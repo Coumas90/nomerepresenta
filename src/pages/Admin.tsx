@@ -3,15 +3,22 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Upload, Database } from "lucide-react";
+import { ArrowLeft, Upload, Database, LogOut } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { artworks } from "@/data/artworks";
 
 const Admin = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { signOut } = useAuth();
   const [isMigrating, setIsMigrating] = useState(false);
   const [progress, setProgress] = useState("");
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+  };
 
   const uploadImageToStorage = async (imagePath: string, fileName: string): Promise<string> => {
     try {
@@ -123,14 +130,22 @@ const Admin = () => {
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="container max-w-4xl mx-auto">
-        <Button
-          onClick={() => navigate("/")}
-          variant="ghost"
-          className="mb-6"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Home
-        </Button>
+        <div className="flex items-center justify-between mb-6">
+          <Button
+            onClick={() => navigate("/")}
+            variant="ghost"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Home
+          </Button>
+          <Button
+            onClick={handleSignOut}
+            variant="outline"
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            Sign Out
+          </Button>
+        </div>
 
         <Card>
           <CardHeader>
