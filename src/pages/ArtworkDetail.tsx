@@ -46,70 +46,27 @@ const ArtworkDetail = () => {
           </Button>
         </div>
 
-        <div className="container mx-auto px-6 pt-32 pb-16">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
-            {/* Left Column - Text Content */}
-            <div className="space-y-8">
-              <div>
-                <h1 className="text-5xl lg:text-6xl font-bold tracking-tight uppercase mb-2">
-                  {artwork.title}
-                </h1>
-                <p className="text-xl text-muted-foreground uppercase tracking-wide">
-                  {artwork.category}
-                </p>
-              </div>
-
-              <div className="space-y-6">
-                <div>
-                  <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-                    Year
-                  </h2>
-                  <p className="text-lg">{artwork.year}</p>
-                </div>
-
-                <div>
-                  <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-                    Dimensions
-                  </h2>
-                  <p className="text-lg whitespace-pre-line">
-                    {artwork.title}, {artwork.year}
-                    {"\n"}{artwork.materials}
-                    {"\n"}{artwork.dimensions}
-                  </p>
-                </div>
-
-                <div>
-                  <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-                    Technique
-                  </h2>
-                  <p className="text-lg">{artwork.technique}</p>
-                </div>
-
-                <div>
-                  <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-                    Materials
-                  </h2>
-                  <p className="text-lg">{artwork.materials}</p>
-                </div>
-
-                <div className="pt-4">
-                  <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">
-                    About this work
-                  </h2>
-                  <p className="text-base leading-relaxed">{artwork.description}</p>
-                </div>
-              </div>
+        <div className="container mx-auto px-6 pt-32 pb-16 max-w-4xl">
+          {/* Centered Layout */}
+          <div className="flex flex-col items-center space-y-8">
+            {/* Image - Centered and optimized */}
+            <div className="w-full max-w-2xl">
+              <img
+                src={artwork.imageDetail}
+                alt={artwork.title}
+                loading="lazy"
+                decoding="async"
+                className="w-full h-auto object-contain"
+              />
             </div>
 
-            {/* Right Column - Image */}
-            <div className="lg:sticky lg:top-32 lg:h-fit">
-              <div className="aspect-[4/5] bg-muted overflow-hidden">
-                <img
-                  src={artwork.imageDetail}
-                  alt={artwork.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+            {/* Minimal Text Info - Centered */}
+            <div className="text-center space-y-2 max-w-xl">
+              <p className="text-lg leading-relaxed whitespace-pre-line">
+                {artwork.title}, {artwork.year}
+                {"\n"}{artwork.materials}
+                {"\n"}{artwork.dimensions}
+              </p>
             </div>
           </div>
         </div>
