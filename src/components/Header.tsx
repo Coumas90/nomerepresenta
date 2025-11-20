@@ -1,4 +1,3 @@
-import { NavLink } from "@/components/NavLink";
 import { useState, useEffect } from "react";
 
 const Header = () => {
@@ -39,14 +38,18 @@ const Header = () => {
     } ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
       <div className="container mx-auto px-6 py-4 flex items-center justify-between">
         {/* Artist Name - Left */}
-        <NavLink 
-          to="/" 
-          className={`text-xl font-bold tracking-tight hover:opacity-70 transition-all duration-300 ${
+        <a 
+          href="#" 
+          onClick={(e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          className={`text-xl font-bold tracking-tight hover:opacity-70 transition-all duration-300 cursor-pointer ${
             isWorksOpen ? 'text-background' : 'text-foreground'
           }`}
         >
           IVAN COMAS
-        </NavLink>
+        </a>
 
         {/* Navigation - Center */}
         <nav className="flex items-center gap-8">
@@ -55,47 +58,44 @@ const Header = () => {
             onMouseEnter={() => setIsWorksOpen(true)}
             onMouseLeave={() => setIsWorksOpen(false)}
           >
-            <NavLink 
-              to="/works" 
+            <a 
+              href="#works" 
               className={`text-sm font-medium tracking-wide hover:opacity-70 transition-all duration-300 ${
                 isWorksOpen ? 'text-background' : 'text-foreground'
               }`}
-              activeClassName="opacity-100"
             >
               WORKS
-            </NavLink>
+            </a>
             
             {isWorksOpen && (
               <div className="absolute left-1/2 -translate-x-1/2 top-full w-screen z-40">
                 <div className="bg-foreground text-background py-8 px-6 w-full flex flex-col items-center">
-                  <NavLink 
-                    to="/works" 
+                  <a 
+                    href="#works" 
                     className="text-base font-bold tracking-wide hover:opacity-70 transition-opacity whitespace-nowrap text-background"
                   >
                     TRI-PEEL
-                  </NavLink>
+                  </a>
                 </div>
               </div>
             )}
           </div>
-          <NavLink 
-            to="/bio" 
+          <a 
+            href="#bio" 
             className={`text-sm font-medium tracking-wide hover:opacity-70 transition-all duration-300 ${
               isWorksOpen ? 'text-background' : 'text-foreground'
             }`}
-            activeClassName="opacity-100"
           >
             BIO
-          </NavLink>
-          <NavLink 
-            to="/contact" 
+          </a>
+          <a 
+            href="#contact" 
             className={`text-sm font-medium tracking-wide hover:opacity-70 transition-all duration-300 ${
               isWorksOpen ? 'text-background' : 'text-foreground'
             }`}
-            activeClassName="opacity-100"
           >
             CONTACT
-          </NavLink>
+          </a>
         </nav>
 
         {/* Right side - empty for now, can add search/account later */}
