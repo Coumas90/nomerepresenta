@@ -28,8 +28,8 @@ const Header = () => {
   }, [lastScrollY]);
 
   return (
-    <header className={`fixed top-0 left-0 right-0 border-b z-50 transition-all duration-300 ${
-      isWorksOpen ? 'bg-foreground border-foreground' : 'bg-background border-border'
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      isWorksOpen ? 'bg-foreground' : 'bg-background'
     } ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
       <div className="container mx-auto px-6 py-4 flex items-center justify-between">
         {/* Artist Name - Left */}
@@ -60,7 +60,11 @@ const Header = () => {
             </NavLink>
             
             {isWorksOpen && (
-              <div className="fixed left-0 right-0 top-[73px] z-40">
+              <div 
+                className="fixed left-0 right-0 top-[73px] z-40"
+                onMouseEnter={() => setIsWorksOpen(true)}
+                onMouseLeave={() => setIsWorksOpen(false)}
+              >
                 <div className="bg-foreground text-background py-12 px-6 w-full flex flex-col items-center gap-4">
                   <NavLink 
                     to="/works/new-arrivals" 
