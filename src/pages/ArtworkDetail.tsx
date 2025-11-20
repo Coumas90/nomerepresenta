@@ -4,19 +4,17 @@ import Header from "@/components/Header";
 import { artworks } from "@/data/artworks";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-
 const ArtworkDetail = () => {
-  const { id } = useParams();
+  const {
+    id
+  } = useParams();
   const navigate = useNavigate();
-  const artwork = artworks.find((art) => art.id === Number(id));
-
+  const artwork = artworks.find(art => art.id === Number(id));
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
   if (!artwork) {
-    return (
-      <>
+    return <>
         <Header />
         <main className="min-h-screen bg-background pt-20">
           <div className="container mx-auto px-6 py-16">
@@ -27,20 +25,13 @@ const ArtworkDetail = () => {
             </Button>
           </div>
         </main>
-      </>
-    );
+      </>;
   }
-
-  return (
-    <>
+  return <>
       <Header />
       <main className="min-h-screen bg-background">
         <div className="fixed top-20 right-6 z-50 pt-4">
-          <Button
-            onClick={() => navigate("/#works")}
-            variant="ghost"
-            className="uppercase tracking-wider text-sm"
-          >
+          <Button onClick={() => navigate("/#works")} variant="ghost" className="uppercase tracking-wider text-sm">
             <ArrowLeft className="mr-2 h-4 w-4" />
             BACK
           </Button>
@@ -51,7 +42,7 @@ const ArtworkDetail = () => {
             {/* Left Column - Text */}
             <div className="flex flex-col justify-center space-y-4 lg:pl-16 pt-12">
               <div>
-                <h1 className="text-5xl lg:text-6xl font-bold tracking-tight uppercase mb-2 leading-tight">
+                <h1 className="text-5xl font-bold tracking-tight uppercase mb-2 leading-tight lg:text-4xl">
                   {artwork.title}
                 </h1>
                 <p className="text-base uppercase tracking-widest font-semibold">
@@ -68,20 +59,12 @@ const ArtworkDetail = () => {
             {/* Right Column - Image */}
             <div className="flex items-center justify-center lg:justify-start">
               <div className="w-full max-w-xl">
-                <img
-                  src={artwork.imageDetail}
-                  alt={artwork.title}
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-auto object-contain"
-                />
+                <img src={artwork.imageDetail} alt={artwork.title} loading="lazy" decoding="async" className="w-full h-auto object-contain" />
               </div>
             </div>
           </div>
         </div>
       </main>
-    </>
-  );
+    </>;
 };
-
 export default ArtworkDetail;
