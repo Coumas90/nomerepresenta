@@ -22,7 +22,7 @@ export interface Artwork {
   materials: string;
   description: string;
   image: string;
-  imageDetail: string;
+  images: string[];
 }
 
 export const artworks: Artwork[] = [
@@ -36,7 +36,7 @@ export const artworks: Artwork[] = [
     materials: "Acrylic, oil pastels, canvas",
     description: "The first piece in the Tri-Peel series explores the intersection of geometric forms and organic textures. Through layered application of mixed media, this work creates a dialogue between structure and spontaneity.",
     image: triPeel1,
-    imageDetail: triPeel1Detail
+    images: [triPeel1, triPeel1Detail]
   },
   {
     id: 2,
@@ -48,7 +48,7 @@ export const artworks: Artwork[] = [
     materials: "Acrylic, oil pastels, canvas",
     description: "Building upon the foundational concepts of the series, this piece delves deeper into the relationship between color and form. The layering technique creates depth and movement within a seemingly static composition.",
     image: triPeel2,
-    imageDetail: triPeel1Detail
+    images: [triPeel2, triPeel1Detail]
   },
   {
     id: 3,
@@ -60,7 +60,7 @@ export const artworks: Artwork[] = [
     materials: "Acrylic, oil pastels, canvas",
     description: "The third iteration examines the balance between order and chaos. Through deliberate mark-making and controlled accidents, the work invites contemplation on the nature of creation itself.",
     image: triPeel3,
-    imageDetail: triPeel1Detail
+    images: [triPeel3, triPeel1Detail]
   },
   {
     id: 4,
@@ -72,7 +72,7 @@ export const artworks: Artwork[] = [
     materials: "Acrylic, oil pastels, canvas, collage elements",
     description: "This larger format piece expands the visual language of the series. The introduction of collage elements adds a new dimension to the exploration of texture and layering.",
     image: triPeel4,
-    imageDetail: triPeel4
+    images: [triPeel4]
   },
   {
     id: 5,
@@ -84,7 +84,7 @@ export const artworks: Artwork[] = [
     materials: "Acrylic, oil pastels, canvas, collage elements",
     description: "Continuing the expanded format, this work explores the tension between fragmentation and unity. Each section speaks its own language while contributing to a cohesive whole.",
     image: triPeel5,
-    imageDetail: triPeel5
+    images: [triPeel5]
   },
   {
     id: 6,
@@ -96,7 +96,7 @@ export const artworks: Artwork[] = [
     materials: "Acrylic, oil pastels, canvas, spray paint",
     description: "The introduction of spray paint techniques brings an urban energy to the series. This piece bridges the gap between studio practice and street art aesthetics.",
     image: triPeel6,
-    imageDetail: triPeel6
+    images: [triPeel6]
   },
   {
     id: 7,
@@ -108,7 +108,7 @@ export const artworks: Artwork[] = [
     materials: "Acrylic, oil pastels, canvas, spray paint",
     description: "A monumental piece that pushes the boundaries of the series. The scale allows for a more immersive experience, drawing the viewer into its complex layered world.",
     image: triPeel7,
-    imageDetail: triPeel7
+    images: [triPeel7]
   },
   {
     id: 8,
@@ -120,7 +120,7 @@ export const artworks: Artwork[] = [
     materials: "Acrylic, oil pastels, canvas, spray paint, charcoal",
     description: "Charcoal marks add gestural energy to the composition. This piece represents a more expressive turn in the series, embracing spontaneity and raw emotion.",
     image: triPeel8,
-    imageDetail: triPeel8
+    images: [triPeel8]
   },
   {
     id: 9,
@@ -132,7 +132,7 @@ export const artworks: Artwork[] = [
     materials: "Acrylic, oil pastels, canvas, spray paint, charcoal",
     description: "This work synthesizes all previous explorations in the series. The convergence of techniques creates a rich, textured surface that rewards close inspection.",
     image: triPeel9,
-    imageDetail: triPeel9
+    images: [triPeel9]
   },
   {
     id: 10,
@@ -144,7 +144,7 @@ export const artworks: Artwork[] = [
     materials: "Acrylic, oil pastels, canvas, spray paint, charcoal, ink",
     description: "The largest piece in the series represents a culmination of ideas. The addition of ink work adds fine detail that contrasts with the bold gestural marks.",
     image: triPeel10,
-    imageDetail: triPeel10
+    images: [triPeel10]
   },
   {
     id: 11,
@@ -156,7 +156,7 @@ export const artworks: Artwork[] = [
     materials: "Acrylic, oil pastels, canvas, spray paint, charcoal, ink",
     description: "This penultimate piece reflects on the journey of the series. It speaks to themes of memory, accumulation, and transformation through its complex layering.",
     image: triPeel11,
-    imageDetail: triPeel11
+    images: [triPeel11]
   },
   {
     id: 12,
@@ -168,6 +168,6 @@ export const artworks: Artwork[] = [
     materials: "Acrylic, oil pastels, canvas, spray paint, charcoal, ink",
     description: "The final piece in the series brings closure while opening new possibilities. It represents both an ending and a beginning, embodying the cyclical nature of artistic practice.",
     image: triPeel12,
-    imageDetail: triPeel12
+    images: [triPeel12]
   }
 ];
