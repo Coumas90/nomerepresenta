@@ -46,10 +46,10 @@ const ArtworkDetail = () => {
           </Button>
         </div>
 
-        <div className="container mx-auto px-8 lg:px-16 pt-32 pb-24">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
+        <div className="container mx-auto px-8 lg:px-16 pt-32 pb-24 max-w-7xl">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
             {/* Left Column - Text */}
-            <div className="lg:col-span-5 space-y-6">
+            <div className="flex flex-col justify-center space-y-6 lg:pl-8">
               <div>
                 <h1 className="text-4xl lg:text-5xl font-bold tracking-tight uppercase mb-3">
                   {artwork.title}
@@ -66,8 +66,8 @@ const ArtworkDetail = () => {
             </div>
 
             {/* Right Column - Image */}
-            <div className="lg:col-span-7 flex items-start justify-center">
-              <div className="w-full max-w-2xl">
+            <div className="flex items-start justify-center lg:justify-start">
+              <div className="w-full max-w-xl">
                 <img
                   src={artwork.imageDetail}
                   alt={artwork.title}
