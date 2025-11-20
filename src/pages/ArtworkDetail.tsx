@@ -42,7 +42,7 @@ const ArtworkDetail = () => {
             {/* Left Column - Text */}
             <div className="flex flex-col justify-center space-y-4 lg:pl-16 pt-12">
               <div>
-                <h1 className="text-5xl font-bold tracking-tight uppercase mb-2 leading-tight lg:text-4xl">
+                <h1 className="text-5xl font-bold tracking-tight uppercase mb-2 leading-tight lg:text-2xl text-left">
                   {artwork.title}
                 </h1>
                 <p className="text-base uppercase tracking-widest font-semibold">
