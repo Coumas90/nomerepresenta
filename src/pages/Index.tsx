@@ -2,7 +2,17 @@ import Header from "@/components/Header";
 import triPeel1 from "@/assets/tri-peel-1.png";
 import triPeel2 from "@/assets/tri-peel-2.png";
 import triPeel3 from "@/assets/tri-peel-3.png";
+import triPeel4 from "@/assets/tri-peel-4.jpg";
+import triPeel5 from "@/assets/tri-peel-5.jpg";
+import triPeel6 from "@/assets/tri-peel-6.jpg";
+import triPeel7 from "@/assets/tri-peel-7.jpg";
+import triPeel8 from "@/assets/tri-peel-8.jpg";
+import triPeel9 from "@/assets/tri-peel-9.jpg";
+import triPeel10 from "@/assets/tri-peel-10.jpg";
+import triPeel11 from "@/assets/tri-peel-11.jpg";
+import triPeel12 from "@/assets/tri-peel-12.jpg";
 import triPeel1Detail from "@/assets/tri-peel-1-detail.jpg";
+
 const mockArtworks = [{
   id: 1,
   title: "Tri-Peel I",
@@ -21,6 +31,60 @@ const mockArtworks = [{
   category: "Paintings",
   image: triPeel3,
   imageDetail: triPeel1Detail
+}, {
+  id: 4,
+  title: "Tri-Peel IV",
+  category: "Paintings",
+  image: triPeel4,
+  imageDetail: triPeel4
+}, {
+  id: 5,
+  title: "Tri-Peel V",
+  category: "Paintings",
+  image: triPeel5,
+  imageDetail: triPeel5
+}, {
+  id: 6,
+  title: "Tri-Peel VI",
+  category: "Paintings",
+  image: triPeel6,
+  imageDetail: triPeel6
+}, {
+  id: 7,
+  title: "Tri-Peel VII",
+  category: "Paintings",
+  image: triPeel7,
+  imageDetail: triPeel7
+}, {
+  id: 8,
+  title: "Tri-Peel VIII",
+  category: "Paintings",
+  image: triPeel8,
+  imageDetail: triPeel8
+}, {
+  id: 9,
+  title: "Tri-Peel IX",
+  category: "Paintings",
+  image: triPeel9,
+  imageDetail: triPeel9
+}, {
+  id: 10,
+  title: "Tri-Peel X",
+  category: "Paintings",
+  image: triPeel10,
+  imageDetail: triPeel10
+}, {
+  id: 11,
+  title: "Tri-Peel XI",
+  category: "Paintings",
+  image: triPeel11,
+  imageDetail: triPeel11
+}, {
+  id: 12,
+  title: "Tri-Peel XII",
+  category: "Paintings",
+  image: triPeel12,
+  imageDetail: triPeel12
 }];
 const Index = () => {
   return <>
