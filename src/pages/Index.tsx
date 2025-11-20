@@ -27,7 +27,7 @@ const Index = () => {
                     {/* Imagen principal */}
                     <img src={artwork.image} alt={artwork.title} className="w-full h-full object-cover absolute inset-0 transition-opacity duration-700 group-hover:opacity-0" loading="lazy" />
                     {/* Imagen de detalle/zoom */}
-                    <img src={artwork.imageDetail} alt={`${artwork.title} - Detail`} className="w-full h-full object-cover absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100" loading="lazy" />
+                    <img src={artwork.images[0]} alt={`${artwork.title} - Detail`} className="w-full h-full object-cover absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100" loading="lazy" />
                   </div>
                   <div className="space-y-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <h3 className="text-sm font-medium tracking-wide">{artwork.title}</h3>
