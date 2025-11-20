@@ -3,16 +3,27 @@ import triPeel1 from "@/assets/tri-peel-1.png";
 import triPeel2 from "@/assets/tri-peel-2.png";
 import triPeel3 from "@/assets/tri-peel-3.png";
 import triPeel1Detail from "@/assets/tri-peel-1-detail.jpg";
-
-const mockArtworks = [
-  { id: 1, title: "Tri-Peel I", category: "Paintings", image: triPeel1, imageDetail: triPeel1Detail },
-  { id: 2, title: "Tri-Peel II", category: "Paintings", image: triPeel2, imageDetail: triPeel1Detail },
-  { id: 3, title: "Tri-Peel III", category: "Paintings", image: triPeel3, imageDetail: triPeel1Detail },
-];
-
+const mockArtworks = [{
+  id: 1,
+  title: "Tri-Peel I",
+  category: "Paintings",
+  image: triPeel1,
+  imageDetail: triPeel1Detail
+}, {
+  id: 2,
+  title: "Tri-Peel II",
+  category: "Paintings",
+  image: triPeel2,
+  imageDetail: triPeel1Detail
+}, {
+  id: 3,
+  title: "Tri-Peel III",
+  category: "Paintings",
+  image: triPeel3,
+  imageDetail: triPeel1Detail
+}];
 const Index = () => {
-  return (
-    <>
+  return <>
       <Header />
       <main className="min-h-screen bg-background">
         {/* Works Section */}
@@ -23,39 +34,25 @@ const Index = () => {
                 <h1 className="text-3xl font-bold tracking-tight">
                   WORKS <span className="mx-2">&gt;</span> TRI-PEEL
                 </h1>
-                <button className="bg-foreground text-background px-6 py-2 text-sm font-bold tracking-wide hover:opacity-90 transition-opacity">
-                  FILTERS
-                </button>
+                
               </div>
             </div>
           </div>
 
           <div className="container mx-auto px-6 py-12">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {mockArtworks.map((artwork) => (
-                <div key={artwork.id} className="group cursor-pointer">
+              {mockArtworks.map(artwork => <div key={artwork.id} className="group cursor-pointer">
                   <div className="aspect-square bg-muted overflow-hidden mb-4 relative">
                     {/* Imagen principal */}
-                    <img 
-                      src={artwork.image} 
-                      alt={artwork.title}
-                      className="w-full h-full object-cover absolute inset-0 transition-opacity duration-700 group-hover:opacity-0"
-                      loading="lazy"
-                    />
+                    <img src={artwork.image} alt={artwork.title} className="w-full h-full object-cover absolute inset-0 transition-opacity duration-700 group-hover:opacity-0" loading="lazy" />
                     {/* Imagen de detalle/zoom */}
-                    <img 
-                      src={artwork.imageDetail} 
-                      alt={`${artwork.title} - Detail`}
-                      className="w-full h-full object-cover absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100"
-                      loading="lazy"
-                    />
+                    <img src={artwork.imageDetail} alt={`${artwork.title} - Detail`} className="w-full h-full object-cover absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100" loading="lazy" />
                   </div>
                   <div className="space-y-1">
                     <h3 className="text-sm font-medium tracking-wide">{artwork.title}</h3>
                     <p className="text-xs text-muted-foreground">{artwork.category}</p>
                   </div>
-                </div>
-              ))}
+                </div>)}
             </div>
           </div>
         </section>
@@ -76,8 +73,6 @@ const Index = () => {
           </div>
         </section>
       </main>
-    </>
-  );
+    </>;
 };
-
 export default Index;
