@@ -1,5 +1,4 @@
 import { useState, useRef } from "react";
-import { ZoomIn } from "lucide-react";
 import { ZoomModal } from "./ZoomModal";
 
 interface InteractiveGalleryProps {
@@ -58,15 +57,6 @@ export const InteractiveGallery = ({ image, imageDetail, title }: InteractiveGal
             cursorPosition === 'center' ? 'cursor-zoom-in' : 'cursor-pointer'
           }`}
         />
-        
-        {/* Indicador de zoom cuando el cursor está en el centro */}
-        {cursorPosition === 'center' && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="bg-background/80 backdrop-blur-sm rounded-full p-4 animate-fade-in">
-              <ZoomIn className="w-8 h-8 text-foreground" />
-            </div>
-          </div>
-        )}
       </div>
 
       <ZoomModal 

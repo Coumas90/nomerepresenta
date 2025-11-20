@@ -69,30 +69,14 @@ export const ZoomModal = ({ isOpen, onClose, image, title }: ZoomModalProps) => 
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
       >
-        {/* Botón de cerrar */}
+        {/* Botón de cerrar - minimalista */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-50 bg-background/20 hover:bg-background/40 backdrop-blur-sm rounded-full p-2 transition-all duration-200"
+          className="absolute top-6 right-6 z-50 text-white/60 hover:text-white transition-colors duration-200"
           aria-label="Cerrar"
         >
-          <X className="w-6 h-6 text-white" />
+          <X className="w-8 h-8" strokeWidth={1.5} />
         </button>
-
-        {/* Instrucciones */}
-        <div className="absolute top-4 left-4 z-50 bg-background/20 backdrop-blur-sm rounded-lg px-4 py-2">
-          <p className="text-white text-sm font-medium">
-            Rueda del mouse para zoom • Arrastra para mover
-          </p>
-        </div>
-
-        {/* Indicador de zoom */}
-        {scale > 1 && (
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-50 bg-background/20 backdrop-blur-sm rounded-full px-4 py-2">
-            <p className="text-white text-sm font-medium">
-              {Math.round(scale * 100)}%
-            </p>
-          </div>
-        )}
 
         {/* Imagen */}
         <div className="flex items-center justify-center w-full h-full p-8">
