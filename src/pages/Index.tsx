@@ -2,11 +2,12 @@ import Header from "@/components/Header";
 import triPeel1 from "@/assets/tri-peel-1.png";
 import triPeel2 from "@/assets/tri-peel-2.png";
 import triPeel3 from "@/assets/tri-peel-3.png";
+import triPeel1Detail from "@/assets/tri-peel-1-detail.jpg";
 
 const mockArtworks = [
-  { id: 1, title: "Tri-Peel I", category: "Paintings", image: triPeel1 },
-  { id: 2, title: "Tri-Peel II", category: "Paintings", image: triPeel2 },
-  { id: 3, title: "Tri-Peel III", category: "Paintings", image: triPeel3 },
+  { id: 1, title: "Tri-Peel I", category: "Paintings", image: triPeel1, imageDetail: triPeel1Detail },
+  { id: 2, title: "Tri-Peel II", category: "Paintings", image: triPeel2, imageDetail: triPeel1Detail },
+  { id: 3, title: "Tri-Peel III", category: "Paintings", image: triPeel3, imageDetail: triPeel1Detail },
 ];
 
 const Index = () => {
@@ -33,11 +34,20 @@ const Index = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {mockArtworks.map((artwork) => (
                 <div key={artwork.id} className="group cursor-pointer">
-                  <div className="aspect-square bg-muted overflow-hidden mb-4">
+                  <div className="aspect-square bg-muted overflow-hidden mb-4 relative">
+                    {/* Imagen principal */}
                     <img 
                       src={artwork.image} 
                       alt={artwork.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="w-full h-full object-cover absolute inset-0 transition-opacity duration-700 group-hover:opacity-0"
+                      loading="lazy"
+                    />
+                    {/* Imagen de detalle/zoom */}
+                    <img 
+                      src={artwork.imageDetail} 
+                      alt={`${artwork.title} - Detail`}
+                      className="w-full h-full object-cover absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100"
+                      loading="lazy"
                     />
                   </div>
                   <div className="space-y-1">
