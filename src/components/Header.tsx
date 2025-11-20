@@ -1,13 +1,36 @@
 import { NavLink } from "@/components/NavLink";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const Header = () => {
   const [isWorksOpen, setIsWorksOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      if (currentScrollY < 10) {
+        setIsVisible(true);
+      } else if (currentScrollY > lastScrollY) {
+        // Scrolling down
+        setIsVisible(false);
+      } else {
+        // Scrolling up
+        setIsVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
 
   return (
-    <header className={`fixed top-0 left-0 right-0 border-b z-50 transition-colors duration-300 ${
+    <header className={`fixed top-0 left-0 right-0 border-b z-50 transition-all duration-300 ${
       isWorksOpen ? 'bg-foreground border-foreground' : 'bg-background border-border'
-    }`}>
+    } ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
       <div className="container mx-auto px-6 py-4 flex items-center justify-between">
         {/* Artist Name - Left */}
         <NavLink 
