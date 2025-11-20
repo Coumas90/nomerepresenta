@@ -59,7 +59,7 @@ const ArtworkDetail = () => {
             {/* Right Column - Image */}
             <div className="flex items-center justify-center lg:justify-start">
               <div className="w-full max-w-xl">
-                <img src={artwork.imageDetail} alt={artwork.title} loading="lazy" decoding="async" className="w-full h-auto object-contain" />
+                <img src={artwork.image} alt={artwork.title} loading="lazy" decoding="async" className="w-full h-auto object-contain" />
               </div>
             </div>
           </div>
