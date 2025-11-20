@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import { artworks } from "@/data/artworks";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { InteractiveGallery } from "@/components/artwork/InteractiveGallery";
 const ArtworkDetail = () => {
   const {
     id
@@ -58,9 +59,11 @@ const ArtworkDetail = () => {
 
             {/* Right Column - Image */}
             <div className="flex items-center justify-center lg:justify-start">
-              <div className="w-full max-w-xl">
-                <img src={artwork.image} alt={artwork.title} loading="lazy" decoding="async" className="w-full h-auto object-contain" />
-              </div>
+              <InteractiveGallery 
+                image={artwork.image}
+                imageDetail={artwork.imageDetail}
+                title={artwork.title}
+              />
             </div>
           </div>
         </div>
