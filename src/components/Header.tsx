@@ -66,11 +66,7 @@ const Header = () => {
             </NavLink>
             
             {isWorksOpen && (
-              <div 
-                className="fixed left-0 right-0 top-[57px] z-40"
-                onMouseEnter={() => setIsWorksOpen(true)}
-                onMouseLeave={() => setIsWorksOpen(false)}
-              >
+              <div className="absolute left-1/2 -translate-x-1/2 top-full w-screen z-40">
                 <div className="bg-foreground text-background py-8 px-6 w-full flex flex-col items-center">
                   <NavLink 
                     to="/works" 

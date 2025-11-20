@@ -15,7 +15,7 @@ const Works = () => {
       <Header />
       <main className="min-h-screen bg-background">
         {/* Sticky Breadcrumb */}
-        <div className="sticky top-0 bg-background z-40 border-b border-border pt-24 pb-6">
+        <div className="sticky top-0 bg-background z-40 pt-24 pb-6">
           <div className="container mx-auto px-6">
             <div className="flex items-center justify-between">
               <h1 className="text-3xl font-bold tracking-tight">
