@@ -1,15 +1,12 @@
 import Header from "@/components/Header";
+import triPeel1 from "@/assets/tri-peel-1.png";
+import triPeel2 from "@/assets/tri-peel-2.png";
+import triPeel3 from "@/assets/tri-peel-3.png";
 
 const mockArtworks = [
-  { id: 1, title: "Leather Jacket", category: "Paintings", image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800" },
-  { id: 2, title: "Hooded Work", category: "Sculptures", image: "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=800" },
-  { id: 3, title: "Black Jacket", category: "Paintings", image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800" },
-  { id: 4, title: "Urban Collection", category: "Drawings", image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=800" },
-  { id: 5, title: "Street Style", category: "Paintings", image: "https://images.unsplash.com/photo-1548126032-079d9d-b6c4c?w=800" },
-  { id: 6, title: "Dark Aesthetic", category: "Installations", image: "https://images.unsplash.com/photo-1520975954732-35dd22299614?w=800" },
-  { id: 7, title: "Monochrome", category: "Digital", image: "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800" },
-  { id: 8, title: "Minimal Design", category: "Paintings", image: "https://images.unsplash.com/photo-1608748010899-18f300247112?w=800" },
-  { id: 9, title: "Contemporary", category: "Sculptures", image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800" },
+  { id: 1, title: "Tri-Peel I", category: "Paintings", image: triPeel1 },
+  { id: 2, title: "Tri-Peel II", category: "Paintings", image: triPeel2 },
+  { id: 3, title: "Tri-Peel III", category: "Paintings", image: triPeel3 },
 ];
 
 const Works = () => {
@@ -22,7 +19,7 @@ const Works = () => {
           <div className="container mx-auto px-6">
             <div className="flex items-center justify-between">
               <h1 className="text-3xl font-bold tracking-tight">
-                WORKS <span className="mx-2">&gt;</span> NEW ARRIVALS
+                WORKS <span className="mx-2">&gt;</span> TRI-PEEL
               </h1>
               <button className="bg-foreground text-background px-6 py-2 text-sm font-bold tracking-wide hover:opacity-90 transition-opacity">
                 FILTERS
