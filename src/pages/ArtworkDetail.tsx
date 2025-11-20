@@ -47,26 +47,26 @@ const ArtworkDetail = () => {
         </div>
 
         <div className="container mx-auto px-8 lg:px-16 pt-32 pb-24 max-w-7xl">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             {/* Left Column - Text */}
-            <div className="flex flex-col justify-center space-y-6 lg:pl-8">
+            <div className="flex flex-col justify-center space-y-4 lg:pl-16 pt-12">
               <div>
-                <h1 className="text-4xl lg:text-5xl font-bold tracking-tight uppercase mb-3">
+                <h1 className="text-5xl lg:text-6xl font-bold tracking-tight uppercase mb-2 leading-tight">
                   {artwork.title}
                 </h1>
-                <p className="text-sm uppercase tracking-wider text-muted-foreground">
+                <p className="text-base uppercase tracking-widest font-semibold">
                   {artwork.year}
                 </p>
               </div>
 
-              <div className="text-sm uppercase tracking-wide leading-relaxed space-y-1">
+              <div className="text-xs uppercase tracking-widest leading-loose space-y-0.5 font-medium">
                 <p>{artwork.materials}</p>
                 <p>{artwork.dimensions}</p>
               </div>
             </div>
 
             {/* Right Column - Image */}
-            <div className="flex items-start justify-center lg:justify-start">
+            <div className="flex items-center justify-center lg:justify-start">
               <div className="w-full max-w-xl">
                 <img
                   src={artwork.imageDetail}
