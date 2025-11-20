@@ -1,8 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
-import { artworks } from "@/data/artworks";
+import { useArtworks } from "@/hooks/useArtworks";
+
 const Index = () => {
   const navigate = useNavigate();
+  const { data: artworks, isLoading, error } = useArtworks();
 
   return <>
       <Header />
@@ -21,20 +23,52 @@ const Index = () => {
           </div>
 
           <div className="container mx-auto px-6 py-12">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {artworks.map(artwork => <div key={artwork.id} className="group cursor-pointer" onClick={() => navigate(`/artwork/${artwork.id}`)}>
-                  <div className="aspect-square bg-muted overflow-hidden mb-4 relative">
-                    {/* Imagen principal */}
-                    <img src={artwork.image} alt={artwork.title} className="w-full h-full object-cover absolute inset-0 transition-opacity duration-700 group-hover:opacity-0" loading="lazy" />
-                    {/* Imagen de detalle/zoom */}
-                    <img src={artwork.imageDetail} alt={`${artwork.title} - Detail`} className="w-full h-full object-cover absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100" loading="lazy" />
+            {isLoading && (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">Loading artworks...</p>
+              </div>
+            )}
+            
+            {error && (
+              <div className="text-center py-12">
+                <p className="text-destructive">Error loading artworks. Please try again.</p>
+              </div>
+            )}
+
+            {artworks && artworks.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {artworks.map(artwork => (
+                  <div key={artwork.id} className="group cursor-pointer" onClick={() => navigate(`/artwork/${artwork.id}`)}>
+                    <div className="aspect-square bg-muted overflow-hidden mb-4 relative">
+                      {/* Imagen principal */}
+                      <img 
+                        src={artwork.image_url} 
+                        alt={artwork.title} 
+                        className="w-full h-full object-cover absolute inset-0 transition-opacity duration-700 group-hover:opacity-0" 
+                        loading="lazy" 
+                      />
+                      {/* Imagen de detalle/zoom */}
+                      <img 
+                        src={artwork.image_detail_url} 
+                        alt={`${artwork.title} - Detail`} 
+                        className="w-full h-full object-cover absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100" 
+                        loading="lazy" 
+                      />
+                    </div>
+                    <div className="space-y-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <h3 className="text-sm font-medium tracking-wide">{artwork.title}</h3>
+                      <p className="text-xs text-muted-foreground">{artwork.year}</p>
+                    </div>
                   </div>
-                  <div className="space-y-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <h3 className="text-sm font-medium tracking-wide">{artwork.title}</h3>
-                    <p className="text-xs text-muted-foreground">{artwork.category}</p>
-                  </div>
-                </div>)}
-            </div>
+                ))}
+              </div>
+            )}
+
+            {artworks && artworks.length === 0 && !isLoading && (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">No artworks available yet.</p>
+              </div>
+            )}
           </div>
         </section>
 
