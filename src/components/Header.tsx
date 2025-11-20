@@ -33,9 +33,9 @@ const Header = () => {
   }, [lastScrollY, isWorksOpen]);
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      isWorksOpen ? 'bg-foreground' : 'bg-background'
-    } ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-transparent ${
+      isVisible ? 'translate-y-0' : '-translate-y-full'
+    }`}>
       <div className="container mx-auto px-6 py-4 flex items-center justify-between">
         {/* Artist Name - Left */}
         <a 
