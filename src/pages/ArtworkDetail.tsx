@@ -38,35 +38,44 @@ const ArtworkDetail = () => {
         <div className="fixed top-20 right-6 z-50 pt-4">
           <Button
             onClick={() => navigate("/#works")}
-            variant="default"
-            className="bg-foreground text-background hover:bg-foreground/90"
+            variant="ghost"
+            className="uppercase tracking-wider text-sm"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            BACK TO WORKS
+            BACK
           </Button>
         </div>
 
-        <div className="container mx-auto px-6 pt-32 pb-16 max-w-4xl">
-          {/* Centered Layout */}
-          <div className="flex flex-col items-center space-y-8">
-            {/* Image - Centered and optimized */}
-            <div className="w-full max-w-2xl">
-              <img
-                src={artwork.imageDetail}
-                alt={artwork.title}
-                loading="lazy"
-                decoding="async"
-                className="w-full h-auto object-contain"
-              />
+        <div className="container mx-auto px-8 lg:px-16 pt-32 pb-24">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
+            {/* Left Column - Text */}
+            <div className="lg:col-span-5 space-y-6">
+              <div>
+                <h1 className="text-4xl lg:text-5xl font-bold tracking-tight uppercase mb-3">
+                  {artwork.title}
+                </h1>
+                <p className="text-sm uppercase tracking-wider text-muted-foreground">
+                  {artwork.year}
+                </p>
+              </div>
+
+              <div className="text-sm uppercase tracking-wide leading-relaxed space-y-1">
+                <p>{artwork.materials}</p>
+                <p>{artwork.dimensions}</p>
+              </div>
             </div>
 
-            {/* Minimal Text Info - Centered */}
-            <div className="text-center space-y-2 max-w-xl">
-              <p className="text-lg leading-relaxed whitespace-pre-line">
-                {artwork.title}, {artwork.year}
-                {"\n"}{artwork.materials}
-                {"\n"}{artwork.dimensions}
-              </p>
+            {/* Right Column - Image */}
+            <div className="lg:col-span-7 flex items-start justify-center">
+              <div className="w-full max-w-2xl">
+                <img
+                  src={artwork.imageDetail}
+                  alt={artwork.title}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-auto object-contain"
+                />
+              </div>
             </div>
           </div>
         </div>
