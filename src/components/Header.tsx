@@ -10,6 +10,12 @@ const Header = () => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       
+      // Don't hide header when dropdown is open
+      if (isWorksOpen) {
+        setIsVisible(true);
+        return;
+      }
+      
       if (currentScrollY < 10) {
         setIsVisible(true);
       } else if (currentScrollY > lastScrollY) {
@@ -25,7 +31,7 @@ const Header = () => {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
+  }, [lastScrollY, isWorksOpen]);
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -61,46 +67,16 @@ const Header = () => {
             
             {isWorksOpen && (
               <div 
-                className="fixed left-0 right-0 top-[73px] z-40"
+                className="fixed left-0 right-0 top-[57px] z-40"
                 onMouseEnter={() => setIsWorksOpen(true)}
                 onMouseLeave={() => setIsWorksOpen(false)}
               >
-                <div className="bg-foreground text-background py-12 px-6 w-full flex flex-col items-center gap-4">
+                <div className="bg-foreground text-background py-8 px-6 w-full flex flex-col items-center">
                   <NavLink 
-                    to="/works/new-arrivals" 
+                    to="/works" 
                     className="text-base font-bold tracking-wide hover:opacity-70 transition-opacity whitespace-nowrap text-background"
                   >
-                    NEW ARRIVALS
-                  </NavLink>
-                  <NavLink 
-                    to="/works/paintings" 
-                    className="text-base font-bold tracking-wide hover:opacity-70 transition-opacity whitespace-nowrap text-background"
-                  >
-                    PAINTINGS
-                  </NavLink>
-                  <NavLink 
-                    to="/works/sculptures" 
-                    className="text-base font-bold tracking-wide hover:opacity-70 transition-opacity whitespace-nowrap text-background"
-                  >
-                    SCULPTURES
-                  </NavLink>
-                  <NavLink 
-                    to="/works/drawings" 
-                    className="text-base font-bold tracking-wide hover:opacity-70 transition-opacity whitespace-nowrap text-background"
-                  >
-                    DRAWINGS
-                  </NavLink>
-                  <NavLink 
-                    to="/works/installations" 
-                    className="text-base font-bold tracking-wide hover:opacity-70 transition-opacity whitespace-nowrap text-background"
-                  >
-                    INSTALLATIONS
-                  </NavLink>
-                  <NavLink 
-                    to="/works/digital" 
-                    className="text-base font-bold tracking-wide hover:opacity-70 transition-opacity whitespace-nowrap text-background"
-                  >
-                    DIGITAL
+                    TRI-PEEL
                   </NavLink>
                 </div>
               </div>
