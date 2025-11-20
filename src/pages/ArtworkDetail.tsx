@@ -71,7 +71,11 @@ const ArtworkDetail = () => {
                   <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-2">
                     Dimensions
                   </h2>
-                  <p className="text-lg">{artwork.dimensions}</p>
+                  <p className="text-lg whitespace-pre-line">
+                    {artwork.title}, {artwork.year}
+                    {"\n"}{artwork.materials}
+                    {"\n"}{artwork.dimensions}
+                  </p>
                 </div>
 
                 <div>
