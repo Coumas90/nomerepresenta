@@ -1,6 +1,4 @@
 import Header from "@/components/Header";
-import { Lightbox } from "@/components/artwork/Lightbox";
-import { useState } from "react";
 import triPeel1 from "@/assets/tri-peel-1.png";
 import triPeel2 from "@/assets/tri-peel-2.png";
 import triPeel3 from "@/assets/tri-peel-3.png";
@@ -25,8 +23,6 @@ const mockArtworks = [{
   imageDetail: triPeel1Detail
 }];
 const Index = () => {
-  const [selectedArtworkIndex, setSelectedArtworkIndex] = useState<number | null>(null);
-
   return <>
       <Header />
       <main className="min-h-screen bg-background">
@@ -45,11 +41,7 @@ const Index = () => {
 
           <div className="container mx-auto px-6 py-12">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {mockArtworks.map((artwork, index) => <div 
-                  key={artwork.id} 
-                  className="group cursor-pointer"
-                  onClick={() => setSelectedArtworkIndex(index)}
-                >
+              {mockArtworks.map(artwork => <div key={artwork.id} className="group cursor-pointer">
                   <div className="aspect-square bg-muted overflow-hidden mb-4 relative">
                     {/* Imagen principal */}
                     <img src={artwork.image} alt={artwork.title} className="w-full h-full object-cover absolute inset-0 transition-opacity duration-700 group-hover:opacity-0" loading="lazy" />
@@ -63,13 +55,6 @@ const Index = () => {
                 </div>)}
             </div>
           </div>
-
-          <Lightbox
-            artworks={mockArtworks}
-            selectedIndex={selectedArtworkIndex}
-            onClose={() => setSelectedArtworkIndex(null)}
-            onNavigate={setSelectedArtworkIndex}
-          />
         </section>
 
         {/* Bio Section */}
