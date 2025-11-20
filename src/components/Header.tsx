@@ -68,9 +68,10 @@ const Header = () => {
                 <div className="bg-foreground text-background py-12 px-6 w-full flex flex-col items-center gap-4">
                   <NavLink 
                     to="/works" 
-                    className="text-base font-bold tracking-wide hover:opacity-70 transition-opacity whitespace-nowrap text-background"
+                    className="text-base font-bold tracking-wide whitespace-nowrap text-background relative group"
                   >
                     TRI-PEEL
+                    <span className="absolute left-0 right-0 bottom-0 h-0.5 bg-background scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
                   </NavLink>
                 </div>
               </div>
