@@ -1,20 +1,34 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import Header from "@/components/Header";
-import { artworks } from "@/data/artworks";
+import { useArtwork } from "@/hooks/useArtworks";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+
 const ArtworkDetail = () => {
-  const {
-    id
-  } = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
-  const artwork = artworks.find(art => art.id === Number(id));
+  const { data: artwork, isLoading, error } = useArtwork(id);
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-  if (!artwork) {
-    return <>
+
+  if (isLoading) {
+    return (
+      <>
+        <Header />
+        <main className="min-h-screen bg-background pt-20">
+          <div className="container mx-auto px-6 py-16">
+            <p className="text-muted-foreground">Loading artwork...</p>
+          </div>
+        </main>
+      </>
+    );
+  }
+
+  if (error || !artwork) {
+    return (
+      <>
         <Header />
         <main className="min-h-screen bg-background pt-20">
           <div className="container mx-auto px-6 py-16">
@@ -25,7 +39,8 @@ const ArtworkDetail = () => {
             </Button>
           </div>
         </main>
-      </>;
+      </>
+    );
   }
   return <>
       <Header />
@@ -59,7 +74,7 @@ const ArtworkDetail = () => {
             {/* Right Column - Image */}
             <div className="flex items-center justify-center lg:justify-start">
               <div className="w-full max-w-xl">
-                <img src={artwork.image} alt={artwork.title} loading="lazy" decoding="async" className="w-full h-auto object-contain" />
+                <img src={artwork.image_url} alt={artwork.title} loading="lazy" decoding="async" className="w-full h-auto object-contain" />
               </div>
             </div>
           </div>
