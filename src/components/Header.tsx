@@ -60,43 +60,17 @@ const Header = () => {
             </NavLink>
             
             {isWorksOpen && (
-              <div className="fixed left-0 right-0 top-[73px] z-40">
+              <div 
+                className="fixed left-0 right-0 top-[73px] z-40"
+                onMouseEnter={() => setIsWorksOpen(true)}
+                onMouseLeave={() => setIsWorksOpen(false)}
+              >
                 <div className="bg-foreground text-background py-12 px-6 w-full flex flex-col items-center gap-4">
                   <NavLink 
-                    to="/works/new-arrivals" 
+                    to="/works" 
                     className="text-base font-bold tracking-wide hover:opacity-70 transition-opacity whitespace-nowrap text-background"
                   >
-                    NEW ARRIVALS
-                  </NavLink>
-                  <NavLink 
-                    to="/works/paintings" 
-                    className="text-base font-bold tracking-wide hover:opacity-70 transition-opacity whitespace-nowrap text-background"
-                  >
-                    PAINTINGS
-                  </NavLink>
-                  <NavLink 
-                    to="/works/sculptures" 
-                    className="text-base font-bold tracking-wide hover:opacity-70 transition-opacity whitespace-nowrap text-background"
-                  >
-                    SCULPTURES
-                  </NavLink>
-                  <NavLink 
-                    to="/works/drawings" 
-                    className="text-base font-bold tracking-wide hover:opacity-70 transition-opacity whitespace-nowrap text-background"
-                  >
-                    DRAWINGS
-                  </NavLink>
-                  <NavLink 
-                    to="/works/installations" 
-                    className="text-base font-bold tracking-wide hover:opacity-70 transition-opacity whitespace-nowrap text-background"
-                  >
-                    INSTALLATIONS
-                  </NavLink>
-                  <NavLink 
-                    to="/works/digital" 
-                    className="text-base font-bold tracking-wide hover:opacity-70 transition-opacity whitespace-nowrap text-background"
-                  >
-                    DIGITAL
+                    TRI-PEEL
                   </NavLink>
                 </div>
               </div>
