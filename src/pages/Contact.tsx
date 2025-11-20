@@ -1,18 +1,17 @@
 import Header from "@/components/Header";
 
-const Index = () => {
+const Contact = () => {
   return (
     <>
       <Header />
       <main className="min-h-screen bg-background pt-20">
         <div className="container mx-auto px-6 py-16">
-          <div className="max-w-4xl mx-auto">
-            {/* Tu contenido aquí */}
-          </div>
+          <h1 className="text-4xl font-bold mb-8">CONTACT</h1>
+          {/* Content goes here */}
         </div>
       </main>
     </>
   );
 };
 
-export default Index;
+export default Contact;
