@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import triPeel1 from "@/assets/tri-peel-1.png";
 import triPeel2 from "@/assets/tri-peel-2.png";
@@ -14,79 +15,81 @@ import triPeel12 from "@/assets/tri-peel-12.jpg";
 import triPeel1Detail from "@/assets/tri-peel-1-detail.jpg";
 
 const mockArtworks = [{
-  id: 1,
+  id: "1",
   title: "Tri-Peel I",
   category: "Paintings",
   image: triPeel1,
   imageDetail: triPeel1Detail
 }, {
-  id: 2,
+  id: "2",
   title: "Tri-Peel II",
   category: "Paintings",
   image: triPeel2,
   imageDetail: triPeel1Detail
 }, {
-  id: 3,
+  id: "3",
   title: "Tri-Peel III",
   category: "Paintings",
   image: triPeel3,
   imageDetail: triPeel1Detail
 }, {
-  id: 4,
+  id: "4",
   title: "Tri-Peel IV",
   category: "Paintings",
   image: triPeel4,
   imageDetail: triPeel4
 }, {
-  id: 5,
+  id: "5",
   title: "Tri-Peel V",
   category: "Paintings",
   image: triPeel5,
   imageDetail: triPeel5
 }, {
-  id: 6,
+  id: "6",
   title: "Tri-Peel VI",
   category: "Paintings",
   image: triPeel6,
   imageDetail: triPeel6
 }, {
-  id: 7,
+  id: "7",
   title: "Tri-Peel VII",
   category: "Paintings",
   image: triPeel7,
   imageDetail: triPeel7
 }, {
-  id: 8,
+  id: "8",
   title: "Tri-Peel VIII",
   category: "Paintings",
   image: triPeel8,
   imageDetail: triPeel8
 }, {
-  id: 9,
+  id: "9",
   title: "Tri-Peel IX",
   category: "Paintings",
   image: triPeel9,
   imageDetail: triPeel9
 }, {
-  id: 10,
+  id: "10",
   title: "Tri-Peel X",
   category: "Paintings",
   image: triPeel10,
   imageDetail: triPeel10
 }, {
-  id: 11,
+  id: "11",
   title: "Tri-Peel XI",
   category: "Paintings",
   image: triPeel11,
   imageDetail: triPeel11
 }, {
-  id: 12,
+  id: "12",
   title: "Tri-Peel XII",
   category: "Paintings",
   image: triPeel12,
   imageDetail: triPeel12
 }];
 const Index = () => {
+  const navigate = useNavigate();
+
   return <>
       <Header />
       <main className="min-h-screen bg-background">
@@ -105,7 +108,11 @@ const Index = () => {
 
           <div className="container mx-auto px-6 py-12">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {mockArtworks.map(artwork => <div key={artwork.id} className="group cursor-pointer">
+              {mockArtworks.map(artwork => <div 
+                key={artwork.id} 
+                className="group cursor-pointer"
+                onClick={() => navigate(`/artwork/${artwork.id}`)}
+              >
                   <div className="aspect-square bg-muted overflow-hidden mb-4 relative">
                     {/* Imagen principal */}
                     <img src={artwork.image} alt={artwork.title} className="w-full h-full object-cover absolute inset-0 transition-opacity duration-700 group-hover:opacity-0" loading="lazy" />
