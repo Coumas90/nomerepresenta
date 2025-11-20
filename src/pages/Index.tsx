@@ -48,7 +48,7 @@ const Index = () => {
                     {/* Imagen de detalle/zoom */}
                     <img src={artwork.imageDetail} alt={`${artwork.title} - Detail`} className="w-full h-full object-cover absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100" loading="lazy" />
                   </div>
-                  <div className="space-y-1">
+                  <div className="space-y-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <h3 className="text-sm font-medium tracking-wide">{artwork.title}</h3>
                     <p className="text-xs text-muted-foreground">{artwork.category}</p>
                   </div>
