@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import { Instagram } from "lucide-react";
 import Header from "@/components/Header";
 import { useArtworks } from "@/hooks/useArtworks";
-import { ContactForm } from "@/components/ContactForm";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -201,44 +200,33 @@ const Index = () => {
           <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16">
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8">CONTACT</h1>
             
-            <div className="max-w-3xl animate-fade-in space-y-8 sm:space-y-12">
-              {/* Contact Information */}
-              <div className="space-y-4">
-                <div>
-                  <a 
-                    href="mailto:contact@ivancomas.com" 
-                    className="text-lg sm:text-xl font-medium text-foreground hover:text-primary transition-colors duration-200 inline-block"
-                  >
-                    contact@ivancomas.com
-                  </a>
-                </div>
+            <div className="max-w-3xl text-center animate-fade-in">
+              <div className="space-y-3 sm:space-y-4">
+                {/* Email */}
+                <a 
+                  href="mailto:contact@ivancomas.com"
+                  className="text-2xl sm:text-3xl font-light text-foreground hover:text-primary transition-colors duration-300 inline-block"
+                >
+                  contact@ivancomas.com
+                </a>
 
-                <p className="text-sm sm:text-base text-muted-foreground">
+                {/* Location */}
+                <p className="text-sm sm:text-base font-light text-muted-foreground">
                   Currently based between São Paulo and Paris
-                </p>
-
-                <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl">
-                  For professional inquiries, exhibition proposals, or acquisition information, 
-                  please reach out using the form below or via email.
                 </p>
               </div>
 
-              {/* Contact Form */}
-              <div className="pt-4 sm:pt-8">
-                <ContactForm />
-                
-                {/* Social Media Links */}
-                <div className="flex items-center justify-center gap-6 mt-8">
-                  <a
-                    href="https://instagram.com/ivancomas"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-muted-foreground hover:text-primary transition-colors duration-200"
-                    aria-label="Instagram"
-                  >
-                    <Instagram className="w-6 h-6" />
-                  </a>
-                </div>
+              {/* Social Media - Solo icono */}
+              <div className="mt-8 sm:mt-12">
+                <a
+                  href="https://instagram.com/ivancomas"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block text-muted-foreground hover:text-foreground transition-colors duration-300"
+                  aria-label="Instagram"
+                >
+                  <Instagram className="w-5 h-5 sm:w-6 sm:h-6" />
+                </a>
               </div>
             </div>
           </div>
