@@ -27,8 +27,12 @@ const ArtworkDetail = () => {
   if (error || !artwork) {
     return (
       <main className="min-h-screen bg-background">
-        <div className="fixed top-6 right-6 z-50">
-          <Button onClick={() => navigate("/works")} variant="ghost" className="uppercase tracking-wider text-sm">
+        <div className="fixed top-6 right-6 z-50 animate-fade-in">
+          <Button 
+            onClick={() => navigate("/works")} 
+            variant="ghost" 
+            className="uppercase tracking-wider text-sm cursor-pointer hover:scale-105 transition-transform duration-200"
+          >
             <ArrowLeft className="mr-2 h-4 w-4" />
             BACK
           </Button>
@@ -41,8 +45,12 @@ const ArtworkDetail = () => {
   }
   return (
     <main className="min-h-screen bg-background">
-      <div className="fixed top-6 right-6 z-50">
-        <Button onClick={() => navigate("/works")} variant="ghost" className="uppercase tracking-wider text-sm">
+      <div className="fixed top-6 right-6 z-50 animate-fade-in">
+        <Button 
+          onClick={() => navigate("/works")} 
+          variant="ghost" 
+          className="uppercase tracking-wider text-sm cursor-pointer hover:scale-105 transition-transform duration-200"
+        >
           <ArrowLeft className="mr-2 h-4 w-4" />
           BACK
         </Button>
