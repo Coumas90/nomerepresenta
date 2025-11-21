@@ -14,6 +14,7 @@ const Admin = () => {
   const { signOut } = useAuth();
   const [editingArtwork, setEditingArtwork] = useState<ArtworkData | undefined>(undefined);
   const [showForm, setShowForm] = useState(false);
+  const [preselectedSeriesId, setPreselectedSeriesId] = useState<string | undefined>(undefined);
 
   const handleSignOut = async () => {
     await signOut();
@@ -27,12 +28,20 @@ const Admin = () => {
 
   const handleCreateNew = () => {
     setEditingArtwork(undefined);
+    setPreselectedSeriesId(undefined);
+    setShowForm(true);
+  };
+
+  const handleCreateInSeries = (seriesId: string) => {
+    setEditingArtwork(undefined);
+    setPreselectedSeriesId(seriesId);
     setShowForm(true);
   };
 
   const handleFormSuccess = () => {
     setShowForm(false);
     setEditingArtwork(undefined);
+    setPreselectedSeriesId(undefined);
   };
 
   return (
@@ -79,7 +88,11 @@ const Admin = () => {
                     Cancel
                   </Button>
                 </div>
-                <ArtworkForm artwork={editingArtwork} onSuccess={handleFormSuccess} />
+                <ArtworkForm 
+                  artwork={editingArtwork} 
+                  preselectedSeriesId={preselectedSeriesId}
+                  onSuccess={handleFormSuccess} 
+                />
               </div>
             ) : (
               <Button onClick={handleCreateNew} variant="default" className="w-full">
@@ -88,7 +101,7 @@ const Admin = () => {
               </Button>
             )}
 
-            <ArtworksList onEdit={handleEdit} />
+            <ArtworksList onEdit={handleEdit} onCreateInSeries={handleCreateInSeries} />
           </TabsContent>
         </Tabs>
       </div>

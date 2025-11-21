@@ -13,10 +13,11 @@ import MultipleImageUpload from "./MultipleImageUpload";
 
 interface ArtworkFormProps {
   artwork?: ArtworkData;
+  preselectedSeriesId?: string;
   onSuccess?: () => void;
 }
 
-const ArtworkForm = ({ artwork, onSuccess }: ArtworkFormProps) => {
+const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormProps) => {
   const [formData, setFormData] = useState({
     title: artwork?.title || "",
     year: artwork?.year || "",
@@ -26,7 +27,7 @@ const ArtworkForm = ({ artwork, onSuccess }: ArtworkFormProps) => {
     description: artwork?.description || "",
     image_url: artwork?.image_url || "",
     image_detail_url: artwork?.image_detail_url || "",
-    series_id: artwork?.series_id || "",
+    series_id: artwork?.series_id || preselectedSeriesId || "",
     display_order: artwork?.display_order || 0,
   });
 
@@ -48,8 +49,13 @@ const ArtworkForm = ({ artwork, onSuccess }: ArtworkFormProps) => {
         series_id: artwork.series_id,
         display_order: artwork.display_order,
       });
+    } else if (preselectedSeriesId) {
+      setFormData(prev => ({
+        ...prev,
+        series_id: preselectedSeriesId,
+      }));
     }
-  }, [artwork]);
+  }, [artwork, preselectedSeriesId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
