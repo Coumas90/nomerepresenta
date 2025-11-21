@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import { useArtworks } from "@/hooks/useArtworks";
+import { ContactForm } from "@/components/ContactForm";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -199,27 +200,32 @@ const Index = () => {
           <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16">
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8">CONTACT</h1>
             
-            <div className="max-w-3xl animate-fade-in space-y-6 sm:space-y-8">
-              {/* Email principal */}
-              <div>
-                <a 
-                  href="mailto:contact@ivancomas.com" 
-                  className="text-lg sm:text-xl font-medium text-foreground hover:text-primary transition-colors duration-200 inline-block"
-                >
-                  contact@ivancomas.com
-                </a>
+            <div className="max-w-3xl animate-fade-in space-y-8 sm:space-y-12">
+              {/* Contact Information */}
+              <div className="space-y-4">
+                <div>
+                  <a 
+                    href="mailto:contact@ivancomas.com" 
+                    className="text-lg sm:text-xl font-medium text-foreground hover:text-primary transition-colors duration-200 inline-block"
+                  >
+                    contact@ivancomas.com
+                  </a>
+                </div>
+
+                <p className="text-sm sm:text-base text-muted-foreground">
+                  Currently based between São Paulo and Paris
+                </p>
+
+                <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl">
+                  For professional inquiries, exhibition proposals, or acquisition information, 
+                  please reach out using the form below or via email.
+                </p>
               </div>
 
-              {/* Ubicación */}
-              <p className="text-sm sm:text-base text-muted-foreground">
-                Currently based between São Paulo and Paris
-              </p>
-
-              {/* Nota adicional */}
-              <p className="text-sm text-muted-foreground leading-relaxed pt-4 max-w-2xl">
-                For professional inquiries, exhibition proposals, or acquisition information, 
-                please reach out via email.
-              </p>
+              {/* Contact Form */}
+              <div className="pt-4 sm:pt-8">
+                <ContactForm />
+              </div>
             </div>
           </div>
         </section>
