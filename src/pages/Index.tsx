@@ -11,7 +11,7 @@ const Index = () => {
       <main className="min-h-screen bg-background">
         {/* Works Section */}
         <section id="works" className="min-h-screen pt-16 sm:pt-20">
-          <div className="sticky top-16 sm:top-20 bg-background/95 backdrop-blur-sm z-40 pt-3 sm:pt-4 pb-4 sm:pb-6 border-b border-border/10">
+          <div className="sticky top-16 sm:top-20 bg-transparent z-40 pt-3 sm:pt-4 pb-4 sm:pb-6">
             <div className="container mx-auto px-4 sm:px-6">
               <div className="flex items-center justify-between">
                 <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight">
