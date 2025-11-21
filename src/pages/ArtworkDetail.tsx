@@ -1,20 +1,28 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useArtwork } from "@/hooks/useArtworks";
 import { useArtworkImages } from "@/hooks/useArtworkImages";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import ImageLightbox from "@/components/ImageLightbox";
 
 const ArtworkDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { data: artwork, isLoading, error } = useArtwork(id);
   const { data: images } = useArtworkImages(artwork?.id);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
   
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const handleImageClick = (index: number) => {
+    setLightboxIndex(index);
+    setLightboxOpen(true);
+  };
 
   if (isLoading) {
     return (
@@ -81,15 +89,25 @@ const ArtworkDetail = () => {
                 {images && images.length > 0 ? (
                   <Carousel className="w-full">
                     <CarouselContent>
-                      {images.map((image) => (
+                      {images.map((image, index) => (
                         <CarouselItem key={image.id}>
-                          <img
-                            src={image.image_url}
-                            alt={artwork.title}
-                            loading="lazy"
-                            decoding="async"
-                            className="w-full h-auto object-contain"
-                          />
+                          <div 
+                            className="cursor-zoom-in group relative"
+                            onClick={() => handleImageClick(index)}
+                          >
+                            <img
+                              src={image.image_url}
+                              alt={artwork.title}
+                              loading="lazy"
+                              decoding="async"
+                              className="w-full h-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                            />
+                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center">
+                              <span className="text-white text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/50 px-4 py-2 rounded-full">
+                                Click to zoom
+                              </span>
+                            </div>
+                          </div>
                         </CarouselItem>
                       ))}
                     </CarouselContent>
@@ -101,20 +119,49 @@ const ArtworkDetail = () => {
                     )}
                   </Carousel>
                 ) : (
-                  <img
-                    src={artwork.image_url}
-                    alt={artwork.title}
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full h-auto object-contain"
-                  />
+                  <div 
+                    className="cursor-zoom-in group relative"
+                    onClick={() => handleImageClick(0)}
+                  >
+                    <img
+                      src={artwork.image_url}
+                      alt={artwork.title}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center">
+                      <span className="text-white text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/50 px-4 py-2 rounded-full">
+                        Click to zoom
+                      </span>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
+          </div>
         </div>
-      </div>
-    </main>
-  );
+
+        {/* Lightbox */}
+        {images && images.length > 0 ? (
+          <ImageLightbox
+            images={images}
+            currentIndex={lightboxIndex}
+            open={lightboxOpen}
+            onOpenChange={setLightboxOpen}
+            altText={artwork.title}
+          />
+        ) : (
+          <ImageLightbox
+            images={[{ id: artwork.id, image_url: artwork.image_url }]}
+            currentIndex={0}
+            open={lightboxOpen}
+            onOpenChange={setLightboxOpen}
+            altText={artwork.title}
+          />
+        )}
+      </main>
+    );
 };
 
 export default ArtworkDetail;
