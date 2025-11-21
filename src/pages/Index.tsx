@@ -1,11 +1,22 @@
 import { useNavigate } from "react-router-dom";
 import { Instagram } from "lucide-react";
+import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import { useArtworks } from "@/hooks/useArtworks";
 
 const Index = () => {
   const navigate = useNavigate();
   const { data: artworks, isLoading, error } = useArtworks();
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return <>
       <Header />
@@ -198,7 +209,14 @@ const Index = () => {
         {/* Contact Section */}
         <section id="contact" className="min-h-screen pt-16 sm:pt-20">
           <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8">CONTACT</h1>
+            <h1 
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8 transition-transform duration-300 ease-out"
+              style={{ 
+                transform: `translateY(${scrollY * 0.05}px)` 
+              }}
+            >
+              CONTACT
+            </h1>
             
             <div className="max-w-3xl text-center">
               <div className="space-y-3 sm:space-y-4">
