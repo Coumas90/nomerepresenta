@@ -90,6 +90,13 @@ const Auth = () => {
     }
 
     setIsSubmitting(true);
+    
+    // Password Recovery Flow:
+    // 1. This sends an email with a recovery link to the user
+    // 2. The link points to /reset-password on this domain (must match Supabase Site URL)
+    // 3. Supabase appends #access_token=...&type=recovery to the URL
+    // 4. ResetPassword.tsx detects the session and allows password update
+    // Important: Make sure Supabase Auth settings have the correct Site URL and Redirect URLs
     const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
       redirectTo: `${window.location.origin}/reset-password`,
     });

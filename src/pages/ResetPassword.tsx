@@ -22,17 +22,42 @@ const ResetPassword = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
-    // Check if user has valid reset token
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Recovery Flow Validation:
+    // When user clicks the email link, they arrive here with #access_token=...&type=recovery
+    // Supabase automatically processes the hash and creates a temporary session
+    // We verify that session exists before allowing password reset
+    
+    console.log('🔐 ResetPassword: Checking for recovery session...', {
+      pathname: window.location.pathname,
+      hasHash: !!window.location.hash,
+      hashPreview: window.location.hash.substring(0, 50)
+    });
+
+    const checkSession = async () => {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      
+      if (error) {
+        console.error('❌ Error getting session:', error);
+      }
+      
       if (!session) {
+        console.warn('⚠️ No recovery session found');
         toast({
           title: "Invalid or expired link",
-          description: "Please request a new password reset link.",
+          description: "The password reset link has been used or has expired. Please request a new one.",
           variant: "destructive",
         });
-        navigate("/auth");
+        
+        // Give user time to read the message before redirect
+        setTimeout(() => {
+          navigate("/auth");
+        }, 2000);
+      } else {
+        console.log('✅ Valid recovery session detected');
       }
-    });
+    };
+
+    checkSession();
   }, [navigate, toast]);
 
   const handleResetPassword = async (e: React.FormEvent) => {
@@ -58,23 +83,31 @@ const ResetPassword = () => {
     }
 
     setIsSubmitting(true);
+    console.log('🔄 Attempting password update...');
+    
     const { error } = await supabase.auth.updateUser({
       password: password,
     });
     setIsSubmitting(false);
 
     if (error) {
+      console.error('❌ Password update failed:', error);
       toast({
         title: "Error",
-        description: error.message,
+        description: error.message || "Failed to update password. The link may have expired.",
         variant: "destructive",
       });
     } else {
+      console.log('✅ Password updated successfully');
       toast({
         title: "Password Updated!",
-        description: "Your password has been successfully reset.",
+        description: "Your password has been successfully reset. You can now sign in.",
       });
-      navigate("/auth");
+      
+      // Redirect to auth page after brief delay
+      setTimeout(() => {
+        navigate("/auth");
+      }, 1500);
     }
   };
 
