@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useUserRole } from "@/hooks/useUserRole";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,6 +20,7 @@ const authSchema = z.object({
 const Auth = () => {
   const navigate = useNavigate();
   const { user, signIn, loading } = useAuth();
+  const { data: userRole, isLoading: roleLoading } = useUserRole(user?.id);
   const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,10 +30,14 @@ const Auth = () => {
   const [resetEmail, setResetEmail] = useState("");
 
   useEffect(() => {
-    if (user && !loading) {
-      navigate("/");
+    if (user && !loading && !roleLoading) {
+      if (userRole === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     }
-  }, [user, loading, navigate]);
+  }, [user, loading, roleLoading, userRole, navigate]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
