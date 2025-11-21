@@ -1,16 +1,19 @@
 import { useState, useEffect } from "react";
+import { Menu, X } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const Header = () => {
   const [isWorksOpen, setIsWorksOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       
-      // Don't hide header when dropdown is open
-      if (isWorksOpen) {
+      // Don't hide header when dropdown or mobile menu is open
+      if (isWorksOpen || isMobileMenuOpen) {
         setIsVisible(true);
         return;
       }
@@ -30,7 +33,19 @@ const Header = () => {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY, isWorksOpen]);
+  }, [lastScrollY, isWorksOpen, isMobileMenuOpen]);
+
+  const scrollToSection = (sectionId: string) => {
+    setIsMobileMenuOpen(false);
+    if (sectionId === 'top') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -38,23 +53,23 @@ const Header = () => {
     } ${
       isVisible ? 'translate-y-0' : '-translate-y-full'
     }`}>
-      <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+      <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
         {/* Artist Name - Left */}
         <a 
           href="#" 
           onClick={(e) => {
             e.preventDefault();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            scrollToSection('top');
           }}
-          className={`text-xl font-bold tracking-tight hover:opacity-70 transition-all duration-300 cursor-pointer ${
+          className={`text-lg sm:text-xl font-bold tracking-tight hover:opacity-70 transition-all duration-300 cursor-pointer ${
             isWorksOpen ? 'text-background' : 'text-foreground'
           }`}
         >
           IVAN COMAS
         </a>
 
-        {/* Navigation - Center */}
-        <nav className="flex items-center gap-8">
+        {/* Desktop Navigation - Hidden on mobile */}
+        <nav className="hidden md:flex items-center gap-8">
           <div 
             className="relative"
             onMouseEnter={() => setIsWorksOpen(true)}
@@ -100,8 +115,50 @@ const Header = () => {
           </a>
         </nav>
 
-        {/* Right side - empty for now, can add search/account later */}
-        <div className="w-32"></div>
+        {/* Mobile Menu Button */}
+        <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+          <SheetTrigger asChild className="md:hidden">
+            <button 
+              className={`p-2 ${isWorksOpen ? 'text-background' : 'text-foreground'}`}
+              aria-label="Toggle menu"
+            >
+              <Menu className="h-6 w-6" />
+            </button>
+          </SheetTrigger>
+          <SheetContent side="right" className="w-[280px] sm:w-[320px] bg-foreground text-background">
+            <nav className="flex flex-col gap-6 mt-8">
+              <button
+                onClick={() => scrollToSection('works')}
+                className="text-left text-lg font-medium tracking-wide hover:opacity-70 transition-opacity"
+              >
+                WORKS
+              </button>
+              <div className="pl-4 border-l-2 border-background/20">
+                <button
+                  onClick={() => scrollToSection('works')}
+                  className="text-left text-base font-bold tracking-wide hover:opacity-70 transition-opacity"
+                >
+                  TRI-PEEL
+                </button>
+              </div>
+              <button
+                onClick={() => scrollToSection('bio')}
+                className="text-left text-lg font-medium tracking-wide hover:opacity-70 transition-opacity"
+              >
+                BIO
+              </button>
+              <button
+                onClick={() => scrollToSection('contact')}
+                className="text-left text-lg font-medium tracking-wide hover:opacity-70 transition-opacity"
+              >
+                CONTACT
+              </button>
+            </nav>
+          </SheetContent>
+        </Sheet>
+
+        {/* Desktop Right Spacer - Hidden on mobile */}
+        <div className="hidden md:block w-32"></div>
       </div>
     </header>
   );
