@@ -69,7 +69,7 @@ const Header = () => {
         </a>
 
         {/* Desktop Navigation - Hidden on mobile */}
-        <nav className="hidden md:flex items-center gap-8">
+        <nav className="hidden md:flex items-center gap-8 ml-auto">
           <div 
             className="relative"
             onMouseEnter={() => setIsWorksOpen(true)}
@@ -156,9 +156,6 @@ const Header = () => {
             </nav>
           </SheetContent>
         </Sheet>
-
-        {/* Desktop Right Spacer - Hidden on mobile */}
-        <div className="hidden md:block w-32"></div>
       </div>
     </header>
   );
