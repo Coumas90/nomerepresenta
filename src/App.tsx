@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import ArtworkDetail from "./pages/ArtworkDetail";
 import Admin from "./pages/Admin";
 import Auth from "./pages/Auth";
+import ResetPassword from "./pages/ResetPassword";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 
@@ -22,6 +23,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/artwork/:id" element={<ArtworkDetail />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route 
             path="/admin" 
             element={
