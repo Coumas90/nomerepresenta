@@ -127,3 +127,33 @@ export const useUploadImage = () => {
     },
   });
 };
+
+export const useUpdateArtworksOrder = () => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async (artworks: { id: string; display_order: number; series_id: string }[]) => {
+      const updates = artworks.map(a => 
+        supabase
+          .from("artworks")
+          .update({ display_order: a.display_order })
+          .eq("id", a.id)
+      );
+
+      const results = await Promise.all(updates);
+      const error = results.find(r => r.error);
+      if (error?.error) throw error.error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["artworks"] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to update artwork order",
+        variant: "destructive",
+      });
+    },
+  });
+};
