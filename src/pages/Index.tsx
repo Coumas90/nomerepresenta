@@ -200,24 +200,24 @@ const Index = () => {
           <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16">
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8">CONTACT</h1>
             
-            <div className="max-w-3xl text-center animate-fade-in">
+            <div className="max-w-3xl text-center">
               <div className="space-y-3 sm:space-y-4">
                 {/* Email */}
                 <a 
                   href="mailto:contact@ivancomas.com"
-                  className="text-2xl sm:text-3xl font-light text-foreground hover:text-primary transition-colors duration-300 inline-block"
+                  className="text-2xl sm:text-3xl font-light text-foreground hover:text-primary transition-colors duration-300 inline-block opacity-0 animate-fade-in-up"
                 >
                   contact@ivancomas.com
                 </a>
 
                 {/* Location */}
-                <p className="text-sm sm:text-base font-light text-muted-foreground">
+                <p className="text-sm sm:text-base font-light text-muted-foreground opacity-0 animate-fade-in-up-delay-1">
                   Currently based between São Paulo and Paris
                 </p>
               </div>
 
               {/* Social Media - Solo icono */}
-              <div className="mt-8 sm:mt-12">
+              <div className="mt-8 sm:mt-12 opacity-0 animate-fade-in-up-delay-2">
                 <a
                   href="https://instagram.com/ivancomas"
                   target="_blank"
