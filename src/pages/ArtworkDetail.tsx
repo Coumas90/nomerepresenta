@@ -2,13 +2,17 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import Header from "@/components/Header";
 import { useArtwork } from "@/hooks/useArtworks";
+import { useArtworkImages } from "@/hooks/useArtworkImages";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 const ArtworkDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { data: artwork, isLoading, error } = useArtwork(id);
+  const { data: images } = useArtworkImages(artwork?.id);
+  
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -71,10 +75,40 @@ const ArtworkDetail = () => {
               </div>
             </div>
 
-            {/* Right Column - Image */}
+            {/* Right Column - Image Gallery */}
             <div className="flex items-center justify-center lg:justify-start">
               <div className="w-full max-w-xl">
-                <img src={artwork.image_url} alt={artwork.title} loading="lazy" decoding="async" className="w-full h-auto object-contain" />
+                {images && images.length > 0 ? (
+                  <Carousel className="w-full">
+                    <CarouselContent>
+                      {images.map((image) => (
+                        <CarouselItem key={image.id}>
+                          <img
+                            src={image.image_url}
+                            alt={artwork.title}
+                            loading="lazy"
+                            decoding="async"
+                            className="w-full h-auto object-contain"
+                          />
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    {images.length > 1 && (
+                      <>
+                        <CarouselPrevious className="left-2" />
+                        <CarouselNext className="right-2" />
+                      </>
+                    )}
+                  </Carousel>
+                ) : (
+                  <img
+                    src={artwork.image_url}
+                    alt={artwork.title}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-auto object-contain"
+                  />
+                )}
               </div>
             </div>
           </div>
