@@ -9,6 +9,7 @@ import { useCreateArtwork, useUpdateArtwork } from "@/hooks/useArtworkMutations"
 import { useSeries } from "@/hooks/useSeries";
 import { ArtworkData } from "@/hooks/useArtworks";
 import ImageUpload from "./ImageUpload";
+import MultipleImageUpload from "./MultipleImageUpload";
 
 interface ArtworkFormProps {
   artwork?: ArtworkData;
@@ -184,6 +185,12 @@ const ArtworkForm = ({ artwork, onSuccess }: ArtworkFormProps) => {
               currentUrl={formData.image_detail_url}
             />
           </div>
+
+          {artwork && (
+            <div className="col-span-full">
+              <MultipleImageUpload artworkId={artwork.id} />
+            </div>
+          )}
 
           <Button type="submit" disabled={isSubmitting} className="w-full">
             {isSubmitting ? "Saving..." : artwork ? "Update Artwork" : "Create Artwork"}
