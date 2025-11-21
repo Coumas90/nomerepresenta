@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Upload, X, GripVertical } from "lucide-react";
+import { Upload, X, GripVertical, Star } from "lucide-react";
 import { useUploadImage } from "@/hooks/useArtworkMutations";
-import { useArtworkImages, useAddArtworkImage, useDeleteArtworkImage, useUpdateImageOrder } from "@/hooks/useArtworkImages";
+import { useArtworkImages, useAddArtworkImage, useDeleteArtworkImage, useUpdateImageOrder, useSetMainImage } from "@/hooks/useArtworkImages";
 import { Card } from "@/components/ui/card";
 import {
   DndContext,
@@ -32,9 +32,10 @@ interface SortableImageProps {
   image: any;
   index: number;
   onDelete: (id: string) => void;
+  onSetMain: (id: string) => void;
 }
 
-const SortableImage = ({ image, index, onDelete }: SortableImageProps) => {
+const SortableImage = ({ image, index, onDelete, onSetMain }: SortableImageProps) => {
   const {
     attributes,
     listeners,
@@ -62,7 +63,17 @@ const SortableImage = ({ image, index, onDelete }: SortableImageProps) => {
         alt={`Artwork image ${index + 1}`}
         className="w-full h-40 object-cover"
       />
-      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+        <Button
+          type="button"
+          variant={image.is_main ? "default" : "secondary"}
+          size="icon"
+          className="h-8 w-8"
+          onClick={() => onSetMain(image.id)}
+          title="Marcar como principal"
+        >
+          <Star className={`h-4 w-4 ${image.is_main ? 'fill-current' : ''}`} />
+        </Button>
         <Button
           type="button"
           variant="destructive"
@@ -91,6 +102,7 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
   const addImageMutation = useAddArtworkImage();
   const deleteImageMutation = useDeleteArtworkImage();
   const updateOrderMutation = useUpdateImageOrder();
+  const setMainImageMutation = useSetMainImage();
   const { data: images, isLoading } = useArtworkImages(artworkId);
 
   const sensors = useSensors(
@@ -131,6 +143,12 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
   const handleDelete = async (imageId: string) => {
     if (!artworkId) return;
     await deleteImageMutation.mutateAsync({ id: imageId, artwork_id: artworkId });
+    if (onImagesChange) onImagesChange();
+  };
+
+  const handleSetMain = async (imageId: string) => {
+    if (!artworkId) return;
+    await setMainImageMutation.mutateAsync({ imageId, artworkId });
     if (onImagesChange) onImagesChange();
   };
 
@@ -210,6 +228,7 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
                   image={image}
                   index={index}
                   onDelete={handleDelete}
+                  onSetMain={handleSetMain}
                 />
               ))}
             </div>
