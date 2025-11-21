@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff } from "lucide-react";
 import { z } from "zod";
+import { P5Background } from "@/components/P5Background";
 
 const authSchema = z.object({
   email: z.string().trim().email({ message: "Invalid email address" }).max(255),
@@ -70,8 +71,9 @@ const Auth = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-6">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center p-6 relative">
+      <P5Background />
+      <Card className="w-full max-w-md backdrop-blur-xl bg-background/80 border-border/50 shadow-2xl">
         <CardHeader>
           <CardTitle>Admin Sign In</CardTitle>
           <CardDescription>Sign in to access the admin panel</CardDescription>
