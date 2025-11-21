@@ -1,20 +1,32 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useArtwork } from "@/hooks/useArtworks";
 import { useArtworkImages } from "@/hooks/useArtworkImages";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, CarouselApi } from "@/components/ui/carousel";
 
 const ArtworkDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { data: artwork, isLoading, error } = useArtwork(id);
   const { data: images } = useArtworkImages(artwork?.id);
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
   
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  useEffect(() => {
+    if (!api) return;
+
+    setCurrent(api.selectedScrollSnap());
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap());
+    });
+  }, [api]);
 
   if (isLoading) {
     return (
@@ -79,19 +91,28 @@ const ArtworkDetail = () => {
             <div className="flex items-center justify-center lg:justify-start">
               <div className="w-full max-w-xl">
                 {images && images.length > 0 ? (
-                  <Carousel className="w-full">
+                  <Carousel className="w-full" setApi={setApi}>
                     <CarouselContent>
-                      {images.map((image) => (
-                        <CarouselItem key={image.id}>
-                          <img
-                            src={image.image_url}
-                            alt={artwork.title}
-                            loading="lazy"
-                            decoding="async"
-                            className="w-full h-auto object-contain"
-                          />
-                        </CarouselItem>
-                      ))}
+                      {images.map((image, index) => {
+                        // Cargar solo la imagen actual y las adyacentes
+                        const shouldLoad = Math.abs(index - current) <= 1;
+                        
+                        return (
+                          <CarouselItem key={image.id}>
+                            {shouldLoad ? (
+                              <img
+                                src={image.image_url}
+                                alt={artwork.title}
+                                loading={index === 0 ? "eager" : "lazy"}
+                                decoding="async"
+                                className="w-full h-auto object-contain transition-opacity duration-300"
+                              />
+                            ) : (
+                              <div className="w-full aspect-square bg-muted animate-pulse" />
+                            )}
+                          </CarouselItem>
+                        );
+                      })}
                     </CarouselContent>
                     {images.length > 1 && (
                       <>
@@ -104,7 +125,7 @@ const ArtworkDetail = () => {
                   <img
                     src={artwork.image_url}
                     alt={artwork.title}
-                    loading="lazy"
+                    loading="eager"
                     decoding="async"
                     className="w-full h-auto object-contain"
                   />

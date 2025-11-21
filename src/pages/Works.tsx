@@ -4,9 +4,12 @@ import Header from "@/components/Header";
 import { useArtworks } from "@/hooks/useArtworks";
 import { useSeries } from "@/hooks/useSeries";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ProgressiveImage } from "@/components/ProgressiveImage";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Works = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { data: artworks = [], isLoading: artworksLoading } = useArtworks();
   const { data: series = [], isLoading: seriesLoading } = useSeries();
   const [selectedSeriesId, setSelectedSeriesId] = useState<string>("");
@@ -16,6 +19,27 @@ const Works = () => {
     : artworks;
 
   const selectedSeries = series.find(s => s.id === selectedSeriesId);
+
+  // Prefetch en hover
+  const handleArtworkHover = (artworkId: string, imageUrl: string) => {
+    // Prefetch data
+    queryClient.prefetchQuery({
+      queryKey: ["artwork", artworkId],
+      queryFn: async () => {
+        const { supabase } = await import("@/integrations/supabase/client");
+        const { data } = await supabase
+          .from("artworks")
+          .select("*")
+          .eq("id", artworkId)
+          .single();
+        return data;
+      },
+    });
+    
+    // Prefetch imagen principal
+    const img = new Image();
+    img.src = imageUrl;
+  };
 
   if (artworksLoading || seriesLoading) {
     return (
@@ -72,12 +96,13 @@ const Works = () => {
                   key={artwork.id}
                   className="group cursor-pointer"
                   onClick={() => navigate(`/artwork/${artwork.id}`)}
+                  onMouseEnter={() => handleArtworkHover(artwork.id, artwork.image_url)}
                 >
                   <div className="aspect-square bg-muted overflow-hidden mb-4 rounded-lg">
-                    <img
+                    <ProgressiveImage
                       src={artwork.image_url}
                       alt={artwork.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="w-full h-full transition-transform duration-500 group-hover:scale-105"
                     />
                   </div>
                   <div className="space-y-1">
