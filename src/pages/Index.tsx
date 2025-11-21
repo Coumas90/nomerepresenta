@@ -198,8 +198,28 @@ const Index = () => {
         <section id="contact" className="min-h-screen pt-16 sm:pt-20">
           <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16">
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8">CONTACT</h1>
-            <div className="max-w-3xl">
-              <p className="text-sm sm:text-base text-muted-foreground">Content coming soon...</p>
+            
+            <div className="max-w-3xl animate-fade-in space-y-6 sm:space-y-8">
+              {/* Email principal */}
+              <div>
+                <a 
+                  href="mailto:contact@ivancomas.com" 
+                  className="text-lg sm:text-xl font-medium text-foreground hover:text-primary transition-colors duration-200 inline-block"
+                >
+                  contact@ivancomas.com
+                </a>
+              </div>
+
+              {/* Ubicación */}
+              <p className="text-sm sm:text-base text-muted-foreground">
+                Currently based between São Paulo and Paris
+              </p>
+
+              {/* Nota adicional */}
+              <p className="text-sm text-muted-foreground leading-relaxed pt-4 max-w-2xl">
+                For professional inquiries, exhibition proposals, or acquisition information, 
+                please reach out via email.
+              </p>
             </div>
           </div>
         </section>
