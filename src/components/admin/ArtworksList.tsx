@@ -7,6 +7,7 @@ import { Edit, Trash2, GripVertical, Plus } from "lucide-react";
 import { useArtworks, ArtworkData } from "@/hooks/useArtworks";
 import { useSeries } from "@/hooks/useSeries";
 import { useDeleteArtwork, useUpdateArtworksOrder } from "@/hooks/useArtworkMutations";
+import ArtworkPreviewDialog from "./ArtworkPreviewDialog";
 import {
   DndContext,
   closestCenter,
@@ -29,9 +30,10 @@ interface SortableArtworkItemProps {
   artwork: ArtworkData;
   onEdit: (artwork: ArtworkData) => void;
   onDelete: (id: string) => void;
+  onPreview: (artwork: ArtworkData) => void;
 }
 
-const SortableArtworkItem = ({ artwork, onEdit, onDelete }: SortableArtworkItemProps) => {
+const SortableArtworkItem = ({ artwork, onEdit, onDelete, onPreview }: SortableArtworkItemProps) => {
   const {
     attributes,
     listeners,
@@ -52,11 +54,21 @@ const SortableArtworkItem = ({ artwork, onEdit, onDelete }: SortableArtworkItemP
       <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
         <GripVertical className="h-5 w-5 text-muted-foreground" />
       </div>
-      <img
-        src={artwork.image_url}
-        alt={artwork.title}
-        className="w-12 h-12 object-cover rounded"
-      />
+      <button
+        onClick={() => onPreview(artwork)}
+        className="group/img relative"
+      >
+        <img
+          src={artwork.image_url}
+          alt={artwork.title}
+          className="w-12 h-12 object-cover rounded transition-all duration-200 group-hover/img:ring-2 group-hover/img:ring-primary cursor-pointer"
+        />
+        <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 rounded transition-colors duration-200 flex items-center justify-center">
+          <span className="text-white text-xs opacity-0 group-hover/img:opacity-100 transition-opacity duration-200">
+            Preview
+          </span>
+        </div>
+      </button>
       <div className="flex-1 min-w-0">
         <p className="font-medium text-sm truncate">{artwork.title}</p>
         <p className="text-xs text-muted-foreground">{artwork.year} • {artwork.dimensions}</p>
@@ -94,6 +106,8 @@ const ArtworksList = ({ onEdit, onCreateInSeries }: ArtworksListProps) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [artworkToDelete, setArtworkToDelete] = useState<string | null>(null);
   const [activeSeries, setActiveSeries] = useState<string | null>(null);
+  const [previewArtwork, setPreviewArtwork] = useState<ArtworkData | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -113,6 +127,11 @@ const ArtworksList = ({ onEdit, onCreateInSeries }: ArtworksListProps) => {
       setDeleteDialogOpen(false);
       setArtworkToDelete(null);
     }
+  };
+
+  const handlePreview = (artwork: ArtworkData) => {
+    setPreviewArtwork(artwork);
+    setPreviewOpen(true);
   };
 
   const handleDragEnd = (event: DragEndEvent, seriesId: string) => {
@@ -189,6 +208,7 @@ const ArtworksList = ({ onEdit, onCreateInSeries }: ArtworksListProps) => {
                                   artwork={artwork}
                                   onEdit={onEdit}
                                   onDelete={handleDeleteClick}
+                                  onPreview={handlePreview}
                                 />
                               ))}
                             </div>
@@ -226,6 +246,13 @@ const ArtworksList = ({ onEdit, onCreateInSeries }: ArtworksListProps) => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <ArtworkPreviewDialog
+        artwork={previewArtwork}
+        series={series.find(s => s.id === previewArtwork?.series_id)}
+        open={previewOpen}
+        onOpenChange={setPreviewOpen}
+      />
     </>
   );
 };
