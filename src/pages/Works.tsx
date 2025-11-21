@@ -1,52 +1,97 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
-import triPeel1 from "@/assets/tri-peel-1.png";
-import triPeel2 from "@/assets/tri-peel-2.png";
-import triPeel3 from "@/assets/tri-peel-3.png";
-
-const mockArtworks = [
-  { id: 1, title: "Tri-Peel I", category: "Paintings", image: triPeel1 },
-  { id: 2, title: "Tri-Peel II", category: "Paintings", image: triPeel2 },
-  { id: 3, title: "Tri-Peel III", category: "Paintings", image: triPeel3 },
-];
+import { useArtworks } from "@/hooks/useArtworks";
+import { useSeries } from "@/hooks/useSeries";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const Works = () => {
+  const navigate = useNavigate();
+  const { data: artworks = [], isLoading: artworksLoading } = useArtworks();
+  const { data: series = [], isLoading: seriesLoading } = useSeries();
+  const [selectedSeriesId, setSelectedSeriesId] = useState<string>("");
+
+  const filteredArtworks = selectedSeriesId
+    ? artworks.filter(a => a.series_id === selectedSeriesId)
+    : artworks;
+
+  const selectedSeries = series.find(s => s.id === selectedSeriesId);
+
+  if (artworksLoading || seriesLoading) {
+    return (
+      <>
+        <Header />
+        <main className="min-h-screen bg-background flex items-center justify-center">
+          <div className="text-center">Loading...</div>
+        </main>
+      </>
+    );
+  }
   return (
     <>
       <Header />
       <main className="min-h-screen bg-background">
-        {/* Sticky Breadcrumb */}
-        <div className="sticky top-0 bg-background z-40 pt-24 pb-6">
+        {/* Sticky Header */}
+        <div className="sticky top-0 bg-background z-40 pt-24 pb-6 border-b">
           <div className="container mx-auto px-6">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-4">
               <h1 className="text-3xl font-bold tracking-tight">
-                WORKS <span className="mx-2">&gt;</span> TRI-PEEL
+                WORKS
+                {selectedSeries && (
+                  <>
+                    <span className="mx-2">&gt;</span>
+                    {selectedSeries.name}
+                  </>
+                )}
               </h1>
-              <button className="bg-foreground text-background px-6 py-2 text-sm font-bold tracking-wide hover:opacity-90 transition-opacity">
-                FILTERS
-              </button>
+              <div className="flex items-center gap-3">
+                <Select value={selectedSeriesId} onValueChange={setSelectedSeriesId}>
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="All Series" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Series</SelectItem>
+                    {series.map((s) => (
+                      <SelectItem key={s.id} value={s.id}>
+                        {s.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Gallery Grid */}
         <div className="container mx-auto px-6 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {mockArtworks.map((artwork) => (
-              <div key={artwork.id} className="group cursor-pointer">
-                <div className="aspect-square bg-muted overflow-hidden mb-4">
-                  <img 
-                    src={artwork.image} 
-                    alt={artwork.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
+          {filteredArtworks.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredArtworks.map((artwork) => (
+                <div
+                  key={artwork.id}
+                  className="group cursor-pointer"
+                  onClick={() => navigate(`/artwork/${artwork.id}`)}
+                >
+                  <div className="aspect-square bg-muted overflow-hidden mb-4 rounded-lg">
+                    <img
+                      src={artwork.image_url}
+                      alt={artwork.title}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="text-sm font-medium tracking-wide">{artwork.title}</h3>
+                    <p className="text-xs text-muted-foreground">{artwork.year}</p>
+                  </div>
                 </div>
-                <div className="space-y-1">
-                  <h3 className="text-sm font-medium tracking-wide">{artwork.title}</h3>
-                  <p className="text-xs text-muted-foreground">{artwork.category}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-20 text-muted-foreground">
+              No artworks found. {selectedSeries ? `Try selecting a different series.` : `Create some artworks in the admin panel.`}
+            </div>
+          )}
         </div>
       </main>
     </>
