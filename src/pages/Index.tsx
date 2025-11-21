@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { Instagram } from "lucide-react";
 import Header from "@/components/Header";
 import { useArtworks } from "@/hooks/useArtworks";
 import { ContactForm } from "@/components/ContactForm";
@@ -225,6 +226,19 @@ const Index = () => {
               {/* Contact Form */}
               <div className="pt-4 sm:pt-8">
                 <ContactForm />
+                
+                {/* Social Media Links */}
+                <div className="flex items-center justify-center gap-6 mt-8">
+                  <a
+                    href="https://instagram.com/ivancomas"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-muted-foreground hover:text-primary transition-colors duration-200"
+                    aria-label="Instagram"
+                  >
+                    <Instagram className="w-6 h-6" />
+                  </a>
+                </div>
               </div>
             </div>
           </div>
