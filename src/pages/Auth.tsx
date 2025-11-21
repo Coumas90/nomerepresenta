@@ -36,7 +36,17 @@ const Auth = () => {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const validation = authSchema.safeParse({ email, password });
+    // Normalize credentials
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedPassword = password.trim();
+    
+    console.log('🔐 Attempting login with email:', normalizedEmail);
+    
+    const validation = authSchema.safeParse({ 
+      email: normalizedEmail, 
+      password: normalizedPassword 
+    });
+    
     if (!validation.success) {
       toast({
         title: "Validation Error",
@@ -47,16 +57,18 @@ const Auth = () => {
     }
 
     setIsSubmitting(true);
-    const { error } = await signIn(email, password);
+    const { error } = await signIn(normalizedEmail, normalizedPassword);
     setIsSubmitting(false);
 
     if (error) {
+      console.error('❌ Login error:', error);
       toast({
         title: "Login Failed",
-        description: error.message,
+        description: error.message || "Invalid login credentials. Please check your email and password.",
         variant: "destructive",
       });
     } else {
+      console.log('✅ Login successful');
       toast({
         title: "Welcome back!",
         description: "You have successfully signed in.",

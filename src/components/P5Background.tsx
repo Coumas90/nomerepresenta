@@ -28,24 +28,16 @@ export const P5Background = () => {
     let tiles: Tile[] = [];
     let mouseX = 0;
     let mouseY = 0;
+    let imagesLoaded = false;
     const COLS = 8;
     const ROWS = 6;
     const PARALLAX_STRENGTH = 0.02;
 
     const sketch = (p: p5) => {
-      p.setup = () => {
-        // Load all artwork images
-        artworks.forEach((artwork) => {
-          p.loadImage(artwork.image_url, (img) => {
-            images.push(img);
-          });
-        });
-        const canvas = p.createCanvas(p.windowWidth, p.windowHeight);
-        canvas.parent(containerRef.current!);
-        p.pixelDensity(1); // Performance optimization
-        p.frameRate(30); // Limit frame rate for better performance
-
-        // Initialize tiles
+      const initializeTiles = () => {
+        if (images.length === 0) return;
+        
+        tiles = []; // Clear existing tiles
         const tileW = p.width / COLS;
         const tileH = p.height / ROWS;
 
@@ -68,10 +60,54 @@ export const P5Background = () => {
             });
           }
         }
+        imagesLoaded = true;
+      };
+
+      p.setup = () => {
+        const canvas = p.createCanvas(p.windowWidth, p.windowHeight);
+        canvas.parent(containerRef.current!);
+        p.pixelDensity(1); // Performance optimization
+        p.frameRate(30); // Limit frame rate for better performance
+
+        // Load all artwork images with counter
+        let loadedCount = 0;
+        artworks.forEach((artwork) => {
+          p.loadImage(
+            artwork.image_url,
+            (img) => {
+              images.push(img);
+              loadedCount++;
+              
+              // Initialize tiles only when ALL images are loaded
+              if (loadedCount === artworks.length) {
+                console.log(`✅ All ${artworks.length} images loaded successfully`);
+                initializeTiles();
+              }
+            },
+            (err) => {
+              console.error('Error loading image:', artwork.image_url, err);
+              loadedCount++;
+              // Still try to initialize if we've attempted all images
+              if (loadedCount === artworks.length && images.length > 0) {
+                console.log(`⚠️ Loaded ${images.length} of ${artworks.length} images`);
+                initializeTiles();
+              }
+            }
+          );
+        });
       };
 
       p.draw = () => {
         p.background(20, 20, 30);
+
+        // Show loading state if images aren't ready
+        if (!imagesLoaded || tiles.length === 0) {
+          p.fill(255, 255, 255, 100);
+          p.textAlign(p.CENTER, p.CENTER);
+          p.textSize(16);
+          p.text('Loading artworks...', p.width / 2, p.height / 2);
+          return;
+        }
 
         // Update mouse position smoothly
         mouseX = p.lerp(mouseX, p.mouseX, 0.1);
@@ -167,20 +203,9 @@ export const P5Background = () => {
       p.windowResized = () => {
         p.resizeCanvas(p.windowWidth, p.windowHeight);
 
-        // Recalculate tile positions
-        const tileW = p.width / COLS;
-        const tileH = p.height / ROWS;
-        let index = 0;
-        for (let row = 0; row < ROWS; row++) {
-          for (let col = 0; col < COLS; col++) {
-            if (tiles[index]) {
-              tiles[index].x = col * tileW;
-              tiles[index].y = row * tileH;
-              tiles[index].w = tileW;
-              tiles[index].h = tileH;
-            }
-            index++;
-          }
+        // Reinitialize tiles with new dimensions if images are loaded
+        if (imagesLoaded && images.length > 0) {
+          initializeTiles();
         }
       };
     };
