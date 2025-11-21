@@ -1,25 +1,62 @@
 import { useNavigate } from "react-router-dom";
 import { Instagram } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Header from "@/components/Header";
 import { useArtworks } from "@/hooks/useArtworks";
+import { ProgressiveImage } from "@/components/ProgressiveImage";
+import { useQueryClient } from "@tanstack/react-query";
 const Index = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const {
     data: artworks,
     isLoading,
     error
   } = useArtworks();
   const [scrollY, setScrollY] = useState(0);
+  
+  // Debounce scroll con useMemo
+  const scrollTransform = useMemo(() => ({
+    works: `translateY(${Math.min(scrollY * -0.02, 20)}px)`,
+    bio: `translateY(${Math.min(scrollY * -0.03, 40)}px)`,
+    contact: `translateY(${Math.min(scrollY * -0.03, 40)}px)`,
+  }), [scrollY]);
+  
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      setScrollY(window.scrollY);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrollY(window.scrollY);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
-    window.addEventListener('scroll', handleScroll, {
-      passive: true
-    });
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Prefetch en hover
+  const handleArtworkHover = (artworkId: string, imageUrl: string) => {
+    // Prefetch data
+    queryClient.prefetchQuery({
+      queryKey: ["artwork", artworkId],
+      queryFn: async () => {
+        const { supabase } = await import("@/integrations/supabase/client");
+        const { data } = await supabase
+          .from("artworks")
+          .select("*")
+          .eq("id", artworkId)
+          .single();
+        return data;
+      },
+    });
+    
+    // Prefetch imagen principal
+    const img = new Image();
+    img.src = imageUrl;
+  };
   return <>
       <Header />
       <main className="min-h-screen bg-background">
@@ -28,9 +65,10 @@ const Index = () => {
           <div className="sticky top-16 sm:top-20 bg-transparent z-40 pt-3 sm:pt-4 pb-4 sm:pb-6">
             <div className="container mx-auto px-4 sm:px-6">
               <div className="flex items-center justify-between">
-                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight transition-transform duration-300 ease-out" style={{
-                transform: `translateY(${Math.min(scrollY * -0.02, 20)}px)`
-              }}>
+                <h1 
+                  className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight transition-transform duration-300 ease-out" 
+                  style={{ transform: scrollTransform.works }}
+                >
                   WORKS <span className="mx-1 sm:mx-2">&gt;</span> TRI-PEEL
                 </h1>
               </div>
@@ -47,19 +85,34 @@ const Index = () => {
               </div>}
 
             {artworks && artworks.length > 0 && <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-                {artworks.map(artwork => <div key={artwork.id} className="group cursor-pointer animate-fade-in" onClick={() => navigate(`/artwork/${artwork.id}`)}>
+                {artworks.map(artwork => (
+                  <div 
+                    key={artwork.id} 
+                    className="group cursor-pointer animate-fade-in" 
+                    onClick={() => navigate(`/artwork/${artwork.id}`)}
+                    onMouseEnter={() => handleArtworkHover(artwork.id, artwork.image_url)}
+                  >
                     <div className="aspect-square bg-muted overflow-hidden mb-3 sm:mb-4 relative rounded-sm">
-                      {/* Imagen principal */}
-                      <img src={artwork.image_url} alt={artwork.title} className="w-full h-full object-cover absolute inset-0 transition-opacity duration-700 group-hover:opacity-0" loading="lazy" />
+                      {/* Imagen principal con lazy loading optimizado */}
+                      <ProgressiveImage 
+                        src={artwork.image_url} 
+                        alt={artwork.title} 
+                        className="absolute inset-0 transition-opacity duration-700 group-hover:opacity-0"
+                      />
                       {/* Imagen de detalle/zoom - solo hover en desktop */}
-                      <img src={artwork.image_detail_url} alt={`${artwork.title} - Detail`} className="w-full h-full object-cover absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100 hidden sm:block" loading="lazy" />
+                      <ProgressiveImage 
+                        src={artwork.image_detail_url} 
+                        alt={`${artwork.title} - Detail`} 
+                        className="absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100 hidden sm:block"
+                      />
                     </div>
                     {/* En mobile: siempre visible. En desktop: hover */}
                     <div className="space-y-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
                       <h3 className="text-sm sm:text-base font-medium tracking-wide">{artwork.title}</h3>
                       <p className="text-xs sm:text-sm text-muted-foreground">{artwork.year}</p>
                     </div>
-                  </div>)}
+                  </div>
+                ))}
               </div>}
 
             {artworks && artworks.length === 0 && !isLoading && <div className="text-center py-12">
@@ -71,9 +124,10 @@ const Index = () => {
         {/* Bio Section */}
         <section id="bio" className="min-h-screen pt-16 sm:pt-20">
           <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8 transition-transform duration-300 ease-out" style={{
-            transform: `translateY(${Math.min(scrollY * -0.03, 40)}px)`
-          }}>
+            <h1 
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8 transition-transform duration-300 ease-out" 
+              style={{ transform: scrollTransform.bio }}
+            >
               BIO
             </h1>
             
@@ -193,9 +247,10 @@ const Index = () => {
         {/* Contact Section */}
         <section id="contact" className="min-h-screen pt-16 sm:pt-20">
           <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8 transition-transform duration-300 ease-out" style={{
-            transform: `translateY(${Math.min(scrollY * -0.03, 40)}px)`
-          }}>
+            <h1 
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8 transition-transform duration-300 ease-out" 
+              style={{ transform: scrollTransform.contact }}
+            >
               CONTACT
             </h1>
             

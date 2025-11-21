@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import p5 from "p5";
 import { useArtworks } from "@/hooks/useArtworks";
 
@@ -20,6 +20,8 @@ interface Tile {
 export const P5Background = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { data: artworks, isLoading } = useArtworks();
+  const [isMouseMoving, setIsMouseMoving] = useState(false);
+  const mouseMoveTimeoutRef = useRef<number>();
 
   useEffect(() => {
     if (!containerRef.current || isLoading || !artworks || artworks.length === 0) return;
@@ -29,9 +31,11 @@ export const P5Background = () => {
     let mouseX = 0;
     let mouseY = 0;
     let imagesLoaded = false;
-    const COLS = 8;
-    const ROWS = 6;
+    const COLS = 6; // Reducido de 8 a 6
+    const ROWS = 4; // Reducido de 6 a 4
     const PARALLAX_STRENGTH = 0.02;
+    const MAX_INITIAL_IMAGES = 6; // Solo cargar 6 imágenes inicialmente
+    let allImagesLoaded = false;
 
     const sketch = (p: p5) => {
       const initializeTiles = () => {
@@ -66,47 +70,79 @@ export const P5Background = () => {
       p.setup = () => {
         const canvas = p.createCanvas(p.windowWidth, p.windowHeight);
         canvas.parent(containerRef.current!);
-        p.pixelDensity(1); // Performance optimization
-        p.frameRate(30); // Limit frame rate for better performance
+        p.pixelDensity(1);
+        p.frameRate(20); // Reducido de 30 a 20 para mejor performance
 
-        // Load all artwork images with counter
+        // Cargar solo las primeras 6 imágenes inicialmente
+        const initialArtworks = artworks.slice(0, MAX_INITIAL_IMAGES);
+        const remainingArtworks = artworks.slice(MAX_INITIAL_IMAGES);
+        
         let loadedCount = 0;
-        artworks.forEach((artwork) => {
+        
+        // Cargar imágenes iniciales
+        initialArtworks.forEach((artwork) => {
           p.loadImage(
             artwork.image_url,
             (img) => {
               images.push(img);
               loadedCount++;
               
-              // Initialize tiles only when ALL images are loaded
-              if (loadedCount === artworks.length) {
-                console.log(`✅ All ${artworks.length} images loaded successfully`);
+              if (loadedCount === initialArtworks.length) {
+                console.log(`✅ Initial ${loadedCount} images loaded`);
                 initializeTiles();
               }
             },
             (err) => {
               console.error('Error loading image:', artwork.image_url, err);
               loadedCount++;
-              // Still try to initialize if we've attempted all images
-              if (loadedCount === artworks.length && images.length > 0) {
-                console.log(`⚠️ Loaded ${images.length} of ${artworks.length} images`);
+              if (loadedCount === initialArtworks.length && images.length > 0) {
                 initializeTiles();
               }
             }
           );
         });
+
+        // Lazy load del resto después de 2 segundos
+        if (remainingArtworks.length > 0) {
+          setTimeout(() => {
+            console.log(`🔄 Loading remaining ${remainingArtworks.length} images...`);
+            remainingArtworks.forEach((artwork) => {
+              p.loadImage(
+                artwork.image_url,
+                (img) => {
+                  images.push(img);
+                  if (images.length === artworks.length) {
+                    allImagesLoaded = true;
+                    console.log(`✅ All ${artworks.length} images loaded`);
+                  }
+                },
+                (err) => {
+                  console.error('Error loading remaining image:', artwork.image_url, err);
+                }
+              );
+            });
+          }, 2000);
+        } else {
+          allImagesLoaded = true;
+        }
       };
 
       p.draw = () => {
         p.background(20, 20, 30);
 
-        // Show loading state if images aren't ready
         if (!imagesLoaded || tiles.length === 0) {
           p.fill(255, 255, 255, 100);
           p.textAlign(p.CENTER, p.CENTER);
           p.textSize(16);
           p.text('Loading artworks...', p.width / 2, p.height / 2);
           return;
+        }
+
+        // Aumentar frameRate solo cuando el mouse se mueve
+        if (isMouseMoving) {
+          p.frameRate(30);
+        } else {
+          p.frameRate(15);
         }
 
         // Update mouse position smoothly
@@ -140,8 +176,8 @@ export const P5Background = () => {
             tile.targetOpacity = 0.3 + Math.random() * 0.5;
           }
 
-          // Randomly switch images occasionally
-          if (p.frameCount % 300 === index % 300 && Math.random() > 0.7) {
+          // Randomly switch images occasionally (solo si todas las imágenes están cargadas)
+          if (allImagesLoaded && p.frameCount % 300 === index % 300 && Math.random() > 0.7) {
             const newIndex = Math.floor(Math.random() * images.length);
             tile.imgIndex = newIndex;
             tile.img = images[newIndex];
@@ -212,10 +248,27 @@ export const P5Background = () => {
 
     const p5Instance = new p5(sketch);
 
+    // Debounce del mouse movement
+    const handleMouseMove = () => {
+      setIsMouseMoving(true);
+      if (mouseMoveTimeoutRef.current) {
+        clearTimeout(mouseMoveTimeoutRef.current);
+      }
+      mouseMoveTimeoutRef.current = window.setTimeout(() => {
+        setIsMouseMoving(false);
+      }, 150);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+
     return () => {
       p5Instance.remove();
+      window.removeEventListener('mousemove', handleMouseMove);
+      if (mouseMoveTimeoutRef.current) {
+        clearTimeout(mouseMoveTimeoutRef.current);
+      }
     };
-  }, [artworks, isLoading]);
+  }, [artworks, isLoading, isMouseMoving]);
 
   if (isLoading || !artworks || artworks.length === 0) {
     return (
