@@ -103,3 +103,34 @@ export const useUpdateImageOrder = () => {
     },
   });
 };
+
+export const useSetMainImage = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ imageId, artworkId }: { imageId: string; artworkId: string }) => {
+      // First, set all images for this artwork to is_main = false
+      const { error: resetError } = await supabase
+        .from("artwork_images")
+        .update({ is_main: false })
+        .eq("artwork_id", artworkId);
+
+      if (resetError) throw resetError;
+
+      // Then, set the selected image to is_main = true
+      const { error: setError } = await supabase
+        .from("artwork_images")
+        .update({ is_main: true })
+        .eq("id", imageId);
+
+      if (setError) throw setError;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["artwork-images", variables.artworkId] });
+      toast.success("Imagen principal actualizada");
+    },
+    onError: (error: Error) => {
+      toast.error(`Error al actualizar imagen principal: ${error.message}`);
+    },
+  });
+};
