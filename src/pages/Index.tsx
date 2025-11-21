@@ -29,7 +29,7 @@ const Index = () => {
                 <h1 
                   className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight transition-transform duration-300 ease-out"
                   style={{ 
-                    transform: `translateY(${scrollY * 0.03}px)` 
+                    transform: `translateY(${Math.min(scrollY * -0.02, 20)}px)` 
                   }}
                 >
                   WORKS <span className="mx-1 sm:mx-2">&gt;</span> TRI-PEEL
@@ -99,7 +99,7 @@ const Index = () => {
             <h1 
               className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8 transition-transform duration-300 ease-out"
               style={{ 
-                transform: `translateY(${scrollY * 0.05}px)` 
+                transform: `translateY(${Math.min(scrollY * -0.03, 40)}px)` 
               }}
             >
               BIO
@@ -224,7 +224,7 @@ const Index = () => {
             <h1 
               className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8 transition-transform duration-300 ease-out"
               style={{ 
-                transform: `translateY(${scrollY * 0.05}px)` 
+                transform: `translateY(${Math.min(scrollY * -0.03, 40)}px)` 
               }}
             >
               CONTACT
