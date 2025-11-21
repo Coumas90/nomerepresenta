@@ -61,7 +61,7 @@ const Header = () => {
             e.preventDefault();
             scrollToSection('top');
           }}
-          className={`text-lg sm:text-xl font-bold tracking-tight hover:opacity-70 transition-all duration-300 cursor-pointer ${
+          className={`text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight hover:opacity-70 transition-all duration-300 cursor-pointer ${
             isWorksOpen ? 'text-background' : 'text-foreground'
           }`}
         >
