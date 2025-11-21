@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Edit, Trash2, GripVertical } from "lucide-react";
+import { Edit, Trash2, GripVertical, Plus } from "lucide-react";
 import { useArtworks, ArtworkData } from "@/hooks/useArtworks";
 import { useSeries } from "@/hooks/useSeries";
 import { useDeleteArtwork, useUpdateArtworksOrder } from "@/hooks/useArtworkMutations";
@@ -83,9 +83,10 @@ const SortableArtworkItem = ({ artwork, onEdit, onDelete }: SortableArtworkItemP
 
 interface ArtworksListProps {
   onEdit: (artwork: ArtworkData) => void;
+  onCreateInSeries: (seriesId: string) => void;
 }
 
-const ArtworksList = ({ onEdit }: ArtworksListProps) => {
+const ArtworksList = ({ onEdit, onCreateInSeries }: ArtworksListProps) => {
   const { data: artworks = [], isLoading: artworksLoading } = useArtworks();
   const { data: series = [], isLoading: seriesLoading } = useSeries();
   const deleteMutation = useDeleteArtwork();
@@ -160,6 +161,17 @@ const ArtworksList = ({ onEdit }: ArtworksListProps) => {
                       {s.name} ({seriesArtworks.length})
                     </AccordionTrigger>
                     <AccordionContent>
+                      <div className="mb-3">
+                        <Button
+                          onClick={() => onCreateInSeries(s.id)}
+                          variant="outline"
+                          className="w-full"
+                          size="sm"
+                        >
+                          <Plus className="mr-2 h-4 w-4" />
+                          New Artwork in {s.name}
+                        </Button>
+                      </div>
                       {seriesArtworks.length > 0 ? (
                         <DndContext
                           sensors={sensors}
