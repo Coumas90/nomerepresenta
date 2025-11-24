@@ -8,6 +8,7 @@ import { ArtworkData } from "@/hooks/useArtworks";
 import ArtworkForm from "@/components/admin/ArtworkForm";
 import ArtworksList from "@/components/admin/ArtworksList";
 import SeriesManager from "@/components/admin/SeriesManager";
+import AnalyticsDashboard from "@/components/admin/analytics/AnalyticsDashboard";
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -63,9 +64,14 @@ const Admin = () => {
 
         <Tabs defaultValue="artworks" className="space-y-6">
           <TabsList>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="series">Series</TabsTrigger>
             <TabsTrigger value="artworks">Artworks</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="analytics">
+            <AnalyticsDashboard />
+          </TabsContent>
 
           <TabsContent value="series">
             <SeriesManager />

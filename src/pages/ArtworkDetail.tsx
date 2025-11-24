@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useArtwork } from "@/hooks/useArtworks";
 import { useArtworkImages } from "@/hooks/useArtworkImages";
 import { Button } from "@/components/ui/button";
@@ -7,18 +7,46 @@ import { ArrowLeft } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, CarouselApi } from "@/components/ui/carousel";
 import { HoverNavigationCarousel } from "@/components/artwork/HoverNavigationCarousel";
 import { ArtworkStructuredData } from "@/components/seo/ArtworkStructuredData";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 const ArtworkDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { trackPageView, trackArtworkView, endArtworkView } = useAnalytics();
   const { data: artwork, isLoading, error } = useArtwork(id);
   const { data: images } = useArtworkImages(artwork?.id);
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
+  const viewIdRef = useRef<string | null>(null);
+  const startTimeRef = useRef<Date>(new Date());
   
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // Track artwork view
+  useEffect(() => {
+    if (!artwork) return;
+
+    const initTracking = async () => {
+      startTimeRef.current = new Date();
+      const viewId = await trackArtworkView(artwork.id, artwork.series_id, {
+        clickedDetail: true,
+      });
+      viewIdRef.current = viewId || null;
+    };
+
+    initTracking();
+    trackPageView(`/artwork/${artwork.id}`, `Artwork - ${artwork.title}`);
+
+    // Cleanup: record duration when leaving
+    return () => {
+      if (viewIdRef.current) {
+        const duration = Math.floor((new Date().getTime() - startTimeRef.current.getTime()) / 1000);
+        endArtworkView(viewIdRef.current, duration);
+      }
+    };
+  }, [artwork, trackPageView, trackArtworkView, endArtworkView]);
 
   useEffect(() => {
     if (!api) return;
