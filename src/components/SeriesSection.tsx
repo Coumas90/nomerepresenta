@@ -38,7 +38,7 @@ export const SeriesSection = ({
   return (
     <div ref={sectionRef} className="mb-16" id={`series-${series.id}`}>
       {/* Sticky Header */}
-      <div className="sticky top-16 sm:top-20 bg-background z-40 pt-3 sm:pt-4 pb-4 sm:pb-6">
+      <div className="sticky top-16 sm:top-20 bg-transparent z-40 pt-3 sm:pt-4 pb-4 sm:pb-6">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between">
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight">
