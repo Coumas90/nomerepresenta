@@ -128,63 +128,61 @@ const ArtworkDetail = () => {
         </div>
 
         {/* Desktop: Gallery layout con absolute positioning */}
-        <div className="hidden lg:block relative min-h-[calc(100vh-140px)]">
-          {/* Contenedor flex para centrar imagen */}
-          <div className="flex items-center justify-center h-full">
-            <div className="w-full max-w-[60vw]">
-              {images && images.length > 0 ? (
-                <Carousel className="w-full" setApi={setApi}>
-                  <CarouselContent>
-                    {images.map((image, index) => {
-                      const shouldLoad = Math.abs(index - current) <= 1;
-                      
-                      return (
-                        <CarouselItem key={image.id}>
-                          {shouldLoad ? (
-                            <img
-                              src={image.image_url}
-                              alt={artwork.title}
-                              loading={index === 0 ? "eager" : "lazy"}
-                              decoding="async"
-                              className="w-full h-auto object-contain transition-opacity duration-300"
-                            />
-                          ) : (
-                            <div className="w-full aspect-square bg-muted animate-pulse" />
-                          )}
-                        </CarouselItem>
-                      );
-                    })}
-                  </CarouselContent>
-                  {images.length > 1 && (
-                    <>
-                      <CarouselPrevious className="left-2" />
-                      <CarouselNext className="right-2" />
-                    </>
-                  )}
-                </Carousel>
-              ) : (
-                <img
-                  src={artwork.image_url}
-                  alt={artwork.title}
-                  loading="eager"
-                  decoding="async"
-                  className="w-full h-auto object-contain"
-                />
-              )}
-            </div>
-          </div>
+        <div className="hidden lg:block min-h-[calc(100vh-140px)] flex items-center justify-center">
+          {/* Contenedor del carousel ahora es RELATIVE */}
+          <div className="relative w-full max-w-[60vw]">
+            {images && images.length > 0 ? (
+              <Carousel className="w-full" setApi={setApi}>
+                <CarouselContent>
+                  {images.map((image, index) => {
+                    const shouldLoad = Math.abs(index - current) <= 1;
+                    
+                    return (
+                      <CarouselItem key={image.id}>
+                        {shouldLoad ? (
+                          <img
+                            src={image.image_url}
+                            alt={artwork.title}
+                            loading={index === 0 ? "eager" : "lazy"}
+                            decoding="async"
+                            className="w-full h-auto object-contain transition-opacity duration-300"
+                          />
+                        ) : (
+                          <div className="w-full aspect-square bg-muted animate-pulse" />
+                        )}
+                      </CarouselItem>
+                    );
+                  })}
+                </CarouselContent>
+                {images.length > 1 && (
+                  <>
+                    <CarouselPrevious className="left-2" />
+                    <CarouselNext className="right-2" />
+                  </>
+                )}
+              </Carousel>
+            ) : (
+              <img
+                src={artwork.image_url}
+                alt={artwork.title}
+                loading="eager"
+                decoding="async"
+                className="w-full h-auto object-contain"
+              />
+            )}
 
-          {/* Info absolute bottom-right */}
-          <div className="absolute bottom-12 right-16 text-right space-y-1">
-            <h1 className="text-base font-bold uppercase tracking-wide">
-              {artwork.title}
-            </h1>
-            <p className="text-xs uppercase tracking-wider font-medium">
-              {artwork.year}
-            </p>
-            <div className="text-xs uppercase tracking-wider space-y-0.5 font-medium">
-              <p>{artwork.materials}</p>
-              <p>{artwork.dimensions}</p>
+            {/* Info posicionada respecto al borde inferior derecho de la imagen */}
+            <div className="absolute top-[calc(100%+24px)] right-0 text-right space-y-1">
+              <h1 className="text-base font-bold uppercase tracking-wide">
+                {artwork.title}
+              </h1>
+              <p className="text-xs uppercase tracking-wider font-medium">
+                {artwork.year}
+              </p>
+              <div className="text-xs uppercase tracking-wider space-y-0.5 font-medium">
+                <p>{artwork.materials}</p>
+                <p>{artwork.dimensions}</p>
+              </div>
             </div>
           </div>
         </div>
