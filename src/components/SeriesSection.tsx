@@ -47,9 +47,9 @@ export const SeriesSection = ({
             
             {/* Only show button if series has description */}
             {series.description && (
-              <button
+            <button
                 onClick={onToggleDescription}
-                className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full hover:bg-accent transition-colors duration-300"
+                className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 transition-opacity duration-300 hover:opacity-70"
                 aria-label={isDescriptionExpanded ? "Collapse description" : "Expand description"}
               >
                 {isDescriptionExpanded ? (
