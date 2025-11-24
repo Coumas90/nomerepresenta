@@ -117,7 +117,7 @@ export const HoverNavigationCarousel = ({
       {canScrollPrev && images.length > 1 && (
         <div
           onClick={handlePrevious}
-          className="absolute left-0 top-0 bottom-0 w-[30%] z-10 cursor-pointer"
+          className="absolute left-0 top-0 bottom-0 w-[30%] z-10"
           aria-label="Previous image zone"
         />
       )}
@@ -126,7 +126,7 @@ export const HoverNavigationCarousel = ({
       {canScrollNext && images.length > 1 && (
         <div
           onClick={handleNext}
-          className="absolute right-0 top-0 bottom-0 w-[30%] z-10 cursor-pointer"
+          className="absolute right-0 top-0 bottom-0 w-[30%] z-10"
           aria-label="Next image zone"
         />
       )}
