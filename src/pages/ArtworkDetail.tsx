@@ -127,11 +127,11 @@ const ArtworkDetail = () => {
           </div>
         </div>
 
-        {/* Desktop: Gallery layout con absolute positioning */}
-        <div className="hidden lg:block relative min-h-[calc(100vh-140px)]">
-          {/* Contenedor flex para centrar imagen */}
-          <div className="flex items-center justify-center h-full">
-            <div className="w-full max-w-[60vw]">
+        {/* Desktop: Gallery layout */}
+        <div className="hidden lg:flex lg:items-center lg:justify-center min-h-[calc(100vh-140px)]">
+          <div className="w-full max-w-[60vw] flex flex-col gap-4">
+            {/* Imagen */}
+            <div className="w-full">
               {images && images.length > 0 ? (
                 <Carousel className="w-full" setApi={setApi}>
                   <CarouselContent>
@@ -172,19 +172,19 @@ const ArtworkDetail = () => {
                 />
               )}
             </div>
-          </div>
 
-          {/* Info absolute bottom-right */}
-          <div className="absolute bottom-12 right-16 text-right space-y-1">
-            <h1 className="text-base font-bold uppercase tracking-wide">
-              {artwork.title}
-            </h1>
-            <p className="text-xs uppercase tracking-wider font-medium">
-              {artwork.year}
-            </p>
-            <div className="text-xs uppercase tracking-wider space-y-0.5 font-medium">
-              <p>{artwork.materials}</p>
-              <p>{artwork.dimensions}</p>
+            {/* Info alineada a la derecha, justo debajo de la imagen */}
+            <div className="text-right space-y-1 pr-2">
+              <h1 className="text-base font-bold uppercase tracking-wide">
+                {artwork.title}
+              </h1>
+              <p className="text-xs uppercase tracking-wider font-medium">
+                {artwork.year}
+              </p>
+              <div className="text-xs uppercase tracking-wider space-y-0.5 font-medium">
+                <p>{artwork.materials}</p>
+                <p>{artwork.dimensions}</p>
+              </div>
             </div>
           </div>
         </div>
