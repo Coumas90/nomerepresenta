@@ -6,6 +6,7 @@ import { useArtworks } from "@/hooks/useArtworks";
 import { useSeries } from "@/hooks/useSeries";
 import { SeriesSection } from "@/components/SeriesSection";
 import { useQueryClient } from "@tanstack/react-query";
+import { ArtistStructuredData } from "@/components/seo/ArtistStructuredData";
 const Index = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -80,6 +81,19 @@ const Index = () => {
     img.src = imageUrl;
   };
   return <>
+      <ArtistStructuredData
+        name="Ivan Comas"
+        description="Ivan Comas is a Franco-Argentine artist working between São Paulo and Paris. His practice evolves through layered procedures that merge industrial materials, fragmented text, and the visual residue of dense urban environments."
+        url="https://ivancomas.lovable.app"
+        image="https://ivancomas.lovable.app/images/artworks/tri-peel-1.png"
+        birthDate="1987"
+        birthPlace="Buenos Aires, Argentina"
+        nationality="Franco-Argentine"
+        jobTitle="Visual Artist"
+        sameAs={[
+          "https://instagram.com/ivancomas",
+        ]}
+      />
       <Header />
       <main className="min-h-screen bg-background">
         {/* Works Section - Organized by Series */}

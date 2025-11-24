@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, CarouselApi } from "@/components/ui/carousel";
 import { HoverNavigationCarousel } from "@/components/artwork/HoverNavigationCarousel";
+import { ArtworkStructuredData } from "@/components/seo/ArtworkStructuredData";
 
 const ArtworkDetail = () => {
   const { id } = useParams();
@@ -58,6 +59,18 @@ const ArtworkDetail = () => {
   }
   return (
     <main className="min-h-screen bg-background">
+      <ArtworkStructuredData
+        name={artwork.title}
+        description={artwork.description}
+        image={artwork.image_url}
+        creator="Ivan Comas"
+        dateCreated={artwork.year}
+        artMedium={artwork.materials}
+        artform={artwork.technique}
+        width={artwork.dimensions.split('x')[0]?.trim()}
+        height={artwork.dimensions.split('x')[1]?.trim()}
+        url={`https://ivancomas.lovable.app/artwork/${artwork.id}`}
+      />
       <div className="fixed top-6 right-6 z-50 animate-fade-in">
         <Button 
           onClick={() => navigate("/")} 
