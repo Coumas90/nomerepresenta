@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 interface LoadingSkeletonProps {
-  type?: "dashboard" | "list" | "form" | "analytics";
+  type?: "dashboard" | "list" | "form" | "analytics" | "metrics" | "chart" | "activity";
 }
 
 export const LoadingSkeleton = ({ type = "dashboard" }: LoadingSkeletonProps) => {
@@ -82,6 +82,34 @@ export const LoadingSkeleton = ({ type = "dashboard" }: LoadingSkeletonProps) =>
               </CardContent>
             </Card>
           ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (type === "metrics") {
+    return (
+      <Card>
+        <CardHeader className="space-y-2">
+          <Skeleton className="h-4 w-24" />
+          <Skeleton className="h-8 w-16" />
+          <Skeleton className="h-3 w-20" />
+        </CardHeader>
+      </Card>
+    );
+  }
+
+  if (type === "chart") {
+    return <Skeleton className="h-[300px] w-full rounded-lg" />;
+  }
+
+  if (type === "activity") {
+    return (
+      <div className="flex items-center gap-4">
+        <Skeleton className="h-16 w-16 rounded" />
+        <div className="flex-1 space-y-2">
+          <Skeleton className="h-4 w-32" />
+          <Skeleton className="h-3 w-24" />
         </div>
       </div>
     );
