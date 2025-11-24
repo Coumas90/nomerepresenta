@@ -125,35 +125,54 @@ const Header = () => {
               <Menu className="h-6 w-6" />
             </button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-[280px] sm:w-[320px] bg-foreground text-background">
-            <nav className="flex flex-col gap-6 mt-8">
-              <button
-                onClick={() => scrollToSection('works')}
-                className="text-left text-lg font-medium tracking-wide hover:opacity-70 transition-opacity"
-              >
-                WORKS
-              </button>
-              <div className="pl-4 border-l-2 border-background/20">
+          <SheetContent 
+            side="right" 
+            className="w-full max-w-none bg-foreground text-background border-none p-0"
+          >
+            <div className="flex flex-col h-full px-6">
+              {/* Logo/Nombre del artista arriba */}
+              <div className="pt-8">
                 <button
-                  onClick={() => scrollToSection('works')}
-                  className="text-left text-base font-bold tracking-wide hover:opacity-70 transition-opacity"
+                  onClick={() => scrollToSection('top')}
+                  className="text-2xl font-bold tracking-tight hover:opacity-70 transition-opacity"
                 >
-                  TRI-PEEL
+                  IVAN COMAS
                 </button>
               </div>
-              <button
-                onClick={() => scrollToSection('bio')}
-                className="text-left text-lg font-medium tracking-wide hover:opacity-70 transition-opacity"
-              >
-                BIO
-              </button>
-              <button
-                onClick={() => scrollToSection('contact')}
-                className="text-left text-lg font-medium tracking-wide hover:opacity-70 transition-opacity"
-              >
-                CONTACT
-              </button>
-            </nav>
+              
+              {/* Navegación centrada verticalmente */}
+              <nav className="flex-1 flex flex-col justify-center gap-10 -mt-16">
+                <button
+                  onClick={() => scrollToSection('works')}
+                  className="text-left text-2xl font-medium tracking-wide hover:opacity-70 transition-opacity"
+                >
+                  WORKS
+                </button>
+                
+                <div className="pl-6 border-l border-background/20">
+                  <button
+                    onClick={() => scrollToSection('works')}
+                    className="text-left text-lg font-normal tracking-wide hover:opacity-70 transition-opacity"
+                  >
+                    TRI-PEEL
+                  </button>
+                </div>
+                
+                <button
+                  onClick={() => scrollToSection('bio')}
+                  className="text-left text-2xl font-medium tracking-wide hover:opacity-70 transition-opacity"
+                >
+                  BIO
+                </button>
+                
+                <button
+                  onClick={() => scrollToSection('contact')}
+                  className="text-left text-2xl font-medium tracking-wide hover:opacity-70 transition-opacity"
+                >
+                  CONTACT
+                </button>
+              </nav>
+            </div>
           </SheetContent>
         </Sheet>
       </div>
