@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics_sessions: {
+        Row: {
+          created_at: string
+          device_type: string | null
+          ended_at: string | null
+          id: string
+          referrer: string | null
+          session_id: string
+          started_at: string
+          total_duration_seconds: number | null
+          user_agent: string | null
+          visitor_fingerprint: string | null
+        }
+        Insert: {
+          created_at?: string
+          device_type?: string | null
+          ended_at?: string | null
+          id?: string
+          referrer?: string | null
+          session_id: string
+          started_at?: string
+          total_duration_seconds?: number | null
+          user_agent?: string | null
+          visitor_fingerprint?: string | null
+        }
+        Update: {
+          created_at?: string
+          device_type?: string | null
+          ended_at?: string | null
+          id?: string
+          referrer?: string | null
+          session_id?: string
+          started_at?: string
+          total_duration_seconds?: number | null
+          user_agent?: string | null
+          visitor_fingerprint?: string | null
+        }
+        Relationships: []
+      }
       artwork_images: {
         Row: {
           artwork_id: string
@@ -45,6 +84,60 @@ export type Database = {
             columns: ["artwork_id"]
             isOneToOne: false
             referencedRelation: "artworks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      artwork_views: {
+        Row: {
+          artwork_id: string
+          clicked_detail: boolean | null
+          created_at: string
+          ended_at: string | null
+          hovered: boolean | null
+          id: string
+          series_id: string | null
+          session_id: string
+          started_at: string
+          view_duration_seconds: number | null
+        }
+        Insert: {
+          artwork_id: string
+          clicked_detail?: boolean | null
+          created_at?: string
+          ended_at?: string | null
+          hovered?: boolean | null
+          id?: string
+          series_id?: string | null
+          session_id: string
+          started_at?: string
+          view_duration_seconds?: number | null
+        }
+        Update: {
+          artwork_id?: string
+          clicked_detail?: boolean | null
+          created_at?: string
+          ended_at?: string | null
+          hovered?: boolean | null
+          id?: string
+          series_id?: string | null
+          session_id?: string
+          started_at?: string
+          view_duration_seconds?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artwork_views_artwork_id_fkey"
+            columns: ["artwork_id"]
+            isOneToOne: false
+            referencedRelation: "artworks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "artwork_views_series_id_fkey"
+            columns: ["series_id"]
+            isOneToOne: false
+            referencedRelation: "series"
             referencedColumns: ["id"]
           },
         ]
@@ -105,6 +198,36 @@ export type Database = {
           },
         ]
       }
+      page_views: {
+        Row: {
+          created_at: string
+          id: string
+          page_name: string | null
+          page_path: string
+          session_id: string
+          time_on_page_seconds: number | null
+          viewed_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          page_name?: string | null
+          page_path: string
+          session_id: string
+          time_on_page_seconds?: number | null
+          viewed_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          page_name?: string | null
+          page_path?: string
+          session_id?: string
+          time_on_page_seconds?: number | null
+          viewed_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -152,6 +275,44 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      series_interactions: {
+        Row: {
+          artworks_viewed_count: number | null
+          created_at: string
+          expanded_description: boolean | null
+          id: string
+          series_id: string
+          session_id: string
+          viewed_at: string
+        }
+        Insert: {
+          artworks_viewed_count?: number | null
+          created_at?: string
+          expanded_description?: boolean | null
+          id?: string
+          series_id: string
+          session_id: string
+          viewed_at?: string
+        }
+        Update: {
+          artworks_viewed_count?: number | null
+          created_at?: string
+          expanded_description?: boolean | null
+          id?: string
+          series_id?: string
+          session_id?: string
+          viewed_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "series_interactions_series_id_fkey"
+            columns: ["series_id"]
+            isOneToOne: false
+            referencedRelation: "series"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {

@@ -7,9 +7,11 @@ import { useSeries } from "@/hooks/useSeries";
 import { SeriesSection } from "@/components/SeriesSection";
 import { useQueryClient } from "@tanstack/react-query";
 import { ArtistStructuredData } from "@/components/seo/ArtistStructuredData";
+import { useAnalytics } from "@/hooks/useAnalytics";
 const Index = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { trackPageView, trackSeriesInteraction } = useAnalytics();
   const {
     data: artworks,
     isLoading,
@@ -31,12 +33,27 @@ const Index = () => {
     }, {} as Record<string, typeof artworks>);
   }, [artworks, series]);
 
+  // Track page view on mount
+  useEffect(() => {
+    trackPageView('/', 'Home - Works Gallery');
+  }, [trackPageView]);
+
   // Toggle series description
   const toggleSeriesDescription = (seriesId: string) => {
+    const isExpanding = !expandedSeries[seriesId];
     setExpandedSeries(prev => ({
       ...prev,
-      [seriesId]: !prev[seriesId]
+      [seriesId]: isExpanding
     }));
+    
+    // Track series interaction
+    if (isExpanding) {
+      const seriesArtworks = artworksBySeries[seriesId] || [];
+      trackSeriesInteraction(seriesId, {
+        expandedDescription: true,
+        artworksViewedCount: seriesArtworks.length,
+      });
+    }
   };
 
   // Debounce scroll con useMemo

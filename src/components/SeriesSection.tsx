@@ -4,6 +4,7 @@ import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { ProgressiveImage } from "@/components/ProgressiveImage";
 import { ArtworkData } from "@/hooks/useArtworks";
 import { SeriesData } from "@/hooks/useSeries";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 interface SeriesSectionProps {
   series: SeriesData;
@@ -22,11 +23,13 @@ export const SeriesSection = ({
   onArtworkClick,
   onArtworkHover,
 }: SeriesSectionProps) => {
+  const { trackArtworkView } = useAnalytics();
   const sectionRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const [isStuck, setIsStuck] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const trackedArtworksRef = useRef<Set<string>>(new Set());
 
   // Auto-scroll when description expands
   useEffect(() => {
@@ -73,6 +76,31 @@ export const SeriesSection = ({
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY, isStuck]);
+
+  // Track artwork views when they enter viewport
+  useEffect(() => {
+    const observers: IntersectionObserver[] = [];
+    
+    artworks.forEach((artwork) => {
+      const element = document.querySelector(`[data-artwork-id="${artwork.id}"]`);
+      if (!element) return;
+
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting && !trackedArtworksRef.current.has(artwork.id)) {
+            trackedArtworksRef.current.add(artwork.id);
+            trackArtworkView(artwork.id, series.id, { hovered: false });
+          }
+        },
+        { threshold: 0.5 }
+      );
+
+      observer.observe(element);
+      observers.push(observer);
+    });
+
+    return () => observers.forEach(o => o.disconnect());
+  }, [artworks, series.id, trackArtworkView]);
 
   return (
     <div ref={sectionRef} className="mb-16" id={`series-${series.id}`}>
@@ -127,9 +155,17 @@ export const SeriesSection = ({
             {artworks.map((artwork) => (
               <div
                 key={artwork.id}
+                data-artwork-id={artwork.id}
                 className="group cursor-pointer animate-fade-in"
                 onClick={() => onArtworkClick(artwork.id)}
-                onMouseEnter={() => onArtworkHover(artwork.id, artwork.image_url)}
+                onMouseEnter={() => {
+                  onArtworkHover(artwork.id, artwork.image_url);
+                  // Track hover
+                  if (!trackedArtworksRef.current.has(`${artwork.id}-hover`)) {
+                    trackedArtworksRef.current.add(`${artwork.id}-hover`);
+                    trackArtworkView(artwork.id, series.id, { hovered: true });
+                  }
+                }}
               >
                 <div className="aspect-square bg-muted overflow-hidden mb-3 sm:mb-4 relative rounded-sm">
                   {/* Main image with lazy loading */}
