@@ -50,8 +50,8 @@ const ArtworkDetail = () => {
             BACK
           </Button>
         </div>
-        <div className="container mx-auto px-6 py-16 pt-24">
-          <h1 className="text-4xl font-bold mb-8">Artwork not found</h1>
+        <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 pt-24">
+          <h1 className="text-3xl sm:text-4xl font-bold mb-6 sm:mb-8">Artwork not found</h1>
         </div>
       </main>
     );
@@ -69,7 +69,7 @@ const ArtworkDetail = () => {
         </Button>
       </div>
 
-      <div className="container mx-auto px-6 min-h-screen flex items-center">
+      <div className="container mx-auto px-4 sm:px-6 min-h-screen flex items-center">
         {/* Mobile: Stack vertical */}
         <div className="lg:hidden flex flex-col gap-8">
           <div className="w-full">
@@ -115,10 +115,10 @@ const ArtworkDetail = () => {
           </div>
           
           <div className="text-center space-y-2">
-            <h1 className="text-2xl font-bold uppercase tracking-wide">
+            <h1 className="text-xl sm:text-2xl font-bold uppercase tracking-wide">
               {artwork.title}
             </h1>
-            <p className="text-sm uppercase tracking-wider font-medium">
+            <p className="text-xs sm:text-sm uppercase tracking-wider font-medium">
               {artwork.year}
             </p>
             <div className="text-xs uppercase tracking-wider space-y-0.5">

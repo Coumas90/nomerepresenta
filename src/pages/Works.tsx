@@ -57,9 +57,9 @@ const Works = () => {
       <main className="min-h-screen bg-background">
         {/* Sticky Header */}
         <div className="sticky top-0 bg-background z-40 pt-24 pb-6 border-b">
-          <div className="container mx-auto px-6">
+          <div className="container mx-auto px-4 sm:px-6">
             <div className="flex items-center justify-between gap-4">
-              <h1 className="text-3xl font-bold tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
                 WORKS
                 {selectedSeries && (
                   <>
@@ -88,7 +88,7 @@ const Works = () => {
         </div>
 
         {/* Gallery Grid */}
-        <div className="container mx-auto px-6 py-12">
+        <div className="container mx-auto px-4 sm:px-6 py-12">
           {filteredArtworks.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredArtworks.map((artwork) => (
