@@ -101,3 +101,18 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .bio-link {
+    @apply relative inline-block;
+  }
+  
+  .bio-link::after {
+    content: '';
+    @apply absolute left-0 bottom-0 w-full h-[1px] bg-current scale-x-0 origin-left transition-transform duration-300 ease-out;
+  }
+  
+  .bio-link:hover::after {
+    @apply scale-x-100;
+  }
+}
