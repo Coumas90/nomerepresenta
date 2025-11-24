@@ -12,11 +12,13 @@ export interface SeriesHeatData {
   unique_sessions: number;
 }
 
-export const useSeriesHeatmap = (days: number = 30) => {
+export const useSeriesHeatmap = (startDate?: Date, endDate?: Date) => {
+  const effectiveStartDate = startDate || subDays(new Date(), 30);
+  const effectiveEndDate = endDate || new Date();
+
   return useQuery({
-    queryKey: ['series-heatmap', days],
+    queryKey: ['series-heatmap', effectiveStartDate.toISOString(), effectiveEndDate.toISOString()],
     queryFn: async (): Promise<SeriesHeatData[]> => {
-      const startDate = subDays(new Date(), days);
 
       // Get series interactions
       const { data: interactions } = await supabase
@@ -30,13 +32,15 @@ export const useSeriesHeatmap = (days: number = 30) => {
             name
           )
         `)
-        .gte('viewed_at', startDate.toISOString());
+        .gte('viewed_at', effectiveStartDate.toISOString())
+        .lte('viewed_at', effectiveEndDate.toISOString());
 
       // Get artwork views per series
       const { data: artworkViews } = await supabase
         .from('artwork_views')
         .select('series_id, session_id')
-        .gte('started_at', startDate.toISOString())
+        .gte('started_at', effectiveStartDate.toISOString())
+        .lte('started_at', effectiveEndDate.toISOString())
         .not('series_id', 'is', null);
 
       if (!interactions || interactions.length === 0) return [];

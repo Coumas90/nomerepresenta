@@ -3,8 +3,13 @@ import { useDailyVisitors } from "@/hooks/useAnalyticsStats";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { format } from 'date-fns';
 
-const VisitorsChart = () => {
-  const { data: dailyData, isLoading } = useDailyVisitors(30);
+interface VisitorsChartProps {
+  startDate: Date;
+  endDate: Date;
+}
+
+const VisitorsChart = ({ startDate, endDate }: VisitorsChartProps) => {
+  const { data: dailyData, isLoading } = useDailyVisitors(startDate, endDate);
 
   if (isLoading) {
     return (

@@ -1,10 +1,33 @@
+import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { subDays, startOfDay, endOfDay } from "date-fns";
+import { DateRange } from "react-day-picker";
 import AnalyticsOverview from "./AnalyticsOverview";
 import ArtworksAnalytics from "./ArtworksAnalytics";
 import SeriesAnalytics from "./SeriesAnalytics";
 import SessionsAnalytics from "./SessionsAnalytics";
+import DateRangeFilter from "./DateRangeFilter";
 
 const AnalyticsDashboard = () => {
+  const [presetDays, setPresetDays] = useState(30);
+  const [customDateRange, setCustomDateRange] = useState<DateRange | undefined>(undefined);
+
+  // Calculate effective date range
+  const getDateRange = (): { startDate: Date; endDate: Date } => {
+    if (customDateRange?.from) {
+      return {
+        startDate: startOfDay(customDateRange.from),
+        endDate: customDateRange.to ? endOfDay(customDateRange.to) : endOfDay(new Date()),
+      };
+    }
+    return {
+      startDate: startOfDay(subDays(new Date(), presetDays)),
+      endDate: endOfDay(new Date()),
+    };
+  };
+
+  const dateRange = getDateRange();
+
   return (
     <div className="space-y-6">
       <div>
@@ -13,6 +36,14 @@ const AnalyticsDashboard = () => {
           Análisis completo del comportamiento de visitantes
         </p>
       </div>
+
+      {/* Date Range Filter */}
+      <DateRangeFilter
+        dateRange={customDateRange}
+        onDateRangeChange={setCustomDateRange}
+        presetDays={presetDays}
+        onPresetChange={setPresetDays}
+      />
 
       <Tabs defaultValue="overview" className="space-y-6">
         <TabsList>
@@ -23,19 +54,19 @@ const AnalyticsDashboard = () => {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
-          <AnalyticsOverview />
+          <AnalyticsOverview startDate={dateRange.startDate} endDate={dateRange.endDate} />
         </TabsContent>
 
         <TabsContent value="artworks" className="space-y-6">
-          <ArtworksAnalytics />
+          <ArtworksAnalytics startDate={dateRange.startDate} endDate={dateRange.endDate} />
         </TabsContent>
 
         <TabsContent value="series" className="space-y-6">
-          <SeriesAnalytics />
+          <SeriesAnalytics startDate={dateRange.startDate} endDate={dateRange.endDate} />
         </TabsContent>
 
         <TabsContent value="sessions" className="space-y-6">
-          <SessionsAnalytics />
+          <SessionsAnalytics startDate={dateRange.startDate} endDate={dateRange.endDate} />
         </TabsContent>
       </Tabs>
     </div>

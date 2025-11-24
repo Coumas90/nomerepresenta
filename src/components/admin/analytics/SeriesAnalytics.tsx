@@ -1,9 +1,14 @@
 import SeriesHeatmap from "./SeriesHeatmap";
 
-const SeriesAnalytics = () => {
+interface SeriesAnalyticsProps {
+  startDate: Date;
+  endDate: Date;
+}
+
+const SeriesAnalytics = ({ startDate, endDate }: SeriesAnalyticsProps) => {
   return (
     <div className="space-y-6">
-      <SeriesHeatmap />
+      <SeriesHeatmap startDate={startDate} endDate={endDate} />
     </div>
   );
 };

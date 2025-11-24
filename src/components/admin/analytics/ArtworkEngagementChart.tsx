@@ -2,8 +2,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useArtworkEngagement } from "@/hooks/useArtworkAnalytics";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-const ArtworkEngagementChart = () => {
-  const { data: engagement, isLoading } = useArtworkEngagement(30);
+interface ArtworkEngagementChartProps {
+  startDate: Date;
+  endDate: Date;
+}
+
+const ArtworkEngagementChart = ({ startDate, endDate }: ArtworkEngagementChartProps) => {
+  const { data: engagement, isLoading } = useArtworkEngagement(startDate, endDate);
 
   if (isLoading) {
     return (

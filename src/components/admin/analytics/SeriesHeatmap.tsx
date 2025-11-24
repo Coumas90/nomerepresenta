@@ -2,8 +2,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useSeriesHeatmap } from "@/hooks/useSeriesAnalytics";
 import { Flame } from "lucide-react";
 
-const SeriesHeatmap = () => {
-  const { data: series, isLoading } = useSeriesHeatmap(30);
+interface SeriesHeatmapProps {
+  startDate: Date;
+  endDate: Date;
+}
+
+const SeriesHeatmap = ({ startDate, endDate }: SeriesHeatmapProps) => {
+  const { data: series, isLoading } = useSeriesHeatmap(startDate, endDate);
 
   if (isLoading) {
     return (

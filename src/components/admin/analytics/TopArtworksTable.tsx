@@ -2,8 +2,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useTopArtworks } from "@/hooks/useArtworkAnalytics";
 
-const TopArtworksTable = () => {
-  const { data: artworks, isLoading } = useTopArtworks(30, 10);
+interface TopArtworksTableProps {
+  startDate: Date;
+  endDate: Date;
+}
+
+const TopArtworksTable = ({ startDate, endDate }: TopArtworksTableProps) => {
+  const { data: artworks, isLoading } = useTopArtworks(startDate, endDate, 10);
 
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60);

@@ -1,9 +1,14 @@
 import RecentSessionsTable from "./RecentSessionsTable";
 
-const SessionsAnalytics = () => {
+interface SessionsAnalyticsProps {
+  startDate: Date;
+  endDate: Date;
+}
+
+const SessionsAnalytics = ({ startDate, endDate }: SessionsAnalyticsProps) => {
   return (
     <div className="space-y-6">
-      <RecentSessionsTable />
+      <RecentSessionsTable startDate={startDate} endDate={endDate} />
     </div>
   );
 };

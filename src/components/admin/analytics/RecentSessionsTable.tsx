@@ -5,13 +5,20 @@ import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
-const RecentSessionsTable = () => {
+interface RecentSessionsTableProps {
+  startDate: Date;
+  endDate: Date;
+}
+
+const RecentSessionsTable = ({ startDate, endDate }: RecentSessionsTableProps) => {
   const { data: sessions, isLoading } = useQuery({
-    queryKey: ['recent-sessions'],
+    queryKey: ['recent-sessions', startDate.toISOString(), endDate.toISOString()],
     queryFn: async () => {
       const { data } = await supabase
         .from('analytics_sessions')
         .select('*')
+        .gte('started_at', startDate.toISOString())
+        .lte('started_at', endDate.toISOString())
         .order('started_at', { ascending: false })
         .limit(20);
       return data;

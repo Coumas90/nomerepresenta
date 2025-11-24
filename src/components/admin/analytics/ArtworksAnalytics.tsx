@@ -1,11 +1,16 @@
 import TopArtworksTable from "./TopArtworksTable";
 import ArtworkEngagementChart from "./ArtworkEngagementChart";
 
-const ArtworksAnalytics = () => {
+interface ArtworksAnalyticsProps {
+  startDate: Date;
+  endDate: Date;
+}
+
+const ArtworksAnalytics = ({ startDate, endDate }: ArtworksAnalyticsProps) => {
   return (
     <div className="space-y-6">
-      <TopArtworksTable />
-      <ArtworkEngagementChart />
+      <TopArtworksTable startDate={startDate} endDate={endDate} />
+      <ArtworkEngagementChart startDate={startDate} endDate={endDate} />
     </div>
   );
 };
