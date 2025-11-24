@@ -98,26 +98,42 @@ export const HoverNavigationCarousel = ({
         </CarouselContent>
       </Carousel>
 
-      {/* Left Arrow - zona izquierda */}
-      {showLeftArrow && (
-        <button
+      {/* Zona clickeable izquierda - 30% del ancho */}
+      {canScrollPrev && images.length > 1 && (
+        <div
           onClick={handlePrevious}
-          className="absolute left-8 top-1/2 -translate-y-1/2 z-10 transition-opacity duration-200 hover:scale-110 transform"
-          aria-label="Previous image"
-        >
-          <ChevronLeft size={48} className="text-foreground drop-shadow-lg" strokeWidth={1.5} />
-        </button>
+          className="absolute left-0 top-0 bottom-0 w-[30%] z-10 cursor-pointer"
+          aria-label="Previous image zone"
+        />
       )}
 
-      {/* Right Arrow - zona derecha */}
-      {showRightArrow && (
-        <button
+      {/* Zona clickeable derecha - 30% del ancho */}
+      {canScrollNext && images.length > 1 && (
+        <div
           onClick={handleNext}
-          className="absolute right-8 top-1/2 -translate-y-1/2 z-10 transition-opacity duration-200 hover:scale-110 transform"
-          aria-label="Next image"
+          className="absolute right-0 top-0 bottom-0 w-[30%] z-10 cursor-pointer"
+          aria-label="Next image zone"
+        />
+      )}
+
+      {/* Left Arrow - indicador visual en zona izquierda */}
+      {showLeftArrow && (
+        <div
+          className="absolute left-8 top-1/2 -translate-y-1/2 z-20 transition-opacity duration-200 pointer-events-none"
+          aria-hidden="true"
+        >
+          <ChevronLeft size={48} className="text-foreground drop-shadow-lg" strokeWidth={1.5} />
+        </div>
+      )}
+
+      {/* Right Arrow - indicador visual en zona derecha */}
+      {showRightArrow && (
+        <div
+          className="absolute right-8 top-1/2 -translate-y-1/2 z-20 transition-opacity duration-200 pointer-events-none"
+          aria-hidden="true"
         >
           <ChevronRight size={48} className="text-foreground drop-shadow-lg" strokeWidth={1.5} />
-        </button>
+        </div>
       )}
     </div>
   );
