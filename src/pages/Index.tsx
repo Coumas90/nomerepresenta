@@ -140,16 +140,13 @@ const Index = () => {
         </section>
 
         {/* Bio Section */}
-        <section id="bio" className="min-h-screen pt-16 sm:pt-20">
+        <section id="bio" className="pt-12 sm:pt-16 pb-8 sm:pb-12">
           <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16">
-            <h1 
-              className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8 transition-transform duration-300 ease-out" 
-              style={{ transform: scrollTransform.bio }}
-            >
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8">
               BIO
             </h1>
             
-            <div className="max-w-4xl animate-fade-in">
+            <div className="max-w-4xl">
               {/* Artist Name and Origin */}
               <p className="text-base sm:text-lg font-semibold mb-4">
                 Ivan Comas (b. 1987, Buenos Aires)
@@ -166,7 +163,7 @@ const Index = () => {
               </div>
 
               {/* Education Section */}
-              <div className="mb-12 sm:mb-16 animate-fade-in">
+              <div className="mb-12 sm:mb-16">
                 <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">EDUCATION</h2>
                 <div className="space-y-3 sm:space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-2 sm:gap-6">
@@ -187,7 +184,7 @@ const Index = () => {
               </div>
 
               {/* Solo and Two Person Exhibitions */}
-              <div className="mb-12 sm:mb-16 animate-fade-in">
+              <div className="mb-12 sm:mb-16">
                 <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">SOLO AND TWO PERSON EXHIBITIONS</h2>
                 <div className="space-y-3 sm:space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-2 sm:gap-6">
@@ -235,7 +232,7 @@ const Index = () => {
               </div>
 
               {/* Selected Group Exhibitions */}
-              <div className="animate-fade-in">
+              <div>
                 <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">SELECTED GROUP EXHIBITIONS</h2>
                 <div className="space-y-3 sm:space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-2 sm:gap-6">
@@ -263,19 +260,16 @@ const Index = () => {
         </section>
 
         {/* Contact Section */}
-        <section id="contact" className="min-h-screen pt-16 sm:pt-20">
+        <section id="contact" className="pt-8 sm:pt-12 pb-16 sm:pb-24">
           <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16">
-            <h1 
-              className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8 transition-transform duration-300 ease-out" 
-              style={{ transform: scrollTransform.contact }}
-            >
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8">
               CONTACT
             </h1>
             
             <div className="max-w-3xl text-left">
               <div className="space-y-3 sm:space-y-4">
                 {/* Email */}
-                <a href="mailto:contact@ivancomas.com" className="text-2xl sm:text-3xl font-light text-foreground hover:text-primary transition-colors duration-300 inline-block opacity-0 animate-fade-in-up">
+                <a href="mailto:contact@ivancomas.com" className="text-2xl sm:text-3xl font-light text-foreground hover:text-primary transition-colors duration-300 inline-block">
                   contact@ivancomas.com
                 </a>
 
@@ -284,7 +278,7 @@ const Index = () => {
               </div>
 
               {/* Social Media - Solo icono */}
-              <div className="mt-8 sm:mt-12 opacity-0 animate-fade-in-up-delay-2">
+              <div className="mt-8 sm:mt-12">
                 <a href="https://instagram.com/ivancomas" target="_blank" rel="noopener noreferrer" className="inline-block text-muted-foreground hover:text-foreground transition-colors duration-300" aria-label="Instagram">
                   <Instagram className="w-5 h-5 sm:w-6 sm:h-6" />
                 </a>
