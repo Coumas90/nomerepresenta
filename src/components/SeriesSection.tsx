@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Plus, Minus } from "lucide-react";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { ProgressiveImage } from "@/components/ProgressiveImage";
@@ -23,6 +23,8 @@ export const SeriesSection = ({
   onArtworkHover,
 }: SeriesSectionProps) => {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const [isStuck, setIsStuck] = useState(false);
 
   // Auto-scroll when description expands
   useEffect(() => {
@@ -35,10 +37,31 @@ export const SeriesSection = ({
     }
   }, [isDescriptionExpanded]);
 
+  // Detect when header becomes sticky
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsStuck(!entry.isIntersecting);
+      },
+      { threshold: 0 }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div ref={sectionRef} className="mb-16" id={`series-${series.id}`}>
+      {/* Sentinel for sticky detection */}
+      <div ref={sentinelRef} className="h-px" />
+      
       {/* Sticky Header */}
-      <div className="sticky top-16 sm:top-20 bg-transparent z-40 pt-3 sm:pt-4 pb-4 sm:pb-6">
+      <div className={`sticky top-16 sm:top-20 z-40 pt-3 sm:pt-4 pb-4 sm:pb-6 transition-all duration-300 ${
+        isStuck ? 'bg-background/80 backdrop-blur-md shadow-sm' : 'bg-transparent'
+      }`}>
         <div className="container mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between">
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight">
