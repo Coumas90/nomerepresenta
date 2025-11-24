@@ -1,26 +1,48 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, LogOut, Plus } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
+import { Plus } from "lucide-react";
 import { ArtworkData } from "@/hooks/useArtworks";
 import ArtworkForm from "@/components/admin/ArtworkForm";
 import ArtworksList from "@/components/admin/ArtworksList";
 import SeriesManager from "@/components/admin/SeriesManager";
-import AnalyticsDashboard from "@/components/admin/analytics/AnalyticsDashboard";
+import { AdminLayout } from "@/components/admin/layout/AdminLayout";
+import { DashboardHome } from "@/components/admin/DashboardHome";
+import RealtimeAnalytics from "@/components/admin/analytics/RealtimeAnalytics";
+import AnalyticsOverview from "@/components/admin/analytics/AnalyticsOverview";
+import ArtworksAnalytics from "@/components/admin/analytics/ArtworksAnalytics";
+import SeriesAnalytics from "@/components/admin/analytics/SeriesAnalytics";
+import AudienceAnalytics from "@/components/admin/analytics/AudienceAnalytics";
+import SessionsAnalytics from "@/components/admin/analytics/SessionsAnalytics";
+import { DateRange } from "react-day-picker";
 
 const Admin = () => {
-  const navigate = useNavigate();
-  const { signOut } = useAuth();
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const section = params.get("section") || "dashboard";
+
   const [editingArtwork, setEditingArtwork] = useState<ArtworkData | undefined>(undefined);
   const [showForm, setShowForm] = useState(false);
   const [preselectedSeriesId, setPreselectedSeriesId] = useState<string | undefined>(undefined);
+  const [presetDays, setPresetDays] = useState(30);
+  const [customDateRange, setCustomDateRange] = useState<DateRange | undefined>(undefined);
 
-  const handleSignOut = async () => {
-    await signOut();
-    navigate("/");
+  const getDateRange = (): { startDate: Date; endDate: Date } => {
+    if (customDateRange?.from && customDateRange?.to) {
+      return {
+        startDate: customDateRange.from,
+        endDate: customDateRange.to,
+      };
+    }
+    
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - presetDays);
+    
+    return { startDate, endDate };
   };
+
+  const { startDate, endDate } = getDateRange();
 
   const handleEdit = (artwork: ArtworkData) => {
     setEditingArtwork(artwork);
@@ -45,39 +67,35 @@ const Admin = () => {
     setPreselectedSeriesId(undefined);
   };
 
-  return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="container max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <Button onClick={() => navigate("/")} variant="ghost">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Home
-            </Button>
-            <h1 className="text-2xl font-bold">Admin Panel</h1>
-          </div>
-          <Button onClick={handleSignOut} variant="outline">
-            <LogOut className="mr-2 h-4 w-4" />
-            Sign Out
-          </Button>
-        </div>
-
-        <Tabs defaultValue="artworks" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-            <TabsTrigger value="series">Series</TabsTrigger>
-            <TabsTrigger value="artworks">Artworks</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="analytics">
-            <AnalyticsDashboard />
-          </TabsContent>
-
-          <TabsContent value="series">
-            <SeriesManager />
-          </TabsContent>
-
-          <TabsContent value="artworks" className="space-y-6">
+  const renderContent = () => {
+    switch (section) {
+      case "dashboard":
+        return <DashboardHome />;
+      
+      case "analytics-live":
+        return <RealtimeAnalytics />;
+      
+      case "analytics-overview":
+        return <AnalyticsOverview startDate={startDate} endDate={endDate} />;
+      
+      case "analytics-artworks":
+        return <ArtworksAnalytics startDate={startDate} endDate={endDate} />;
+      
+      case "analytics-series":
+        return <SeriesAnalytics startDate={startDate} endDate={endDate} />;
+      
+      case "analytics-audience":
+        return <AudienceAnalytics startDate={startDate} endDate={endDate} />;
+      
+      case "analytics-sessions":
+        return <SessionsAnalytics startDate={startDate} endDate={endDate} />;
+      
+      case "content-series":
+        return <SeriesManager />;
+      
+      case "content-artworks":
+        return (
+          <div className="space-y-6">
             {showForm ? (
               <div>
                 <div className="flex items-center justify-between mb-4">
@@ -106,12 +124,19 @@ const Admin = () => {
                 New Artwork
               </Button>
             )}
-
             <ArtworksList onEdit={handleEdit} onCreateInSeries={handleCreateInSeries} />
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>
+          </div>
+        );
+      
+      default:
+        return <DashboardHome />;
+    }
+  };
+
+  return (
+    <AdminLayout>
+      {renderContent()}
+    </AdminLayout>
   );
 };
 
