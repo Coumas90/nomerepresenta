@@ -16,6 +16,9 @@ export type Database = {
     Tables: {
       analytics_sessions: {
         Row: {
+          city: string | null
+          country: string | null
+          country_name: string | null
           created_at: string
           device_type: string | null
           ended_at: string | null
@@ -28,6 +31,9 @@ export type Database = {
           visitor_fingerprint: string | null
         }
         Insert: {
+          city?: string | null
+          country?: string | null
+          country_name?: string | null
           created_at?: string
           device_type?: string | null
           ended_at?: string | null
@@ -40,6 +46,9 @@ export type Database = {
           visitor_fingerprint?: string | null
         }
         Update: {
+          city?: string | null
+          country?: string | null
+          country_name?: string | null
           created_at?: string
           device_type?: string | null
           ended_at?: string | null
