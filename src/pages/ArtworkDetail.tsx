@@ -172,7 +172,7 @@ const ArtworkDetail = () => {
             )}
 
             {/* Info posicionada respecto al borde inferior derecho de la imagen */}
-            <div className="absolute top-[calc(100%+24px)] right-0 text-right space-y-1">
+            <div className="absolute bottom-0 right-0 text-right space-y-1">
               <h1 className="text-base font-bold uppercase tracking-wide">
                 {artwork.title}
               </h1>
