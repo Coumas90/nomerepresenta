@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselApi } from "@/components/ui/carousel";
 
@@ -19,9 +19,11 @@ export const HoverNavigationCarousel = ({
 }: HoverNavigationCarouselProps) => {
   const [api, setApi] = useState<CarouselApi>();
   const [mouseZone, setMouseZone] = useState<"left" | "right" | "center">("center");
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!api) return;
@@ -41,8 +43,13 @@ export const HoverNavigationCarousel = ({
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
     const percentage = (x / rect.width) * 100;
 
+    // Guardar posición exacta del cursor
+    setMousePosition({ x, y });
+
+    // Determinar zona
     if (percentage < 30) {
       setMouseZone("left");
     } else if (percentage > 70) {
@@ -67,8 +74,14 @@ export const HoverNavigationCarousel = ({
   const showLeftArrow = isHovering && mouseZone === "left" && canScrollPrev && images.length > 1;
   const showRightArrow = isHovering && mouseZone === "right" && canScrollNext && images.length > 1;
 
+  // Calcular posiciones de las flechas con límites
+  const containerWidth = containerRef.current?.offsetWidth || 0;
+  const leftArrowX = Math.max(32, Math.min(mousePosition.x, containerWidth * 0.3 - 24));
+  const rightArrowX = Math.max(containerWidth * 0.7 + 24, Math.min(mousePosition.x, containerWidth - 32));
+
   return (
     <div
+      ref={containerRef}
       className="relative w-full h-full"
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovering(true)}
@@ -116,20 +129,30 @@ export const HoverNavigationCarousel = ({
         />
       )}
 
-      {/* Left Arrow - indicador visual en zona izquierda */}
+      {/* Left Arrow - indicador visual que sigue el cursor */}
       {showLeftArrow && (
         <div
-          className="absolute left-8 top-1/2 -translate-y-1/2 z-20 transition-opacity duration-200 pointer-events-none"
+          className="absolute z-20 transition-all duration-150 pointer-events-none"
+          style={{
+            left: `${leftArrowX}px`,
+            top: `${mousePosition.y}px`,
+            transform: 'translate(-50%, -50%)'
+          }}
           aria-hidden="true"
         >
           <ChevronLeft size={48} className="text-foreground drop-shadow-lg" strokeWidth={1.5} />
         </div>
       )}
 
-      {/* Right Arrow - indicador visual en zona derecha */}
+      {/* Right Arrow - indicador visual que sigue el cursor */}
       {showRightArrow && (
         <div
-          className="absolute right-8 top-1/2 -translate-y-1/2 z-20 transition-opacity duration-200 pointer-events-none"
+          className="absolute z-20 transition-all duration-150 pointer-events-none"
+          style={{
+            left: `${rightArrowX}px`,
+            top: `${mousePosition.y}px`,
+            transform: 'translate(-50%, -50%)'
+          }}
           aria-hidden="true"
         >
           <ChevronRight size={48} className="text-foreground drop-shadow-lg" strokeWidth={1.5} />
