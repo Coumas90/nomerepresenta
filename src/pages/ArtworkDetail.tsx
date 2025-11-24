@@ -129,7 +129,7 @@ const ArtworkDetail = () => {
 
         {/* Desktop: Gallery layout */}
         <div className="hidden lg:flex min-h-[calc(100vh-140px)] items-center justify-center">
-          <div className="flex flex-col items-end gap-6">
+          <div className="flex flex-col items-end gap-3">
             {/* Contenedor de la imagen */}
             <div className="relative w-full max-w-[60vw] max-h-[calc(100vh-200px)]">
               {images && images.length > 0 ? (
