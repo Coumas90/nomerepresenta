@@ -127,52 +127,54 @@ const ArtworkDetail = () => {
           </div>
         </div>
 
-        {/* Desktop: Gallery layout con absolute positioning */}
-        <div className="hidden lg:block min-h-[calc(100vh-140px)] flex items-center justify-center">
-          {/* Contenedor del carousel ahora es RELATIVE */}
-          <div className="relative w-full max-w-[60vw] max-h-[calc(100vh-200px)]">
-            {images && images.length > 0 ? (
-              <Carousel className="w-full h-full max-h-[calc(100vh-200px)]" setApi={setApi}>
-                <CarouselContent className="h-full">
-                  {images.map((image, index) => {
-                    const shouldLoad = Math.abs(index - current) <= 1;
-                    
-                    return (
-                      <CarouselItem key={image.id} className="flex items-center justify-center h-full">
-                        {shouldLoad ? (
-                          <img
-                            src={image.image_url}
-                            alt={artwork.title}
-                            loading={index === 0 ? "eager" : "lazy"}
-                            decoding="async"
-                            className="w-full h-full max-h-[calc(100vh-200px)] object-contain transition-opacity duration-300"
-                          />
-                        ) : (
-                          <div className="w-full aspect-square bg-muted animate-pulse" />
-                        )}
-                      </CarouselItem>
-                    );
-                  })}
-                </CarouselContent>
-                {images.length > 1 && (
-                  <>
-                    <CarouselPrevious className="left-2" />
-                    <CarouselNext className="right-2" />
-                  </>
-                )}
-              </Carousel>
-            ) : (
-              <img
-                src={artwork.image_url}
-                alt={artwork.title}
-                loading="eager"
-                decoding="async"
-                className="w-full h-full max-h-[calc(100vh-200px)] object-contain"
-              />
-            )}
+        {/* Desktop: Gallery layout */}
+        <div className="hidden lg:flex min-h-[calc(100vh-140px)] items-center justify-center">
+          <div className="flex flex-col items-end gap-6">
+            {/* Contenedor de la imagen */}
+            <div className="relative w-full max-w-[60vw] max-h-[calc(100vh-200px)]">
+              {images && images.length > 0 ? (
+                <Carousel className="w-full h-full max-h-[calc(100vh-200px)]" setApi={setApi}>
+                  <CarouselContent className="h-full">
+                    {images.map((image, index) => {
+                      const shouldLoad = Math.abs(index - current) <= 1;
+                      
+                      return (
+                        <CarouselItem key={image.id} className="flex items-center justify-center h-full">
+                          {shouldLoad ? (
+                            <img
+                              src={image.image_url}
+                              alt={artwork.title}
+                              loading={index === 0 ? "eager" : "lazy"}
+                              decoding="async"
+                              className="w-full h-full max-h-[calc(100vh-200px)] object-contain transition-opacity duration-300"
+                            />
+                          ) : (
+                            <div className="w-full aspect-square bg-muted animate-pulse" />
+                          )}
+                        </CarouselItem>
+                      );
+                    })}
+                  </CarouselContent>
+                  {images.length > 1 && (
+                    <>
+                      <CarouselPrevious className="left-2" />
+                      <CarouselNext className="right-2" />
+                    </>
+                  )}
+                </Carousel>
+              ) : (
+                <img
+                  src={artwork.image_url}
+                  alt={artwork.title}
+                  loading="eager"
+                  decoding="async"
+                  className="w-full h-full max-h-[calc(100vh-200px)] object-contain"
+                />
+              )}
+            </div>
 
-            {/* Info posicionada respecto al borde inferior derecho de la imagen */}
-            <div className="absolute bottom-0 right-0 text-right space-y-1">
+            {/* Info del artwork */}
+            <div className="text-right space-y-1">
               <h1 className="text-base font-bold uppercase tracking-wide">
                 {artwork.title}
               </h1>
