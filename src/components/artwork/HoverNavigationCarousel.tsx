@@ -82,7 +82,9 @@ export const HoverNavigationCarousel = ({
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-full"
+      className={`relative w-full h-full ${
+        mouseZone === "left" || mouseZone === "right" ? "cursor-none" : ""
+      }`}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
@@ -132,7 +134,7 @@ export const HoverNavigationCarousel = ({
       {/* Left Arrow - indicador visual que sigue el cursor */}
       {showLeftArrow && (
         <div
-          className="absolute z-20 transition-all duration-150 pointer-events-none"
+          className="absolute z-20 pointer-events-none"
           style={{
             left: `${leftArrowX}px`,
             top: `${mousePosition.y}px`,
@@ -140,14 +142,14 @@ export const HoverNavigationCarousel = ({
           }}
           aria-hidden="true"
         >
-          <ChevronLeft size={48} className="text-foreground drop-shadow-lg" strokeWidth={1.5} />
+          <ChevronLeft size={40} className="text-foreground drop-shadow-lg" strokeWidth={1.5} />
         </div>
       )}
 
       {/* Right Arrow - indicador visual que sigue el cursor */}
       {showRightArrow && (
         <div
-          className="absolute z-20 transition-all duration-150 pointer-events-none"
+          className="absolute z-20 pointer-events-none"
           style={{
             left: `${rightArrowX}px`,
             top: `${mousePosition.y}px`,
@@ -155,7 +157,7 @@ export const HoverNavigationCarousel = ({
           }}
           aria-hidden="true"
         >
-          <ChevronRight size={48} className="text-foreground drop-shadow-lg" strokeWidth={1.5} />
+          <ChevronRight size={40} className="text-foreground drop-shadow-lg" strokeWidth={1.5} />
         </div>
       )}
     </div>
