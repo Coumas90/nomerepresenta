@@ -25,6 +25,8 @@ export const SeriesSection = ({
   const sectionRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const [isStuck, setIsStuck] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   // Auto-scroll when description expands
   useEffect(() => {
@@ -53,14 +55,35 @@ export const SeriesSection = ({
     return () => observer.disconnect();
   }, []);
 
+  // Handle scroll direction for fade effect
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Only hide when scrolling down and header is stuck
+      if (currentScrollY > lastScrollY && isStuck) {
+        setIsVisible(false);
+      } else {
+        setIsVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY, isStuck]);
+
   return (
     <div ref={sectionRef} className="mb-16" id={`series-${series.id}`}>
       {/* Sentinel element for intersection detection */}
       <div ref={sentinelRef} className="h-px" />
       
       {/* Sticky Header */}
-      <div className={`sticky top-16 sm:top-20 bg-transparent z-40 pt-3 sm:pt-4 pb-4 sm:pb-6 transition-all duration-300 ${
+      <div className={`sticky top-16 sm:top-20 bg-transparent z-40 pt-3 sm:pt-4 pb-4 sm:pb-6 transition-all duration-500 ${
         isStuck ? 'border-b border-border/50' : ''
+      } ${
+        isVisible ? 'opacity-100' : 'opacity-0'
       }`}>
         <div className="container mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between">
