@@ -13,11 +13,13 @@ export interface ArtworkAnalytics {
   detail_clicks: number;
 }
 
-export const useTopArtworks = (days: number = 30, limit: number = 10) => {
+export const useTopArtworks = (startDate?: Date, endDate?: Date, limit: number = 10) => {
+  const effectiveStartDate = startDate || subDays(new Date(), 30);
+  const effectiveEndDate = endDate || new Date();
+
   return useQuery({
-    queryKey: ['top-artworks', days, limit],
+    queryKey: ['top-artworks', effectiveStartDate.toISOString(), effectiveEndDate.toISOString(), limit],
     queryFn: async (): Promise<ArtworkAnalytics[]> => {
-      const startDate = subDays(new Date(), days);
 
       const { data: views } = await supabase
         .from('artwork_views')
@@ -34,7 +36,8 @@ export const useTopArtworks = (days: number = 30, limit: number = 10) => {
             )
           )
         `)
-        .gte('started_at', startDate.toISOString());
+        .gte('started_at', effectiveStartDate.toISOString())
+        .lte('started_at', effectiveEndDate.toISOString());
 
       if (!views || views.length === 0) return [];
 
@@ -94,11 +97,13 @@ export const useTopArtworks = (days: number = 30, limit: number = 10) => {
   });
 };
 
-export const useArtworkEngagement = (days: number = 30) => {
+export const useArtworkEngagement = (startDate?: Date, endDate?: Date) => {
+  const effectiveStartDate = startDate || subDays(new Date(), 30);
+  const effectiveEndDate = endDate || new Date();
+
   return useQuery({
-    queryKey: ['artwork-engagement', days],
+    queryKey: ['artwork-engagement', effectiveStartDate.toISOString(), effectiveEndDate.toISOString()],
     queryFn: async () => {
-      const startDate = subDays(new Date(), days);
 
       const { data: views } = await supabase
         .from('artwork_views')
@@ -109,7 +114,8 @@ export const useArtworkEngagement = (days: number = 30) => {
             title
           )
         `)
-        .gte('started_at', startDate.toISOString())
+        .gte('started_at', effectiveStartDate.toISOString())
+        .lte('started_at', effectiveEndDate.toISOString())
         .not('view_duration_seconds', 'is', null);
 
       if (!views || views.length === 0) return [];

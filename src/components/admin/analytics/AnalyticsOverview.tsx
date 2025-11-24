@@ -3,8 +3,13 @@ import { useAnalyticsStats } from "@/hooks/useAnalyticsStats";
 import { Users, Clock, Image, Eye } from "lucide-react";
 import VisitorsChart from "./VisitorsChart";
 
-const AnalyticsOverview = () => {
-  const { data: stats, isLoading } = useAnalyticsStats(30);
+interface AnalyticsOverviewProps {
+  startDate: Date;
+  endDate: Date;
+}
+
+const AnalyticsOverview = ({ startDate, endDate }: AnalyticsOverviewProps) => {
+  const { data: stats, isLoading } = useAnalyticsStats(startDate, endDate);
 
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -68,7 +73,7 @@ const AnalyticsOverview = () => {
         ))}
       </div>
 
-      <VisitorsChart />
+      <VisitorsChart startDate={startDate} endDate={endDate} />
     </div>
   );
 };

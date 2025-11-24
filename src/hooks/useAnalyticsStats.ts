@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { subDays, startOfDay, endOfDay } from 'date-fns';
+import { subDays, startOfDay, endOfDay, differenceInDays, eachDayOfInterval } from 'date-fns';
 
 export interface AnalyticsOverviewStats {
   totalVisitors: number;
@@ -17,17 +17,20 @@ export interface DailyVisitors {
   sessions: number;
 }
 
-export const useAnalyticsStats = (days: number = 30) => {
+export const useAnalyticsStats = (startDate?: Date, endDate?: Date) => {
+  const effectiveStartDate = startDate || subDays(new Date(), 30);
+  const effectiveEndDate = endDate || new Date();
+
   return useQuery({
-    queryKey: ['analytics-stats', days],
+    queryKey: ['analytics-stats', effectiveStartDate.toISOString(), effectiveEndDate.toISOString()],
     queryFn: async (): Promise<AnalyticsOverviewStats> => {
-      const startDate = subDays(new Date(), days);
 
       // Total unique visitors (sessions)
       const { count: totalVisitors } = await supabase
         .from('analytics_sessions')
         .select('*', { count: 'exact', head: true })
-        .gte('started_at', startDate.toISOString());
+        .gte('started_at', effectiveStartDate.toISOString())
+        .lte('started_at', effectiveEndDate.toISOString());
 
       // Sessions today
       const todayStart = startOfDay(new Date());
@@ -40,7 +43,8 @@ export const useAnalyticsStats = (days: number = 30) => {
       const { data: sessions } = await supabase
         .from('analytics_sessions')
         .select('total_duration_seconds')
-        .gte('started_at', startDate.toISOString())
+        .gte('started_at', effectiveStartDate.toISOString())
+        .lte('started_at', effectiveEndDate.toISOString())
         .not('total_duration_seconds', 'is', null);
 
       const avgTimeOnSite = sessions && sessions.length > 0
@@ -51,7 +55,8 @@ export const useAnalyticsStats = (days: number = 30) => {
       const { data: artworkCounts } = await supabase
         .from('artwork_views')
         .select('session_id')
-        .gte('started_at', startDate.toISOString());
+        .gte('started_at', effectiveStartDate.toISOString())
+        .lte('started_at', effectiveEndDate.toISOString());
 
       const sessionArtworkMap = new Map<string, number>();
       artworkCounts?.forEach(view => {
@@ -66,13 +71,15 @@ export const useAnalyticsStats = (days: number = 30) => {
       const { count: totalPageViews } = await supabase
         .from('page_views')
         .select('*', { count: 'exact', head: true })
-        .gte('viewed_at', startDate.toISOString());
+        .gte('viewed_at', effectiveStartDate.toISOString())
+        .lte('viewed_at', effectiveEndDate.toISOString());
 
       // Unique artworks viewed
       const { data: uniqueArtworks } = await supabase
         .from('artwork_views')
         .select('artwork_id')
-        .gte('started_at', startDate.toISOString());
+        .gte('started_at', effectiveStartDate.toISOString())
+        .lte('started_at', effectiveEndDate.toISOString());
 
       const uniqueArtworksViewed = new Set(uniqueArtworks?.map(v => v.artwork_id)).size;
 
@@ -88,16 +95,18 @@ export const useAnalyticsStats = (days: number = 30) => {
   });
 };
 
-export const useDailyVisitors = (days: number = 30) => {
-  return useQuery({
-    queryKey: ['daily-visitors', days],
-    queryFn: async (): Promise<DailyVisitors[]> => {
-      const startDate = subDays(new Date(), days);
+export const useDailyVisitors = (startDate?: Date, endDate?: Date) => {
+  const effectiveStartDate = startDate || subDays(new Date(), 30);
+  const effectiveEndDate = endDate || new Date();
 
+  return useQuery({
+    queryKey: ['daily-visitors', effectiveStartDate.toISOString(), effectiveEndDate.toISOString()],
+    queryFn: async (): Promise<DailyVisitors[]> => {
       const { data: sessions } = await supabase
         .from('analytics_sessions')
         .select('started_at')
-        .gte('started_at', startDate.toISOString())
+        .gte('started_at', effectiveStartDate.toISOString())
+        .lte('started_at', effectiveEndDate.toISOString())
         .order('started_at', { ascending: true });
 
       // Group by day
@@ -112,17 +121,17 @@ export const useDailyVisitors = (days: number = 30) => {
         dayData.sessions++;
       });
 
-      // Fill in missing days
-      const result: DailyVisitors[] = [];
-      for (let i = days - 1; i >= 0; i--) {
-        const date = startOfDay(subDays(new Date(), i)).toISOString().split('T')[0];
+      // Fill in missing days with all days in range
+      const allDays = eachDayOfInterval({ start: effectiveStartDate, end: effectiveEndDate });
+      const result: DailyVisitors[] = allDays.map(day => {
+        const date = startOfDay(day).toISOString().split('T')[0];
         const dayData = dailyMap.get(date);
-        result.push({
+        return {
           date,
           visitors: dayData?.sessions || 0,
           sessions: dayData?.sessions || 0,
-        });
-      }
+        };
+      });
 
       return result;
     },
