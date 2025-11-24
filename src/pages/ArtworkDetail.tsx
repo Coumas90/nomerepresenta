@@ -68,7 +68,7 @@ const ArtworkDetail = () => {
         </Button>
       </div>
 
-      <div className="container mx-auto px-6 pt-24 pb-16">
+      <div className="container mx-auto px-6 min-h-screen flex items-center">
         {/* Mobile: Stack vertical */}
         <div className="lg:hidden flex flex-col gap-8">
           <div className="w-full">
@@ -128,7 +128,7 @@ const ArtworkDetail = () => {
         </div>
 
         {/* Desktop: Gallery layout */}
-        <div className="hidden lg:flex min-h-[calc(100vh-140px)] justify-center">
+        <div className="hidden lg:grid place-items-center w-full">
           <div className="grid grid-cols-[1fr_auto] items-end gap-[60px]">
             {/* Contenedor de la imagen */}
             <div className="relative max-w-[60vw] max-h-[calc(100vh-200px)]">
