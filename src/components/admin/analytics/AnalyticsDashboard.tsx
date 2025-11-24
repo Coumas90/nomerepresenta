@@ -7,6 +7,7 @@ import ArtworksAnalytics from "./ArtworksAnalytics";
 import SeriesAnalytics from "./SeriesAnalytics";
 import SessionsAnalytics from "./SessionsAnalytics";
 import AudienceAnalytics from "./AudienceAnalytics";
+import RealtimeAnalytics from "./RealtimeAnalytics";
 import DateRangeFilter from "./DateRangeFilter";
 
 const AnalyticsDashboard = () => {
@@ -46,14 +47,24 @@ const AnalyticsDashboard = () => {
         onPresetChange={setPresetDays}
       />
 
-        <Tabs defaultValue="overview" className="space-y-6">
+        <Tabs defaultValue="realtime" className="space-y-6">
           <TabsList>
+            <TabsTrigger value="realtime">
+              <div className="flex items-center gap-1">
+                <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                Live
+              </div>
+            </TabsTrigger>
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="artworks">Artworks</TabsTrigger>
             <TabsTrigger value="series">Series</TabsTrigger>
             <TabsTrigger value="audience">Audience</TabsTrigger>
             <TabsTrigger value="sessions">Sessions</TabsTrigger>
           </TabsList>
+
+        <TabsContent value="realtime" className="space-y-6">
+          <RealtimeAnalytics />
+        </TabsContent>
 
         <TabsContent value="overview" className="space-y-6">
           <AnalyticsOverview startDate={dateRange.startDate} endDate={dateRange.endDate} />
