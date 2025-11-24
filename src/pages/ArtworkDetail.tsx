@@ -128,10 +128,10 @@ const ArtworkDetail = () => {
         </div>
 
         {/* Desktop: Gallery layout */}
-        <div className="hidden lg:flex min-h-[calc(100vh-140px)] items-center justify-center">
-          <div className="flex flex-col items-end gap-3">
+        <div className="hidden lg:flex min-h-[calc(100vh-140px)] justify-center">
+          <div className="grid grid-cols-[1fr_auto] items-end gap-[60px]">
             {/* Contenedor de la imagen */}
-            <div className="relative w-full max-w-[60vw] max-h-[calc(100vh-200px)]">
+            <div className="relative max-w-[60vw] max-h-[calc(100vh-200px)]">
               {images && images.length > 0 ? (
                 <Carousel className="w-full h-full max-h-[calc(100vh-200px)]" setApi={setApi}>
                   <CarouselContent className="h-full">
@@ -174,7 +174,7 @@ const ArtworkDetail = () => {
             </div>
 
             {/* Info del artwork */}
-            <div className="text-right space-y-1">
+            <div className="text-left space-y-1">
               <h1 className="text-base font-bold uppercase tracking-wide">
                 {artwork.title}
               </h1>
