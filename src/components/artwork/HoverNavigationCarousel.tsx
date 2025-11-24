@@ -9,6 +9,7 @@ interface HoverNavigationCarouselProps {
   };
   currentIndex: number;
   onIndexChange: (index: number) => void;
+  registerImageRef?: (element: HTMLImageElement | null) => void;
 }
 
 export const HoverNavigationCarousel = ({
@@ -16,6 +17,7 @@ export const HoverNavigationCarousel = ({
   artwork,
   currentIndex,
   onIndexChange,
+  registerImageRef,
 }: HoverNavigationCarouselProps) => {
   const [api, setApi] = useState<CarouselApi>();
   const [mouseZone, setMouseZone] = useState<"left" | "right" | "center">("center");
@@ -102,6 +104,7 @@ export const HoverNavigationCarousel = ({
                     alt={artwork.title}
                     loading={index === 0 ? "eager" : "lazy"}
                     decoding="async"
+                    ref={index === currentIndex && registerImageRef ? registerImageRef : undefined}
                     className="w-full h-full max-h-[calc(100vh-200px)] object-contain transition-opacity duration-300"
                   />
                 ) : (
