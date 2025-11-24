@@ -6,6 +6,7 @@ import { useSeries } from "@/hooks/useSeries";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ProgressiveImage } from "@/components/ProgressiveImage";
 import { useQueryClient } from "@tanstack/react-query";
+import ArtworkRecommendations from "@/components/ArtworkRecommendations";
 
 const Works = () => {
   const navigate = useNavigate();
@@ -87,8 +88,13 @@ const Works = () => {
           </div>
         </div>
 
+        {/* AI Recommendations */}
+        <div className="container mx-auto px-4 sm:px-6 py-8">
+          <ArtworkRecommendations />
+        </div>
+
         {/* Gallery Grid */}
-        <div className="container mx-auto px-4 sm:px-6 py-12">
+        <div className="container mx-auto px-4 sm:px-6 py-8">
           {filteredArtworks.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredArtworks.map((artwork) => (
