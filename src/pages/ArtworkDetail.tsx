@@ -5,6 +5,7 @@ import { useArtworkImages } from "@/hooks/useArtworkImages";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, CarouselApi } from "@/components/ui/carousel";
+import { ZoomableCarousel } from "@/components/artwork/ZoomableCarousel";
 
 const ArtworkDetail = () => {
   const { id } = useParams();
@@ -130,39 +131,15 @@ const ArtworkDetail = () => {
         {/* Desktop: Gallery layout */}
         <div className="hidden lg:grid place-items-center w-full">
           <div className="grid grid-cols-[1fr_auto] items-end gap-[60px]">
-            {/* Contenedor de la imagen */}
-            <div className="relative max-w-[60vw] max-h-[calc(100vh-200px)]">
-              {images && images.length > 0 ? (
-                <Carousel className="w-full h-full max-h-[calc(100vh-200px)]" setApi={setApi}>
-                  <CarouselContent className="h-full">
-                    {images.map((image, index) => {
-                      const shouldLoad = Math.abs(index - current) <= 1;
-                      
-                      return (
-                        <CarouselItem key={image.id} className="flex items-center justify-center h-full">
-                          {shouldLoad ? (
-                            <img
-                              src={image.image_url}
-                              alt={artwork.title}
-                              loading={index === 0 ? "eager" : "lazy"}
-                              decoding="async"
-                              className="w-full h-full max-h-[calc(100vh-200px)] object-contain transition-opacity duration-300"
-                            />
-                          ) : (
-                            <div className="w-full aspect-square bg-muted animate-pulse" />
-                          )}
-                        </CarouselItem>
-                      );
-                    })}
-                  </CarouselContent>
-                  {images.length > 1 && (
-                    <>
-                      <CarouselPrevious className="left-2" />
-                      <CarouselNext className="right-2" />
-                    </>
-                  )}
-                </Carousel>
-              ) : (
+            {/* Contenedor de la imagen con zoom interactivo */}
+            {images && images.length > 0 ? (
+              <ZoomableCarousel 
+                images={images} 
+                title={artwork.title}
+                currentIndex={current}
+              />
+            ) : (
+              <div className="relative max-w-[60vw] max-h-[calc(100vh-200px)]">
                 <img
                   src={artwork.image_url}
                   alt={artwork.title}
@@ -170,8 +147,8 @@ const ArtworkDetail = () => {
                   decoding="async"
                   className="w-full h-full max-h-[calc(100vh-200px)] object-contain"
                 />
-              )}
-            </div>
+              </div>
+            )}
 
             {/* Info del artwork */}
             <div className="text-left space-y-1">
