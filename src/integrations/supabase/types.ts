@@ -62,6 +62,47 @@ export type Database = {
         }
         Relationships: []
       }
+      artwork_cursor_tracking: {
+        Row: {
+          artwork_id: string
+          created_at: string | null
+          id: string
+          session_id: string
+          viewport_height: number
+          viewport_width: number
+          x_position: number
+          y_position: number
+        }
+        Insert: {
+          artwork_id: string
+          created_at?: string | null
+          id?: string
+          session_id: string
+          viewport_height: number
+          viewport_width: number
+          x_position: number
+          y_position: number
+        }
+        Update: {
+          artwork_id?: string
+          created_at?: string | null
+          id?: string
+          session_id?: string
+          viewport_height?: number
+          viewport_width?: number
+          x_position?: number
+          y_position?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artwork_cursor_tracking_artwork_id_fkey"
+            columns: ["artwork_id"]
+            isOneToOne: false
+            referencedRelation: "artworks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       artwork_images: {
         Row: {
           artwork_id: string

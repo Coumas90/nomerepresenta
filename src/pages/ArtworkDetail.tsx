@@ -8,6 +8,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { HoverNavigationCarousel } from "@/components/artwork/HoverNavigationCarousel";
 import { ArtworkStructuredData } from "@/components/seo/ArtworkStructuredData";
 import { useAnalytics } from "@/hooks/useAnalytics";
+import { useArtworkCursorTracking } from "@/hooks/useArtworkCursorTracking";
 
 const ArtworkDetail = () => {
   const { id } = useParams();
@@ -19,6 +20,12 @@ const ArtworkDetail = () => {
   const [current, setCurrent] = useState(0);
   const viewIdRef = useRef<string | null>(null);
   const startTimeRef = useRef<Date>(new Date());
+  
+  // Cursor tracking for heatmap
+  const { registerImageElement } = useArtworkCursorTracking(
+    artwork?.id || '',
+    !!artwork // Only track when artwork is loaded
+  );
   
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -128,6 +135,7 @@ const ArtworkDetail = () => {
                             alt={artwork.title}
                             loading={index === 0 ? "eager" : "lazy"}
                             decoding="async"
+                            ref={index === current ? registerImageElement : undefined}
                             className="w-full h-auto object-contain transition-opacity duration-300"
                           />
                         ) : (
@@ -150,6 +158,7 @@ const ArtworkDetail = () => {
                 alt={artwork.title}
                 loading="eager"
                 decoding="async"
+                ref={registerImageElement}
                 className="w-full h-auto object-contain"
               />
             )}
@@ -180,6 +189,7 @@ const ArtworkDetail = () => {
                   artwork={artwork}
                   currentIndex={current}
                   onIndexChange={setCurrent}
+                  registerImageRef={registerImageElement}
                 />
               ) : (
                 <img
@@ -187,6 +197,7 @@ const ArtworkDetail = () => {
                   alt={artwork.title}
                   loading="eager"
                   decoding="async"
+                  ref={registerImageElement}
                   className="w-full h-full max-h-[calc(100vh-200px)] object-contain"
                 />
               )}
