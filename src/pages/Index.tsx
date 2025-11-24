@@ -202,14 +202,14 @@ const Index = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-2 sm:gap-6">
                     <span className="font-semibold text-sm sm:text-base">2016</span>
                     <p className="text-sm sm:text-base">
-                      <span className="text-foreground">After Sonora</span>, <span className="text-muted-foreground">Steve Turner, Los Angeles</span>
+                      <a href="http://steveturner.la/exhibition/ivan-comas-3#1" target="_blank" rel="noopener noreferrer" className="text-foreground hover:text-primary transition-colors underline decoration-1 underline-offset-2">After Sonora</a>, <span className="text-muted-foreground">Steve Turner, Los Angeles</span>
                     </p>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-2 sm:gap-6">
                     <span className="font-semibold text-sm sm:text-base">2015</span>
                     <div className="space-y-2 text-sm sm:text-base">
                       <p>
-                        <span className="text-foreground">Days go by</span>, <span className="text-muted-foreground">Duve, Berlin</span>
+                        <a href="https://www.duveberlin.com/exhibition/days-go-by" target="_blank" rel="noopener noreferrer" className="text-foreground hover:text-primary transition-colors underline decoration-1 underline-offset-2">Days go by</a>, <span className="text-muted-foreground">Duve, Berlin</span>
                       </p>
                       <p>
                         <span className="text-foreground">Art Berlin Contemporary, ABC</span> <span className="text-muted-foreground">(with Steve Turner), Berlin</span>
@@ -218,7 +218,7 @@ const Index = () => {
                         <span className="text-foreground">Ivan Comas and Joaquín Boz, ArtBo</span>, <span className="text-muted-foreground">Bogotá (with Steve Turner)</span>
                       </p>
                       <p>
-                        <span className="text-foreground">La Brea</span>, <span className="text-muted-foreground">Steve Turner, Los Angeles</span>
+                        <a href="http://steveturner.la/exhibition/ivan-comas#1" target="_blank" rel="noopener noreferrer" className="text-foreground hover:text-primary transition-colors underline decoration-1 underline-offset-2">La Brea</a>, <span className="text-muted-foreground">Steve Turner, Los Angeles</span>
                       </p>
                     </div>
                   </div>
