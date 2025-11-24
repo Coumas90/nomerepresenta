@@ -5,6 +5,7 @@ import { useArtworkImages } from "@/hooks/useArtworkImages";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, CarouselApi } from "@/components/ui/carousel";
+import { HoverNavigationCarousel } from "@/components/artwork/HoverNavigationCarousel";
 
 const ArtworkDetail = () => {
   const { id } = useParams();
@@ -133,35 +134,12 @@ const ArtworkDetail = () => {
             {/* Contenedor de la imagen */}
             <div className="relative max-w-[60vw] max-h-[calc(100vh-200px)]">
               {images && images.length > 0 ? (
-                <Carousel className="w-full h-full max-h-[calc(100vh-200px)]" setApi={setApi}>
-                  <CarouselContent className="h-full">
-                    {images.map((image, index) => {
-                      const shouldLoad = Math.abs(index - current) <= 1;
-                      
-                      return (
-                        <CarouselItem key={image.id} className="flex items-center justify-center h-full">
-                          {shouldLoad ? (
-                            <img
-                              src={image.image_url}
-                              alt={artwork.title}
-                              loading={index === 0 ? "eager" : "lazy"}
-                              decoding="async"
-                              className="w-full h-full max-h-[calc(100vh-200px)] object-contain transition-opacity duration-300"
-                            />
-                          ) : (
-                            <div className="w-full aspect-square bg-muted animate-pulse" />
-                          )}
-                        </CarouselItem>
-                      );
-                    })}
-                  </CarouselContent>
-                  {images.length > 1 && (
-                    <>
-                      <CarouselPrevious className="left-2" />
-                      <CarouselNext className="right-2" />
-                    </>
-                  )}
-                </Carousel>
+                <HoverNavigationCarousel
+                  images={images}
+                  artwork={artwork}
+                  currentIndex={current}
+                  onIndexChange={setCurrent}
+                />
               ) : (
                 <img
                   src={artwork.image_url}
