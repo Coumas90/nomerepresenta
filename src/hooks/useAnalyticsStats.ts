@@ -24,39 +24,63 @@ export const useAnalyticsStats = (startDate?: Date, endDate?: Date) => {
   return useQuery({
     queryKey: ['analytics-stats', effectiveStartDate.toISOString(), effectiveEndDate.toISOString()],
     queryFn: async (): Promise<AnalyticsOverviewStats> => {
-
-      // Total unique visitors (sessions)
-      const { count: totalVisitors } = await supabase
-        .from('analytics_sessions')
-        .select('*', { count: 'exact', head: true })
-        .gte('started_at', effectiveStartDate.toISOString())
-        .lte('started_at', effectiveEndDate.toISOString());
-
-      // Sessions today
       const todayStart = startOfDay(new Date());
-      const { count: sessionsToday } = await supabase
-        .from('analytics_sessions')
-        .select('*', { count: 'exact', head: true })
-        .gte('started_at', todayStart.toISOString());
 
-      // Average time on site
-      const { data: sessions } = await supabase
-        .from('analytics_sessions')
-        .select('total_duration_seconds')
-        .gte('started_at', effectiveStartDate.toISOString())
-        .lte('started_at', effectiveEndDate.toISOString())
-        .not('total_duration_seconds', 'is', null);
+      // Execute all queries in parallel
+      const [
+        { count: totalVisitors },
+        { count: sessionsToday },
+        { data: sessions },
+        { data: artworkCounts },
+        { count: totalPageViews },
+        { data: uniqueArtworks },
+      ] = await Promise.all([
+        // Total unique visitors (sessions)
+        supabase
+          .from('analytics_sessions')
+          .select('*', { count: 'exact', head: true })
+          .gte('started_at', effectiveStartDate.toISOString())
+          .lte('started_at', effectiveEndDate.toISOString()),
+        
+        // Sessions today
+        supabase
+          .from('analytics_sessions')
+          .select('*', { count: 'exact', head: true })
+          .gte('started_at', todayStart.toISOString()),
+        
+        // Average time on site
+        supabase
+          .from('analytics_sessions')
+          .select('total_duration_seconds')
+          .gte('started_at', effectiveStartDate.toISOString())
+          .lte('started_at', effectiveEndDate.toISOString())
+          .not('total_duration_seconds', 'is', null),
+        
+        // Average artworks per session
+        supabase
+          .from('artwork_views')
+          .select('session_id')
+          .gte('started_at', effectiveStartDate.toISOString())
+          .lte('started_at', effectiveEndDate.toISOString()),
+        
+        // Total page views
+        supabase
+          .from('page_views')
+          .select('*', { count: 'exact', head: true })
+          .gte('viewed_at', effectiveStartDate.toISOString())
+          .lte('viewed_at', effectiveEndDate.toISOString()),
+        
+        // Unique artworks viewed
+        supabase
+          .from('artwork_views')
+          .select('artwork_id')
+          .gte('started_at', effectiveStartDate.toISOString())
+          .lte('started_at', effectiveEndDate.toISOString()),
+      ]);
 
       const avgTimeOnSite = sessions && sessions.length > 0
         ? Math.floor(sessions.reduce((sum, s) => sum + (s.total_duration_seconds || 0), 0) / sessions.length)
         : 0;
-
-      // Average artworks per session
-      const { data: artworkCounts } = await supabase
-        .from('artwork_views')
-        .select('session_id')
-        .gte('started_at', effectiveStartDate.toISOString())
-        .lte('started_at', effectiveEndDate.toISOString());
 
       const sessionArtworkMap = new Map<string, number>();
       artworkCounts?.forEach(view => {
@@ -66,20 +90,6 @@ export const useAnalyticsStats = (startDate?: Date, endDate?: Date) => {
       const avgArtworksPerSession = sessionArtworkMap.size > 0
         ? Math.floor(Array.from(sessionArtworkMap.values()).reduce((sum, count) => sum + count, 0) / sessionArtworkMap.size)
         : 0;
-
-      // Total page views
-      const { count: totalPageViews } = await supabase
-        .from('page_views')
-        .select('*', { count: 'exact', head: true })
-        .gte('viewed_at', effectiveStartDate.toISOString())
-        .lte('viewed_at', effectiveEndDate.toISOString());
-
-      // Unique artworks viewed
-      const { data: uniqueArtworks } = await supabase
-        .from('artwork_views')
-        .select('artwork_id')
-        .gte('started_at', effectiveStartDate.toISOString())
-        .lte('started_at', effectiveEndDate.toISOString());
 
       const uniqueArtworksViewed = new Set(uniqueArtworks?.map(v => v.artwork_id)).size;
 

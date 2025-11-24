@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useDailyVisitors } from "@/hooks/useAnalyticsStats";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { format } from 'date-fns';
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface VisitorsChartProps {
   startDate: Date;
@@ -18,9 +19,7 @@ const VisitorsChart = ({ startDate, endDate }: VisitorsChartProps) => {
           <CardTitle>Visitantes por Día</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[300px] flex items-center justify-center text-muted-foreground">
-            Cargando datos...
-          </div>
+          <Skeleton className="h-[300px] w-full rounded-lg" />
         </CardContent>
       </Card>
     );

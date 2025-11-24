@@ -4,6 +4,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Button } from "@/components/ui/button";
 import { Shield } from "lucide-react";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { AdminSidebarSkeleton } from "@/components/admin/layout/AdminSidebarSkeleton";
+import { AdminHeaderSkeleton } from "@/components/admin/layout/AdminHeaderSkeleton";
+import { LoadingSkeleton } from "@/components/admin/LoadingSkeleton";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -23,9 +27,17 @@ const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps)
 
   if (authLoading || roleLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <p className="text-muted-foreground">Loading...</p>
-      </div>
+      <SidebarProvider>
+        <div className="min-h-screen flex w-full bg-background">
+          <AdminSidebarSkeleton />
+          <div className="flex-1 flex flex-col">
+            <AdminHeaderSkeleton />
+            <main className="flex-1 p-6">
+              <LoadingSkeleton type="dashboard" />
+            </main>
+          </div>
+        </div>
+      </SidebarProvider>
     );
   }
 
