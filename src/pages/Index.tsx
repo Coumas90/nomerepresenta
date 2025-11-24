@@ -244,7 +244,7 @@ const Index = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-2 sm:gap-6">
                     <span className="font-semibold text-sm sm:text-base">2017</span>
                     <p className="text-sm sm:text-base">
-                      <span className="text-foreground">Monet is my church</span>, <span className="text-muted-foreground">Dittrich & Schlechtriern, Berlin</span>
+                      <a href="https://dittrich-schlechtriem.com/monet-is-my-church/" target="_blank" rel="noopener noreferrer" className="text-foreground hover:text-primary transition-colors bio-link">Monet is my church</a>, <span className="text-muted-foreground">Dittrich & Schlechtriern, Berlin</span>
                     </p>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-2 sm:gap-6">
@@ -279,7 +279,7 @@ const Index = () => {
 
               {/* Social Media - Solo icono */}
               <div className="mt-8 sm:mt-12">
-                <a href="https://instagram.com/ivancomas" target="_blank" rel="noopener noreferrer" className="inline-block text-muted-foreground hover:text-foreground transition-colors duration-300" aria-label="Instagram">
+                <a href="https://instagram.com/manyvices" target="_blank" rel="noopener noreferrer" className="inline-block text-muted-foreground hover:text-foreground transition-colors duration-300" aria-label="Instagram">
                   <Instagram className="w-5 h-5 sm:w-6 sm:h-6" />
                 </a>
               </div>
