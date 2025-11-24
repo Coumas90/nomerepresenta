@@ -68,70 +68,125 @@ const ArtworkDetail = () => {
         </Button>
       </div>
 
-      <div className="container mx-auto px-8 lg:px-16 pt-24 pb-24 max-w-7xl">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-            {/* Left Column - Text */}
-            <div className="flex flex-col justify-center space-y-4 lg:pl-16 pt-12">
-              <div>
-                <h1 className="text-5xl font-bold tracking-tight uppercase mb-2 leading-tight lg:text-2xl text-left">
-                  {artwork.title}
-                </h1>
-                <p className="text-base uppercase tracking-widest font-semibold">
-                  {artwork.year}
-                </p>
-              </div>
-
-              <div className="text-xs uppercase tracking-widest leading-loose space-y-0.5 font-medium">
-                <p>{artwork.materials}</p>
-                <p>{artwork.dimensions}</p>
-              </div>
-            </div>
-
-            {/* Right Column - Image Gallery */}
-            <div className="flex items-center justify-center lg:justify-start">
-              <div className="w-full max-w-xl">
-                {images && images.length > 0 ? (
-                  <Carousel className="w-full" setApi={setApi}>
-                    <CarouselContent>
-                      {images.map((image, index) => {
-                        // Cargar solo la imagen actual y las adyacentes
-                        const shouldLoad = Math.abs(index - current) <= 1;
-                        
-                        return (
-                          <CarouselItem key={image.id}>
-                            {shouldLoad ? (
-                              <img
-                                src={image.image_url}
-                                alt={artwork.title}
-                                loading={index === 0 ? "eager" : "lazy"}
-                                decoding="async"
-                                className="w-full h-auto object-contain transition-opacity duration-300"
-                              />
-                            ) : (
-                              <div className="w-full aspect-square bg-muted animate-pulse" />
-                            )}
-                          </CarouselItem>
-                        );
-                      })}
-                    </CarouselContent>
-                    {images.length > 1 && (
-                      <>
-                        <CarouselPrevious className="left-2" />
-                        <CarouselNext className="right-2" />
-                      </>
-                    )}
-                  </Carousel>
-                ) : (
-                  <img
-                    src={artwork.image_url}
-                    alt={artwork.title}
-                    loading="eager"
-                    decoding="async"
-                    className="w-full h-auto object-contain"
-                  />
+      <div className="container mx-auto px-6 pt-24 pb-16">
+        {/* Mobile: Stack vertical */}
+        <div className="lg:hidden flex flex-col gap-8">
+          <div className="w-full">
+            {images && images.length > 0 ? (
+              <Carousel className="w-full" setApi={setApi}>
+                <CarouselContent>
+                  {images.map((image, index) => {
+                    const shouldLoad = Math.abs(index - current) <= 1;
+                    
+                    return (
+                      <CarouselItem key={image.id}>
+                        {shouldLoad ? (
+                          <img
+                            src={image.image_url}
+                            alt={artwork.title}
+                            loading={index === 0 ? "eager" : "lazy"}
+                            decoding="async"
+                            className="w-full h-auto object-contain transition-opacity duration-300"
+                          />
+                        ) : (
+                          <div className="w-full aspect-square bg-muted animate-pulse" />
+                        )}
+                      </CarouselItem>
+                    );
+                  })}
+                </CarouselContent>
+                {images.length > 1 && (
+                  <>
+                    <CarouselPrevious className="left-2" />
+                    <CarouselNext className="right-2" />
+                  </>
                 )}
-              </div>
+              </Carousel>
+            ) : (
+              <img
+                src={artwork.image_url}
+                alt={artwork.title}
+                loading="eager"
+                decoding="async"
+                className="w-full h-auto object-contain"
+              />
+            )}
+          </div>
+          
+          <div className="text-center space-y-2">
+            <h1 className="text-2xl font-bold uppercase tracking-wide">
+              {artwork.title}
+            </h1>
+            <p className="text-sm uppercase tracking-wider font-medium">
+              {artwork.year}
+            </p>
+            <div className="text-xs uppercase tracking-wider space-y-0.5">
+              <p>{artwork.materials}</p>
+              <p>{artwork.dimensions}</p>
             </div>
+          </div>
+        </div>
+
+        {/* Desktop: Gallery layout con absolute positioning */}
+        <div className="hidden lg:block relative min-h-[calc(100vh-140px)]">
+          {/* Contenedor flex para centrar imagen */}
+          <div className="flex items-center justify-center h-full">
+            <div className="w-full max-w-[60vw]">
+              {images && images.length > 0 ? (
+                <Carousel className="w-full" setApi={setApi}>
+                  <CarouselContent>
+                    {images.map((image, index) => {
+                      const shouldLoad = Math.abs(index - current) <= 1;
+                      
+                      return (
+                        <CarouselItem key={image.id}>
+                          {shouldLoad ? (
+                            <img
+                              src={image.image_url}
+                              alt={artwork.title}
+                              loading={index === 0 ? "eager" : "lazy"}
+                              decoding="async"
+                              className="w-full h-auto object-contain transition-opacity duration-300"
+                            />
+                          ) : (
+                            <div className="w-full aspect-square bg-muted animate-pulse" />
+                          )}
+                        </CarouselItem>
+                      );
+                    })}
+                  </CarouselContent>
+                  {images.length > 1 && (
+                    <>
+                      <CarouselPrevious className="left-2" />
+                      <CarouselNext className="right-2" />
+                    </>
+                  )}
+                </Carousel>
+              ) : (
+                <img
+                  src={artwork.image_url}
+                  alt={artwork.title}
+                  loading="eager"
+                  decoding="async"
+                  className="w-full h-auto object-contain"
+                />
+              )}
+            </div>
+          </div>
+
+          {/* Info absolute bottom-right */}
+          <div className="absolute bottom-12 right-16 text-right space-y-1">
+            <h1 className="text-base font-bold uppercase tracking-wide">
+              {artwork.title}
+            </h1>
+            <p className="text-xs uppercase tracking-wider font-medium">
+              {artwork.year}
+            </p>
+            <div className="text-xs uppercase tracking-wider space-y-0.5 font-medium">
+              <p>{artwork.materials}</p>
+              <p>{artwork.dimensions}</p>
+            </div>
+          </div>
         </div>
       </div>
     </main>
