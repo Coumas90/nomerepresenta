@@ -6,6 +6,7 @@ import AnalyticsOverview from "./AnalyticsOverview";
 import ArtworksAnalytics from "./ArtworksAnalytics";
 import SeriesAnalytics from "./SeriesAnalytics";
 import SessionsAnalytics from "./SessionsAnalytics";
+import AudienceAnalytics from "./AudienceAnalytics";
 import DateRangeFilter from "./DateRangeFilter";
 
 const AnalyticsDashboard = () => {
@@ -45,13 +46,14 @@ const AnalyticsDashboard = () => {
         onPresetChange={setPresetDays}
       />
 
-      <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="artworks">Artworks</TabsTrigger>
-          <TabsTrigger value="series">Series</TabsTrigger>
-          <TabsTrigger value="sessions">Sessions</TabsTrigger>
-        </TabsList>
+        <Tabs defaultValue="overview" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="artworks">Artworks</TabsTrigger>
+            <TabsTrigger value="series">Series</TabsTrigger>
+            <TabsTrigger value="audience">Audience</TabsTrigger>
+            <TabsTrigger value="sessions">Sessions</TabsTrigger>
+          </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
           <AnalyticsOverview startDate={dateRange.startDate} endDate={dateRange.endDate} />
@@ -63,6 +65,10 @@ const AnalyticsDashboard = () => {
 
         <TabsContent value="series" className="space-y-6">
           <SeriesAnalytics startDate={dateRange.startDate} endDate={dateRange.endDate} />
+        </TabsContent>
+
+        <TabsContent value="audience" className="space-y-6">
+          <AudienceAnalytics startDate={dateRange.startDate} endDate={dateRange.endDate} />
         </TabsContent>
 
         <TabsContent value="sessions" className="space-y-6">

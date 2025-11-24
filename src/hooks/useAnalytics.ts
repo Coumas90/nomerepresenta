@@ -58,6 +58,22 @@ export const useAnalytics = () => {
         sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         localStorage.setItem(STORAGE_KEY, sessionId);
         
+        // Get geolocation data
+        let geoData = { country: null, country_name: null, city: null };
+        try {
+          const geoResponse = await fetch('https://ipapi.co/json/');
+          if (geoResponse.ok) {
+            const geo = await geoResponse.json();
+            geoData = {
+              country: geo.country_code || null,
+              country_name: geo.country_name || null,
+              city: geo.city || null,
+            };
+          }
+        } catch (error) {
+          console.log('Could not fetch geolocation:', error);
+        }
+        
         // Create new session
         await supabase.from('analytics_sessions').insert({
           session_id: sessionId,
@@ -65,6 +81,9 @@ export const useAnalytics = () => {
           referrer: document.referrer || null,
           user_agent: navigator.userAgent,
           device_type: getDeviceType(),
+          country: geoData.country,
+          country_name: geoData.country_name,
+          city: geoData.city,
           started_at: new Date().toISOString(),
         });
       }
