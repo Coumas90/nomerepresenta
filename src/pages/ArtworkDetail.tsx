@@ -130,22 +130,22 @@ const ArtworkDetail = () => {
         {/* Desktop: Gallery layout con absolute positioning */}
         <div className="hidden lg:block min-h-[calc(100vh-140px)] flex items-center justify-center">
           {/* Contenedor del carousel ahora es RELATIVE */}
-          <div className="relative w-full max-w-[60vw]">
+          <div className="relative w-full max-w-[60vw] max-h-[calc(100vh-200px)]">
             {images && images.length > 0 ? (
-              <Carousel className="w-full" setApi={setApi}>
-                <CarouselContent>
+              <Carousel className="w-full h-full max-h-[calc(100vh-200px)]" setApi={setApi}>
+                <CarouselContent className="h-full">
                   {images.map((image, index) => {
                     const shouldLoad = Math.abs(index - current) <= 1;
                     
                     return (
-                      <CarouselItem key={image.id}>
+                      <CarouselItem key={image.id} className="flex items-center justify-center h-full">
                         {shouldLoad ? (
                           <img
                             src={image.image_url}
                             alt={artwork.title}
                             loading={index === 0 ? "eager" : "lazy"}
                             decoding="async"
-                            className="w-full h-auto object-contain transition-opacity duration-300"
+                            className="w-full h-full max-h-[calc(100vh-200px)] object-contain transition-opacity duration-300"
                           />
                         ) : (
                           <div className="w-full aspect-square bg-muted animate-pulse" />
@@ -167,7 +167,7 @@ const ArtworkDetail = () => {
                 alt={artwork.title}
                 loading="eager"
                 decoding="async"
-                className="w-full h-auto object-contain"
+                className="w-full h-full max-h-[calc(100vh-200px)] object-contain"
               />
             )}
 
