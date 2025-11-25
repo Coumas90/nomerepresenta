@@ -21,7 +21,20 @@ export const P5Background = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { data: artworks, isLoading } = useArtworks();
   const [isMouseMoving, setIsMouseMoving] = useState(false);
+  const isMouseMovingRef = useRef(false);
   const mouseMoveTimeoutRef = useRef<number>();
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  // Update ref when state changes
+  useEffect(() => {
+    isMouseMovingRef.current = isMouseMoving;
+  }, [isMouseMoving]);
+
+  // Helper to convert relative URLs to absolute
+  const getAbsoluteUrl = (url: string) => {
+    if (url.startsWith('http')) return url;
+    return `${window.location.origin}${url}`;
+  };
 
   useEffect(() => {
     if (!containerRef.current || isLoading || !artworks || artworks.length === 0) return;
@@ -82,7 +95,7 @@ export const P5Background = () => {
         // Cargar imágenes iniciales
         initialArtworks.forEach((artwork) => {
           p.loadImage(
-            artwork.image_url,
+            getAbsoluteUrl(artwork.image_url),
             (img) => {
               images.push(img);
               loadedCount++;
@@ -94,6 +107,7 @@ export const P5Background = () => {
             },
             (err) => {
               console.error('Error loading image:', artwork.image_url, err);
+              setLoadError(`Failed to load: ${artwork.image_url}`);
               loadedCount++;
               if (loadedCount === initialArtworks.length && images.length > 0) {
                 initializeTiles();
@@ -108,7 +122,7 @@ export const P5Background = () => {
             console.log(`🔄 Loading remaining ${remainingArtworks.length} images...`);
             remainingArtworks.forEach((artwork) => {
               p.loadImage(
-                artwork.image_url,
+                getAbsoluteUrl(artwork.image_url),
                 (img) => {
                   images.push(img);
                   if (images.length === artworks.length) {
@@ -138,8 +152,8 @@ export const P5Background = () => {
           return;
         }
 
-        // Aumentar frameRate solo cuando el mouse se mueve
-        if (isMouseMoving) {
+        // Aumentar frameRate solo cuando el mouse se mueve (usando ref)
+        if (isMouseMovingRef.current) {
           p.frameRate(30);
         } else {
           p.frameRate(15);
@@ -268,7 +282,7 @@ export const P5Background = () => {
         clearTimeout(mouseMoveTimeoutRef.current);
       }
     };
-  }, [artworks, isLoading, isMouseMoving]);
+  }, [artworks, isLoading]);
 
   if (isLoading || !artworks || artworks.length === 0) {
     return (
@@ -276,5 +290,14 @@ export const P5Background = () => {
     );
   }
 
-  return <div ref={containerRef} className="fixed inset-0 -z-10" />;
+  return (
+    <>
+      <div ref={containerRef} className="fixed inset-0 -z-10" />
+      {loadError && (
+        <div className="fixed bottom-4 right-4 bg-destructive/90 text-destructive-foreground px-4 py-2 rounded-md text-sm max-w-md z-50">
+          {loadError}
+        </div>
+      )}
+    </>
+  );
 };
