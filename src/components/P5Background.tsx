@@ -2,6 +2,54 @@ import { useEffect, useRef, useState } from "react";
 import p5 from "p5";
 import { useArtworks } from "@/hooks/useArtworks";
 
+// Device detection and performance settings
+const getDeviceSettings = () => {
+  const isMobile = window.innerWidth < 768;
+  const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
+  const isLowEnd = navigator.hardwareConcurrency ? navigator.hardwareConcurrency <= 4 : false;
+
+  if (isMobile) {
+    return {
+      cols: 3,
+      rows: 3,
+      parallaxStrength: 0.01, // Reduced parallax for mobile
+      maxInitialImages: 4,
+      pixelDensity: 1,
+      baseFrameRate: 15,
+      activeFrameRate: 20,
+      blurAmount: 1, // Less blur for performance
+      enableImageSwitching: false, // Disable on mobile
+    };
+  }
+
+  if (isTablet) {
+    return {
+      cols: 4,
+      rows: 3,
+      parallaxStrength: 0.015,
+      maxInitialImages: 5,
+      pixelDensity: 1,
+      baseFrameRate: 18,
+      activeFrameRate: 25,
+      blurAmount: 1.5,
+      enableImageSwitching: true,
+    };
+  }
+
+  // Desktop settings (adjust for low-end devices)
+  return {
+    cols: isLowEnd ? 5 : 6,
+    rows: isLowEnd ? 3 : 4,
+    parallaxStrength: 0.02,
+    maxInitialImages: isLowEnd ? 5 : 6,
+    pixelDensity: 1,
+    baseFrameRate: isLowEnd ? 18 : 20,
+    activeFrameRate: isLowEnd ? 25 : 30,
+    blurAmount: 2,
+    enableImageSwitching: true,
+  };
+};
+
 interface Tile {
   x: number;
   y: number;
@@ -39,15 +87,18 @@ export const P5Background = () => {
   useEffect(() => {
     if (!containerRef.current || isLoading || !artworks || artworks.length === 0) return;
 
+    // Get device-specific settings
+    const deviceSettings = getDeviceSettings();
+    
     let images: p5.Image[] = [];
     let tiles: Tile[] = [];
     let mouseX = 0;
     let mouseY = 0;
     let imagesLoaded = false;
-    const COLS = 6; // Reducido de 8 a 6
-    const ROWS = 4; // Reducido de 6 a 4
-    const PARALLAX_STRENGTH = 0.02;
-    const MAX_INITIAL_IMAGES = 6; // Solo cargar 6 imágenes inicialmente
+    const COLS = deviceSettings.cols;
+    const ROWS = deviceSettings.rows;
+    const PARALLAX_STRENGTH = deviceSettings.parallaxStrength;
+    const MAX_INITIAL_IMAGES = deviceSettings.maxInitialImages;
     let allImagesLoaded = false;
 
     const sketch = (p: p5) => {
@@ -83,8 +134,8 @@ export const P5Background = () => {
       p.setup = () => {
         const canvas = p.createCanvas(p.windowWidth, p.windowHeight);
         canvas.parent(containerRef.current!);
-        p.pixelDensity(1);
-        p.frameRate(20); // Reducido de 30 a 20 para mejor performance
+        p.pixelDensity(deviceSettings.pixelDensity);
+        p.frameRate(deviceSettings.baseFrameRate);
 
         // Cargar solo las primeras 6 imágenes inicialmente
         const initialArtworks = artworks.slice(0, MAX_INITIAL_IMAGES);
@@ -154,9 +205,9 @@ export const P5Background = () => {
 
         // Aumentar frameRate solo cuando el mouse se mueve (usando ref)
         if (isMouseMovingRef.current) {
-          p.frameRate(30);
+          p.frameRate(deviceSettings.activeFrameRate);
         } else {
-          p.frameRate(15);
+          p.frameRate(deviceSettings.baseFrameRate);
         }
 
         // Update mouse position smoothly
@@ -190,8 +241,8 @@ export const P5Background = () => {
             tile.targetOpacity = 0.3 + Math.random() * 0.5;
           }
 
-          // Randomly switch images occasionally (solo si todas las imágenes están cargadas)
-          if (allImagesLoaded && p.frameCount % 300 === index % 300 && Math.random() > 0.7) {
+          // Randomly switch images occasionally (solo si todas las imágenes están cargadas y dispositivo lo soporta)
+          if (deviceSettings.enableImageSwitching && allImagesLoaded && p.frameCount % 300 === index % 300 && Math.random() > 0.7) {
             const newIndex = Math.floor(Math.random() * images.length);
             tile.imgIndex = newIndex;
             tile.img = images[newIndex];
@@ -246,8 +297,10 @@ export const P5Background = () => {
         }
         p.pop();
 
-        // Apply blur effect
-        p.filter(p.BLUR, 2);
+        // Apply blur effect (device-optimized)
+        if (deviceSettings.blurAmount > 0) {
+          p.filter(p.BLUR, deviceSettings.blurAmount);
+        }
       };
 
       p.windowResized = () => {
