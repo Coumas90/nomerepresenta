@@ -14,6 +14,7 @@ const ArtworkDetail = lazy(() => import("./pages/ArtworkDetail"));
 const Admin = lazy(() => import("./pages/Admin"));
 const Auth = lazy(() => import("./pages/Auth"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const Install = lazy(() => import("./pages/Install"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -68,6 +69,7 @@ const App = () => (
             <Route path="/artwork/:id" element={<ArtworkDetail />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/install" element={<Install />} />
             <Route 
               path="/admin" 
               element={
