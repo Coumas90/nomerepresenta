@@ -7,6 +7,7 @@ import { useEffect, lazy, Suspense } from "react";
 import Index from "./pages/Index";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
+import { AdminLoadingFallback } from "./components/admin/AdminLoadingFallback";
 
 // Code splitting para páginas públicas
 const ArtworkDetail = lazy(() => import("./pages/ArtworkDetail"));
@@ -70,9 +71,11 @@ const App = () => (
             <Route 
               path="/admin" 
               element={
-                <ProtectedRoute requireAdmin={true}>
-                  <Admin />
-                </ProtectedRoute>
+                <Suspense fallback={<AdminLoadingFallback />}>
+                  <ProtectedRoute requireAdmin={true}>
+                    <Admin />
+                  </ProtectedRoute>
+                </Suspense>
               } 
             />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
