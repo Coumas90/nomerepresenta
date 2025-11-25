@@ -11,6 +11,8 @@ import { Eye, EyeOff } from "lucide-react";
 import { z } from "zod";
 import { P5Background } from "@/components/P5Background";
 import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
+import { subDays } from "date-fns";
 
 const authSchema = z.object({
   email: z.string().trim().email({ message: "Invalid email address" }).max(255),
@@ -22,6 +24,7 @@ const Auth = () => {
   const { user, signIn, loading } = useAuth();
   const { data: userRole, isLoading: roleLoading } = useUserRole(user?.id);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -75,6 +78,34 @@ const Auth = () => {
       });
     } else {
       console.log('✅ Login successful');
+      
+      // Prefetch admin data while showing toast
+      const startDate = subDays(new Date(), 7);
+      const endDate = new Date();
+      
+      queryClient.prefetchQuery({
+        queryKey: ['artworks'],
+        queryFn: async () => {
+          const { data } = await supabase
+            .from("artworks")
+            .select("*")
+            .order("display_order", { ascending: true });
+          return data;
+        }
+      });
+      
+      queryClient.prefetchQuery({
+        queryKey: ['analytics-stats', startDate.toISOString(), endDate.toISOString()],
+        queryFn: async () => {
+          const { data: sessions } = await supabase
+            .from('analytics_sessions')
+            .select('started_at, total_duration_seconds')
+            .gte('started_at', startDate.toISOString())
+            .lte('started_at', endDate.toISOString());
+          return sessions;
+        }
+      });
+      
       toast({
         title: "Welcome back!",
         description: "You have successfully signed in.",

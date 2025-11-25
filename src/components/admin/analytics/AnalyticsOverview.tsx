@@ -82,7 +82,7 @@ const AnalyticsOverview = ({ startDate, endDate }: AnalyticsOverviewProps) => {
           <CardTitle>Visitors Over Time</CardTitle>
         </CardHeader>
         <CardContent>
-          <VisitorsChart startDate={startDate} endDate={endDate} />
+          <VisitorsChart data={stats?.dailyVisitors || []} />
         </CardContent>
       </Card>
     </div>

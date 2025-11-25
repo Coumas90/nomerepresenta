@@ -88,7 +88,11 @@ export const DashboardHome = () => {
           <CardDescription>Last 7 days activity</CardDescription>
         </CardHeader>
         <CardContent>
-          <VisitorsChart startDate={startDate} endDate={endDate} />
+          {statsLoading ? (
+            <LoadingSkeleton type="chart" />
+          ) : (
+            <VisitorsChart data={stats?.dailyVisitors || []} />
+          )}
         </CardContent>
       </Card>
 

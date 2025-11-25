@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, lazy, Suspense } from "react";
 import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -8,13 +8,16 @@ import ArtworksList from "@/components/admin/ArtworksList";
 import SeriesManager from "@/components/admin/SeriesManager";
 import { AdminLayout } from "@/components/admin/layout/AdminLayout";
 import { DashboardHome } from "@/components/admin/DashboardHome";
-import RealtimeAnalytics from "@/components/admin/analytics/RealtimeAnalytics";
 import AnalyticsOverview from "@/components/admin/analytics/AnalyticsOverview";
-import ArtworksAnalytics from "@/components/admin/analytics/ArtworksAnalytics";
-import SeriesAnalytics from "@/components/admin/analytics/SeriesAnalytics";
-import AudienceAnalytics from "@/components/admin/analytics/AudienceAnalytics";
-import SessionsAnalytics from "@/components/admin/analytics/SessionsAnalytics";
 import { DateRange } from "react-day-picker";
+import { LoadingSkeleton } from "@/components/admin/LoadingSkeleton";
+
+// Lazy load heavy analytics components
+const RealtimeAnalytics = lazy(() => import("@/components/admin/analytics/RealtimeAnalytics"));
+const ArtworksAnalytics = lazy(() => import("@/components/admin/analytics/ArtworksAnalytics"));
+const SeriesAnalytics = lazy(() => import("@/components/admin/analytics/SeriesAnalytics"));
+const AudienceAnalytics = lazy(() => import("@/components/admin/analytics/AudienceAnalytics"));
+const SessionsAnalytics = lazy(() => import("@/components/admin/analytics/SessionsAnalytics"));
 
 const Admin = () => {
   const location = useLocation();
@@ -73,22 +76,42 @@ const Admin = () => {
         return <DashboardHome />;
       
       case "analytics-live":
-        return <RealtimeAnalytics />;
+        return (
+          <Suspense fallback={<LoadingSkeleton type="analytics" />}>
+            <RealtimeAnalytics />
+          </Suspense>
+        );
       
       case "analytics-overview":
         return <AnalyticsOverview startDate={startDate} endDate={endDate} />;
       
       case "analytics-artworks":
-        return <ArtworksAnalytics startDate={startDate} endDate={endDate} />;
+        return (
+          <Suspense fallback={<LoadingSkeleton type="analytics" />}>
+            <ArtworksAnalytics startDate={startDate} endDate={endDate} />
+          </Suspense>
+        );
       
       case "analytics-series":
-        return <SeriesAnalytics startDate={startDate} endDate={endDate} />;
+        return (
+          <Suspense fallback={<LoadingSkeleton type="analytics" />}>
+            <SeriesAnalytics startDate={startDate} endDate={endDate} />
+          </Suspense>
+        );
       
       case "analytics-audience":
-        return <AudienceAnalytics startDate={startDate} endDate={endDate} />;
+        return (
+          <Suspense fallback={<LoadingSkeleton type="analytics" />}>
+            <AudienceAnalytics startDate={startDate} endDate={endDate} />
+          </Suspense>
+        );
       
       case "analytics-sessions":
-        return <SessionsAnalytics startDate={startDate} endDate={endDate} />;
+        return (
+          <Suspense fallback={<LoadingSkeleton type="analytics" />}>
+            <SessionsAnalytics startDate={startDate} endDate={endDate} />
+          </Suspense>
+        );
       
       case "content-series":
         return <SeriesManager />;

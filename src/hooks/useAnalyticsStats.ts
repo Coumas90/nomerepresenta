@@ -9,6 +9,7 @@ export interface AnalyticsOverviewStats {
   avgArtworksPerSession: number;
   totalPageViews: number;
   uniqueArtworksViewed: number;
+  dailyVisitors: DailyVisitors[];
 }
 
 export interface DailyVisitors {
@@ -26,7 +27,7 @@ export const useAnalyticsStats = (startDate?: Date, endDate?: Date) => {
     queryFn: async (): Promise<AnalyticsOverviewStats> => {
       const todayStart = startOfDay(new Date());
 
-      // Execute all queries in parallel
+      // Execute all queries in parallel (including daily visitors)
       const [
         { count: totalVisitors },
         { count: sessionsToday },
@@ -34,6 +35,7 @@ export const useAnalyticsStats = (startDate?: Date, endDate?: Date) => {
         { data: artworkCounts },
         { count: totalPageViews },
         { data: uniqueArtworks },
+        { data: dailySessions },
       ] = await Promise.all([
         // Total unique visitors (sessions)
         supabase
@@ -76,6 +78,14 @@ export const useAnalyticsStats = (startDate?: Date, endDate?: Date) => {
           .select('artwork_id')
           .gte('started_at', effectiveStartDate.toISOString())
           .lte('started_at', effectiveEndDate.toISOString()),
+        
+        // Daily sessions for chart
+        supabase
+          .from('analytics_sessions')
+          .select('started_at')
+          .gte('started_at', effectiveStartDate.toISOString())
+          .lte('started_at', effectiveEndDate.toISOString())
+          .order('started_at', { ascending: true }),
       ]);
 
       const avgTimeOnSite = sessions && sessions.length > 0
@@ -93,6 +103,29 @@ export const useAnalyticsStats = (startDate?: Date, endDate?: Date) => {
 
       const uniqueArtworksViewed = new Set(uniqueArtworks?.map(v => v.artwork_id)).size;
 
+      // Process daily visitors data
+      const dailyMap = new Map<string, { visitors: Set<string>; sessions: number }>();
+      dailySessions?.forEach(session => {
+        const date = startOfDay(new Date(session.started_at)).toISOString().split('T')[0];
+        if (!dailyMap.has(date)) {
+          dailyMap.set(date, { visitors: new Set(), sessions: 0 });
+        }
+        const dayData = dailyMap.get(date)!;
+        dayData.sessions++;
+      });
+
+      // Fill in missing days with all days in range
+      const allDays = eachDayOfInterval({ start: effectiveStartDate, end: effectiveEndDate });
+      const dailyVisitors: DailyVisitors[] = allDays.map(day => {
+        const date = startOfDay(day).toISOString().split('T')[0];
+        const dayData = dailyMap.get(date);
+        return {
+          date,
+          visitors: dayData?.sessions || 0,
+          sessions: dayData?.sessions || 0,
+        };
+      });
+
       return {
         totalVisitors: totalVisitors || 0,
         sessionsToday: sessionsToday || 0,
@@ -100,6 +133,7 @@ export const useAnalyticsStats = (startDate?: Date, endDate?: Date) => {
         avgArtworksPerSession,
         totalPageViews: totalPageViews || 0,
         uniqueArtworksViewed,
+        dailyVisitors,
       };
     },
   });
