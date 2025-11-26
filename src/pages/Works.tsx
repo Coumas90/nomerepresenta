@@ -104,7 +104,7 @@ const Works = () => {
                   onClick={() => navigate(`/artwork/${artwork.id}`)}
                   onMouseEnter={() => handleArtworkHover(artwork.id, artwork.image_url)}
                 >
-                  <div className="aspect-square overflow-hidden mb-4 rounded-lg flex items-center justify-center">
+                  <div className="aspect-square bg-muted overflow-hidden mb-4 rounded-lg">
                     <ProgressiveImage
                       src={artwork.image_url}
                       alt={artwork.title}
