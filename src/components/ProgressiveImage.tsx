@@ -6,11 +6,15 @@ interface ProgressiveImageProps {
   alt: string;
   className?: string;
   onClick?: () => void;
+  eager?: boolean;
 }
 
-export const ProgressiveImage = ({ src, alt, className = "", onClick }: ProgressiveImageProps) => {
+export const ProgressiveImage = ({ src, alt, className = "", onClick, eager = false }: ProgressiveImageProps) => {
   const { imgRef, isVisible, isLoaded, setIsLoaded } = useImageLazyLoad();
   const [error, setError] = useState(false);
+
+  // Si eager es true, cargamos inmediatamente sin lazy loading
+  const shouldLoad = eager || isVisible;
 
   return (
     <div ref={imgRef} className={`relative ${className}`}>
@@ -20,7 +24,7 @@ export const ProgressiveImage = ({ src, alt, className = "", onClick }: Progress
       )}
       
       {/* Imagen real */}
-      {isVisible && (
+      {shouldLoad && (
         <img
           src={src}
           alt={alt}
@@ -30,7 +34,7 @@ export const ProgressiveImage = ({ src, alt, className = "", onClick }: Progress
           className={`w-full h-full object-cover transition-opacity duration-500 ${
             isLoaded ? "opacity-100" : "opacity-0"
           }`}
-          loading="lazy"
+          loading={eager ? "eager" : "lazy"}
           decoding="async"
         />
       )}
