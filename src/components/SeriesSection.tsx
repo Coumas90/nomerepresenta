@@ -34,11 +34,17 @@ export const SeriesSection = ({
   // Auto-scroll when description expands
   useEffect(() => {
     if (isDescriptionExpanded && sectionRef.current) {
-      sectionRef.current.scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'start',
-        inline: 'nearest'
-      });
+      // Pequeño delay para que la animación del Collapsible comience
+      setTimeout(() => {
+        const headerOffset = 80; // Altura del header principal (top-16 sm:top-20 = ~64-80px)
+        const sectionTop = sectionRef.current?.getBoundingClientRect().top ?? 0;
+        const offsetPosition = window.scrollY + sectionTop - headerOffset;
+        
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }, 50);
     }
   }, [isDescriptionExpanded]);
 
