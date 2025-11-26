@@ -129,31 +129,31 @@ const Header = () => {
             side="right" 
             className="w-full max-w-none bg-foreground text-background border-none p-0"
           >
-            <div className="flex flex-col h-full px-10">
+            <div className="flex flex-col h-full px-12">
               {/* Logo/Nombre del artista arriba */}
-              <div className="pt-8">
+              <div className="pt-10">
                 <button
                   onClick={() => scrollToSection('top')}
-                  className="text-3xl font-bold tracking-tight hover:opacity-70 transition-opacity"
+                  className="text-4xl font-bold italic tracking-tight hover:opacity-70 transition-opacity"
                 >
                   IVAN COMAS
                 </button>
               </div>
               
               {/* Navegación centrada verticalmente */}
-              <nav className="flex-1 flex flex-col justify-center gap-8 -mt-16">
+              <nav className="flex-1 flex flex-col justify-center gap-10 -mt-16">
                 {/* Grupo WORKS + TRI-PEEL */}
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-3">
                   <button
                     onClick={() => scrollToSection('works')}
-                    className="text-left text-2xl font-medium tracking-wide hover:opacity-70 transition-opacity"
+                    className="text-left text-3xl font-medium tracking-wide hover:opacity-70 transition-opacity"
                   >
                     WORKS
                   </button>
                   
                   <button
                     onClick={() => scrollToSection('works')}
-                    className="text-left text-lg font-normal tracking-wide hover:opacity-70 transition-opacity ml-4"
+                    className="text-left text-xl font-normal tracking-wide hover:opacity-70 transition-opacity ml-4"
                   >
                     / TRI-PEEL
                   </button>
@@ -161,14 +161,14 @@ const Header = () => {
                 
                 <button
                   onClick={() => scrollToSection('bio')}
-                  className="text-left text-2xl font-medium tracking-wide hover:opacity-70 transition-opacity"
+                  className="text-left text-3xl font-medium tracking-wide hover:opacity-70 transition-opacity"
                 >
                   BIO
                 </button>
                 
                 <button
                   onClick={() => scrollToSection('contact')}
-                  className="text-left text-2xl font-medium tracking-wide hover:opacity-70 transition-opacity"
+                  className="text-left text-3xl font-medium tracking-wide hover:opacity-70 transition-opacity"
                 >
                   CONTACT
                 </button>
