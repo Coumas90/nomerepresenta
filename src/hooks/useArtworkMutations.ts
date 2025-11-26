@@ -9,9 +9,23 @@ export const useCreateArtwork = () => {
 
   return useMutation({
     mutationFn: async (artwork: Omit<ArtworkData, "id">) => {
+      // Calculate display_order automatically if not provided or is 0
+      let displayOrder = artwork.display_order;
+      if (displayOrder === 0 || displayOrder === undefined) {
+        const { data: maxOrderData } = await supabase
+          .from("artworks")
+          .select("display_order")
+          .eq("series_id", artwork.series_id)
+          .order("display_order", { ascending: false })
+          .limit(1);
+        
+        const maxOrder = maxOrderData?.[0]?.display_order ?? -1;
+        displayOrder = maxOrder + 1;
+      }
+
       const { data, error } = await supabase
         .from("artworks")
-        .insert(artwork)
+        .insert({ ...artwork, display_order: displayOrder })
         .select()
         .single();
 

@@ -146,6 +146,7 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
               </Select>
             </div>
 
+          {artwork && (
             <div className="space-y-2">
               <Label htmlFor="display_order">Display Order</Label>
               <Input
@@ -155,6 +156,7 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
                 onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) })}
               />
             </div>
+          )}
           </div>
 
           <div className="space-y-2">
@@ -168,13 +170,13 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description *</Label>
+            <Label htmlFor="description">Description</Label>
             <Textarea
               id="description"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               rows={4}
-              required
+              placeholder="Optional description of the artwork"
             />
           </div>
 
