@@ -175,19 +175,23 @@ export const SeriesSection = ({
               >
                 <div className="aspect-square bg-muted overflow-hidden mb-3 sm:mb-4 relative rounded-sm">
                   {/* Main image with lazy loading */}
-                  <ProgressiveImage
-                    src={artwork.image_url}
-                    alt={artwork.title}
-                    className="absolute inset-0 transition-opacity duration-700 group-hover:opacity-0"
-                  />
+                  <div className="absolute inset-0 transition-opacity duration-700 group-hover:opacity-0">
+                    <ProgressiveImage
+                      src={artwork.image_url}
+                      alt={artwork.title}
+                      className="w-full h-full"
+                    />
+                  </div>
                   {/* Detail/zoom image - carga eager para hover */}
-                  <ProgressiveImage
-                    src={artwork.image_detail_url}
-                    alt={`${artwork.title} - Detail`}
-                    className="absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100 hidden sm:block"
-                    eager
-                    skipInternalFade
-                  />
+                  <div className="absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100 hidden sm:block">
+                    <ProgressiveImage
+                      src={artwork.image_detail_url}
+                      alt={`${artwork.title} - Detail`}
+                      className="w-full h-full"
+                      eager
+                      skipInternalFade
+                    />
+                  </div>
                 </div>
                 {/* Mobile: always visible. Desktop: hover */}
                 <div className="space-y-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">

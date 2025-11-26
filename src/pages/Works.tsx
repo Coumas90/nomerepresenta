@@ -105,20 +105,24 @@ const Works = () => {
                   onMouseEnter={() => handleArtworkHover(artwork.id, artwork.image_url)}
                 >
                   <div className="aspect-square bg-muted overflow-hidden mb-4 rounded-lg relative">
-                    {/* Main image */}
-                    <ProgressiveImage
-                      src={artwork.image_url}
-                      alt={artwork.title}
-                      className="absolute inset-0 transition-opacity duration-700 group-hover:opacity-0"
-                    />
+                    {/* Main image layer */}
+                    <div className="absolute inset-0 transition-opacity duration-700 group-hover:opacity-0">
+                      <ProgressiveImage
+                        src={artwork.image_url}
+                        alt={artwork.title}
+                        className="w-full h-full"
+                      />
+                    </div>
                     {/* Detail/zoom image on hover - desktop only */}
-                    <ProgressiveImage
-                      src={artwork.image_detail_url}
-                      alt={`${artwork.title} - Detail`}
-                      className="absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100 hidden sm:block"
-                      eager
-                      skipInternalFade
-                    />
+                    <div className="absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100 hidden sm:block">
+                      <ProgressiveImage
+                        src={artwork.image_detail_url}
+                        alt={`${artwork.title} - Detail`}
+                        className="w-full h-full"
+                        eager
+                        skipInternalFade
+                      />
+                    </div>
                   </div>
                   <div className="space-y-1">
                     <h3 className="text-sm font-medium tracking-wide">{artwork.title}</h3>
