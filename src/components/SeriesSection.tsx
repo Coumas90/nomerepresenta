@@ -186,6 +186,7 @@ export const SeriesSection = ({
                     alt={`${artwork.title} - Detail`}
                     className="absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100 hidden sm:block"
                     eager
+                    skipInternalFade
                   />
                 </div>
                 {/* Mobile: always visible. Desktop: hover */}
