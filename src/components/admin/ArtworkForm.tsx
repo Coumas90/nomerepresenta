@@ -10,6 +10,7 @@ import { useSeries } from "@/hooks/useSeries";
 import { ArtworkData } from "@/hooks/useArtworks";
 import ImageUpload from "./ImageUpload";
 import MultipleImageUpload from "./MultipleImageUpload";
+import { toast } from "sonner";
 
 interface ArtworkFormProps {
   artwork?: ArtworkData;
@@ -60,8 +61,10 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    console.log("Submitting with formData:", formData);
+
     if (!formData.image_url || !formData.image_detail_url) {
-      alert("Please upload both images before submitting");
+      toast.error("Por favor sube ambas imágenes antes de continuar");
       return;
     }
 
@@ -190,13 +193,27 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <ImageUpload
                 label="Main Image *"
-                onUploadComplete={(url) => setFormData({ ...formData, image_url: url })}
+                onUploadComplete={(url) => {
+                  console.log("Main image uploaded:", url);
+                  setFormData(prev => {
+                    const updated = { ...prev, image_url: url };
+                    console.log("Updated formData after main image:", updated);
+                    return updated;
+                  });
+                }}
                 currentUrl={formData.image_url}
               />
 
               <ImageUpload
                 label="Detail Image *"
-                onUploadComplete={(url) => setFormData({ ...formData, image_detail_url: url })}
+                onUploadComplete={(url) => {
+                  console.log("Detail image uploaded:", url);
+                  setFormData(prev => {
+                    const updated = { ...prev, image_detail_url: url };
+                    console.log("Updated formData after detail image:", updated);
+                    return updated;
+                  });
+                }}
                 currentUrl={formData.image_detail_url}
               />
             </div>
