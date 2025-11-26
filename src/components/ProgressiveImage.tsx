@@ -7,9 +7,10 @@ interface ProgressiveImageProps {
   className?: string;
   onClick?: () => void;
   eager?: boolean;
+  skipInternalFade?: boolean;
 }
 
-export const ProgressiveImage = ({ src, alt, className = "", onClick, eager = false }: ProgressiveImageProps) => {
+export const ProgressiveImage = ({ src, alt, className = "", onClick, eager = false, skipInternalFade = false }: ProgressiveImageProps) => {
   const { imgRef, isVisible, isLoaded, setIsLoaded } = useImageLazyLoad();
   const [error, setError] = useState(false);
 
@@ -18,8 +19,8 @@ export const ProgressiveImage = ({ src, alt, className = "", onClick, eager = fa
 
   return (
     <div ref={imgRef} className={`relative ${className}`}>
-      {/* Placeholder con blur */}
-      {!isLoaded && (
+      {/* Placeholder con blur - no mostrar si skipInternalFade */}
+      {!isLoaded && !skipInternalFade && (
         <div className="absolute inset-0 bg-muted animate-pulse" />
       )}
       
@@ -32,7 +33,7 @@ export const ProgressiveImage = ({ src, alt, className = "", onClick, eager = fa
           onLoad={() => setIsLoaded(true)}
           onError={() => setError(true)}
           className={`w-full h-full object-cover transition-opacity duration-500 ${
-            isLoaded ? "opacity-100" : "opacity-0"
+            skipInternalFade ? "opacity-100" : (isLoaded ? "opacity-100" : "opacity-0")
           }`}
           loading={eager ? "eager" : "lazy"}
           decoding="async"
