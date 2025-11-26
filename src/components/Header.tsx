@@ -134,27 +134,28 @@ const Header = () => {
               <div className="pt-8">
                 <button
                   onClick={() => scrollToSection('top')}
-                  className="text-2xl font-bold tracking-tight hover:opacity-70 transition-opacity"
+                  className="text-2xl font-bold italic tracking-tight hover:opacity-70 transition-opacity"
                 >
                   IVAN COMAS
                 </button>
               </div>
               
               {/* Navegación centrada verticalmente */}
-              <nav className="flex-1 flex flex-col justify-center gap-10 -mt-16">
-                <button
-                  onClick={() => scrollToSection('works')}
-                  className="text-left text-2xl font-medium tracking-wide hover:opacity-70 transition-opacity"
-                >
-                  WORKS
-                </button>
-                
-                <div className="pl-6 border-l border-background/20">
+              <nav className="flex-1 flex flex-col justify-center gap-8 -mt-16">
+                {/* Grupo WORKS + TRI-PEEL */}
+                <div className="flex flex-col gap-2">
                   <button
                     onClick={() => scrollToSection('works')}
-                    className="text-left text-lg font-normal tracking-wide hover:opacity-70 transition-opacity"
+                    className="text-left text-2xl font-medium tracking-wide hover:opacity-70 transition-opacity"
                   >
-                    TRI-PEEL
+                    WORKS
+                  </button>
+                  
+                  <button
+                    onClick={() => scrollToSection('works')}
+                    className="text-left text-lg font-normal tracking-wide hover:opacity-70 transition-opacity ml-4"
+                  >
+                    / TRI-PEEL
                   </button>
                 </div>
                 
