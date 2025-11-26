@@ -173,7 +173,7 @@ export const SeriesSection = ({
                   }
                 }}
               >
-                <div className="aspect-square bg-muted overflow-hidden mb-3 sm:mb-4 relative rounded-sm">
+                <div className="aspect-square overflow-hidden mb-3 sm:mb-4 relative rounded-sm flex items-center justify-center">
                   {/* Main image with lazy loading */}
                   <ProgressiveImage
                     src={artwork.image_url}
