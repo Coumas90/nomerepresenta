@@ -27,7 +27,7 @@ export const ProgressiveImage = ({ src, alt, className = "", onClick }: Progress
           onClick={onClick}
           onLoad={() => setIsLoaded(true)}
           onError={() => setError(true)}
-          className={`w-full h-full object-contain transition-opacity duration-500 ${
+          className={`w-full h-full object-cover transition-opacity duration-500 ${
             isLoaded ? "opacity-100" : "opacity-0"
           }`}
           loading="lazy"
