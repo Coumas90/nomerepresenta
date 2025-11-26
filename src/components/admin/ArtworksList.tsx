@@ -61,7 +61,7 @@ const SortableArtworkItem = ({ artwork, onEdit, onDelete, onPreview }: SortableA
         <img
           src={artwork.image_url}
           alt={artwork.title}
-          className="w-12 h-12 object-contain rounded transition-all duration-200 group-hover/img:ring-2 group-hover/img:ring-primary cursor-pointer"
+          className="w-12 h-12 object-cover rounded transition-all duration-200 group-hover/img:ring-2 group-hover/img:ring-primary cursor-pointer"
         />
         <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 rounded transition-colors duration-200 flex items-center justify-center">
           <span className="text-white text-xs opacity-0 group-hover/img:opacity-100 transition-opacity duration-200">
