@@ -19,10 +19,13 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarFooter,
+  SidebarHeader,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -52,8 +55,19 @@ export function AdminSidebar() {
   };
 
   return (
-    <Sidebar className={collapsed ? "w-14" : "w-60"} collapsible="icon">
-      <SidebarContent>
+    <TooltipProvider>
+      <Sidebar className={collapsed ? "w-14" : "w-60"} collapsible="icon">
+        <SidebarHeader className={collapsed ? "items-center py-4" : "py-4 px-4"}>
+          <div className={collapsed ? "text-center" : ""}>
+            <h2 className={`font-bold tracking-tight ${collapsed ? "text-xs" : "text-lg"}`}>
+              IVAN COMAS
+            </h2>
+          </div>
+        </SidebarHeader>
+        
+        <Separator />
+        
+        <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className={collapsed ? "opacity-0" : ""}>
             Main
@@ -82,26 +96,43 @@ export function AdminSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {analyticsItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
+              {analyticsItems.map((item) => {
+                const menuButton = (
                   <SidebarMenuButton asChild>
                     <NavLink 
                       to={item.url}
-                      className="hover:bg-muted/50" 
+                      className="hover:bg-muted/50 transition-colors" 
                       activeClassName="bg-muted text-primary font-medium"
                     >
                       <item.icon className="h-4 w-4" />
                       {!collapsed && <span>{item.title}</span>}
                       {item.title === "Live" && !collapsed && (
                         <span className="ml-auto flex h-2 w-2">
-                          <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-green-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                          <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-emerald-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 shadow-lg shadow-emerald-500/50"></span>
                         </span>
                       )}
                     </NavLink>
                   </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+                );
+
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    {collapsed ? (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          {menuButton}
+                        </TooltipTrigger>
+                        <TooltipContent side="right">
+                          <p>{item.title}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    ) : (
+                      menuButton
+                    )}
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -112,39 +143,74 @@ export function AdminSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {contentItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
+              {contentItems.map((item) => {
+                const menuButton = (
                   <SidebarMenuButton asChild>
                     <NavLink 
                       to={item.url}
-                      className="hover:bg-muted/50" 
+                      className="hover:bg-muted/50 transition-colors" 
                       activeClassName="bg-muted text-primary font-medium"
                     >
                       <item.icon className="h-4 w-4" />
                       {!collapsed && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+                );
+
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    {collapsed ? (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          {menuButton}
+                        </TooltipTrigger>
+                        <TooltipContent side="right">
+                          <p>{item.title}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    ) : (
+                      menuButton
+                    )}
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-      </SidebarContent>
+        </SidebarContent>
 
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <Button 
-              variant="ghost" 
-              onClick={handleSignOut}
-              className="w-full justify-start"
-            >
-              <LogOut className="h-4 w-4" />
-              {!collapsed && <span className="ml-2">Sign Out</span>}
-            </Button>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
-    </Sidebar>
+        <SidebarFooter>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              {collapsed ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      onClick={handleSignOut}
+                      className="w-full justify-center hover:bg-muted/50 transition-colors"
+                    >
+                      <LogOut className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">
+                    <p>Sign Out</p>
+                  </TooltipContent>
+                </Tooltip>
+              ) : (
+                <Button 
+                  variant="ghost" 
+                  onClick={handleSignOut}
+                  className="w-full justify-start hover:bg-muted/50 transition-colors"
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span className="ml-2">Sign Out</span>
+                </Button>
+              )}
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarFooter>
+      </Sidebar>
+    </TooltipProvider>
   );
 }
