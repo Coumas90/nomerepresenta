@@ -108,7 +108,7 @@ export const SeriesSection = ({
       <div ref={sentinelRef} className="h-px" />
       
       {/* Sticky Header */}
-      <div className={`sticky top-16 sm:top-20 bg-background z-40 pt-3 sm:pt-4 pb-4 sm:pb-6 transition-all duration-500 ${
+      <div className={`sticky top-16 sm:top-20 bg-transparent z-40 pt-3 sm:pt-4 pb-4 sm:pb-6 transition-all duration-500 ${
         isVisible ? 'opacity-100 blur-0' : 'opacity-0 blur-sm'
       }`}>
         <div className="container mx-auto px-4 sm:px-6">
