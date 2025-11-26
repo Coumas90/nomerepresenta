@@ -20,28 +20,32 @@ export const DashboardHome = () => {
       value: stats?.totalVisitors || 0,
       subtitle: "Last 7 days",
       icon: Users,
-      color: "text-blue-500",
+      iconColor: "text-blue-600",
+      bgColor: "bg-blue-50 dark:bg-blue-950/30",
     },
     {
       title: "Active Sessions",
       value: stats?.sessionsToday || 0,
       subtitle: "Today",
       icon: Activity,
-      color: "text-green-500",
+      iconColor: "text-emerald-600",
+      bgColor: "bg-emerald-50 dark:bg-emerald-950/30",
     },
     {
       title: "Total Artworks",
       value: artworks?.length || 0,
       subtitle: "Published",
       icon: Image,
-      color: "text-purple-500",
+      iconColor: "text-purple-600",
+      bgColor: "bg-purple-50 dark:bg-purple-950/30",
     },
     {
       title: "Avg. Engagement",
       value: `${Math.round(stats?.avgTimeOnSite || 0)}s`,
       subtitle: "Time on site",
       icon: TrendingUp,
-      color: "text-orange-500",
+      iconColor: "text-orange-600",
+      bgColor: "bg-orange-50 dark:bg-orange-950/30",
     },
   ];
 
@@ -64,16 +68,21 @@ export const DashboardHome = () => {
           </>
         ) : (
           metrics.map((metric) => (
-            <Card key={metric.title}>
+            <Card 
+              key={metric.title}
+              className="transition-all duration-200 hover:shadow-md hover:-translate-y-0.5"
+            >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
                   {metric.title}
                 </CardTitle>
-                <metric.icon className={`h-4 w-4 ${metric.color}`} />
+                <div className={`p-2.5 rounded-lg ${metric.bgColor}`}>
+                  <metric.icon className={`h-5 w-5 ${metric.iconColor}`} />
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{metric.value}</div>
-                <p className="text-xs text-muted-foreground">
+                <div className="text-3xl font-bold tracking-tight">{metric.value}</div>
+                <p className="text-xs text-muted-foreground mt-1">
                   {metric.subtitle}
                 </p>
               </CardContent>
