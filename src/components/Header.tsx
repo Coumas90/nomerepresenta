@@ -134,7 +134,7 @@ const Header = () => {
               <div className="pt-10">
                 <button
                   onClick={() => scrollToSection('top')}
-                  className="text-4xl font-bold italic tracking-tight hover:opacity-70 transition-opacity"
+                  className="text-4xl font-bold tracking-tight hover:opacity-70 transition-opacity"
                 >
                   IVAN COMAS
                 </button>
