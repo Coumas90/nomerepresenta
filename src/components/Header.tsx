@@ -129,12 +129,12 @@ const Header = () => {
             side="right" 
             className="w-full max-w-none bg-foreground text-background border-none p-0"
           >
-            <div className="flex flex-col h-full px-6">
+            <div className="flex flex-col h-full px-10">
               {/* Logo/Nombre del artista arriba */}
               <div className="pt-8">
                 <button
                   onClick={() => scrollToSection('top')}
-                  className="text-2xl font-bold italic tracking-tight hover:opacity-70 transition-opacity"
+                  className="text-3xl font-bold tracking-tight hover:opacity-70 transition-opacity"
                 >
                   IVAN COMAS
                 </button>
