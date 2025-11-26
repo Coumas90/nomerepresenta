@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Upload, X, GripVertical, Star } from "lucide-react";
+import { Upload, X, GripVertical, Star, Loader2 } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import { useUploadImage } from "@/hooks/useArtworkMutations";
 import { useArtworkImages, useAddArtworkImage, useDeleteArtworkImage, useUpdateImageOrder, useSetMainImage } from "@/hooks/useArtworkImages";
 import { Card } from "@/components/ui/card";
@@ -96,9 +97,19 @@ const SortableImage = ({ image, index, onDelete, onSetMain }: SortableImageProps
   );
 };
 
+interface UploadingImage {
+  id: string;
+  file: File;
+  preview: string;
+  progress: number;
+  status: 'uploading' | 'processing' | 'complete' | 'error';
+  error?: string;
+}
+
 const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadProps) => {
   const [uploading, setUploading] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
+  const [uploadingImages, setUploadingImages] = useState<UploadingImage[]>([]);
   const uploadMutation = useUploadImage();
   const addImageMutation = useAddArtworkImage();
   const deleteImageMutation = useDeleteArtworkImage();
@@ -117,23 +128,85 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
     if (!files || !artworkId) return;
 
     setUploading(true);
+    
+    // Create preview objects for each file
+    const newUploadingImages: UploadingImage[] = Array.from(files)
+      .filter(file => file.type.startsWith('image/'))
+      .map(file => ({
+        id: `${Date.now()}-${Math.random()}`,
+        file,
+        preview: URL.createObjectURL(file),
+        progress: 0,
+        status: 'uploading' as const,
+      }));
+
+    setUploadingImages(newUploadingImages);
+
     try {
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        if (!file.type.startsWith('image/')) continue;
+      for (let i = 0; i < newUploadingImages.length; i++) {
+        const uploadingImage = newUploadingImages[i];
         
-        const fileName = `${Date.now()}-${file.name}`;
-        const url = await uploadMutation.mutateAsync({ file, fileName });
-        
-        await addImageMutation.mutateAsync({
-          artwork_id: artworkId,
-          image_url: url,
-          display_order: (images?.length || 0) + i + 1,
-          is_main: (images?.length || 0) === 0 && i === 0,
-        });
+        try {
+          // Update progress: uploading
+          setUploadingImages(prev => 
+            prev.map(img => 
+              img.id === uploadingImage.id 
+                ? { ...img, progress: 30, status: 'uploading' as const }
+                : img
+            )
+          );
+
+          const fileName = `${Date.now()}-${uploadingImage.file.name}`;
+          const url = await uploadMutation.mutateAsync({ 
+            file: uploadingImage.file, 
+            fileName 
+          });
+
+          // Update progress: processing
+          setUploadingImages(prev => 
+            prev.map(img => 
+              img.id === uploadingImage.id 
+                ? { ...img, progress: 60, status: 'processing' as const }
+                : img
+            )
+          );
+
+          await addImageMutation.mutateAsync({
+            artwork_id: artworkId,
+            image_url: url,
+            display_order: (images?.length || 0) + i + 1,
+            is_main: (images?.length || 0) === 0 && i === 0,
+          });
+
+          // Update progress: complete
+          setUploadingImages(prev => 
+            prev.map(img => 
+              img.id === uploadingImage.id 
+                ? { ...img, progress: 100, status: 'complete' as const }
+                : img
+            )
+          );
+
+          // Clean up preview URL
+          URL.revokeObjectURL(uploadingImage.preview);
+        } catch (error) {
+          console.error("Error uploading image:", error);
+          setUploadingImages(prev => 
+            prev.map(img => 
+              img.id === uploadingImage.id 
+                ? { ...img, status: 'error' as const, error: 'Error al subir' }
+                : img
+            )
+          );
+        }
       }
       
       if (onImagesChange) onImagesChange();
+      
+      // Clear uploading images after a brief delay to show completion
+      setTimeout(() => {
+        setUploadingImages([]);
+      }, 1000);
     } catch (error) {
       console.error("Error uploading images:", error);
     } finally {
@@ -273,45 +346,91 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
 
       {isLoading ? (
         <p className="text-sm text-muted-foreground">Cargando imágenes...</p>
-      ) : images && images.length > 0 ? (
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext items={images.map((img) => img.id)} strategy={rectSortingStrategy}>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {images.map((image, index) => (
-                <SortableImage
-                  key={image.id}
-                  image={image}
-                  index={index}
-                  onDelete={handleDelete}
-                  onSetMain={handleSetMain}
-                />
-              ))}
-            </div>
-          </SortableContext>
-        </DndContext>
       ) : (
-        <div
-          className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-            isDragOver
-              ? 'border-primary bg-primary/5'
-              : 'border-border hover:border-primary/50'
-          }`}
-          onDragEnter={handleDragEnter}
-          onDragLeave={handleDragLeave}
-          onDragOver={handleDragOver}
-          onDrop={handleDrop}
-        >
-          <Upload className={`h-8 w-8 mx-auto mb-2 transition-colors ${
-            isDragOver ? 'text-primary' : 'text-muted-foreground'
-          }`} />
-          <p className="text-sm text-muted-foreground">
-            {isDragOver ? 'Suelta las imágenes aquí' : 'Arrastra imágenes aquí o haz clic en "Agregar Imágenes"'}
-          </p>
-        </div>
+        <>
+          {/* Uploading Images Preview */}
+          {uploadingImages.length > 0 && (
+            <div className="space-y-2">
+              <Label className="text-sm text-muted-foreground">Subiendo...</Label>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {uploadingImages.map((uploadingImg) => (
+                  <Card key={uploadingImg.id} className="relative overflow-hidden">
+                    <img
+                      src={uploadingImg.preview}
+                      alt="Uploading preview"
+                      className="w-full h-40 object-cover"
+                    />
+                    <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center p-4">
+                      {uploadingImg.status === 'error' ? (
+                        <div className="text-center">
+                          <X className="h-8 w-8 text-destructive mx-auto mb-2" />
+                          <p className="text-xs text-destructive">{uploadingImg.error}</p>
+                        </div>
+                      ) : uploadingImg.status === 'complete' ? (
+                        <div className="text-center">
+                          <div className="h-8 w-8 rounded-full bg-green-600 flex items-center justify-center mx-auto mb-2">
+                            <span className="text-white text-lg">✓</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground">Completado</p>
+                        </div>
+                      ) : (
+                        <div className="w-full text-center">
+                          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2 text-primary" />
+                          <Progress value={uploadingImg.progress} className="w-full mb-2" />
+                          <p className="text-xs text-muted-foreground">
+                            {uploadingImg.status === 'uploading' ? 'Subiendo...' : 'Procesando...'}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Existing Images */}
+          {images && images.length > 0 ? (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext items={images.map((img) => img.id)} strategy={rectSortingStrategy}>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {images.map((image, index) => (
+                    <SortableImage
+                      key={image.id}
+                      image={image}
+                      index={index}
+                      onDelete={handleDelete}
+                      onSetMain={handleSetMain}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
+          ) : (
+            <div
+              className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+                isDragOver
+                  ? 'border-primary bg-primary/5'
+                  : 'border-border hover:border-primary/50'
+              }`}
+              onDragEnter={handleDragEnter}
+              onDragLeave={handleDragLeave}
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+            >
+              <Upload className={`h-8 w-8 mx-auto mb-2 transition-colors ${
+                isDragOver ? 'text-primary' : 'text-muted-foreground'
+              }`} />
+              <p className="text-sm text-muted-foreground">
+                {isDragOver ? 'Suelta las imágenes aquí' : 'Arrastra imágenes aquí o haz clic en "Agregar Imágenes"'}
+              </p>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
