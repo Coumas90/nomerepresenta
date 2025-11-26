@@ -180,11 +180,12 @@ export const SeriesSection = ({
                     alt={artwork.title}
                     className="absolute inset-0 transition-opacity duration-700 group-hover:opacity-0"
                   />
-                  {/* Detail/zoom image - only hover on desktop */}
+                  {/* Detail/zoom image - carga eager para hover */}
                   <ProgressiveImage
                     src={artwork.image_detail_url}
                     alt={`${artwork.title} - Detail`}
                     className="absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100 hidden sm:block"
+                    eager
                   />
                 </div>
                 {/* Mobile: always visible. Desktop: hover */}
