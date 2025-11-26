@@ -12,32 +12,35 @@ interface ImageUploadProps {
 
 const ImageUpload = ({ label, onUploadComplete, currentUrl }: ImageUploadProps) => {
   const [preview, setPreview] = useState<string | null>(currentUrl || null);
-  const [file, setFile] = useState<File | null>(null);
+  const [isUploaded, setIsUploaded] = useState<boolean>(!!currentUrl);
   const uploadMutation = useUploadImage();
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
-      setFile(selectedFile);
+      // Show preview immediately
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreview(reader.result as string);
       };
       reader.readAsDataURL(selectedFile);
+
+      // Auto-upload immediately
+      try {
+        const fileName = `${Date.now()}-${selectedFile.name}`;
+        const url = await uploadMutation.mutateAsync({ file: selectedFile, fileName });
+        onUploadComplete(url);
+        setIsUploaded(true);
+      } catch (error) {
+        setIsUploaded(false);
+      }
     }
   };
 
-  const handleUpload = async () => {
-    if (!file) return;
-
-    const fileName = `${Date.now()}-${file.name}`;
-    const url = await uploadMutation.mutateAsync({ file, fileName });
-    onUploadComplete(url);
-  };
-
   const handleRemove = () => {
-    setFile(null);
     setPreview(null);
+    setIsUploaded(false);
+    onUploadComplete("");
   };
 
   return (
@@ -59,15 +62,18 @@ const ImageUpload = ({ label, onUploadComplete, currentUrl }: ImageUploadProps) 
           >
             <X className="h-4 w-4" />
           </Button>
-          {file && (
-            <Button
-              type="button"
-              onClick={handleUpload}
-              disabled={uploadMutation.isPending}
-              className="mt-2 w-full"
-            >
-              {uploadMutation.isPending ? "Uploading..." : "Upload Image"}
-            </Button>
+          {uploadMutation.isPending && (
+            <div className="absolute inset-0 bg-background/80 flex items-center justify-center rounded-lg">
+              <div className="text-center">
+                <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-2"></div>
+                <p className="text-sm text-muted-foreground">Uploading...</p>
+              </div>
+            </div>
+          )}
+          {isUploaded && !uploadMutation.isPending && (
+            <div className="absolute bottom-2 left-2 bg-green-600 text-white px-2 py-1 rounded text-xs flex items-center gap-1">
+              <span>✓</span> Uploaded
+            </div>
           )}
         </div>
       ) : (
