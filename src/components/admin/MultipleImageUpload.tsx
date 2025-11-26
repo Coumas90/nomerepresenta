@@ -98,6 +98,7 @@ const SortableImage = ({ image, index, onDelete, onSetMain }: SortableImageProps
 
 const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadProps) => {
   const [uploading, setUploading] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
   const uploadMutation = useUploadImage();
   const addImageMutation = useAddArtworkImage();
   const deleteImageMutation = useDeleteArtworkImage();
@@ -112,14 +113,15 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
     })
   );
 
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
+  const processFiles = async (files: FileList) => {
     if (!files || !artworkId) return;
 
     setUploading(true);
     try {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
+        if (!file.type.startsWith('image/')) continue;
+        
         const fileName = `${Date.now()}-${file.name}`;
         const url = await uploadMutation.mutateAsync({ file, fileName });
         
@@ -132,11 +134,46 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
       }
       
       if (onImagesChange) onImagesChange();
-      e.target.value = "";
     } catch (error) {
       console.error("Error uploading images:", error);
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files) {
+      await processFiles(files);
+      e.target.value = "";
+    }
+  };
+
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      await processFiles(files);
     }
   };
 
@@ -212,6 +249,28 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
         </div>
       </div>
 
+      {/* Drag & Drop Zone - visible cuando hay imágenes */}
+      {images && images.length > 0 && (
+        <div
+          className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors ${
+            isDragOver
+              ? 'border-primary bg-primary/5'
+              : 'border-border hover:border-primary/50'
+          }`}
+          onDragEnter={handleDragEnter}
+          onDragLeave={handleDragLeave}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+        >
+          <Upload className={`h-6 w-6 mx-auto mb-1 transition-colors ${
+            isDragOver ? 'text-primary' : 'text-muted-foreground'
+          }`} />
+          <p className="text-sm text-muted-foreground">
+            {isDragOver ? 'Suelta las imágenes aquí' : 'Arrastra imágenes aquí o usa el botón de arriba'}
+          </p>
+        </div>
+      )}
+
       {isLoading ? (
         <p className="text-sm text-muted-foreground">Cargando imágenes...</p>
       ) : images && images.length > 0 ? (
@@ -235,10 +294,22 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
           </SortableContext>
         </DndContext>
       ) : (
-        <div className="border-2 border-dashed rounded-lg p-8 text-center">
-          <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+        <div
+          className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+            isDragOver
+              ? 'border-primary bg-primary/5'
+              : 'border-border hover:border-primary/50'
+          }`}
+          onDragEnter={handleDragEnter}
+          onDragLeave={handleDragLeave}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+        >
+          <Upload className={`h-8 w-8 mx-auto mb-2 transition-colors ${
+            isDragOver ? 'text-primary' : 'text-muted-foreground'
+          }`} />
           <p className="text-sm text-muted-foreground">
-            No hay imágenes aún. Haz clic en "Agregar Imágenes" para subir.
+            {isDragOver ? 'Suelta las imágenes aquí' : 'Arrastra imágenes aquí o haz clic en "Agregar Imágenes"'}
           </p>
         </div>
       )}
