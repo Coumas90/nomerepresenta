@@ -64,10 +64,32 @@ const Admin = () => {
     setShowForm(true);
   };
 
-  const handleFormSuccess = () => {
-    setShowForm(false);
-    setEditingArtwork(undefined);
-    setPreselectedSeriesId(undefined);
+  const handleFormSuccess = async (newArtworkId?: string) => {
+    if (newArtworkId) {
+      // If a new artwork was created, fetch it and open in edit mode to add more images
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { data } = await supabase
+        .from("artworks")
+        .select("*")
+        .eq("id", newArtworkId)
+        .single();
+      
+      if (data) {
+        setEditingArtwork(data as ArtworkData);
+        setPreselectedSeriesId(undefined);
+        // Keep showForm true to stay in edit mode
+        import("@/hooks/use-toast").then(({ toast }) => {
+          toast({
+            title: "Obra creada",
+            description: "Ahora puedes agregar más imágenes a la galería",
+          });
+        });
+      }
+    } else {
+      setShowForm(false);
+      setEditingArtwork(undefined);
+      setPreselectedSeriesId(undefined);
+    }
   };
 
   const renderContent = () => {

@@ -14,7 +14,7 @@ import MultipleImageUpload from "./MultipleImageUpload";
 interface ArtworkFormProps {
   artwork?: ArtworkData;
   preselectedSeriesId?: string;
-  onSuccess?: () => void;
+  onSuccess?: (artworkId?: string) => void;
 }
 
 const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormProps) => {
@@ -65,14 +65,20 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
       return;
     }
 
-    if (artwork) {
-      await updateMutation.mutateAsync({ id: artwork.id, ...formData });
-    } else {
-      await createMutation.mutateAsync(formData);
-    }
-
-    if (onSuccess) {
-      onSuccess();
+    try {
+      if (artwork) {
+        await updateMutation.mutateAsync({ id: artwork.id, ...formData });
+        if (onSuccess) {
+          onSuccess();
+        }
+      } else {
+        const newArtwork = await createMutation.mutateAsync(formData);
+        if (onSuccess && newArtwork?.id) {
+          onSuccess(newArtwork.id);
+        }
+      }
+    } catch (error) {
+      console.error("Error submitting artwork:", error);
     }
   };
 
@@ -180,18 +186,25 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <ImageUpload
-              label="Main Image *"
-              onUploadComplete={(url) => setFormData({ ...formData, image_url: url })}
-              currentUrl={formData.image_url}
-            />
+          <div className="space-y-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <ImageUpload
+                label="Main Image *"
+                onUploadComplete={(url) => setFormData({ ...formData, image_url: url })}
+                currentUrl={formData.image_url}
+              />
 
-            <ImageUpload
-              label="Detail Image *"
-              onUploadComplete={(url) => setFormData({ ...formData, image_detail_url: url })}
-              currentUrl={formData.image_detail_url}
-            />
+              <ImageUpload
+                label="Detail Image *"
+                onUploadComplete={(url) => setFormData({ ...formData, image_detail_url: url })}
+                currentUrl={formData.image_detail_url}
+              />
+            </div>
+            {!artwork && (
+              <p className="text-sm text-muted-foreground text-center">
+                Después de crear la obra, podrás agregar más imágenes a la galería
+              </p>
+            )}
           </div>
 
           {artwork && (
