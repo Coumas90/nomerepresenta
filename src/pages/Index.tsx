@@ -139,18 +139,14 @@ const Index = () => {
             
             <div className="max-w-4xl">
               {/* Artist Name and Origin */}
-              <p className="text-base font-semibold mb-4 sm:text-base">
+              <p className="text-base mb-4 font-medium sm:text-base">
                 Ivan Comas (b. 1987, Buenos Aires)
               </p>
               
               {/* Bio Paragraphs */}
               <div className="space-y-6 sm:space-y-8 text-sm sm:text-base leading-relaxed text-muted-foreground mb-12 sm:mb-16">
-                <p className="text-base">
-                  is a Franco-Argentine artist working between São Paulo and Paris. His practice evolves through layered procedures that merge industrial materials, fragmented text, and the visual residue of dense urban environments. Comas builds stratified surfaces through cycles of inscription, burial, and rupture, developing a material language shaped by years of movement between major cities and long periods of photographic and observational research.
-                </p>
-                <p>
-                  Educated at the École des Beaux-Arts de Paris, Comas has developed a body of work that intersects painting, photography, and writing, forming a coherent investigation into memory, architecture, and the rhythm of collapsing structures. His work has been exhibited in Los Angeles, Berlin, Paris, and São Paulo, and is held in private collections in Latin America, Europe, and the United States, including the Jumex and Vergez & Pearson collections.
-                </p>
+                <p className="text-base">Franco-Argentine artist working between São Paulo and Paris. His practice evolves through layered procedures that merge industrial materials, fragmented text, and the visual residue of dense urban environments. Comas builds stratified surfaces through cycles of inscription, burial, and rupture, developing a material language shaped by years of movement between major cities and long periods of photographic and observational research.</p>
+                <p>Educated at the École des Beaux-Arts de Paris, Comas has developed a body of work that intersects painting, photography, and writing, forming a coherent investigation into memory, architecture, and the rhythm of collapsing structures. His work has been exhibited in Los Angeles, Berlin, Paris, and São Paulo, and is held in private collections in Latin America, Europe, and the United States, including the Jumex and Vergez & Pearson collections.</p>
               </div>
 
               {/* Education Section */}
