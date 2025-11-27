@@ -11,24 +11,27 @@ import { useAnalytics } from "@/hooks/useAnalytics";
 const Index = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { trackPageView, trackSeriesInteraction } = useAnalytics();
+  const {
+    trackPageView,
+    trackSeriesInteraction
+  } = useAnalytics();
   const {
     data: artworks,
     isLoading,
     error
   } = useArtworks();
-  const { data: series, isLoading: seriesLoading } = useSeries();
+  const {
+    data: series,
+    isLoading: seriesLoading
+  } = useSeries();
   const [scrollY, setScrollY] = useState(0);
   const [expandedSeries, setExpandedSeries] = useState<Record<string, boolean>>({});
-  
+
   // Group artworks by series
   const artworksBySeries = useMemo(() => {
     if (!artworks || !series) return {};
-    
     return series.reduce((acc, s) => {
-      acc[s.id] = artworks
-        .filter(art => art.series_id === s.id)
-        .sort((a, b) => a.display_order - b.display_order);
+      acc[s.id] = artworks.filter(art => art.series_id === s.id).sort((a, b) => a.display_order - b.display_order);
       return acc;
     }, {} as Record<string, typeof artworks>);
   }, [artworks, series]);
@@ -45,13 +48,13 @@ const Index = () => {
       ...prev,
       [seriesId]: isExpanding
     }));
-    
+
     // Track series interaction
     if (isExpanding) {
       const seriesArtworks = artworksBySeries[seriesId] || [];
       trackSeriesInteraction(seriesId, {
         expandedDescription: true,
-        artworksViewedCount: seriesArtworks.length,
+        artworksViewedCount: seriesArtworks.length
       });
     }
   };
@@ -59,9 +62,8 @@ const Index = () => {
   // Debounce scroll con useMemo
   const scrollTransform = useMemo(() => ({
     bio: `translateY(${Math.min(scrollY * -0.03, 40)}px)`,
-    contact: `translateY(${Math.min(scrollY * -0.03, 40)}px)`,
+    contact: `translateY(${Math.min(scrollY * -0.03, 40)}px)`
   }), [scrollY]);
-  
   useEffect(() => {
     let ticking = false;
     const handleScroll = () => {
@@ -73,7 +75,9 @@ const Index = () => {
         ticking = true;
       }
     };
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('scroll', handleScroll, {
+      passive: true
+    });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -83,95 +87,65 @@ const Index = () => {
     queryClient.prefetchQuery({
       queryKey: ["artwork", artworkId],
       queryFn: async () => {
-        const { supabase } = await import("@/integrations/supabase/client");
-        const { data } = await supabase
-          .from("artworks")
-          .select("*")
-          .eq("id", artworkId)
-          .single();
+        const {
+          supabase
+        } = await import("@/integrations/supabase/client");
+        const {
+          data
+        } = await supabase.from("artworks").select("*").eq("id", artworkId).single();
         return data;
-      },
+      }
     });
-    
+
     // Prefetch imagen principal
     const img = new Image();
     img.src = imageUrl;
   };
   return <>
-      <ArtistStructuredData
-        name="Ivan Comas"
-        description="Ivan Comas is a Franco-Argentine artist working between São Paulo and Paris. His practice evolves through layered procedures that merge industrial materials, fragmented text, and the visual residue of dense urban environments."
-        url="https://ivancomas.lovable.app"
-        image="https://ivancomas.lovable.app/images/artworks/tri-peel-1.png"
-        birthDate="1987"
-        birthPlace="Buenos Aires, Argentina"
-        nationality="Franco-Argentine"
-        jobTitle="Visual Artist"
-        sameAs={[
-          "https://instagram.com/ivancomas",
-        ]}
-      />
+      <ArtistStructuredData name="Ivan Comas" description="Ivan Comas is a Franco-Argentine artist working between São Paulo and Paris. His practice evolves through layered procedures that merge industrial materials, fragmented text, and the visual residue of dense urban environments." url="https://ivancomas.lovable.app" image="https://ivancomas.lovable.app/images/artworks/tri-peel-1.png" birthDate="1987" birthPlace="Buenos Aires, Argentina" nationality="Franco-Argentine" jobTitle="Visual Artist" sameAs={["https://instagram.com/ivancomas"]} />
       <Header />
       <main className="min-h-screen bg-background">
         {/* Works Section - Organized by Series */}
         <section id="works" className="min-h-screen pt-16 sm:pt-20">
-          {(isLoading || seriesLoading) && (
-            <div className="container mx-auto px-4 sm:px-6 py-12">
+          {(isLoading || seriesLoading) && <div className="container mx-auto px-4 sm:px-6 py-12">
               <div className="text-center py-12">
                 <p className="text-sm sm:text-base text-muted-foreground">Loading artworks...</p>
               </div>
-            </div>
-          )}
+            </div>}
           
-          {error && (
-            <div className="container mx-auto px-4 sm:px-6 py-12">
+          {error && <div className="container mx-auto px-4 sm:px-6 py-12">
               <div className="text-center py-12">
                 <p className="text-sm sm:text-base text-destructive">Error loading artworks. Please try again.</p>
               </div>
-            </div>
-          )}
+            </div>}
 
-          {series && artworks && !isLoading && !seriesLoading && (
-            <>
-              {series.map((s) => (
-                <SeriesSection
-                  key={s.id}
-                  series={s}
-                  artworks={artworksBySeries[s.id] || []}
-                  isDescriptionExpanded={expandedSeries[s.id] || false}
-                  onToggleDescription={() => toggleSeriesDescription(s.id)}
-                  onArtworkClick={(id) => navigate(`/artwork/${id}`)}
-                  onArtworkHover={handleArtworkHover}
-                />
-              ))}
-            </>
-          )}
+          {series && artworks && !isLoading && !seriesLoading && <>
+              {series.map(s => <SeriesSection key={s.id} series={s} artworks={artworksBySeries[s.id] || []} isDescriptionExpanded={expandedSeries[s.id] || false} onToggleDescription={() => toggleSeriesDescription(s.id)} onArtworkClick={id => navigate(`/artwork/${id}`)} onArtworkHover={handleArtworkHover} />)}
+            </>}
 
-          {series && artworks && artworks.length === 0 && !isLoading && (
-            <div className="container mx-auto px-4 sm:px-6 py-12">
+          {series && artworks && artworks.length === 0 && !isLoading && <div className="container mx-auto px-4 sm:px-6 py-12">
               <div className="text-center py-12">
                 <p className="text-sm sm:text-base text-muted-foreground">No artworks available yet.</p>
               </div>
-            </div>
-          )}
+            </div>}
         </section>
 
         {/* Bio Section */}
         <section id="bio" className="pt-12 sm:pt-16 pb-8 sm:pb-12">
           <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8">
+            <h1 className="text-3xl sm:text-4xl font-bold mb-6 sm:mb-8 lg:text-3xl">
               BIO
             </h1>
             
             <div className="max-w-4xl">
               {/* Artist Name and Origin */}
-              <p className="text-base sm:text-lg font-semibold mb-4">
+              <p className="text-base font-semibold mb-4 sm:text-base">
                 Ivan Comas (b. 1987, Buenos Aires)
               </p>
               
               {/* Bio Paragraphs */}
               <div className="space-y-6 sm:space-y-8 text-sm sm:text-base leading-relaxed text-muted-foreground mb-12 sm:mb-16">
-                <p>
+                <p className="text-base">
                   is a Franco-Argentine artist working between São Paulo and Paris. His practice evolves through layered procedures that merge industrial materials, fragmented text, and the visual residue of dense urban environments. Comas builds stratified surfaces through cycles of inscription, burial, and rupture, developing a material language shaped by years of movement between major cities and long periods of photographic and observational research.
                 </p>
                 <p>
@@ -181,7 +155,7 @@ const Index = () => {
 
               {/* Education Section */}
               <div className="mb-12 sm:mb-16">
-                <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">EDUCATION</h2>
+                <h2 className="text-xl font-bold mb-4 sm:mb-6 sm:text-2xl">EDUCATION</h2>
                 <div className="space-y-3 sm:space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-2 sm:gap-6">
                     <span className="font-semibold text-sm sm:text-base">2007-2012</span>
@@ -279,14 +253,14 @@ const Index = () => {
         {/* Contact Section */}
         <section id="contact" className="pt-8 sm:pt-12 pb-16 sm:pb-24">
           <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8">
+            <h1 className="text-3xl sm:text-4xl font-bold mb-6 sm:mb-8 lg:text-3xl">
               CONTACT
             </h1>
             
             <div className="max-w-3xl text-left">
               <div className="space-y-3 sm:space-y-4">
                 {/* Email */}
-                <a href="mailto:contact@ivancomas.com" className="text-2xl sm:text-3xl font-light text-foreground hover:text-primary transition-colors duration-300 inline-block">
+                <a href="mailto:contact@ivancomas.com" className="text-2xl font-light text-foreground hover:text-primary transition-colors duration-300 inline-block sm:text-xl">
                   contact@ivancomas.com
                 </a>
 
