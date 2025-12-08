@@ -364,6 +364,36 @@ export type Database = {
           },
         ]
       }
+      studio_images: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number
+          id: string
+          image_url: string
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          image_url: string
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          image_url?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string

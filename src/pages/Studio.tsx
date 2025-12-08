@@ -1,0 +1,277 @@
+import { useState, useEffect, useCallback, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { ChevronUp, ChevronDown, X } from "lucide-react";
+import { useStudioImages } from "@/hooks/useStudioImages";
+
+const Studio = () => {
+  const navigate = useNavigate();
+  const { data: images, isLoading } = useStudioImages();
+  
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isScrolling, setIsScrolling] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const prevImageRef = useRef<string | null>(null);
+
+  const currentImage = images?.[currentIndex];
+  const hasNext = currentIndex < (images?.length || 0) - 1;
+  const hasPrev = currentIndex > 0;
+
+  // Handle smooth transitions
+  useEffect(() => {
+    if (currentImage?.image_url && currentImage.image_url !== prevImageRef.current) {
+      setIsTransitioning(true);
+      const timer = setTimeout(() => {
+        setIsTransitioning(false);
+        prevImageRef.current = currentImage.image_url;
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [currentImage?.image_url]);
+
+  const goToNext = useCallback(() => {
+    if (hasNext) {
+      setCurrentIndex(prev => prev + 1);
+    }
+  }, [hasNext]);
+
+  const goToPrev = useCallback(() => {
+    if (hasPrev) {
+      setCurrentIndex(prev => prev - 1);
+    }
+  }, [hasPrev]);
+
+  const handleClose = useCallback(() => {
+    navigate("/");
+  }, [navigate]);
+
+  // Scroll/wheel navigation
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      
+      if (isScrolling) return;
+      
+      const threshold = 30;
+      if (Math.abs(e.deltaY) < threshold) return;
+      
+      setIsScrolling(true);
+      
+      if (e.deltaY > 0) {
+        goToNext();
+      } else {
+        goToPrev();
+      }
+      
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+      
+      scrollTimeoutRef.current = setTimeout(() => {
+        setIsScrolling(false);
+      }, 600);
+    };
+
+    window.addEventListener("wheel", handleWheel, { passive: false });
+    return () => {
+      window.removeEventListener("wheel", handleWheel);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, [goToNext, goToPrev, isScrolling]);
+
+  // Touch/swipe navigation
+  useEffect(() => {
+    let touchStartY = 0;
+    
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0].clientY;
+    };
+    
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (isScrolling) return;
+      
+      const touchEndY = e.changedTouches[0].clientY;
+      const deltaY = touchStartY - touchEndY;
+      const minSwipeDistance = 50;
+      
+      if (Math.abs(deltaY) > minSwipeDistance) {
+        setIsScrolling(true);
+        
+        if (deltaY > 0) {
+          goToNext();
+        } else {
+          goToPrev();
+        }
+        
+        setTimeout(() => setIsScrolling(false), 600);
+      }
+    };
+
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchend", handleTouchEnd, { passive: true });
+    
+    return () => {
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [goToNext, goToPrev, isScrolling]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (isScrolling) return;
+      
+      switch (e.key) {
+        case "ArrowDown":
+          e.preventDefault();
+          setIsScrolling(true);
+          goToNext();
+          setTimeout(() => setIsScrolling(false), 600);
+          break;
+        case "ArrowUp":
+          e.preventDefault();
+          setIsScrolling(true);
+          goToPrev();
+          setTimeout(() => setIsScrolling(false), 600);
+          break;
+        case "Escape":
+          handleClose();
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [goToNext, goToPrev, handleClose, isScrolling]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+      </div>
+    );
+  }
+
+  if (!images?.length) {
+    return (
+      <div className="min-h-screen bg-black flex flex-col">
+        {/* Header */}
+        <header className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-6 md:p-8">
+          <span className="text-white text-sm md:text-base font-medium tracking-widest uppercase">
+            STUDIO
+          </span>
+          <button
+            onClick={handleClose}
+            className="text-white hover:opacity-70 transition-opacity duration-200 focus:outline-none"
+            aria-label="Close and return to landing"
+          >
+            <X className="w-6 h-6 md:w-7 md:h-7" strokeWidth={1.5} />
+          </button>
+        </header>
+        
+        <div className="flex-1 flex items-center justify-center">
+          <p className="text-white/60 text-center">
+            No studio images available yet.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative min-h-screen bg-black overflow-hidden">
+      {/* Background image */}
+      <div
+        className={`absolute inset-0 transition-all duration-500 ease-out ${
+          isTransitioning ? "opacity-0 scale-[1.02]" : "opacity-100 scale-100"
+        }`}
+        style={{
+          backgroundImage: `url(${currentImage?.image_url})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      />
+
+      {/* Subtle vignette overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/30 pointer-events-none" />
+
+      {/* Header */}
+      <header className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-6 md:p-8">
+        <span className="text-white text-sm md:text-base font-medium tracking-widest uppercase">
+          STUDIO
+        </span>
+
+        <button
+          onClick={handleClose}
+          className="text-white hover:opacity-70 transition-opacity duration-200 focus:outline-none"
+          aria-label="Close and return to landing"
+        >
+          <X className="w-6 h-6 md:w-7 md:h-7" strokeWidth={1.5} />
+        </button>
+      </header>
+
+      {/* Image title/description overlay */}
+      {(currentImage?.title || currentImage?.description) && (
+        <div className="absolute bottom-24 left-6 md:left-8 right-6 md:right-8 z-20">
+          {currentImage.title && (
+            <h2 className="text-white text-lg md:text-xl font-medium mb-2">
+              {currentImage.title}
+            </h2>
+          )}
+          {currentImage.description && (
+            <p className="text-white/70 text-sm md:text-base max-w-xl">
+              {currentImage.description}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Vertical navigation indicators */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3">
+        {/* Up arrow */}
+        {hasPrev && (
+          <button
+            onClick={() => {
+              if (!isScrolling) {
+                setIsScrolling(true);
+                goToPrev();
+                setTimeout(() => setIsScrolling(false), 600);
+              }
+            }}
+            className="text-white/40 hover:text-white/70 transition-opacity"
+            aria-label="Previous image"
+          >
+            <ChevronUp className="w-5 h-5" strokeWidth={1.5} />
+          </button>
+        )}
+        
+        {/* Counter */}
+        <span className="text-white/40 text-xs tracking-widest font-light">
+          {currentIndex + 1} / {images.length}
+        </span>
+        
+        {/* Down arrow */}
+        {hasNext && (
+          <button
+            onClick={() => {
+              if (!isScrolling) {
+                setIsScrolling(true);
+                goToNext();
+                setTimeout(() => setIsScrolling(false), 600);
+              }
+            }}
+            className="text-white/40 hover:text-white/70 transition-opacity animate-pulse"
+            aria-label="Next image"
+          >
+            <ChevronDown className="w-5 h-5" strokeWidth={1.5} />
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Studio;
