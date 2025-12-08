@@ -10,12 +10,19 @@ const Studio = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isScrolling, setIsScrolling] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isPageLoaded, setIsPageLoaded] = useState(false);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const prevImageRef = useRef<string | null>(null);
 
   const currentImage = images?.[currentIndex];
   const hasNext = currentIndex < (images?.length || 0) - 1;
   const hasPrev = currentIndex > 0;
+
+  // Page load animation
+  useEffect(() => {
+    const timer = setTimeout(() => setIsPageLoaded(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Handle smooth transitions
   useEffect(() => {
@@ -156,7 +163,7 @@ const Studio = () => {
 
   if (!images?.length) {
     return (
-      <div className="min-h-screen bg-black flex flex-col">
+      <div className={`min-h-screen bg-black flex flex-col transition-opacity duration-500 ${isPageLoaded ? 'opacity-100' : 'opacity-0'}`}>
         {/* Header */}
         <header className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-6 md:p-8">
           <span className="text-white text-sm md:text-base font-medium tracking-widest uppercase">
@@ -181,11 +188,11 @@ const Studio = () => {
   }
 
   return (
-    <div className="relative min-h-screen bg-black overflow-hidden">
+    <div className={`relative min-h-screen bg-black overflow-hidden transition-opacity duration-500 ${isPageLoaded ? 'opacity-100' : 'opacity-0'}`}>
       {/* Background image */}
       <div
-        className={`absolute inset-0 transition-all duration-500 ease-out ${
-          isTransitioning ? "opacity-0 scale-[1.02]" : "opacity-100 scale-100"
+        className={`absolute inset-0 transition-all duration-700 ease-out will-change-transform ${
+          isTransitioning ? "opacity-0 scale-[1.03]" : "opacity-100 scale-100"
         }`}
         style={{
           backgroundImage: `url(${currentImage?.image_url})`,
@@ -199,14 +206,14 @@ const Studio = () => {
       <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/30 pointer-events-none" />
 
       {/* Header */}
-      <header className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-6 md:p-8">
+      <header className={`absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-6 md:p-8 transition-all duration-500 delay-100 ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
         <span className="text-white text-sm md:text-base font-medium tracking-widest uppercase">
           STUDIO
         </span>
 
         <button
           onClick={handleClose}
-          className="text-white hover:opacity-70 transition-opacity duration-200 focus:outline-none"
+          className="text-white hover:opacity-70 transition-all duration-200 hover:rotate-90 focus:outline-none"
           aria-label="Close and return to landing"
         >
           <X className="w-6 h-6 md:w-7 md:h-7" strokeWidth={1.5} />
@@ -215,7 +222,7 @@ const Studio = () => {
 
       {/* Image title/description overlay */}
       {(currentImage?.title || currentImage?.description) && (
-        <div className="absolute bottom-24 left-6 md:left-8 right-6 md:right-8 z-20">
+        <div className={`absolute bottom-24 left-6 md:left-8 right-6 md:right-8 z-20 transition-all duration-500 ${isTransitioning ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'}`}>
           {currentImage.title && (
             <h2 className="text-white text-lg md:text-xl font-medium mb-2">
               {currentImage.title}
@@ -230,7 +237,7 @@ const Studio = () => {
       )}
 
       {/* Vertical navigation indicators */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3">
+      <div className={`absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3 transition-all duration-500 delay-200 ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
         {/* Up arrow */}
         {hasPrev && (
           <button
