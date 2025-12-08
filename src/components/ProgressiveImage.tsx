@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useImageLazyLoad } from "@/hooks/useImageLazyLoad";
+import { ImageSkeleton } from "./ImageSkeleton";
 
 interface ProgressiveImageProps {
   src: string;
@@ -8,23 +9,35 @@ interface ProgressiveImageProps {
   onClick?: () => void;
   eager?: boolean;
   skipInternalFade?: boolean;
+  skeletonVariant?: "default" | "shimmer" | "pulse";
 }
 
-export const ProgressiveImage = ({ src, alt, className = "", onClick, eager = false, skipInternalFade = false }: ProgressiveImageProps) => {
+export const ProgressiveImage = ({ 
+  src, 
+  alt, 
+  className = "", 
+  onClick, 
+  eager = false, 
+  skipInternalFade = false,
+  skeletonVariant = "shimmer"
+}: ProgressiveImageProps) => {
   const { imgRef, isVisible, isLoaded, setIsLoaded } = useImageLazyLoad();
   const [error, setError] = useState(false);
 
-  // Si eager es true, cargamos inmediatamente sin lazy loading
+  // If eager is true, load immediately without lazy loading
   const shouldLoad = eager || isVisible;
 
   return (
     <div ref={imgRef} className={`relative ${className}`}>
-      {/* Placeholder con blur - no mostrar si skipInternalFade */}
+      {/* Skeleton loading state */}
       {!isLoaded && !skipInternalFade && (
-        <div className="absolute inset-0 bg-muted animate-pulse" />
+        <ImageSkeleton 
+          className="absolute inset-0" 
+          variant={skeletonVariant}
+        />
       )}
       
-      {/* Imagen real */}
+      {/* Actual image */}
       {shouldLoad && (
         <img
           src={src}
@@ -40,7 +53,7 @@ export const ProgressiveImage = ({ src, alt, className = "", onClick, eager = fa
         />
       )}
       
-      {/* Fallback para errores */}
+      {/* Error fallback */}
       {error && (
         <div className="absolute inset-0 bg-muted flex items-center justify-center">
           <span className="text-xs text-muted-foreground">Failed to load</span>
