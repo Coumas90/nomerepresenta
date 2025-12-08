@@ -8,6 +8,7 @@ import { useSwipeNavigation } from "@/hooks/useSwipeNavigation";
 import { precacheImagesProgressive, getAdjacentArtworkUrls } from "@/lib/cacheUtils";
 import TriPeelOverlay from "@/components/TriPeelOverlay";
 import { ProgressiveImage } from "@/components/ProgressiveImage";
+import { SwipeHint } from "@/components/SwipeHint";
 
 const WorksFullscreen = () => {
   const navigate = useNavigate();
@@ -365,6 +366,13 @@ const WorksFullscreen = () => {
           ))}
         </div>
       )}
+
+      {/* Mobile swipe hints */}
+      <SwipeHint 
+        direction={allImages.length > 1 ? "both" : "vertical"} 
+        show={!showOverlay}
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+      />
 
       {/* TRI-PEEL Overlay */}
       <TriPeelOverlay 
