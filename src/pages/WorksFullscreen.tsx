@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, X } from "lucide-rea
 import { useArtworks } from "@/hooks/useArtworks";
 import { useArtworkImages } from "@/hooks/useArtworkImages";
 import { useImagePreloader } from "@/hooks/useImagePreloader";
-import { precacheImages } from "@/lib/cacheUtils";
+import { precacheImagesProgressive, getAdjacentArtworkUrls } from "@/lib/cacheUtils";
 import TriPeelOverlay from "@/components/TriPeelOverlay";
 import { ProgressiveImage } from "@/components/ProgressiveImage";
 const WorksFullscreen = () => {
@@ -65,18 +65,19 @@ const WorksFullscreen = () => {
     preloadBehind: 1,
   });
 
-  // Cache all artwork images for offline viewing
+  // Progressive caching: only cache adjacent artworks (2 ahead, 1 behind)
+  // This avoids bulk caching all images and respects bandwidth
   useEffect(() => {
     if (artworks?.length) {
-      const allImageUrls = artworks.flatMap(artwork => [
-        artwork.image_url,
-        artwork.image_detail_url,
-      ].filter(Boolean));
+      const adjacentUrls = getAdjacentArtworkUrls(artworks, currentArtworkIndex, {
+        ahead: 2,
+        behind: 1,
+      });
       
-      // Precache in background (non-blocking)
-      precacheImages(allImageUrls);
+      // Precache progressively (skips already-cached images)
+      precacheImagesProgressive(adjacentUrls);
     }
-  }, [artworks]);
+  }, [artworks, currentArtworkIndex]);
 
   // Reset image index when artwork changes (scroll from detail → next artwork full)
   useEffect(() => {
