@@ -6,6 +6,7 @@ import { ArtworkData } from "@/hooks/useArtworks";
 import ArtworkForm from "@/components/admin/ArtworkForm";
 import ArtworksList from "@/components/admin/ArtworksList";
 import SeriesManager from "@/components/admin/SeriesManager";
+import StudioImagesManager from "@/components/admin/StudioImagesManager";
 import { AdminLayout } from "@/components/admin/layout/AdminLayout";
 import { DashboardHome } from "@/components/admin/DashboardHome";
 import AnalyticsOverview from "@/components/admin/analytics/AnalyticsOverview";
@@ -137,6 +138,9 @@ const Admin = () => {
       
       case "content-series":
         return <SeriesManager />;
+      
+      case "content-studio":
+        return <StudioImagesManager />;
       
       case "content-artworks":
         return (
