@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
+import { useHapticFeedback } from "./useHapticFeedback";
 
 interface UseSwipeNavigationOptions {
   onSwipeUp?: () => void;
@@ -11,6 +12,7 @@ interface UseSwipeNavigationOptions {
   wheelThreshold?: number;
   cooldown?: number;
   enabled?: boolean;
+  hapticFeedback?: boolean;
 }
 
 interface UseSwipeNavigationReturn {
@@ -29,14 +31,21 @@ export function useSwipeNavigation({
   wheelThreshold = 30,
   cooldown = 600,
   enabled = true,
+  hapticFeedback = true,
 }: UseSwipeNavigationOptions): UseSwipeNavigationReturn {
   const [isScrolling, setIsScrolling] = useState(false);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const touchStartRef = useRef({ x: 0, y: 0 });
+  const haptic = useHapticFeedback();
 
-  // Helper to set scrolling state with cooldown
-  const triggerWithCooldown = useCallback((callback?: () => void) => {
+  // Helper to set scrolling state with cooldown and haptic feedback
+  const triggerWithCooldown = useCallback((callback?: () => void, useHaptic = true) => {
     if (!callback) return;
+    
+    // Trigger haptic feedback on touch navigation
+    if (hapticFeedback && useHaptic) {
+      haptic.light();
+    }
     
     setIsScrolling(true);
     callback();
@@ -48,9 +57,9 @@ export function useSwipeNavigation({
     scrollTimeoutRef.current = setTimeout(() => {
       setIsScrolling(false);
     }, cooldown);
-  }, [cooldown]);
+  }, [cooldown, hapticFeedback, haptic]);
 
-  // Wheel navigation
+  // Wheel navigation (no haptic - desktop only)
   useEffect(() => {
     if (!enabled || (!onWheelUp && !onWheelDown)) return;
 
@@ -61,9 +70,9 @@ export function useSwipeNavigation({
       if (Math.abs(e.deltaY) < wheelThreshold) return;
       
       if (e.deltaY > 0) {
-        triggerWithCooldown(onWheelDown);
+        triggerWithCooldown(onWheelDown, false);
       } else {
-        triggerWithCooldown(onWheelUp);
+        triggerWithCooldown(onWheelUp, false);
       }
     };
 
@@ -76,7 +85,7 @@ export function useSwipeNavigation({
     };
   }, [enabled, onWheelUp, onWheelDown, isScrolling, wheelThreshold, triggerWithCooldown]);
 
-  // Touch/swipe navigation
+  // Touch/swipe navigation with haptic feedback
   useEffect(() => {
     if (!enabled) return;
 
@@ -99,14 +108,17 @@ export function useSwipeNavigation({
       const isVertical = Math.abs(deltaY) > Math.abs(deltaX);
 
       if (isVertical && Math.abs(deltaY) > threshold) {
-        // Vertical swipe
+        // Vertical swipe with haptic
         if (deltaY > 0 && onSwipeUp) {
-          triggerWithCooldown(onSwipeUp);
+          triggerWithCooldown(onSwipeUp, true);
         } else if (deltaY < 0 && onSwipeDown) {
-          triggerWithCooldown(onSwipeDown);
+          triggerWithCooldown(onSwipeDown, true);
         }
       } else if (!isVertical && Math.abs(deltaX) > threshold) {
-        // Horizontal swipe (no cooldown needed for image navigation)
+        // Horizontal swipe with haptic (lighter feedback)
+        if (hapticFeedback) {
+          haptic.light();
+        }
         if (deltaX > 0 && onSwipeLeft) {
           onSwipeLeft();
         } else if (deltaX < 0 && onSwipeRight) {
@@ -122,7 +134,7 @@ export function useSwipeNavigation({
       window.removeEventListener("touchstart", handleTouchStart);
       window.removeEventListener("touchend", handleTouchEnd);
     };
-  }, [enabled, onSwipeUp, onSwipeDown, onSwipeLeft, onSwipeRight, isScrolling, threshold, triggerWithCooldown]);
+  }, [enabled, onSwipeUp, onSwipeDown, onSwipeLeft, onSwipeRight, isScrolling, threshold, triggerWithCooldown, hapticFeedback, haptic]);
 
   return {
     isScrolling,
