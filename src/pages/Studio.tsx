@@ -3,16 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { ChevronUp, ChevronDown, X } from "lucide-react";
 import { useStudioImages } from "@/hooks/useStudioImages";
 import { useImagePreloader } from "@/hooks/useImagePreloader";
+import { useSwipeNavigation } from "@/hooks/useSwipeNavigation";
 import { ProgressiveImage } from "@/components/ProgressiveImage";
+
 const Studio = () => {
   const navigate = useNavigate();
   const { data: images, isLoading } = useStudioImages();
   
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isScrolling, setIsScrolling] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isPageLoaded, setIsPageLoaded] = useState(false);
-  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const prevImageRef = useRef<string | null>(null);
 
   const currentImage = images?.[currentIndex];
@@ -65,78 +65,13 @@ const Studio = () => {
     navigate("/");
   }, [navigate]);
 
-  // Scroll/wheel navigation
-  useEffect(() => {
-    const handleWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      
-      if (isScrolling) return;
-      
-      const threshold = 30;
-      if (Math.abs(e.deltaY) < threshold) return;
-      
-      setIsScrolling(true);
-      
-      if (e.deltaY > 0) {
-        goToNext();
-      } else {
-        goToPrev();
-      }
-      
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
-      
-      scrollTimeoutRef.current = setTimeout(() => {
-        setIsScrolling(false);
-      }, 600);
-    };
-
-    window.addEventListener("wheel", handleWheel, { passive: false });
-    return () => {
-      window.removeEventListener("wheel", handleWheel);
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
-    };
-  }, [goToNext, goToPrev, isScrolling]);
-
-  // Touch/swipe navigation
-  useEffect(() => {
-    let touchStartY = 0;
-    
-    const handleTouchStart = (e: TouchEvent) => {
-      touchStartY = e.touches[0].clientY;
-    };
-    
-    const handleTouchEnd = (e: TouchEvent) => {
-      if (isScrolling) return;
-      
-      const touchEndY = e.changedTouches[0].clientY;
-      const deltaY = touchStartY - touchEndY;
-      const minSwipeDistance = 50;
-      
-      if (Math.abs(deltaY) > minSwipeDistance) {
-        setIsScrolling(true);
-        
-        if (deltaY > 0) {
-          goToNext();
-        } else {
-          goToPrev();
-        }
-        
-        setTimeout(() => setIsScrolling(false), 600);
-      }
-    };
-
-    window.addEventListener("touchstart", handleTouchStart, { passive: true });
-    window.addEventListener("touchend", handleTouchEnd, { passive: true });
-    
-    return () => {
-      window.removeEventListener("touchstart", handleTouchStart);
-      window.removeEventListener("touchend", handleTouchEnd);
-    };
-  }, [goToNext, goToPrev, isScrolling]);
+  // Swipe and wheel navigation using centralized hook
+  const { isScrolling, setIsScrolling } = useSwipeNavigation({
+    onSwipeUp: goToNext,
+    onSwipeDown: goToPrev,
+    onWheelUp: goToPrev,
+    onWheelDown: goToNext,
+  });
 
   // Keyboard navigation
   useEffect(() => {
