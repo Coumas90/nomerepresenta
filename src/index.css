@@ -202,4 +202,16 @@ All colors MUST be HSL.
       transform: translateX(100%);
     }
   }
+
+  /* Blur-up placeholder effect */
+  .blur-up-placeholder {
+    filter: blur(20px);
+    transform: scale(1.1);
+    image-rendering: auto;
+  }
+
+  /* Blur transition for main image */
+  .blur-0 {
+    filter: blur(0);
+  }
 }

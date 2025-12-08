@@ -1,25 +1,17 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { X } from "lucide-react";
-import { ImageSkeleton } from "@/components/ImageSkeleton";
+import { ProgressiveImage } from "@/components/ProgressiveImage";
 
 const BioHeroImage = () => {
-  const [isLoaded, setIsLoaded] = useState(false);
-  
   return (
-    <div className="aspect-[16/9] md:aspect-[21/9] w-full bg-stone-200 overflow-hidden relative">
-      {!isLoaded && (
-        <ImageSkeleton className="absolute inset-0" variant="shimmer" />
-      )}
-      <img
-        src="/images/artworks/tri-peel-1.png"
-        alt="Ivan Comas - Artist"
-        onLoad={() => setIsLoaded(true)}
-        className={`w-full h-full object-cover object-center transition-all duration-700 hover:scale-105 ${
-          isLoaded ? 'opacity-100' : 'opacity-0'
-        }`}
-      />
-    </div>
+    <ProgressiveImage
+      src="/images/artworks/tri-peel-1.png"
+      alt="Ivan Comas - Artist"
+      className="aspect-[16/9] md:aspect-[21/9] w-full"
+      blurUp
+      eager
+    />
   );
 };
 const Bio = () => {
