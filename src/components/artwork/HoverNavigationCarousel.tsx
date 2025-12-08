@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselApi } from "@/components/ui/carousel";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface HoverNavigationCarouselProps {
   images: Array<{ id: string; image_url: string }>;
@@ -19,6 +20,7 @@ export const HoverNavigationCarousel = ({
   onIndexChange,
   registerImageRef,
 }: HoverNavigationCarouselProps) => {
+  const isMobile = useIsMobile();
   const [api, setApi] = useState<CarouselApi>();
   const [mouseZone, setMouseZone] = useState<"left" | "right" | "center">("center");
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -43,15 +45,15 @@ export const HoverNavigationCarousel = ({
   }, [api, onIndexChange]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isMobile) return; // Ignore mouse events on mobile
+    
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     const percentage = (x / rect.width) * 100;
 
-    // Guardar posición exacta del cursor
     setMousePosition({ x, y });
 
-    // Determinar zona
     if (percentage < 30) {
       setMouseZone("left");
     } else if (percentage > 70) {
@@ -73,10 +75,16 @@ export const HoverNavigationCarousel = ({
     }
   };
 
-  const showLeftArrow = isHovering && mouseZone === "left" && canScrollPrev && images.length > 1;
-  const showRightArrow = isHovering && mouseZone === "right" && canScrollNext && images.length > 1;
+  // Desktop: show arrows following cursor in hover zones
+  // Mobile: always show arrows when navigation is possible
+  const showLeftArrow = isMobile 
+    ? canScrollPrev && images.length > 1
+    : isHovering && mouseZone === "left" && canScrollPrev && images.length > 1;
+  
+  const showRightArrow = isMobile 
+    ? canScrollNext && images.length > 1
+    : isHovering && mouseZone === "right" && canScrollNext && images.length > 1;
 
-  // Calcular posiciones de las flechas con límites
   const containerWidth = containerRef.current?.offsetWidth || 0;
   const leftArrowX = Math.max(32, Math.min(mousePosition.x, containerWidth * 0.3 - 24));
   const rightArrowX = Math.max(containerWidth * 0.7 + 24, Math.min(mousePosition.x, containerWidth - 32));
@@ -85,11 +93,11 @@ export const HoverNavigationCarousel = ({
     <div
       ref={containerRef}
       className={`relative w-full h-full ${
-        mouseZone === "left" || mouseZone === "right" ? "cursor-none" : ""
+        !isMobile && (mouseZone === "left" || mouseZone === "right") ? "cursor-none" : ""
       }`}
       onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
+      onMouseEnter={() => !isMobile && setIsHovering(true)}
+      onMouseLeave={() => !isMobile && setIsHovering(false)}
     >
       <Carousel className="w-full h-full max-h-[calc(100vh-200px)]" setApi={setApi}>
         <CarouselContent className="h-full">
@@ -116,7 +124,7 @@ export const HoverNavigationCarousel = ({
         </CarouselContent>
       </Carousel>
 
-      {/* Zona clickeable izquierda - 30% del ancho */}
+      {/* Clickable left zone - 30% width */}
       {canScrollPrev && images.length > 1 && (
         <div
           onClick={handlePrevious}
@@ -125,7 +133,7 @@ export const HoverNavigationCarousel = ({
         />
       )}
 
-      {/* Zona clickeable derecha - 30% del ancho */}
+      {/* Clickable right zone - 30% width */}
       {canScrollNext && images.length > 1 && (
         <div
           onClick={handleNext}
@@ -134,33 +142,55 @@ export const HoverNavigationCarousel = ({
         />
       )}
 
-      {/* Left Arrow - indicador visual que sigue el cursor */}
+      {/* Left Arrow - Mobile: fixed position, Desktop: follows cursor */}
       {showLeftArrow && (
         <div
-          className="absolute z-20 pointer-events-none"
-          style={{
+          className={`absolute z-20 ${isMobile ? 'pointer-events-auto' : 'pointer-events-none'}`}
+          style={isMobile ? {
+            left: '16px',
+            top: '50%',
+            transform: 'translateY(-50%)'
+          } : {
             left: `${leftArrowX}px`,
             top: `${mousePosition.y}px`,
             transform: 'translate(-50%, -50%)'
           }}
-          aria-hidden="true"
+          onClick={isMobile ? handlePrevious : undefined}
+          aria-hidden={!isMobile}
         >
-          <ChevronLeft size={40} className="text-foreground drop-shadow-lg" strokeWidth={1.5} />
+          <div className={`${isMobile ? 'bg-black/30 backdrop-blur-sm rounded-full p-2' : ''}`}>
+            <ChevronLeft 
+              size={isMobile ? 32 : 40} 
+              className="text-white drop-shadow-lg" 
+              strokeWidth={1.5} 
+            />
+          </div>
         </div>
       )}
 
-      {/* Right Arrow - indicador visual que sigue el cursor */}
+      {/* Right Arrow - Mobile: fixed position, Desktop: follows cursor */}
       {showRightArrow && (
         <div
-          className="absolute z-20 pointer-events-none"
-          style={{
+          className={`absolute z-20 ${isMobile ? 'pointer-events-auto' : 'pointer-events-none'}`}
+          style={isMobile ? {
+            right: '16px',
+            top: '50%',
+            transform: 'translateY(-50%)'
+          } : {
             left: `${rightArrowX}px`,
             top: `${mousePosition.y}px`,
             transform: 'translate(-50%, -50%)'
           }}
-          aria-hidden="true"
+          onClick={isMobile ? handleNext : undefined}
+          aria-hidden={!isMobile}
         >
-          <ChevronRight size={40} className="text-foreground drop-shadow-lg" strokeWidth={1.5} />
+          <div className={`${isMobile ? 'bg-black/30 backdrop-blur-sm rounded-full p-2' : ''}`}>
+            <ChevronRight 
+              size={isMobile ? 32 : 40} 
+              className="text-white drop-shadow-lg" 
+              strokeWidth={1.5} 
+            />
+          </div>
         </div>
       )}
     </div>
