@@ -9,6 +9,8 @@ import {
   getWebPSrcSet,
   getAVIFSrcSet,
   supportsImageTransforms,
+  isLocalImage,
+  getGradientPlaceholder,
   RESPONSIVE_WIDTHS,
   RESPONSIVE_SIZES,
 } from "@/lib/imageUtils";
@@ -39,9 +41,20 @@ interface ProgressiveImageProps {
   responsivePreset?: keyof typeof RESPONSIVE_WIDTHS;
 }
 
-// Generate a tiny placeholder URL by adding transform params (works with Supabase Storage)
+// Generate a placeholder URL based on image type
 const getTinyPlaceholder = (src: string, width = 20): string => {
-  return getOptimizedImageUrl(src, { width, quality: 20 });
+  // For Supabase images, use server-side transform for tiny version
+  if (supportsImageTransforms(src)) {
+    return getOptimizedImageUrl(src, { width, quality: 20 });
+  }
+  
+  // For local images, use a gradient placeholder (works well with blur-up)
+  if (isLocalImage(src)) {
+    return getGradientPlaceholder();
+  }
+  
+  // For other URLs (external), return the original (no blur-up effect)
+  return src;
 };
 
 export const ProgressiveImage = ({ 
