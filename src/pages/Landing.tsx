@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // Menu items with their associated artwork images
 const menuItems = [
@@ -13,7 +14,9 @@ const menuItems = [
 
 const Landing = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isPageLoaded, setIsPageLoaded] = useState(false);
 
@@ -23,6 +26,22 @@ const Landing = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  // Handle tap outside to deselect on mobile
+  useEffect(() => {
+    if (!isMobile || selectedIndex === null) return;
+    
+    const handleTapOutside = (e: TouchEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('button')) {
+        setSelectedIndex(null);
+        setHoveredIndex(null);
+      }
+    };
+    
+    document.addEventListener('touchstart', handleTapOutside);
+    return () => document.removeEventListener('touchstart', handleTapOutside);
+  }, [isMobile, selectedIndex]);
+
   const handleItemClick = (item: typeof menuItems[0]) => {
     if (item.type === "mailto") {
       window.location.href = `mailto:${item.email}`;
@@ -31,7 +50,29 @@ const Landing = () => {
     }
   };
 
+  // Mobile tap handler: first tap = preview, second tap = navigate
+  const handleItemTap = useCallback((index: number, item: typeof menuItems[0]) => {
+    const isClickable = item.type === "link" || item.type === "mailto";
+    
+    if (isMobile && isClickable) {
+      if (selectedIndex === index) {
+        // Second tap - navigate
+        handleItemClick(item);
+      } else {
+        // First tap - show preview
+        setIsTransitioning(true);
+        setSelectedIndex(index);
+        setHoveredIndex(index);
+        setTimeout(() => setIsTransitioning(false), 300);
+      }
+    } else {
+      // Desktop or non-clickable - direct action
+      handleItemClick(item);
+    }
+  }, [isMobile, selectedIndex, navigate]);
+
   const handleMouseEnter = (index: number) => {
+    if (isMobile) return; // Ignore hover on mobile
     if (hoveredIndex !== index) {
       setIsTransitioning(true);
       setHoveredIndex(index);
@@ -40,6 +81,7 @@ const Landing = () => {
   };
 
   const handleMouseLeave = () => {
+    if (isMobile) return; // Ignore hover on mobile
     setIsTransitioning(true);
     setHoveredIndex(null);
     setTimeout(() => setIsTransitioning(false), 300);
@@ -85,10 +127,13 @@ const Landing = () => {
                 style={{ transitionDelay: `${100 + index * 80}ms` }}
               >
                 <button
-                  onClick={() => handleItemClick(item)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleItemTap(index, item);
+                  }}
                   onMouseEnter={() => handleMouseEnter(index)}
                   onMouseLeave={handleMouseLeave}
-                  disabled={!isClickable}
+                  disabled={!isClickable && !isMobile}
                   className={`
                     text-white font-bold tracking-tight leading-none
                     text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl
@@ -97,9 +142,9 @@ const Landing = () => {
                       ? "cursor-pointer hover:tracking-normal" 
                       : "cursor-default"
                     }
-                    ${isHovered 
+                    ${isHovered || selectedIndex === index
                       ? "opacity-100 scale-105" 
-                      : hoveredIndex !== null 
+                      : hoveredIndex !== null || selectedIndex !== null
                         ? "opacity-40" 
                         : "opacity-100"
                     }
@@ -107,10 +152,16 @@ const Landing = () => {
                     disabled:cursor-default
                   `}
                   style={{
-                    textShadow: isHovered ? "0 0 60px rgba(255,255,255,0.4)" : "none",
+                    textShadow: (isHovered || selectedIndex === index) ? "0 0 60px rgba(255,255,255,0.4)" : "none",
                   }}
                 >
                   {item.text}
+                  {/* Mobile hint: tap again to navigate */}
+                  {isMobile && isClickable && selectedIndex === index && (
+                    <span className="block text-xs font-normal tracking-wide opacity-60 mt-2 animate-fade-in">
+                      tap again to open
+                    </span>
+                  )}
                 </button>
               </li>
             );
