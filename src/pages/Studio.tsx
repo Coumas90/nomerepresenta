@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronUp, ChevronDown, X } from "lucide-react";
 import { useStudioImages } from "@/hooks/useStudioImages";
+import { useImagePreloader } from "@/hooks/useImagePreloader";
 
 const Studio = () => {
   const navigate = useNavigate();
@@ -17,6 +18,18 @@ const Studio = () => {
   const currentImage = images?.[currentIndex];
   const hasNext = currentIndex < (images?.length || 0) - 1;
   const hasPrev = currentIndex > 0;
+
+  // Build list of all image URLs for preloading
+  const imageUrls = useMemo(() => 
+    images?.map(img => img.image_url) || [],
+    [images]
+  );
+
+  // Preload adjacent images (2 ahead, 1 behind)
+  useImagePreloader(imageUrls, currentIndex, {
+    preloadAhead: 2,
+    preloadBehind: 1,
+  });
 
   // Page load animation
   useEffect(() => {

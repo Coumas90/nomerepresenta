@@ -1,8 +1,9 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, X } from "lucide-react";
 import { useArtworks } from "@/hooks/useArtworks";
 import { useArtworkImages } from "@/hooks/useArtworkImages";
+import { useImagePreloader } from "@/hooks/useImagePreloader";
 import TriPeelOverlay from "@/components/TriPeelOverlay";
 
 const WorksFullscreen = () => {
@@ -39,6 +40,29 @@ const WorksFullscreen = () => {
   const hasPrevImage = currentImageIndex > 0;
   const hasNextArtwork = currentArtworkIndex < (artworks?.length || 0) - 1;
   const hasPrevArtwork = currentArtworkIndex > 0;
+
+  // Build list of all artwork main images for preloading
+  const artworkMainImages = useMemo(() => 
+    artworks?.map(artwork => artwork.image_url) || [],
+    [artworks]
+  );
+
+  // Preload adjacent artworks (2 ahead, 1 behind)
+  useImagePreloader(artworkMainImages, currentArtworkIndex, {
+    preloadAhead: 2,
+    preloadBehind: 1,
+  });
+
+  // Preload current artwork's detail images
+  const currentArtworkDetailImages = useMemo(() => 
+    allImages.map(img => img.url),
+    [allImages]
+  );
+  
+  useImagePreloader(currentArtworkDetailImages, currentImageIndex, {
+    preloadAhead: 1,
+    preloadBehind: 1,
+  });
 
   // Reset image index when artwork changes (scroll from detail → next artwork full)
   useEffect(() => {
