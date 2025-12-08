@@ -105,8 +105,10 @@ interface BulkUploadItem {
   id: string;
   file: File;
   preview: string;
-  status: "pending" | "uploading" | "done" | "error";
+  status: "pending" | "uploading" | "uploaded" | "saving" | "done" | "error";
   url?: string;
+  title: string;
+  description: string;
 }
 
 const StudioImagesManager = () => {
@@ -130,6 +132,8 @@ const StudioImagesManager = () => {
   // Bulk upload state
   const [bulkItems, setBulkItems] = useState<BulkUploadItem[]>([]);
   const [isBulkUploading, setIsBulkUploading] = useState(false);
+  const [bulkEditMode, setBulkEditMode] = useState(false);
+  const [isSavingBulk, setIsSavingBulk] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -232,6 +236,8 @@ const StudioImagesManager = () => {
           file,
           preview: "",
           status: "pending",
+          title: "",
+          description: "",
         });
       }
     });
@@ -257,14 +263,22 @@ const StudioImagesManager = () => {
     setBulkItems((prev) => prev.filter((item) => item.id !== id));
   };
 
+  const updateBulkItemMetadata = (id: string, field: "title" | "description", value: string) => {
+    setBulkItems((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, [field]: value } : item))
+    );
+  };
+
+  // Step 1: Upload files only (no database save yet)
   const uploadBulkImages = async () => {
     if (bulkItems.length === 0) return;
     
     setIsBulkUploading(true);
-    let currentOrder = images.length;
     let successCount = 0;
     
     for (const item of bulkItems) {
+      if (item.status !== "pending") continue;
+      
       setBulkItems((prev) =>
         prev.map((i) => (i.id === item.id ? { ...i, status: "uploading" } : i))
       );
@@ -273,18 +287,10 @@ const StudioImagesManager = () => {
         const fileName = `${Date.now()}-${item.file.name}`;
         const url = await uploadMutation.mutateAsync({ file: item.file, fileName });
         
-        await createMutation.mutateAsync({
-          title: null,
-          description: null,
-          image_url: url,
-          display_order: currentOrder,
-        });
-        
-        currentOrder++;
         successCount++;
         
         setBulkItems((prev) =>
-          prev.map((i) => (i.id === item.id ? { ...i, status: "done", url } : i))
+          prev.map((i) => (i.id === item.id ? { ...i, status: "uploaded", url } : i))
         );
       } catch {
         setBulkItems((prev) =>
@@ -296,16 +302,64 @@ const StudioImagesManager = () => {
     setIsBulkUploading(false);
     
     if (successCount > 0) {
+      setBulkEditMode(true);
       toast({
-        title: "Upload complete",
-        description: `${successCount} image${successCount > 1 ? "s" : ""} uploaded successfully.`,
+        title: "Files uploaded",
+        description: "Now you can add titles and descriptions before saving.",
       });
     }
+  };
+
+  // Step 2: Save to database with metadata
+  const saveBulkImages = async () => {
+    const uploadedItems = bulkItems.filter((item) => item.status === "uploaded" && item.url);
+    if (uploadedItems.length === 0) return;
     
-    // Clear completed items after a delay
-    setTimeout(() => {
-      setBulkItems((prev) => prev.filter((item) => item.status !== "done"));
-    }, 2000);
+    setIsSavingBulk(true);
+    let currentOrder = images.length;
+    let successCount = 0;
+    
+    for (const item of uploadedItems) {
+      setBulkItems((prev) =>
+        prev.map((i) => (i.id === item.id ? { ...i, status: "saving" } : i))
+      );
+      
+      try {
+        await createMutation.mutateAsync({
+          title: item.title.trim() || null,
+          description: item.description.trim() || null,
+          image_url: item.url!,
+          display_order: currentOrder,
+        });
+        
+        currentOrder++;
+        successCount++;
+        
+        setBulkItems((prev) =>
+          prev.map((i) => (i.id === item.id ? { ...i, status: "done" } : i))
+        );
+      } catch {
+        setBulkItems((prev) =>
+          prev.map((i) => (i.id === item.id ? { ...i, status: "error" } : i))
+        );
+      }
+    }
+    
+    setIsSavingBulk(false);
+    
+    if (successCount > 0) {
+      toast({
+        title: "Images saved",
+        description: `${successCount} image${successCount > 1 ? "s" : ""} added to the gallery.`,
+      });
+      
+      // Clear and reset
+      setTimeout(() => {
+        setBulkItems([]);
+        setBulkEditMode(false);
+        setShowBulkUpload(false);
+      }, 1500);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -339,6 +393,7 @@ const StudioImagesManager = () => {
     setFormData({ title: "", description: "", image_url: "" });
     setPreview(null);
     setBulkItems([]);
+    setBulkEditMode(false);
   };
 
   const completedCount = bulkItems.filter((item) => item.status === "done").length;
@@ -458,42 +513,46 @@ const StudioImagesManager = () => {
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle>Bulk Upload Images</CardTitle>
-                <Button variant="ghost" size="icon" onClick={handleCancel}>
+                <CardTitle>
+                  {bulkEditMode ? "Add Details to Images" : "Bulk Upload Images"}
+                </CardTitle>
+                <Button variant="ghost" size="icon" onClick={handleCancel} disabled={isBulkUploading || isSavingBulk}>
                   <X className="h-4 w-4" />
                 </Button>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* Drop zone */}
-              <div
-                className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-                  isDragOver ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
-                }`}
-                onDragEnter={(e) => { e.preventDefault(); setIsDragOver(true); }}
-                onDragLeave={(e) => { e.preventDefault(); setIsDragOver(false); }}
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={handleBulkFileDrop}
-              >
-                <Images className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
-                <Label htmlFor="bulk-files" className="cursor-pointer text-sm text-muted-foreground hover:text-foreground block">
-                  Drop multiple images here or click to select
-                </Label>
-                <p className="text-xs text-muted-foreground mt-1">
-                  You can select multiple files at once
-                </p>
-                <input
-                  id="bulk-files"
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleBulkFileChange}
-                  className="hidden"
-                />
-              </div>
+              {/* Drop zone - only show when not in edit mode */}
+              {!bulkEditMode && (
+                <div
+                  className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+                    isDragOver ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+                  }`}
+                  onDragEnter={(e) => { e.preventDefault(); setIsDragOver(true); }}
+                  onDragLeave={(e) => { e.preventDefault(); setIsDragOver(false); }}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={handleBulkFileDrop}
+                >
+                  <Images className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
+                  <Label htmlFor="bulk-files" className="cursor-pointer text-sm text-muted-foreground hover:text-foreground block">
+                    Drop multiple images here or click to select
+                  </Label>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    You can select multiple files at once
+                  </p>
+                  <input
+                    id="bulk-files"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleBulkFileChange}
+                    className="hidden"
+                  />
+                </div>
+              )}
 
-              {/* Preview grid */}
-              {bulkItems.length > 0 && (
+              {/* Preview grid - compact mode before upload */}
+              {bulkItems.length > 0 && !bulkEditMode && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">
@@ -501,7 +560,7 @@ const StudioImagesManager = () => {
                     </span>
                     {isBulkUploading && (
                       <span className="text-sm text-muted-foreground">
-                        {completedCount} / {bulkItems.length} uploaded
+                        {bulkItems.filter((i) => i.status === "uploaded").length} / {bulkItems.length} uploaded
                       </span>
                     )}
                   </div>
@@ -529,7 +588,7 @@ const StudioImagesManager = () => {
                             <div className="animate-spin h-5 w-5 border-2 border-primary border-t-transparent rounded-full" />
                           </div>
                         )}
-                        {item.status === "done" && (
+                        {item.status === "uploaded" && (
                           <div className="absolute inset-0 bg-green-500/20 flex items-center justify-center rounded-md">
                             <CheckCircle className="h-5 w-5 text-green-500" />
                           </div>
@@ -558,17 +617,101 @@ const StudioImagesManager = () => {
                 </div>
               )}
 
+              {/* Edit mode - show cards with title/description fields */}
+              {bulkEditMode && bulkItems.length > 0 && (
+                <div className="space-y-4">
+                  <p className="text-sm text-muted-foreground">
+                    Add titles and descriptions to your images (optional). Click "Save All" when done.
+                  </p>
+                  
+                  {isSavingBulk && (
+                    <Progress value={(bulkItems.filter((i) => i.status === "done").length / bulkItems.length) * 100} className="h-2" />
+                  )}
+                  
+                  <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-2">
+                    {bulkItems.filter((item) => item.status === "uploaded" || item.status === "saving" || item.status === "done").map((item) => (
+                      <Card key={item.id} className={item.status === "done" ? "opacity-60" : ""}>
+                        <CardContent className="p-4">
+                          <div className="flex gap-4">
+                            <div className="relative shrink-0">
+                              <img
+                                src={item.preview || item.url}
+                                alt="Preview"
+                                className="w-24 h-24 object-cover rounded-md"
+                              />
+                              {item.status === "saving" && (
+                                <div className="absolute inset-0 bg-background/70 flex items-center justify-center rounded-md">
+                                  <div className="animate-spin h-5 w-5 border-2 border-primary border-t-transparent rounded-full" />
+                                </div>
+                              )}
+                              {item.status === "done" && (
+                                <div className="absolute inset-0 bg-green-500/20 flex items-center justify-center rounded-md">
+                                  <CheckCircle className="h-6 w-6 text-green-500" />
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex-1 space-y-3">
+                              <div>
+                                <Label htmlFor={`title-${item.id}`} className="text-xs">Title</Label>
+                                <Input
+                                  id={`title-${item.id}`}
+                                  value={item.title}
+                                  onChange={(e) => updateBulkItemMetadata(item.id, "title", e.target.value)}
+                                  placeholder="Image title (optional)"
+                                  disabled={item.status !== "uploaded"}
+                                  className="h-9"
+                                  maxLength={100}
+                                />
+                              </div>
+                              <div>
+                                <Label htmlFor={`desc-${item.id}`} className="text-xs">Description</Label>
+                                <Textarea
+                                  id={`desc-${item.id}`}
+                                  value={item.description}
+                                  onChange={(e) => updateBulkItemMetadata(item.id, "description", e.target.value)}
+                                  placeholder="Brief description (optional)"
+                                  disabled={item.status !== "uploaded"}
+                                  rows={2}
+                                  className="resize-none"
+                                  maxLength={500}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Actions */}
               <div className="flex gap-2">
-                <Button
-                  onClick={uploadBulkImages}
-                  disabled={bulkItems.length === 0 || isBulkUploading || bulkItems.every((i) => i.status === "done")}
-                >
-                  {isBulkUploading ? "Uploading..." : `Upload ${bulkItems.filter((i) => i.status === "pending").length} Images`}
-                </Button>
-                <Button type="button" variant="outline" onClick={handleCancel} disabled={isBulkUploading}>
-                  Cancel
-                </Button>
+                {!bulkEditMode ? (
+                  <>
+                    <Button
+                      onClick={uploadBulkImages}
+                      disabled={bulkItems.length === 0 || isBulkUploading || bulkItems.every((i) => i.status !== "pending")}
+                    >
+                      {isBulkUploading ? "Uploading..." : `Upload ${bulkItems.filter((i) => i.status === "pending").length} Images`}
+                    </Button>
+                    <Button type="button" variant="outline" onClick={handleCancel} disabled={isBulkUploading}>
+                      Cancel
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      onClick={saveBulkImages}
+                      disabled={isSavingBulk || bulkItems.every((i) => i.status === "done")}
+                    >
+                      {isSavingBulk ? "Saving..." : `Save All (${bulkItems.filter((i) => i.status === "uploaded").length} images)`}
+                    </Button>
+                    <Button type="button" variant="outline" onClick={handleCancel} disabled={isSavingBulk}>
+                      Cancel
+                    </Button>
+                  </>
+                )}
               </div>
             </CardContent>
           </Card>
