@@ -1,7 +1,15 @@
 import { useState, useEffect, useMemo } from "react";
 import { useImageLazyLoad } from "@/hooks/useImageLazyLoad";
 import { ImageSkeleton } from "./ImageSkeleton";
-import { getWebPUrl, getOptimizedImageUrl } from "@/lib/imageUtils";
+import { 
+  getWebPUrl, 
+  getOptimizedImageUrl, 
+  getResponsiveSrcSet, 
+  getWebPSrcSet,
+  supportsImageTransforms,
+  RESPONSIVE_WIDTHS,
+  RESPONSIVE_SIZES,
+} from "@/lib/imageUtils";
 
 interface ProgressiveImageProps {
   src: string;
@@ -17,8 +25,12 @@ interface ProgressiveImageProps {
   blurUp?: boolean;
   /** Enable WebP format with fallback (default: true) */
   webp?: boolean;
-  /** Sizes attribute for responsive images */
+  /** Sizes attribute for responsive images (e.g., "100vw" or "(min-width: 768px) 50vw, 100vw") */
   sizes?: string;
+  /** Enable responsive srcset (default: true for Supabase images) */
+  responsive?: boolean;
+  /** Preset for responsive widths */
+  responsivePreset?: keyof typeof RESPONSIVE_WIDTHS;
 }
 
 // Generate a tiny placeholder URL by adding transform params (works with Supabase Storage)
@@ -37,7 +49,9 @@ export const ProgressiveImage = ({
   placeholder,
   blurUp = false,
   webp = true,
-  sizes,
+  sizes = RESPONSIVE_SIZES.fullWidth,
+  responsive = true,
+  responsivePreset = "large",
 }: ProgressiveImageProps) => {
   const { imgRef, isVisible, isLoaded, setIsLoaded } = useImageLazyLoad();
   const [error, setError] = useState(false);
@@ -47,10 +61,25 @@ export const ProgressiveImage = ({
   // If eager is true, load immediately without lazy loading
   const shouldLoad = eager || isVisible;
 
+  // Check if image supports transforms
+  const canTransform = useMemo(() => supportsImageTransforms(src), [src]);
+
   // Use provided placeholder or generate tiny version for blur-up
   const placeholderSrc = placeholder || (blurUp ? getTinyPlaceholder(src) : null);
 
-  // Generate WebP URL for Supabase storage images
+  // Generate responsive srcset
+  const srcSet = useMemo(() => {
+    if (!responsive || !canTransform) return undefined;
+    return getResponsiveSrcSet(src, RESPONSIVE_WIDTHS[responsivePreset]);
+  }, [src, responsive, canTransform, responsivePreset]);
+
+  // Generate WebP srcset for responsive images
+  const webpSrcSet = useMemo(() => {
+    if (!webp || webpFailed || !canTransform) return undefined;
+    return getWebPSrcSet(src, RESPONSIVE_WIDTHS[responsivePreset]);
+  }, [src, webp, webpFailed, canTransform, responsivePreset]);
+
+  // Generate single WebP URL as fallback
   const webpSrc = useMemo(() => {
     if (!webp || webpFailed) return null;
     return getWebPUrl(src);
@@ -69,7 +98,7 @@ export const ProgressiveImage = ({
   };
 
   const handleImageError = () => {
-    if (webpSrc && !webpFailed) {
+    if ((webpSrc || webpSrcSet) && !webpFailed) {
       // WebP might have failed, fall back to original format
       setWebpFailed(true);
     } else {
@@ -105,20 +134,30 @@ export const ProgressiveImage = ({
         />
       )}
       
-      {/* Main image with WebP support using picture element */}
+      {/* Main image with WebP and responsive srcset support using picture element */}
       {shouldLoad && (
         <picture>
-          {/* WebP source - browsers that support it will use this */}
-          {webpSrc && !webpFailed && (
+          {/* WebP source with responsive srcset - browsers that support WebP will use this */}
+          {webpSrcSet && !webpFailed && (
+            <source 
+              srcSet={webpSrcSet}
+              sizes={sizes}
+              type="image/webp"
+            />
+          )}
+          
+          {/* Single WebP source fallback if no srcset */}
+          {!webpSrcSet && webpSrc && !webpFailed && (
             <source 
               srcSet={webpSrc} 
               type="image/webp"
             />
           )}
           
-          {/* Fallback image for browsers that don't support WebP */}
+          {/* Fallback image with responsive srcset for browsers that don't support WebP */}
           <img
             src={src}
+            srcSet={srcSet}
             alt={alt}
             onClick={onClick}
             onLoad={handleImageLoad}
@@ -140,3 +179,6 @@ export const ProgressiveImage = ({
     </div>
   );
 };
+
+// Re-export responsive utilities for convenience
+export { RESPONSIVE_SIZES, RESPONSIVE_WIDTHS } from "@/lib/imageUtils";

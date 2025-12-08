@@ -112,18 +112,70 @@ export const getOptimizedImageUrl = (
 };
 
 /**
+ * Default responsive image widths
+ */
+export const RESPONSIVE_WIDTHS = {
+  thumbnail: [160, 320],
+  small: [320, 480, 640],
+  medium: [480, 640, 960, 1280],
+  large: [640, 960, 1280, 1920],
+  full: [320, 640, 960, 1280, 1920, 2560],
+};
+
+/**
+ * Default sizes attribute for common layouts
+ */
+export const RESPONSIVE_SIZES = {
+  /** Full width on all screens */
+  fullWidth: "100vw",
+  /** Full width on mobile, 50% on tablet and up */
+  halfWidth: "(min-width: 768px) 50vw, 100vw",
+  /** Full width on mobile, third on desktop */
+  thirdWidth: "(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw",
+  /** Gallery thumbnail */
+  thumbnail: "(min-width: 1024px) 20vw, (min-width: 768px) 33vw, 50vw",
+  /** Hero/fullscreen image */
+  hero: "100vw",
+  /** Card image */
+  card: "(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 100vw",
+};
+
+/**
  * Get image srcset for responsive images
  */
 export const getResponsiveSrcSet = (
   src: string,
-  widths: number[] = [320, 640, 960, 1280, 1920]
+  widths: number[] = RESPONSIVE_WIDTHS.large,
+  format?: "webp" | "avif"
 ): string => {
-  if (!src || !src.includes("supabase")) return "";
+  if (!src) return "";
+
+  // Check if URL supports transforms (Supabase Storage)
+  const supportsTransforms = src.includes("supabase") && src.includes("/storage/");
+  
+  if (!supportsTransforms) return "";
 
   return widths
     .map((width) => {
-      const url = getOptimizedImageUrl(src, { width });
+      const url = getOptimizedImageUrl(src, { width, format });
       return `${url} ${width}w`;
     })
     .join(", ");
+};
+
+/**
+ * Get WebP srcset for responsive images
+ */
+export const getWebPSrcSet = (
+  src: string,
+  widths: number[] = RESPONSIVE_WIDTHS.large
+): string => {
+  return getResponsiveSrcSet(src, widths, "webp");
+};
+
+/**
+ * Check if URL supports image transforms (Supabase Storage)
+ */
+export const supportsImageTransforms = (src: string): boolean => {
+  return Boolean(src && src.includes("supabase") && src.includes("/storage/"));
 };
