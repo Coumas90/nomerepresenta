@@ -174,7 +174,9 @@ const Studio = () => {
 
         <button
           onClick={handleClose}
-          className="text-white hover:opacity-70 transition-all duration-200 hover:rotate-90 focus:outline-none"
+          className="min-w-[44px] min-h-[44px] flex items-center justify-center
+                     text-white hover:opacity-70 transition-all duration-200 hover:rotate-90 focus:outline-none
+                     -mr-2 md:-mr-3"
           aria-label="Close and return to landing"
         >
           <X className="w-6 h-6 md:w-7 md:h-7" strokeWidth={1.5} />
@@ -199,7 +201,7 @@ const Studio = () => {
 
       {/* Vertical navigation indicators */}
       <div className={`absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3 transition-all duration-500 delay-200 ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-        {/* Up arrow */}
+        {/* Up arrow - enhanced touch target */}
         {hasPrev && (
           <button
             onClick={() => {
@@ -209,10 +211,11 @@ const Studio = () => {
                 setTimeout(() => setIsScrolling(false), 600);
               }
             }}
-            className="text-white/40 hover:text-white/70 transition-opacity"
+            className="min-w-[44px] min-h-[44px] flex items-center justify-center
+                       text-white/40 hover:text-white/70 transition-opacity"
             aria-label="Previous image"
           >
-            <ChevronUp className="w-5 h-5" strokeWidth={1.5} />
+            <ChevronUp className="w-6 h-6" strokeWidth={1.5} />
           </button>
         )}
         
@@ -221,7 +224,7 @@ const Studio = () => {
           {currentIndex + 1} / {images.length}
         </span>
         
-        {/* Down arrow */}
+        {/* Down arrow - enhanced touch target */}
         {hasNext && (
           <button
             onClick={() => {
@@ -231,10 +234,11 @@ const Studio = () => {
                 setTimeout(() => setIsScrolling(false), 600);
               }
             }}
-            className="text-white/40 hover:text-white/70 transition-opacity animate-pulse"
+            className="min-w-[44px] min-h-[44px] flex items-center justify-center
+                       text-white/40 hover:text-white/70 transition-opacity animate-pulse"
             aria-label="Next image"
           >
-            <ChevronDown className="w-5 h-5" strokeWidth={1.5} />
+            <ChevronDown className="w-6 h-6" strokeWidth={1.5} />
           </button>
         )}
       </div>

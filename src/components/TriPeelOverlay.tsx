@@ -31,7 +31,9 @@ const TriPeelOverlay = ({
         </span>
         <button
           onClick={onClose}
-          className="text-stone-900 hover:opacity-70 transition-opacity duration-200 focus:outline-none"
+          className="min-w-[44px] min-h-[44px] flex items-center justify-center
+                     text-stone-900 hover:opacity-70 transition-opacity duration-200 focus:outline-none
+                     -mr-2 md:-mr-3"
           aria-label="Close overlay"
         >
           <X className="w-6 h-6 md:w-7 md:h-7" strokeWidth={1.5} />
