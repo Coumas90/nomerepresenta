@@ -5,6 +5,7 @@ import { useStudioImages } from "@/hooks/useStudioImages";
 import { useImagePreloader } from "@/hooks/useImagePreloader";
 import { useSwipeNavigation } from "@/hooks/useSwipeNavigation";
 import { ProgressiveImage } from "@/components/ProgressiveImage";
+import { SwipeHint } from "@/components/SwipeHint";
 
 const Studio = () => {
   const navigate = useNavigate();
@@ -237,6 +238,12 @@ const Studio = () => {
           </button>
         )}
       </div>
+
+      {/* Mobile swipe hint */}
+      <SwipeHint 
+        direction="vertical" 
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+      />
     </div>
   );
 };
