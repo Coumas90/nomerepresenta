@@ -12,6 +12,7 @@ import { AdminLoadingFallback } from "./components/admin/AdminLoadingFallback";
 // Code splitting para páginas públicas
 const ArtworkDetail = lazy(() => import("./pages/ArtworkDetail"));
 const WorksFullscreen = lazy(() => import("./pages/WorksFullscreen"));
+const Studio = lazy(() => import("./pages/Studio"));
 const Bio = lazy(() => import("./pages/Bio"));
 const Admin = lazy(() => import("./pages/Admin"));
 const Auth = lazy(() => import("./pages/Auth"));
@@ -78,6 +79,15 @@ const App = () => (
               </Suspense>
             } />
             <Route path="/artwork/:id" element={<ArtworkDetail />} />
+            <Route path="/studio" element={
+              <Suspense fallback={
+                <div className="min-h-screen bg-black flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                </div>
+              }>
+                <Studio />
+              </Suspense>
+            } />
             <Route path="/bio" element={
               <Suspense fallback={
                 <div className="min-h-screen bg-background flex items-center justify-center">
