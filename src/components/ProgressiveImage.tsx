@@ -3,9 +3,11 @@ import { useImageLazyLoad } from "@/hooks/useImageLazyLoad";
 import { ImageSkeleton } from "./ImageSkeleton";
 import { 
   getWebPUrl, 
+  getAVIFUrl,
   getOptimizedImageUrl, 
   getResponsiveSrcSet, 
   getWebPSrcSet,
+  getAVIFSrcSet,
   supportsImageTransforms,
   RESPONSIVE_WIDTHS,
   RESPONSIVE_SIZES,
@@ -23,7 +25,11 @@ interface ProgressiveImageProps {
   placeholder?: string;
   /** Enable blur-up effect (uses tiny version of image) */
   blurUp?: boolean;
-  /** Enable WebP format with fallback (default: true) */
+  /** Enable modern formats (WebP/AVIF) with fallback (default: true) */
+  modernFormats?: boolean;
+  /** Enable AVIF format (best compression, default: true) */
+  avif?: boolean;
+  /** Enable WebP format (good compression, wide support, default: true) */
   webp?: boolean;
   /** Sizes attribute for responsive images (e.g., "100vw" or "(min-width: 768px) 50vw, 100vw") */
   sizes?: string;
@@ -48,6 +54,8 @@ export const ProgressiveImage = ({
   skeletonVariant = "shimmer",
   placeholder,
   blurUp = false,
+  modernFormats = true,
+  avif = true,
   webp = true,
   sizes = RESPONSIVE_SIZES.fullWidth,
   responsive = true,
@@ -56,6 +64,7 @@ export const ProgressiveImage = ({
   const { imgRef, isVisible, isLoaded, setIsLoaded } = useImageLazyLoad();
   const [error, setError] = useState(false);
   const [placeholderLoaded, setPlaceholderLoaded] = useState(false);
+  const [avifFailed, setAvifFailed] = useState(false);
   const [webpFailed, setWebpFailed] = useState(false);
 
   // If eager is true, load immediately without lazy loading
@@ -67,29 +76,42 @@ export const ProgressiveImage = ({
   // Use provided placeholder or generate tiny version for blur-up
   const placeholderSrc = placeholder || (blurUp ? getTinyPlaceholder(src) : null);
 
-  // Generate responsive srcset
+  // Generate responsive srcset for original format
   const srcSet = useMemo(() => {
     if (!responsive || !canTransform) return undefined;
     return getResponsiveSrcSet(src, RESPONSIVE_WIDTHS[responsivePreset]);
   }, [src, responsive, canTransform, responsivePreset]);
 
-  // Generate WebP srcset for responsive images
+  // Generate AVIF srcset (best compression)
+  const avifSrcSet = useMemo(() => {
+    if (!modernFormats || !avif || avifFailed || !canTransform) return undefined;
+    return getAVIFSrcSet(src, RESPONSIVE_WIDTHS[responsivePreset]);
+  }, [src, modernFormats, avif, avifFailed, canTransform, responsivePreset]);
+
+  // Generate single AVIF URL as fallback
+  const avifSrc = useMemo(() => {
+    if (!modernFormats || !avif || avifFailed) return null;
+    return getAVIFUrl(src);
+  }, [src, modernFormats, avif, avifFailed]);
+
+  // Generate WebP srcset (good compression, wide support)
   const webpSrcSet = useMemo(() => {
-    if (!webp || webpFailed || !canTransform) return undefined;
+    if (!modernFormats || !webp || webpFailed || !canTransform) return undefined;
     return getWebPSrcSet(src, RESPONSIVE_WIDTHS[responsivePreset]);
-  }, [src, webp, webpFailed, canTransform, responsivePreset]);
+  }, [src, modernFormats, webp, webpFailed, canTransform, responsivePreset]);
 
   // Generate single WebP URL as fallback
   const webpSrc = useMemo(() => {
-    if (!webp || webpFailed) return null;
+    if (!modernFormats || !webp || webpFailed) return null;
     return getWebPUrl(src);
-  }, [src, webp, webpFailed]);
+  }, [src, modernFormats, webp, webpFailed]);
 
   // Reset states when src changes
   useEffect(() => {
     setIsLoaded(false);
     setPlaceholderLoaded(false);
     setError(false);
+    setAvifFailed(false);
     setWebpFailed(false);
   }, [src, setIsLoaded]);
 
@@ -98,11 +120,12 @@ export const ProgressiveImage = ({
   };
 
   const handleImageError = () => {
-    if ((webpSrc || webpSrcSet) && !webpFailed) {
-      // WebP might have failed, fall back to original format
+    // Try fallback chain: AVIF -> WebP -> Original
+    if ((avifSrc || avifSrcSet) && !avifFailed) {
+      setAvifFailed(true);
+    } else if ((webpSrc || webpSrcSet) && !webpFailed) {
       setWebpFailed(true);
     } else {
-      // Original format failed too
       setError(true);
     }
   };
@@ -110,6 +133,10 @@ export const ProgressiveImage = ({
   const imageClasses = `w-full h-full object-cover transition-all duration-500 ease-out z-20 relative ${
     skipInternalFade ? "opacity-100" : (isLoaded ? "opacity-100 blur-0" : "opacity-0")
   } ${onClick ? 'cursor-pointer' : ''}`;
+
+  // Determine which formats to show (browsers pick the first supported)
+  const showAvif = (avifSrcSet || avifSrc) && !avifFailed;
+  const showWebp = (webpSrcSet || webpSrc) && !webpFailed;
 
   return (
     <div ref={imgRef} className={`relative overflow-hidden ${className}`}>
@@ -134,11 +161,28 @@ export const ProgressiveImage = ({
         />
       )}
       
-      {/* Main image with WebP and responsive srcset support using picture element */}
+      {/* Main image with AVIF, WebP, and responsive srcset support using picture element */}
       {shouldLoad && (
         <picture>
-          {/* WebP source with responsive srcset - browsers that support WebP will use this */}
-          {webpSrcSet && !webpFailed && (
+          {/* AVIF source (best compression) - browsers that support AVIF will use this first */}
+          {showAvif && avifSrcSet && (
+            <source 
+              srcSet={avifSrcSet}
+              sizes={sizes}
+              type="image/avif"
+            />
+          )}
+          
+          {/* Single AVIF source fallback if no srcset */}
+          {showAvif && !avifSrcSet && avifSrc && (
+            <source 
+              srcSet={avifSrc} 
+              type="image/avif"
+            />
+          )}
+
+          {/* WebP source (good compression, wide support) - fallback from AVIF */}
+          {showWebp && webpSrcSet && (
             <source 
               srcSet={webpSrcSet}
               sizes={sizes}
@@ -147,14 +191,14 @@ export const ProgressiveImage = ({
           )}
           
           {/* Single WebP source fallback if no srcset */}
-          {!webpSrcSet && webpSrc && !webpFailed && (
+          {showWebp && !webpSrcSet && webpSrc && (
             <source 
               srcSet={webpSrc} 
               type="image/webp"
             />
           )}
           
-          {/* Fallback image with responsive srcset for browsers that don't support WebP */}
+          {/* Fallback image with responsive srcset for browsers that don't support modern formats */}
           <img
             src={src}
             srcSet={srcSet}

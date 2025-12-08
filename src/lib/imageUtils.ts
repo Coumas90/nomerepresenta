@@ -1,8 +1,10 @@
 /**
- * WebP Support Detection and Image Format Utilities
+ * Modern Image Format Support Detection and Utilities
+ * Supports WebP and AVIF with automatic fallbacks
  */
 
 let webpSupported: boolean | null = null;
+let avifSupported: boolean | null = null;
 
 /**
  * Check if the browser supports WebP format
@@ -29,6 +31,30 @@ export const checkWebPSupport = (): Promise<boolean> => {
 };
 
 /**
+ * Check if the browser supports AVIF format
+ */
+export const checkAVIFSupport = (): Promise<boolean> => {
+  if (avifSupported !== null) {
+    return Promise.resolve(avifSupported);
+  }
+
+  return new Promise((resolve) => {
+    const avifTestImage = new Image();
+    avifTestImage.onload = () => {
+      avifSupported = avifTestImage.width === 1;
+      resolve(avifSupported);
+    };
+    avifTestImage.onerror = () => {
+      avifSupported = false;
+      resolve(false);
+    };
+    // Smallest valid AVIF image (1x1 pixel)
+    avifTestImage.src =
+      "data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUIAAADybWV0YQAAAAAAAAAoaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAGxpYmF2aWYAAAAADnBpdG0AAAAAAAEAAAAeaWxvYwAAAABEAAABAAEAAAABAAABGgAAAB0AAAAoaWluZgAAAAAAAQAAABppbmZlAgAAAAABAABhdjAxQ29sb3IAAAAAamlwcnAAAABLaXBjbwAAABRpc3BlAAAAAAAAAAIAAAACAAAAEHBpeGkAAAAAAwgICAAAAAxhdjFDgQ0MAAAAABNjb2xybmNseAACAAIAAYAAAAAXaXBtYQAAAAAAAAABAAEEAQKDBAAAACVtZGF0EgAKBzgABpAQ0AIyDQAAAAAUWghkLxbJ";
+  });
+};
+
+/**
  * Synchronous check for WebP support (returns cached result or assumes support)
  */
 export const supportsWebP = (): boolean => {
@@ -40,10 +66,24 @@ export const supportsWebP = (): boolean => {
 };
 
 /**
- * Initialize WebP support detection
+ * Synchronous check for AVIF support (returns cached result)
  */
-export const initWebPSupport = async (): Promise<void> => {
-  await checkWebPSupport();
+export const supportsAVIF = (): boolean => {
+  return avifSupported === true;
+};
+
+/**
+ * Initialize format support detection
+ */
+export const initFormatSupport = async (): Promise<{
+  webp: boolean;
+  avif: boolean;
+}> => {
+  const [webp, avif] = await Promise.all([
+    checkWebPSupport(),
+    checkAVIFSupport(),
+  ]);
+  return { webp, avif };
 };
 
 /**
@@ -65,10 +105,36 @@ export const getWebPUrl = (src: string): string | null => {
   }
 
   // For other URLs, check if there's a .webp version available
-  // Replace common extensions with .webp
   const webpUrl = src.replace(/\.(jpg|jpeg|png|gif)$/i, ".webp");
   if (webpUrl !== src) {
     return webpUrl;
+  }
+
+  return null;
+};
+
+/**
+ * Convert image URL to AVIF format if supported by storage
+ * Works with Supabase Storage render transforms
+ */
+export const getAVIFUrl = (src: string): string | null => {
+  if (!src) return null;
+
+  // Supabase Storage URLs - add format transform
+  if (src.includes("supabase") && src.includes("/storage/")) {
+    try {
+      const url = new URL(src);
+      url.searchParams.set("format", "avif");
+      return url.toString();
+    } catch {
+      return null;
+    }
+  }
+
+  // For other URLs, check if there's an .avif version available
+  const avifUrl = src.replace(/\.(jpg|jpeg|png|gif|webp)$/i, ".avif");
+  if (avifUrl !== src) {
+    return avifUrl;
   }
 
   return null;
@@ -171,6 +237,16 @@ export const getWebPSrcSet = (
   widths: number[] = RESPONSIVE_WIDTHS.large
 ): string => {
   return getResponsiveSrcSet(src, widths, "webp");
+};
+
+/**
+ * Get AVIF srcset for responsive images
+ */
+export const getAVIFSrcSet = (
+  src: string,
+  widths: number[] = RESPONSIVE_WIDTHS.large
+): string => {
+  return getResponsiveSrcSet(src, widths, "avif");
 };
 
 /**
