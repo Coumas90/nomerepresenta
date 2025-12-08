@@ -5,8 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Edit, Trash2, GripVertical, Plus, X, Upload, Images, CheckCircle } from "lucide-react";
+import { Edit, Trash2, GripVertical, Plus, X, Upload, Images, CheckCircle, ZoomIn } from "lucide-react";
 import { useStudioImages, StudioImage } from "@/hooks/useStudioImages";
 import {
   useCreateStudioImage,
@@ -38,9 +39,10 @@ interface SortableImageItemProps {
   image: StudioImage;
   onEdit: () => void;
   onDelete: () => void;
+  onPreview: () => void;
 }
 
-const SortableImageItem = ({ image, onEdit, onDelete }: SortableImageItemProps) => {
+const SortableImageItem = ({ image, onEdit, onDelete, onPreview }: SortableImageItemProps) => {
   const {
     attributes,
     listeners,
@@ -64,11 +66,16 @@ const SortableImageItem = ({ image, onEdit, onDelete }: SortableImageItemProps) 
             <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
               <GripVertical className="h-5 w-5 text-muted-foreground" />
             </div>
-            <img
-              src={image.image_url}
-              alt={image.title || "Studio image"}
-              className="w-20 h-20 object-cover rounded-md"
-            />
+            <div className="relative group cursor-pointer" onClick={onPreview}>
+              <img
+                src={image.image_url}
+                alt={image.title || "Studio image"}
+                className="w-20 h-20 object-cover rounded-md transition-opacity group-hover:opacity-75"
+              />
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <ZoomIn className="h-6 w-6 text-foreground drop-shadow-lg" />
+              </div>
+            </div>
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold text-base">
                 {image.title || "Untitled"}
@@ -118,6 +125,7 @@ const StudioImagesManager = () => {
   const [imageToDelete, setImageToDelete] = useState<string | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
+  const [previewImage, setPreviewImage] = useState<StudioImage | null>(null);
   
   // Bulk upload state
   const [bulkItems, setBulkItems] = useState<BulkUploadItem[]>([]);
@@ -595,6 +603,7 @@ const StudioImagesManager = () => {
                       image={image}
                       onEdit={() => handleEdit(image)}
                       onDelete={() => handleDeleteClick(image.id)}
+                      onPreview={() => setPreviewImage(image)}
                     />
                   ))}
                 </SortableContext>
@@ -607,6 +616,31 @@ const StudioImagesManager = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Image Preview Modal */}
+      <Dialog open={!!previewImage} onOpenChange={(open) => !open && setPreviewImage(null)}>
+        <DialogContent className="max-w-4xl p-0 overflow-hidden bg-background/95 backdrop-blur-sm">
+          {previewImage && (
+            <div className="relative">
+              <img
+                src={previewImage.image_url}
+                alt={previewImage.title || "Studio image"}
+                className="w-full h-auto max-h-[85vh] object-contain"
+              />
+              {(previewImage.title || previewImage.description) && (
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background/90 to-transparent p-6 pt-12">
+                  {previewImage.title && (
+                    <h3 className="text-lg font-semibold">{previewImage.title}</h3>
+                  )}
+                  {previewImage.description && (
+                    <p className="text-sm text-muted-foreground mt-1">{previewImage.description}</p>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
