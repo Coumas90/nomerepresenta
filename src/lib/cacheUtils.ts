@@ -1,11 +1,78 @@
 /**
  * Utility functions for managing the artwork image cache
+ * Designed to work alongside Workbox runtime caching without duplication
  */
 
 const ARTWORK_CACHE_NAME = "artwork-images-cache";
 
+// Cache names that Workbox might use (from vite.config.ts)
+const WORKBOX_CACHE_NAMES = [
+  "artwork-images-cache",
+  "static-images-cache", 
+  "external-images-cache",
+];
+
+/**
+ * Get base URL without query parameters (for cache matching with ignoreSearch)
+ */
+const getBaseUrl = (url: string): string => {
+  try {
+    const parsed = new URL(url);
+    return `${parsed.origin}${parsed.pathname}`;
+  } catch {
+    return url;
+  }
+};
+
+/**
+ * Check if a URL is already cached in any of the relevant caches
+ * This checks both our manual cache and Workbox's runtime caches
+ */
+export const isUrlCachedAnywhere = async (url: string): Promise<boolean> => {
+  if (!("caches" in window)) return false;
+
+  try {
+    const baseUrl = getBaseUrl(url);
+    
+    // Check all possible cache names
+    for (const cacheName of WORKBOX_CACHE_NAMES) {
+      try {
+        const cache = await caches.open(cacheName);
+        
+        // Try exact match first
+        const exactMatch = await cache.match(url);
+        if (exactMatch) return true;
+        
+        // Try base URL match (without query params, like Workbox's ignoreSearch)
+        if (baseUrl !== url) {
+          const baseMatch = await cache.match(baseUrl);
+          if (baseMatch) return true;
+        }
+        
+        // For Supabase URLs, also check with different query params
+        // since Workbox uses ignoreSearch: true
+        if (url.includes("supabase") && url.includes("/storage/")) {
+          const keys = await cache.keys();
+          const hasMatch = keys.some(request => {
+            const cachedBase = getBaseUrl(request.url);
+            return cachedBase === baseUrl;
+          });
+          if (hasMatch) return true;
+        }
+      } catch {
+        // Cache might not exist yet, continue checking others
+      }
+    }
+    
+    return false;
+  } catch {
+    return false;
+  }
+};
+
 /**
  * Pre-cache a list of image URLs for offline viewing
+ * @deprecated Use precacheImagesProgressive instead to avoid cache duplication
  */
 export const precacheImages = async (urls: string[]): Promise<void> => {
   if (!("caches" in window)) return;
@@ -34,8 +101,8 @@ export const precacheImages = async (urls: string[]): Promise<void> => {
 };
 
 /**
- * Pre-cache images progressively - only cache images not already in cache
- * This avoids redundant network requests and cache writes
+ * Pre-cache images progressively - only cache images not already in ANY cache
+ * This avoids redundant network requests and prevents duplication with Workbox
  */
 export const precacheImagesProgressive = async (urls: string[]): Promise<number> => {
   if (!("caches" in window)) return 0;
@@ -44,14 +111,16 @@ export const precacheImagesProgressive = async (urls: string[]): Promise<number>
     const cache = await caches.open(ARTWORK_CACHE_NAME);
     const validUrls = urls.filter((url) => url && url.startsWith("http"));
     let cachedCount = 0;
+    let skippedCount = 0;
 
-    // Check which URLs are already cached and only fetch new ones
-    const results = await Promise.allSettled(
+    // Check which URLs are already cached (in any cache) and only fetch new ones
+    await Promise.allSettled(
       validUrls.map(async (url) => {
         try {
-          // Check if already in cache
-          const existingResponse = await cache.match(url);
-          if (existingResponse) {
+          // Check if already cached anywhere (including Workbox caches)
+          const alreadyCached = await isUrlCachedAnywhere(url);
+          if (alreadyCached) {
+            skippedCount++;
             return false; // Already cached, skip
           }
 
@@ -69,6 +138,11 @@ export const precacheImagesProgressive = async (urls: string[]): Promise<number>
         }
       })
     );
+
+    // Debug info (only in development)
+    if (skippedCount > 0) {
+      console.debug(`Precache: ${cachedCount} new, ${skippedCount} already cached`);
+    }
 
     return cachedCount;
   } catch (error) {
@@ -101,18 +175,10 @@ export const getAdjacentArtworkUrls = <T extends { image_url: string; image_deta
 };
 
 /**
- * Check if an image is already cached
+ * Check if an image is already cached (in any cache)
  */
 export const isImageCached = async (url: string): Promise<boolean> => {
-  if (!("caches" in window)) return false;
-
-  try {
-    const cache = await caches.open(ARTWORK_CACHE_NAME);
-    const response = await cache.match(url);
-    return !!response;
-  } catch {
-    return false;
-  }
+  return isUrlCachedAnywhere(url);
 };
 
 /**
@@ -143,7 +209,7 @@ export const getCacheStorageInfo = async (): Promise<{
 };
 
 /**
- * Clear all cached artwork images
+ * Clear all cached artwork images (manual cache only, not Workbox)
  */
 export const clearArtworkCache = async (): Promise<void> => {
   if (!("caches" in window)) return;
@@ -156,15 +222,34 @@ export const clearArtworkCache = async (): Promise<void> => {
 };
 
 /**
- * Get count of cached images
+ * Get count of cached images across all relevant caches
  */
 export const getCachedImageCount = async (): Promise<number> => {
   if (!("caches" in window)) return 0;
 
   try {
-    const cache = await caches.open(ARTWORK_CACHE_NAME);
-    const keys = await cache.keys();
-    return keys.length;
+    let totalCount = 0;
+    const seenUrls = new Set<string>();
+
+    for (const cacheName of WORKBOX_CACHE_NAMES) {
+      try {
+        const cache = await caches.open(cacheName);
+        const keys = await cache.keys();
+        
+        // Deduplicate by base URL
+        for (const request of keys) {
+          const baseUrl = getBaseUrl(request.url);
+          if (!seenUrls.has(baseUrl)) {
+            seenUrls.add(baseUrl);
+            totalCount++;
+          }
+        }
+      } catch {
+        // Cache might not exist
+      }
+    }
+
+    return totalCount;
   } catch {
     return 0;
   }
