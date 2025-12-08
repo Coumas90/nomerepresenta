@@ -265,21 +265,24 @@ const WorksFullscreen = () => {
           TRI-PEEL
         </button>
 
-        {/* Close button */}
+        {/* Close button - enhanced touch target */}
         <button
           onClick={handleClose}
-          className="text-white hover:opacity-70 transition-opacity duration-200 focus:outline-none"
+          className="min-w-[44px] min-h-[44px] flex items-center justify-center
+                     text-white hover:opacity-70 transition-opacity duration-200 focus:outline-none
+                     -mr-2 md:-mr-3"
           aria-label="Close and return to landing"
         >
           <X className="w-6 h-6 md:w-7 md:h-7" strokeWidth={1.5} />
         </button>
       </header>
 
-      {/* Left arrow - Previous image/detail */}
+      {/* Left arrow - Previous image/detail - enhanced touch target */}
       {hasPrevImage && (
         <button
           onClick={goToPrevImage}
-          className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-20
+          className="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 z-20
+                     min-w-[44px] min-h-[44px] flex items-center justify-center
                      text-white/60 hover:text-white transition-all duration-200
                      focus:outline-none group"
           aria-label="Previous image"
@@ -291,11 +294,12 @@ const WorksFullscreen = () => {
         </button>
       )}
 
-      {/* Right arrow - Next image/detail */}
+      {/* Right arrow - Next image/detail - enhanced touch target */}
       {hasNextImage && (
         <button
           onClick={goToNextImage}
-          className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20
+          className="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 z-20
+                     min-w-[44px] min-h-[44px] flex items-center justify-center
                      text-white/60 hover:text-white transition-all duration-200
                      focus:outline-none group"
           aria-label="Next image"
@@ -309,7 +313,7 @@ const WorksFullscreen = () => {
 
       {/* Vertical navigation indicators */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3">
-        {/* Up arrow */}
+        {/* Up arrow - enhanced touch target */}
         {hasPrevArtwork && (
           <button
             onClick={() => {
@@ -319,10 +323,11 @@ const WorksFullscreen = () => {
                 setTimeout(() => setIsScrolling(false), 600);
               }
             }}
-            className="text-white/40 hover:text-white/70 transition-opacity"
+            className="min-w-[44px] min-h-[44px] flex items-center justify-center
+                       text-white/40 hover:text-white/70 transition-opacity"
             aria-label="Previous artwork"
           >
-            <ChevronUp className="w-5 h-5" strokeWidth={1.5} />
+            <ChevronUp className="w-6 h-6" strokeWidth={1.5} />
           </button>
         )}
         
@@ -331,7 +336,7 @@ const WorksFullscreen = () => {
           {currentArtworkIndex + 1} / {artworks.length}
         </span>
         
-        {/* Down arrow / scroll hint */}
+        {/* Down arrow - enhanced touch target */}
         {hasNextArtwork && (
           <button
             onClick={() => {
@@ -341,28 +346,31 @@ const WorksFullscreen = () => {
                 setTimeout(() => setIsScrolling(false), 600);
               }
             }}
-            className="text-white/40 hover:text-white/70 transition-opacity animate-pulse"
+            className="min-w-[44px] min-h-[44px] flex items-center justify-center
+                       text-white/40 hover:text-white/70 transition-opacity animate-pulse"
             aria-label="Next artwork"
           >
-            <ChevronDown className="w-5 h-5" strokeWidth={1.5} />
+            <ChevronDown className="w-6 h-6" strokeWidth={1.5} />
           </button>
         )}
       </div>
 
-      {/* Image indicators (dots) */}
+      {/* Image indicators (dots) - enhanced touch targets */}
       {allImages.length > 1 && (
-        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-20 flex gap-1">
           {allImages.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentImageIndex(index)}
-              className={`w-2 h-2 rounded-full transition-all duration-200 ${
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center"
+              aria-label={`View image ${index + 1}`}
+            >
+              <span className={`w-2.5 h-2.5 rounded-full transition-all duration-200 ${
                 index === currentImageIndex 
                   ? "bg-white scale-110" 
-                  : "bg-white/30 hover:bg-white/50"
-              }`}
-              aria-label={`View image ${index + 1}`}
-            />
+                  : "bg-white/30"
+              }`} />
+            </button>
           ))}
         </div>
       )}
