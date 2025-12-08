@@ -242,7 +242,11 @@ const WorksFullscreen = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+        <div className="absolute inset-0 skeleton-shimmer bg-stone-900" />
+        <div className="relative z-10 flex flex-col items-center gap-4">
+          <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+          <span className="text-white/40 text-xs tracking-widest uppercase">Loading</span>
+        </div>
       </div>
     );
   }

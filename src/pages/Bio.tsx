@@ -1,7 +1,27 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { X } from "lucide-react";
+import { ImageSkeleton } from "@/components/ImageSkeleton";
 
+const BioHeroImage = () => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  
+  return (
+    <div className="aspect-[16/9] md:aspect-[21/9] w-full bg-stone-200 overflow-hidden relative">
+      {!isLoaded && (
+        <ImageSkeleton className="absolute inset-0" variant="shimmer" />
+      )}
+      <img
+        src="/images/artworks/tri-peel-1.png"
+        alt="Ivan Comas - Artist"
+        onLoad={() => setIsLoaded(true)}
+        className={`w-full h-full object-cover object-center transition-all duration-700 hover:scale-105 ${
+          isLoaded ? 'opacity-100' : 'opacity-0'
+        }`}
+      />
+    </div>
+  );
+};
 const Bio = () => {
   const navigate = useNavigate();
   const [isPageLoaded, setIsPageLoaded] = useState(false);
@@ -34,13 +54,7 @@ const Bio = () => {
       <main className="pt-24 pb-16">
         {/* Artist Photo */}
         <div className={`w-full mb-12 md:mb-16 overflow-hidden transition-all duration-700 delay-100 ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <div className="aspect-[16/9] md:aspect-[21/9] w-full bg-stone-200 overflow-hidden">
-            <img
-              src="/images/artworks/tri-peel-1.png"
-              alt="Ivan Comas - Artist"
-              className="w-full h-full object-cover object-center transition-transform duration-700 hover:scale-105"
-            />
-          </div>
+          <BioHeroImage />
         </div>
 
         <div className="container mx-auto px-6 md:px-8 max-w-4xl">
