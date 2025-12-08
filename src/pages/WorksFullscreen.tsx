@@ -12,7 +12,9 @@ const WorksFullscreen = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showOverlay, setShowOverlay] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const prevImageRef = useRef<string | null>(null);
 
   const currentArtwork = artworks?.[currentArtworkIndex];
   
@@ -37,10 +39,22 @@ const WorksFullscreen = () => {
   const hasNextArtwork = currentArtworkIndex < (artworks?.length || 0) - 1;
   const hasPrevArtwork = currentArtworkIndex > 0;
 
-  // Reset image index when artwork changes
+  // Reset image index when artwork changes (scroll from detail → next artwork full)
   useEffect(() => {
     setCurrentImageIndex(0);
   }, [currentArtworkIndex]);
+
+  // Handle smooth transitions between images
+  useEffect(() => {
+    if (currentImage && currentImage !== prevImageRef.current) {
+      setIsTransitioning(true);
+      const timer = setTimeout(() => {
+        setIsTransitioning(false);
+        prevImageRef.current = currentImage;
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [currentImage]);
 
   // Navigate to next/previous image (detail)
   const goToNextImage = useCallback(() => {
@@ -240,11 +254,16 @@ const WorksFullscreen = () => {
     );
   }
 
+  // Determine if viewing a detail (not the main image)
+  const isViewingDetail = currentImageIndex > 0;
+
   return (
     <div className="relative min-h-screen bg-black overflow-hidden">
-      {/* Background artwork image */}
+      {/* Background artwork image with enhanced transition */}
       <div
-        className="absolute inset-0 transition-opacity duration-700 ease-out"
+        className={`absolute inset-0 transition-all duration-500 ease-out ${
+          isTransitioning ? "opacity-0 scale-[1.02]" : "opacity-100 scale-100"
+        }`}
         style={{
           backgroundImage: `url(${currentImage})`,
           backgroundSize: "contain",
@@ -253,8 +272,23 @@ const WorksFullscreen = () => {
         }}
       />
 
-      {/* Subtle vignette overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/20 pointer-events-none" />
+      {/* Subtle vignette overlay - darker when viewing detail */}
+      <div 
+        className={`absolute inset-0 pointer-events-none transition-opacity duration-500 ${
+          isViewingDetail 
+            ? "bg-gradient-to-t from-black/40 via-transparent to-black/30" 
+            : "bg-gradient-to-t from-black/20 via-transparent to-black/20"
+        }`} 
+      />
+      
+      {/* Detail indicator */}
+      {isViewingDetail && (
+        <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20">
+          <span className="text-white/50 text-xs tracking-widest uppercase animate-fade-in">
+            Detail {currentImageIndex} / {allImages.length - 1}
+          </span>
+        </div>
+      )}
 
       {/* Minimalist Header */}
       <header className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-6 md:p-8">
