@@ -34,6 +34,73 @@ export const precacheImages = async (urls: string[]): Promise<void> => {
 };
 
 /**
+ * Pre-cache images progressively - only cache images not already in cache
+ * This avoids redundant network requests and cache writes
+ */
+export const precacheImagesProgressive = async (urls: string[]): Promise<number> => {
+  if (!("caches" in window)) return 0;
+
+  try {
+    const cache = await caches.open(ARTWORK_CACHE_NAME);
+    const validUrls = urls.filter((url) => url && url.startsWith("http"));
+    let cachedCount = 0;
+
+    // Check which URLs are already cached and only fetch new ones
+    const results = await Promise.allSettled(
+      validUrls.map(async (url) => {
+        try {
+          // Check if already in cache
+          const existingResponse = await cache.match(url);
+          if (existingResponse) {
+            return false; // Already cached, skip
+          }
+
+          // Fetch and cache
+          const response = await fetch(url, { mode: "cors" });
+          if (response.ok) {
+            await cache.put(url, response);
+            cachedCount++;
+            return true;
+          }
+          return false;
+        } catch (e) {
+          console.debug(`Failed to cache: ${url}`);
+          return false;
+        }
+      })
+    );
+
+    return cachedCount;
+  } catch (error) {
+    console.error("Error precaching images:", error);
+    return 0;
+  }
+};
+
+/**
+ * Get images for progressive precaching based on current index
+ * Returns URLs for adjacent artworks (configurable range)
+ */
+export const getAdjacentArtworkUrls = <T extends { image_url: string; image_detail_url: string }>(
+  artworks: T[],
+  currentIndex: number,
+  options: { ahead?: number; behind?: number } = {}
+): string[] => {
+  const { ahead = 2, behind = 1 } = options;
+  const urls: string[] = [];
+
+  for (let i = currentIndex - behind; i <= currentIndex + ahead; i++) {
+    if (i >= 0 && i < artworks.length) {
+      const artwork = artworks[i];
+      if (artwork.image_url) urls.push(artwork.image_url);
+      if (artwork.image_detail_url) urls.push(artwork.image_detail_url);
+    }
+  }
+
+  return urls.filter(Boolean);
+};
+
+/**
  * Check if an image is already cached
  */
 export const isImageCached = async (url: string): Promise<boolean> => {
