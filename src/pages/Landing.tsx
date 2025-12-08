@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Menu items with their associated artwork images
@@ -15,6 +15,13 @@ const Landing = () => {
   const navigate = useNavigate();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isPageLoaded, setIsPageLoaded] = useState(false);
+
+  // Trigger entrance animation
+  useEffect(() => {
+    const timer = setTimeout(() => setIsPageLoaded(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleItemClick = (item: typeof menuItems[0]) => {
     if (item.type === "mailto") {
@@ -28,7 +35,6 @@ const Landing = () => {
     if (hoveredIndex !== index) {
       setIsTransitioning(true);
       setHoveredIndex(index);
-      // Reset transition state after animation completes
       setTimeout(() => setIsTransitioning(false), 300);
     }
   };
@@ -40,13 +46,13 @@ const Landing = () => {
   };
 
   return (
-    <div className="relative min-h-screen bg-black overflow-hidden">
+    <div className={`relative min-h-screen bg-black overflow-hidden transition-opacity duration-500 ${isPageLoaded ? 'opacity-100' : 'opacity-0'}`}>
       {/* Background images - one for each menu item */}
       {menuItems.map((item, index) => (
         <div
           key={`bg-${index}`}
-          className={`absolute inset-0 transition-opacity duration-500 ease-out ${
-            hoveredIndex === index ? "opacity-40" : "opacity-0"
+          className={`absolute inset-0 transition-all duration-700 ease-out will-change-opacity ${
+            hoveredIndex === index ? "opacity-40 scale-105" : "opacity-0 scale-100"
           }`}
           style={{
             backgroundImage: `url(${item.image})`,
@@ -71,7 +77,13 @@ const Landing = () => {
             const isHovered = hoveredIndex === index;
 
             return (
-              <li key={index}>
+              <li 
+                key={index}
+                className={`transition-all duration-500 ease-out ${
+                  isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+                }`}
+                style={{ transitionDelay: `${100 + index * 80}ms` }}
+              >
                 <button
                   onClick={() => handleItemClick(item)}
                   onMouseEnter={() => handleMouseEnter(index)}
@@ -80,7 +92,7 @@ const Landing = () => {
                   className={`
                     text-white font-bold tracking-tight leading-none
                     text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl
-                    transition-all duration-300 ease-out
+                    transition-all duration-300 ease-out will-change-transform
                     ${isClickable 
                       ? "cursor-pointer hover:tracking-normal" 
                       : "cursor-default"
@@ -88,14 +100,14 @@ const Landing = () => {
                     ${isHovered 
                       ? "opacity-100 scale-105" 
                       : hoveredIndex !== null 
-                        ? "opacity-50" 
+                        ? "opacity-40" 
                         : "opacity-100"
                     }
                     focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50
                     disabled:cursor-default
                   `}
                   style={{
-                    textShadow: isHovered ? "0 0 40px rgba(255,255,255,0.3)" : "none",
+                    textShadow: isHovered ? "0 0 60px rgba(255,255,255,0.4)" : "none",
                   }}
                 >
                   {item.text}

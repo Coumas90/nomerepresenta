@@ -115,4 +115,60 @@ All colors MUST be HSL.
   .bio-link:hover::after {
     @apply scale-x-100;
   }
+
+  /* Page transition wrapper */
+  .page-enter {
+    @apply opacity-0;
+  }
+  
+  .page-enter-active {
+    @apply animate-fade-in;
+  }
+
+  /* Smooth image transitions */
+  .image-transition {
+    @apply transition-all duration-500 ease-out;
+  }
+
+  /* Hover scale with smooth easing */
+  .hover-lift {
+    @apply transition-transform duration-300 ease-out hover:-translate-y-1;
+  }
+
+  /* Smooth opacity transitions */
+  .opacity-transition {
+    @apply transition-opacity duration-300 ease-out;
+  }
+
+  /* Content reveal animation */
+  .reveal {
+    @apply opacity-0;
+  }
+  
+  .reveal.visible {
+    @apply animate-fade-in-up;
+  }
+}
+
+@layer utilities {
+  /* Stagger delay utilities for lists */
+  .stagger-children > * {
+    @apply opacity-0;
+  }
+  
+  .stagger-children.animate > *:nth-child(1) { @apply animate-stagger-1; }
+  .stagger-children.animate > *:nth-child(2) { @apply animate-stagger-2; }
+  .stagger-children.animate > *:nth-child(3) { @apply animate-stagger-3; }
+  .stagger-children.animate > *:nth-child(4) { @apply animate-stagger-4; }
+  .stagger-children.animate > *:nth-child(5) { @apply animate-stagger-5; }
+  .stagger-children.animate > *:nth-child(n+6) { @apply animate-stagger-5; }
+
+  /* Smooth will-change for performance */
+  .will-change-transform {
+    will-change: transform;
+  }
+  
+  .will-change-opacity {
+    will-change: opacity;
+  }
 }

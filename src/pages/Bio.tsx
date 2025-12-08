@@ -1,23 +1,30 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { X } from "lucide-react";
 
 const Bio = () => {
   const navigate = useNavigate();
+  const [isPageLoaded, setIsPageLoaded] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsPageLoaded(true), 50);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleClose = () => {
     navigate("/");
   };
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className={`min-h-screen bg-stone-50 transition-opacity duration-500 ${isPageLoaded ? 'opacity-100' : 'opacity-0'}`}>
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-20 flex items-center justify-between p-6 md:p-8 bg-stone-50/90 backdrop-blur-sm">
+      <header className={`fixed top-0 left-0 right-0 z-20 flex items-center justify-between p-6 md:p-8 bg-stone-50/90 backdrop-blur-sm transition-all duration-500 ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
         <span className="text-stone-900 text-sm md:text-base font-medium tracking-widest uppercase">
           BIO
         </span>
         <button
           onClick={handleClose}
-          className="text-stone-900 hover:opacity-70 transition-opacity duration-200 focus:outline-none"
+          className="text-stone-900 hover:opacity-70 transition-all duration-200 hover:rotate-90 focus:outline-none"
           aria-label="Close and return to landing"
         >
           <X className="w-6 h-6 md:w-7 md:h-7" strokeWidth={1.5} />
@@ -26,19 +33,19 @@ const Bio = () => {
 
       <main className="pt-24 pb-16">
         {/* Artist Photo */}
-        <div className="w-full mb-12 md:mb-16">
+        <div className={`w-full mb-12 md:mb-16 overflow-hidden transition-all duration-700 delay-100 ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <div className="aspect-[16/9] md:aspect-[21/9] w-full bg-stone-200 overflow-hidden">
             <img
               src="/images/artworks/tri-peel-1.png"
               alt="Ivan Comas - Artist"
-              className="w-full h-full object-cover object-center"
+              className="w-full h-full object-cover object-center transition-transform duration-700 hover:scale-105"
             />
           </div>
         </div>
 
         <div className="container mx-auto px-6 md:px-8 max-w-4xl">
           {/* Artist Name & Info */}
-          <div className="mb-12 md:mb-16">
+          <div className={`mb-12 md:mb-16 transition-all duration-700 delay-200 ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-6">
               Ivan Comas
             </h1>
@@ -56,7 +63,7 @@ const Bio = () => {
           </div>
 
           {/* Education */}
-          <section className="mb-12 md:mb-16">
+          <section className={`mb-12 md:mb-16 transition-all duration-700 delay-300 ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             <h2 className="text-lg md:text-xl font-bold tracking-wide uppercase mb-6 text-stone-900">
               Education
             </h2>
@@ -79,7 +86,7 @@ const Bio = () => {
           </section>
 
           {/* Solo and Two Person Exhibitions */}
-          <section className="mb-12 md:mb-16">
+          <section className={`mb-12 md:mb-16 transition-all duration-700 delay-[400ms] ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             <h2 className="text-lg md:text-xl font-bold tracking-wide uppercase mb-6 text-stone-900">
               Solo and Two Person Exhibitions
             </h2>
@@ -137,7 +144,7 @@ const Bio = () => {
           </section>
 
           {/* Selected Group Exhibitions */}
-          <section className="mb-12 md:mb-16">
+          <section className={`mb-12 md:mb-16 transition-all duration-700 delay-500 ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             <h2 className="text-lg md:text-xl font-bold tracking-wide uppercase mb-6 text-stone-900">
               Selected Group Exhibitions
             </h2>
@@ -167,7 +174,7 @@ const Bio = () => {
           </section>
 
           {/* Contact */}
-          <section className="pt-8 border-t border-stone-200">
+          <section className={`pt-8 border-t border-stone-200 transition-all duration-700 delay-[600ms] ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             <a 
               href="mailto:contact@ivancomas.com"
               className="text-stone-900 hover:text-stone-600 transition-colors text-sm tracking-widest uppercase"
