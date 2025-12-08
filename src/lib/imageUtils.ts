@@ -255,3 +255,49 @@ export const getAVIFSrcSet = (
 export const supportsImageTransforms = (src: string): boolean => {
   return Boolean(src && src.includes("supabase") && src.includes("/storage/"));
 };
+
+/**
+ * Check if URL is a local/public image (starts with / but not http)
+ */
+export const isLocalImage = (src: string): boolean => {
+  if (!src) return false;
+  return src.startsWith("/") && !src.startsWith("//");
+};
+
+/**
+ * Generate a solid color placeholder as a data URL
+ * Used for local images that don't support server-side transforms
+ * 
+ * @param color - HSL or hex color for the placeholder (default: neutral gray)
+ * @returns A tiny data URL that can be used as blur-up placeholder
+ */
+export const getLocalPlaceholder = (
+  color: string = "hsl(30, 5%, 80%)"
+): string => {
+  // Create a 1x1 pixel SVG with the specified color
+  // This is the smallest possible placeholder that works for blur-up
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"><rect width="1" height="1" fill="${color}"/></svg>`;
+  const encoded = btoa(svg);
+  return `data:image/svg+xml;base64,${encoded}`;
+};
+
+/**
+ * Generate a gradient placeholder as a data URL
+ * Creates a subtle gradient that works well for blur-up effect
+ */
+export const getGradientPlaceholder = (
+  colorTop: string = "hsl(30, 5%, 85%)",
+  colorBottom: string = "hsl(30, 5%, 75%)"
+): string => {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="4" height="4">
+    <defs>
+      <linearGradient id="g" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" style="stop-color:${colorTop}"/>
+        <stop offset="100%" style="stop-color:${colorBottom}"/>
+      </linearGradient>
+    </defs>
+    <rect width="4" height="4" fill="url(#g)"/>
+  </svg>`;
+  const encoded = btoa(svg);
+  return `data:image/svg+xml;base64,${encoded}`;
+};
