@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useImageLazyLoad } from "@/hooks/useImageLazyLoad";
 import { ImageSkeleton } from "./ImageSkeleton";
+import { getWebPUrl, getOptimizedImageUrl } from "@/lib/imageUtils";
 
 interface ProgressiveImageProps {
   src: string;
@@ -14,19 +15,15 @@ interface ProgressiveImageProps {
   placeholder?: string;
   /** Enable blur-up effect (uses tiny version of image) */
   blurUp?: boolean;
+  /** Enable WebP format with fallback (default: true) */
+  webp?: boolean;
+  /** Sizes attribute for responsive images */
+  sizes?: string;
 }
 
 // Generate a tiny placeholder URL by adding transform params (works with Supabase Storage)
 const getTinyPlaceholder = (src: string, width = 20): string => {
-  // If it's a Supabase storage URL, we can use render transforms
-  if (src.includes('supabase') && src.includes('/storage/')) {
-    const url = new URL(src);
-    url.searchParams.set('width', width.toString());
-    url.searchParams.set('quality', '20');
-    return url.toString();
-  }
-  // For other URLs, return as-is (will use CSS blur instead)
-  return src;
+  return getOptimizedImageUrl(src, { width, quality: 20 });
 };
 
 export const ProgressiveImage = ({ 
@@ -39,10 +36,13 @@ export const ProgressiveImage = ({
   skeletonVariant = "shimmer",
   placeholder,
   blurUp = false,
+  webp = true,
+  sizes,
 }: ProgressiveImageProps) => {
   const { imgRef, isVisible, isLoaded, setIsLoaded } = useImageLazyLoad();
   const [error, setError] = useState(false);
   const [placeholderLoaded, setPlaceholderLoaded] = useState(false);
+  const [webpFailed, setWebpFailed] = useState(false);
 
   // If eager is true, load immediately without lazy loading
   const shouldLoad = eager || isVisible;
@@ -50,12 +50,37 @@ export const ProgressiveImage = ({
   // Use provided placeholder or generate tiny version for blur-up
   const placeholderSrc = placeholder || (blurUp ? getTinyPlaceholder(src) : null);
 
+  // Generate WebP URL for Supabase storage images
+  const webpSrc = useMemo(() => {
+    if (!webp || webpFailed) return null;
+    return getWebPUrl(src);
+  }, [src, webp, webpFailed]);
+
   // Reset states when src changes
   useEffect(() => {
     setIsLoaded(false);
     setPlaceholderLoaded(false);
     setError(false);
+    setWebpFailed(false);
   }, [src, setIsLoaded]);
+
+  const handleImageLoad = () => {
+    setIsLoaded(true);
+  };
+
+  const handleImageError = () => {
+    if (webpSrc && !webpFailed) {
+      // WebP might have failed, fall back to original format
+      setWebpFailed(true);
+    } else {
+      // Original format failed too
+      setError(true);
+    }
+  };
+
+  const imageClasses = `w-full h-full object-cover transition-all duration-500 ease-out z-20 relative ${
+    skipInternalFade ? "opacity-100" : (isLoaded ? "opacity-100 blur-0" : "opacity-0")
+  } ${onClick ? 'cursor-pointer' : ''}`;
 
   return (
     <div ref={imgRef} className={`relative overflow-hidden ${className}`}>
@@ -80,20 +105,30 @@ export const ProgressiveImage = ({
         />
       )}
       
-      {/* Actual full-resolution image */}
+      {/* Main image with WebP support using picture element */}
       {shouldLoad && (
-        <img
-          src={src}
-          alt={alt}
-          onClick={onClick}
-          onLoad={() => setIsLoaded(true)}
-          onError={() => setError(true)}
-          className={`w-full h-full object-cover transition-all duration-500 ease-out z-20 relative ${
-            skipInternalFade ? "opacity-100" : (isLoaded ? "opacity-100 blur-0" : "opacity-0")
-          } ${onClick ? 'cursor-pointer' : ''}`}
-          loading={eager ? "eager" : "lazy"}
-          decoding="async"
-        />
+        <picture>
+          {/* WebP source - browsers that support it will use this */}
+          {webpSrc && !webpFailed && (
+            <source 
+              srcSet={webpSrc} 
+              type="image/webp"
+            />
+          )}
+          
+          {/* Fallback image for browsers that don't support WebP */}
+          <img
+            src={src}
+            alt={alt}
+            onClick={onClick}
+            onLoad={handleImageLoad}
+            onError={handleImageError}
+            className={imageClasses}
+            loading={eager ? "eager" : "lazy"}
+            decoding="async"
+            sizes={sizes}
+          />
+        </picture>
       )}
       
       {/* Error fallback */}
