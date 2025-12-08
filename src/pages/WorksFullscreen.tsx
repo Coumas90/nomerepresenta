@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, X } from "lucide-react";
 import { useArtworks } from "@/hooks/useArtworks";
 import { useArtworkImages } from "@/hooks/useArtworkImages";
 
@@ -11,6 +11,8 @@ const WorksFullscreen = () => {
   const [currentArtworkIndex, setCurrentArtworkIndex] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showOverlay, setShowOverlay] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const currentArtwork = artworks?.[currentArtworkIndex];
   
@@ -80,9 +82,109 @@ const WorksFullscreen = () => {
     setShowOverlay(false);
   }, []);
 
+  // Scroll/wheel navigation with debounce for snap behavior
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      // Don't handle scroll when overlay is open
+      if (showOverlay) return;
+      
+      // Prevent default scroll behavior
+      e.preventDefault();
+      
+      // If already scrolling, ignore
+      if (isScrolling) return;
+      
+      // Determine scroll direction with threshold
+      const threshold = 30;
+      if (Math.abs(e.deltaY) < threshold) return;
+      
+      setIsScrolling(true);
+      
+      if (e.deltaY > 0) {
+        // Scroll down → next artwork
+        goToNextArtwork();
+      } else {
+        // Scroll up → previous artwork
+        goToPrevArtwork();
+      }
+      
+      // Clear existing timeout
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+      
+      // Set cooldown before allowing next scroll
+      scrollTimeoutRef.current = setTimeout(() => {
+        setIsScrolling(false);
+      }, 600); // 600ms cooldown for snap feel
+    };
+
+    window.addEventListener("wheel", handleWheel, { passive: false });
+    return () => {
+      window.removeEventListener("wheel", handleWheel);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, [goToNextArtwork, goToPrevArtwork, showOverlay, isScrolling]);
+
+  // Touch/swipe navigation for mobile
+  useEffect(() => {
+    let touchStartY = 0;
+    let touchStartX = 0;
+    
+    const handleTouchStart = (e: TouchEvent) => {
+      if (showOverlay) return;
+      touchStartY = e.touches[0].clientY;
+      touchStartX = e.touches[0].clientX;
+    };
+    
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (showOverlay || isScrolling) return;
+      
+      const touchEndY = e.changedTouches[0].clientY;
+      const touchEndX = e.changedTouches[0].clientX;
+      const deltaY = touchStartY - touchEndY;
+      const deltaX = touchStartX - touchEndX;
+      
+      const minSwipeDistance = 50;
+      
+      // Vertical swipe takes priority if larger
+      if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > minSwipeDistance) {
+        setIsScrolling(true);
+        
+        if (deltaY > 0) {
+          goToNextArtwork();
+        } else {
+          goToPrevArtwork();
+        }
+        
+        setTimeout(() => setIsScrolling(false), 600);
+      } 
+      // Horizontal swipe for image navigation
+      else if (Math.abs(deltaX) > minSwipeDistance) {
+        if (deltaX > 0) {
+          goToNextImage();
+        } else {
+          goToPrevImage();
+        }
+      }
+    };
+
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchend", handleTouchEnd, { passive: true });
+    
+    return () => {
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [goToNextArtwork, goToPrevArtwork, goToNextImage, goToPrevImage, showOverlay, isScrolling]);
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (isScrolling) return;
+      
       switch (e.key) {
         case "ArrowRight":
           goToNextImage();
@@ -92,11 +194,15 @@ const WorksFullscreen = () => {
           break;
         case "ArrowDown":
           e.preventDefault();
+          setIsScrolling(true);
           goToNextArtwork();
+          setTimeout(() => setIsScrolling(false), 600);
           break;
         case "ArrowUp":
           e.preventDefault();
+          setIsScrolling(true);
           goToPrevArtwork();
+          setTimeout(() => setIsScrolling(false), 600);
           break;
         case "Escape":
           if (showOverlay) {
@@ -116,7 +222,7 @@ const WorksFullscreen = () => {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [goToNextImage, goToPrevImage, goToNextArtwork, goToPrevArtwork, handleClose, handleOpenOverlay, handleCloseOverlay, showOverlay]);
+  }, [goToNextImage, goToPrevImage, goToNextArtwork, goToPrevArtwork, handleClose, handleOpenOverlay, handleCloseOverlay, showOverlay, isScrolling]);
 
   if (isLoading) {
     return (
@@ -203,21 +309,44 @@ const WorksFullscreen = () => {
         </button>
       )}
 
-      {/* Vertical scroll indicators */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2">
+      {/* Vertical navigation indicators */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3">
+        {/* Up arrow */}
+        {hasPrevArtwork && (
+          <button
+            onClick={() => {
+              if (!isScrolling) {
+                setIsScrolling(true);
+                goToPrevArtwork();
+                setTimeout(() => setIsScrolling(false), 600);
+              }
+            }}
+            className="text-white/40 hover:text-white/70 transition-opacity"
+            aria-label="Previous artwork"
+          >
+            <ChevronUp className="w-5 h-5" strokeWidth={1.5} />
+          </button>
+        )}
+        
         {/* Artwork counter */}
-        <span className="text-white/40 text-xs tracking-widest">
+        <span className="text-white/40 text-xs tracking-widest font-light">
           {currentArtworkIndex + 1} / {artworks.length}
         </span>
         
-        {/* Scroll hint */}
+        {/* Down arrow / scroll hint */}
         {hasNextArtwork && (
           <button
-            onClick={goToNextArtwork}
+            onClick={() => {
+              if (!isScrolling) {
+                setIsScrolling(true);
+                goToNextArtwork();
+                setTimeout(() => setIsScrolling(false), 600);
+              }
+            }}
             className="text-white/40 hover:text-white/70 transition-opacity animate-pulse"
             aria-label="Next artwork"
           >
-            <ChevronRight className="w-5 h-5 rotate-90" strokeWidth={1.5} />
+            <ChevronDown className="w-5 h-5" strokeWidth={1.5} />
           </button>
         )}
       </div>
