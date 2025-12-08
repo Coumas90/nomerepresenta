@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ChevronUp, ChevronDown, X } from "lucide-react";
 import { useStudioImages } from "@/hooks/useStudioImages";
 import { useImagePreloader } from "@/hooks/useImagePreloader";
-
+import { ProgressiveImage } from "@/components/ProgressiveImage";
 const Studio = () => {
   const navigate = useNavigate();
   const { data: images, isLoading } = useStudioImages();
@@ -206,18 +206,26 @@ const Studio = () => {
 
   return (
     <div className={`relative min-h-screen bg-black overflow-hidden transition-opacity duration-500 ${isPageLoaded ? 'opacity-100' : 'opacity-0'}`}>
-      {/* Background image */}
+      {/* Background image with AVIF/WebP and responsive srcset */}
       <div
         className={`absolute inset-0 transition-all duration-700 ease-out will-change-transform ${
           isTransitioning ? "opacity-0 scale-[1.03]" : "opacity-100 scale-100"
         }`}
-        style={{
-          backgroundImage: `url(${currentImage?.image_url})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
-      />
+      >
+        {currentImage?.image_url && (
+          <ProgressiveImage
+            src={currentImage.image_url}
+            alt={currentImage.title || "Studio image"}
+            className="w-full h-full"
+            eager
+            skipInternalFade
+            blurUp
+            modernFormats
+            responsivePreset="full"
+            sizes="100vw"
+          />
+        )}
+      </div>
 
       {/* Subtle vignette overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/30 pointer-events-none" />

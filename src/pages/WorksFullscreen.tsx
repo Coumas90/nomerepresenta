@@ -6,7 +6,7 @@ import { useArtworkImages } from "@/hooks/useArtworkImages";
 import { useImagePreloader } from "@/hooks/useImagePreloader";
 import { precacheImages } from "@/lib/cacheUtils";
 import TriPeelOverlay from "@/components/TriPeelOverlay";
-
+import { ProgressiveImage } from "@/components/ProgressiveImage";
 const WorksFullscreen = () => {
   const navigate = useNavigate();
   const { data: artworks, isLoading } = useArtworks();
@@ -302,18 +302,26 @@ const WorksFullscreen = () => {
 
   return (
     <div className="relative min-h-screen bg-black overflow-hidden">
-      {/* Background artwork image with enhanced transition */}
+      {/* Background artwork image with AVIF/WebP and responsive srcset */}
       <div
         className={`absolute inset-0 transition-all duration-500 ease-out ${
           isTransitioning ? "opacity-0 scale-[1.02]" : "opacity-100 scale-100"
         }`}
-        style={{
-          backgroundImage: `url(${currentImage})`,
-          backgroundSize: "contain",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
-      />
+      >
+        {currentImage && (
+          <ProgressiveImage
+            src={currentImage}
+            alt={currentArtwork?.title || "Artwork"}
+            className="w-full h-full"
+            eager
+            skipInternalFade
+            blurUp
+            modernFormats
+            responsivePreset="full"
+            sizes="100vw"
+          />
+        )}
+      </div>
 
       {/* Subtle vignette overlay - darker when viewing detail */}
       <div 
