@@ -8,6 +8,7 @@ import Landing from "./pages/Landing";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 import { AdminLoadingFallback } from "./components/admin/AdminLoadingFallback";
+import { OfflineIndicator } from "./components/OfflineIndicator";
 
 // Code splitting para páginas públicas
 const ArtworkDetail = lazy(() => import("./pages/ArtworkDetail"));
@@ -57,6 +58,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <OfflineIndicator />
       <BrowserRouter>
         <RecoveryRedirectHandler />
         <Suspense fallback={

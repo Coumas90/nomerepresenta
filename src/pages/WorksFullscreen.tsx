@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, X } from "lucide-rea
 import { useArtworks } from "@/hooks/useArtworks";
 import { useArtworkImages } from "@/hooks/useArtworkImages";
 import { useImagePreloader } from "@/hooks/useImagePreloader";
+import { precacheImages } from "@/lib/cacheUtils";
 import TriPeelOverlay from "@/components/TriPeelOverlay";
 
 const WorksFullscreen = () => {
@@ -63,6 +64,19 @@ const WorksFullscreen = () => {
     preloadAhead: 1,
     preloadBehind: 1,
   });
+
+  // Cache all artwork images for offline viewing
+  useEffect(() => {
+    if (artworks?.length) {
+      const allImageUrls = artworks.flatMap(artwork => [
+        artwork.image_url,
+        artwork.image_detail_url,
+      ].filter(Boolean));
+      
+      // Precache in background (non-blocking)
+      precacheImages(allImageUrls);
+    }
+  }, [artworks]);
 
   // Reset image index when artwork changes (scroll from detail → next artwork full)
   useEffect(() => {
