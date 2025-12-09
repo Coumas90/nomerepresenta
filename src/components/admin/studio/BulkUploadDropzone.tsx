@@ -5,6 +5,7 @@ interface BulkUploadDropzoneProps {
   isDragOver: boolean;
   onDragEnter: (e: React.DragEvent) => void;
   onDragLeave: (e: React.DragEvent) => void;
+  onDragOver: (e: React.DragEvent) => void;
   onDrop: (e: React.DragEvent) => void;
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -13,6 +14,7 @@ export const BulkUploadDropzone = ({
   isDragOver,
   onDragEnter,
   onDragLeave,
+  onDragOver,
   onDrop,
   onFileChange,
 }: BulkUploadDropzoneProps) => {
@@ -23,7 +25,7 @@ export const BulkUploadDropzone = ({
       }`}
       onDragEnter={onDragEnter}
       onDragLeave={onDragLeave}
-      onDragOver={(e) => e.preventDefault()}
+      onDragOver={onDragOver}
       onDrop={onDrop}
     >
       <Images className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { X, Upload } from "lucide-react";
 import { useCreateStudioImage, useUpdateStudioImage, useUploadStudioImage } from "@/hooks/useStudioImageMutations";
+import { useFileDrop } from "@/hooks/useFileDrop";
 import { EditImageFormProps } from "./types";
 
 export const EditImageForm = ({ image, onSuccess, onCancel, imagesCount }: EditImageFormProps) => {
@@ -19,9 +20,8 @@ export const EditImageForm = ({ image, onSuccess, onCancel, imagesCount }: EditI
     image_url: image?.image_url || "",
   });
   const [preview, setPreview] = useState<string | null>(image?.image_url || null);
-  const [isDragOver, setIsDragOver] = useState(false);
 
-  const processFile = async (file: File) => {
+  const processFile = useCallback(async (file: File) => {
     const reader = new FileReader();
     reader.onloadend = () => {
       setPreview(reader.result as string);
@@ -31,23 +31,13 @@ export const EditImageForm = ({ image, onSuccess, onCancel, imagesCount }: EditI
     const fileName = `${Date.now()}-${file.name}`;
     const url = await uploadMutation.mutateAsync({ file, fileName });
     setFormData((prev) => ({ ...prev, image_url: url }));
-  };
+  }, [uploadMutation]);
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      await processFile(file);
-    }
-  };
-
-  const handleFileDrop = async (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-    const file = e.dataTransfer.files[0];
-    if (file?.type.startsWith("image/")) {
-      await processFile(file);
-    }
-  };
+  const { isDragOver, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, handleFileInputChange } = useFileDrop({
+    onFilesSelected: (files) => {
+      if (files[0]) processFile(files[0]);
+    },
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,10 +109,10 @@ export const EditImageForm = ({ image, onSuccess, onCancel, imagesCount }: EditI
                 className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
                   isDragOver ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
                 }`}
-                onDragEnter={(e) => { e.preventDefault(); setIsDragOver(true); }}
-                onDragLeave={(e) => { e.preventDefault(); setIsDragOver(false); }}
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={handleFileDrop}
+                onDragEnter={handleDragEnter}
+                onDragLeave={handleDragLeave}
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
               >
                 <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
                 <Label htmlFor="studio-file" className="cursor-pointer text-sm text-muted-foreground hover:text-foreground block">
@@ -132,7 +122,7 @@ export const EditImageForm = ({ image, onSuccess, onCancel, imagesCount }: EditI
                   id="studio-file"
                   type="file"
                   accept="image/*"
-                  onChange={handleFileChange}
+                  onChange={handleFileInputChange}
                   className="hidden"
                 />
               </div>
