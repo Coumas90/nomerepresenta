@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { X } from "lucide-react";
 import { useCreateStudioImage, useUploadStudioImage } from "@/hooks/useStudioImageMutations";
+import { useFileDrop } from "@/hooks/useFileDrop";
 import { toast } from "@/hooks/use-toast";
 import { BulkUploadItem, BulkUploadSectionProps } from "./types";
 import { BulkUploadDropzone } from "./BulkUploadDropzone";
@@ -17,52 +18,40 @@ export const BulkUploadSection = ({ onComplete, onCancel, existingImagesCount }:
   const [isBulkUploading, setIsBulkUploading] = useState(false);
   const [bulkEditMode, setBulkEditMode] = useState(false);
   const [isSavingBulk, setIsSavingBulk] = useState(false);
-  const [isDragOver, setIsDragOver] = useState(false);
 
-  const handleBulkFilesSelect = (files: FileList) => {
+  const handleBulkFilesSelect = useCallback((files: File[]) => {
     const newItems: BulkUploadItem[] = [];
 
-    Array.from(files).forEach((file) => {
-      if (file.type.startsWith("image/")) {
-        const reader = new FileReader();
-        const id = `${Date.now()}-${Math.random().toString(36).substring(7)}`;
+    files.forEach((file) => {
+      const reader = new FileReader();
+      const id = `${Date.now()}-${Math.random().toString(36).substring(7)}`;
 
-        reader.onloadend = () => {
-          setBulkItems((prev) =>
-            prev.map((item) =>
-              item.id === id ? { ...item, preview: reader.result as string } : item
-            )
-          );
-        };
-        reader.readAsDataURL(file);
+      reader.onloadend = () => {
+        setBulkItems((prev) =>
+          prev.map((item) =>
+            item.id === id ? { ...item, preview: reader.result as string } : item
+          )
+        );
+      };
+      reader.readAsDataURL(file);
 
-        newItems.push({
-          id,
-          file,
-          preview: "",
-          status: "pending",
-          title: "",
-          description: "",
-        });
-      }
+      newItems.push({
+        id,
+        file,
+        preview: "",
+        status: "pending",
+        title: "",
+        description: "",
+      });
     });
 
     setBulkItems((prev) => [...prev, ...newItems]);
-  };
+  }, []);
 
-  const handleBulkFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      handleBulkFilesSelect(e.target.files);
-    }
-  };
-
-  const handleBulkFileDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-    if (e.dataTransfer.files) {
-      handleBulkFilesSelect(e.dataTransfer.files);
-    }
-  };
+  const { isDragOver, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, handleFileInputChange } = useFileDrop({
+    multiple: true,
+    onFilesSelected: handleBulkFilesSelect,
+  });
 
   const removeBulkItem = (id: string) => {
     setBulkItems((prev) => prev.filter((item) => item.id !== id));
@@ -188,10 +177,11 @@ export const BulkUploadSection = ({ onComplete, onCancel, existingImagesCount }:
         {!bulkEditMode && (
           <BulkUploadDropzone
             isDragOver={isDragOver}
-            onDragEnter={(e) => { e.preventDefault(); setIsDragOver(true); }}
-            onDragLeave={(e) => { e.preventDefault(); setIsDragOver(false); }}
-            onDrop={handleBulkFileDrop}
-            onFileChange={handleBulkFileChange}
+            onDragEnter={handleDragEnter}
+            onDragLeave={handleDragLeave}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+            onFileChange={handleFileInputChange}
           />
         )}
 
