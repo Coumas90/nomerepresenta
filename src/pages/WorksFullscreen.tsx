@@ -4,11 +4,11 @@ import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, X } from "lucide-rea
 import { useArtworks } from "@/hooks/useArtworks";
 import { useArtworkImages } from "@/hooks/useArtworkImages";
 import { useImagePreloader } from "@/hooks/useImagePreloader";
-import { useSwipeNavigation } from "@/hooks/useSwipeNavigation";
 import { precacheImagesProgressive, getAdjacentArtworkUrls } from "@/lib/cacheUtils";
 import TriPeelOverlay from "@/components/TriPeelOverlay";
 import { ProgressiveImage } from "@/components/ProgressiveImage";
 import { SwipeHint } from "@/components/SwipeHint";
+import { SwipeGestureContainer } from "@/components/SwipeGestureContainer";
 
 const WorksFullscreen = () => {
   const navigate = useNavigate();
@@ -18,6 +18,7 @@ const WorksFullscreen = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showOverlay, setShowOverlay] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
   const prevImageRef = useRef<string | null>(null);
 
   const currentArtwork = artworks?.[currentArtworkIndex];
@@ -110,16 +111,20 @@ const WorksFullscreen = () => {
 
   // Navigate to next/previous artwork
   const goToNextArtwork = useCallback(() => {
-    if (hasNextArtwork) {
+    if (hasNextArtwork && !isScrolling) {
+      setIsScrolling(true);
       setCurrentArtworkIndex(prev => prev + 1);
+      setTimeout(() => setIsScrolling(false), 600);
     }
-  }, [hasNextArtwork]);
+  }, [hasNextArtwork, isScrolling]);
 
   const goToPrevArtwork = useCallback(() => {
-    if (hasPrevArtwork) {
+    if (hasPrevArtwork && !isScrolling) {
+      setIsScrolling(true);
       setCurrentArtworkIndex(prev => prev - 1);
+      setTimeout(() => setIsScrolling(false), 600);
     }
-  }, [hasPrevArtwork]);
+  }, [hasPrevArtwork, isScrolling]);
 
   // Close and go back to landing
   const handleClose = useCallback(() => {
@@ -135,16 +140,30 @@ const WorksFullscreen = () => {
     setShowOverlay(false);
   }, []);
 
-  // Swipe and wheel navigation using centralized hook
-  const { isScrolling, setIsScrolling } = useSwipeNavigation({
-    onSwipeUp: goToNextArtwork,
-    onSwipeDown: goToPrevArtwork,
-    onSwipeLeft: goToNextImage,
-    onSwipeRight: goToPrevImage,
-    onWheelUp: goToPrevArtwork,
-    onWheelDown: goToNextArtwork,
-    enabled: !showOverlay,
-  });
+  // Wheel navigation (desktop)
+  useEffect(() => {
+    if (showOverlay) return;
+
+    let lastWheelTime = 0;
+    const wheelCooldown = 600;
+
+    const handleWheel = (e: WheelEvent) => {
+      const now = Date.now();
+      if (now - lastWheelTime < wheelCooldown) return;
+      
+      if (Math.abs(e.deltaY) > 30) {
+        lastWheelTime = now;
+        if (e.deltaY > 0) {
+          goToNextArtwork();
+        } else {
+          goToPrevArtwork();
+        }
+      }
+    };
+
+    window.addEventListener("wheel", handleWheel, { passive: true });
+    return () => window.removeEventListener("wheel", handleWheel);
+  }, [showOverlay, goToNextArtwork, goToPrevArtwork]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -160,15 +179,11 @@ const WorksFullscreen = () => {
           break;
         case "ArrowDown":
           e.preventDefault();
-          setIsScrolling(true);
           goToNextArtwork();
-          setTimeout(() => setIsScrolling(false), 600);
           break;
         case "ArrowUp":
           e.preventDefault();
-          setIsScrolling(true);
           goToPrevArtwork();
-          setTimeout(() => setIsScrolling(false), 600);
           break;
         case "Escape":
           if (showOverlay) {
@@ -215,26 +230,42 @@ const WorksFullscreen = () => {
 
   return (
     <div className="relative min-h-screen bg-black overflow-hidden">
-      {/* Background artwork image with AVIF/WebP and responsive srcset */}
-      <div
-        className={`absolute inset-0 transition-all duration-500 ease-out ${
-          isTransitioning ? "opacity-0 scale-[1.02]" : "opacity-100 scale-100"
-        }`}
+      {/* SwipeGestureContainer for rubber-band effect */}
+      <SwipeGestureContainer
+        onSwipeUp={goToNextArtwork}
+        onSwipeDown={goToPrevArtwork}
+        onSwipeLeft={goToNextImage}
+        onSwipeRight={goToPrevImage}
+        enabled={!showOverlay}
+        direction={allImages.length > 1 ? "both" : "vertical"}
+        isAtStart={!hasPrevArtwork}
+        isAtEnd={!hasNextArtwork}
+        isAtHorizontalStart={!hasPrevImage}
+        isAtHorizontalEnd={!hasNextImage}
+        showEdgeIndicators
+        className="absolute inset-0"
       >
-        {currentImage && (
-          <ProgressiveImage
-            src={currentImage}
-            alt={currentArtwork?.title || "Artwork"}
-            className="w-full h-full"
-            eager
-            skipInternalFade
-            blurUp
-            modernFormats
-            responsivePreset="full"
-            sizes="100vw"
-          />
-        )}
-      </div>
+        {/* Background artwork image with AVIF/WebP and responsive srcset */}
+        <div
+          className={`absolute inset-0 transition-all duration-500 ease-out ${
+            isTransitioning ? "opacity-0 scale-[1.02]" : "opacity-100 scale-100"
+          }`}
+        >
+          {currentImage && (
+            <ProgressiveImage
+              src={currentImage}
+              alt={currentArtwork?.title || "Artwork"}
+              className="w-full h-full"
+              eager
+              skipInternalFade
+              blurUp
+              modernFormats
+              responsivePreset="full"
+              sizes="100vw"
+            />
+          )}
+        </div>
+      </SwipeGestureContainer>
 
       {/* Subtle vignette overlay - darker when viewing detail */}
       <div 
@@ -316,13 +347,7 @@ const WorksFullscreen = () => {
         {/* Up arrow - enhanced touch target */}
         {hasPrevArtwork && (
           <button
-            onClick={() => {
-              if (!isScrolling) {
-                setIsScrolling(true);
-                goToPrevArtwork();
-                setTimeout(() => setIsScrolling(false), 600);
-              }
-            }}
+            onClick={goToPrevArtwork}
             className="min-w-[44px] min-h-[44px] flex items-center justify-center
                        text-white/40 hover:text-white/70 transition-opacity"
             aria-label="Previous artwork"
@@ -339,13 +364,7 @@ const WorksFullscreen = () => {
         {/* Down arrow - enhanced touch target */}
         {hasNextArtwork && (
           <button
-            onClick={() => {
-              if (!isScrolling) {
-                setIsScrolling(true);
-                goToNextArtwork();
-                setTimeout(() => setIsScrolling(false), 600);
-              }
-            }}
+            onClick={goToNextArtwork}
             className="min-w-[44px] min-h-[44px] flex items-center justify-center
                        text-white/40 hover:text-white/70 transition-opacity animate-pulse"
             aria-label="Next artwork"
@@ -379,6 +398,7 @@ const WorksFullscreen = () => {
       <SwipeHint 
         direction={allImages.length > 1 ? "both" : "vertical"} 
         show={!showOverlay}
+        pageContext="works"
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
       />
 

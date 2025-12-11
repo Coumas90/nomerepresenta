@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { ChevronUp, ChevronDown, X } from "lucide-react";
 import { useStudioImages } from "@/hooks/useStudioImages";
 import { useImagePreloader } from "@/hooks/useImagePreloader";
-import { useSwipeNavigation } from "@/hooks/useSwipeNavigation";
 import { ProgressiveImage } from "@/components/ProgressiveImage";
 import { SwipeHint } from "@/components/SwipeHint";
+import { SwipeGestureContainer } from "@/components/SwipeGestureContainer";
 
 const Studio = () => {
   const navigate = useNavigate();
@@ -14,6 +14,7 @@ const Studio = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isPageLoaded, setIsPageLoaded] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
   const prevImageRef = useRef<string | null>(null);
 
   const currentImage = images?.[currentIndex];
@@ -51,28 +52,47 @@ const Studio = () => {
   }, [currentImage?.image_url]);
 
   const goToNext = useCallback(() => {
-    if (hasNext) {
+    if (hasNext && !isScrolling) {
+      setIsScrolling(true);
       setCurrentIndex(prev => prev + 1);
+      setTimeout(() => setIsScrolling(false), 600);
     }
-  }, [hasNext]);
+  }, [hasNext, isScrolling]);
 
   const goToPrev = useCallback(() => {
-    if (hasPrev) {
+    if (hasPrev && !isScrolling) {
+      setIsScrolling(true);
       setCurrentIndex(prev => prev - 1);
+      setTimeout(() => setIsScrolling(false), 600);
     }
-  }, [hasPrev]);
+  }, [hasPrev, isScrolling]);
 
   const handleClose = useCallback(() => {
     navigate("/");
   }, [navigate]);
 
-  // Swipe and wheel navigation using centralized hook
-  const { isScrolling, setIsScrolling } = useSwipeNavigation({
-    onSwipeUp: goToNext,
-    onSwipeDown: goToPrev,
-    onWheelUp: goToPrev,
-    onWheelDown: goToNext,
-  });
+  // Wheel navigation (desktop)
+  useEffect(() => {
+    let lastWheelTime = 0;
+    const wheelCooldown = 600;
+
+    const handleWheel = (e: WheelEvent) => {
+      const now = Date.now();
+      if (now - lastWheelTime < wheelCooldown) return;
+      
+      if (Math.abs(e.deltaY) > 30) {
+        lastWheelTime = now;
+        if (e.deltaY > 0) {
+          goToNext();
+        } else {
+          goToPrev();
+        }
+      }
+    };
+
+    window.addEventListener("wheel", handleWheel, { passive: true });
+    return () => window.removeEventListener("wheel", handleWheel);
+  }, [goToNext, goToPrev]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -82,16 +102,13 @@ const Studio = () => {
       switch (e.key) {
         case "ArrowDown":
           e.preventDefault();
-          setIsScrolling(true);
           goToNext();
-          setTimeout(() => setIsScrolling(false), 600);
           break;
         case "ArrowUp":
           e.preventDefault();
-          setIsScrolling(true);
           goToPrev();
-          setTimeout(() => setIsScrolling(false), 600);
           break;
+        case "ArrowLeft":
         case "Escape":
           handleClose();
           break;
@@ -142,26 +159,40 @@ const Studio = () => {
 
   return (
     <div className={`relative min-h-screen bg-black overflow-hidden transition-opacity duration-500 ${isPageLoaded ? 'opacity-100' : 'opacity-0'}`}>
-      {/* Background image with AVIF/WebP and responsive srcset */}
-      <div
-        className={`absolute inset-0 transition-all duration-700 ease-out will-change-transform ${
-          isTransitioning ? "opacity-0 scale-[1.03]" : "opacity-100 scale-100"
-        }`}
+      {/* SwipeGestureContainer for rubber-band effect */}
+      <SwipeGestureContainer
+        onSwipeUp={goToNext}
+        onSwipeDown={goToPrev}
+        onSwipeLeft={handleClose}
+        onSwipeRight={handleClose}
+        enabled
+        direction="both"
+        isAtStart={!hasPrev}
+        isAtEnd={!hasNext}
+        showEdgeIndicators
+        className="absolute inset-0"
       >
-        {currentImage?.image_url && (
-          <ProgressiveImage
-            src={currentImage.image_url}
-            alt={currentImage.title || "Studio image"}
-            className="w-full h-full"
-            eager
-            skipInternalFade
-            blurUp
-            modernFormats
-            responsivePreset="full"
-            sizes="100vw"
-          />
-        )}
-      </div>
+        {/* Background image with AVIF/WebP and responsive srcset */}
+        <div
+          className={`absolute inset-0 transition-all duration-700 ease-out will-change-transform ${
+            isTransitioning ? "opacity-0 scale-[1.03]" : "opacity-100 scale-100"
+          }`}
+        >
+          {currentImage?.image_url && (
+            <ProgressiveImage
+              src={currentImage.image_url}
+              alt={currentImage.title || "Studio image"}
+              className="w-full h-full"
+              eager
+              skipInternalFade
+              blurUp
+              modernFormats
+              responsivePreset="full"
+              sizes="100vw"
+            />
+          )}
+        </div>
+      </SwipeGestureContainer>
 
       {/* Subtle vignette overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/30 pointer-events-none" />
@@ -204,13 +235,7 @@ const Studio = () => {
         {/* Up arrow - enhanced touch target */}
         {hasPrev && (
           <button
-            onClick={() => {
-              if (!isScrolling) {
-                setIsScrolling(true);
-                goToPrev();
-                setTimeout(() => setIsScrolling(false), 600);
-              }
-            }}
+            onClick={goToPrev}
             className="min-w-[44px] min-h-[44px] flex items-center justify-center
                        text-white/40 hover:text-white/70 transition-opacity"
             aria-label="Previous image"
@@ -227,13 +252,7 @@ const Studio = () => {
         {/* Down arrow - enhanced touch target */}
         {hasNext && (
           <button
-            onClick={() => {
-              if (!isScrolling) {
-                setIsScrolling(true);
-                goToNext();
-                setTimeout(() => setIsScrolling(false), 600);
-              }
-            }}
+            onClick={goToNext}
             className="min-w-[44px] min-h-[44px] flex items-center justify-center
                        text-white/40 hover:text-white/70 transition-opacity animate-pulse"
             aria-label="Next image"
@@ -246,6 +265,7 @@ const Studio = () => {
       {/* Mobile swipe hint */}
       <SwipeHint 
         direction="vertical" 
+        pageContext="studio"
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
       />
     </div>
