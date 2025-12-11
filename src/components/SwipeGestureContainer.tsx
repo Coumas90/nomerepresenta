@@ -24,10 +24,14 @@ interface SwipeGestureContainerProps {
   resistance?: number;
   /** Whether to show edge indicators */
   showEdgeIndicators?: boolean;
-  /** Whether at first item (shows indicator that can't go back) */
+  /** Whether at first item vertically (can't go up/prev) */
   isAtStart?: boolean;
-  /** Whether at last item (shows indicator that can't go forward) */
+  /** Whether at last item vertically (can't go down/next) */
   isAtEnd?: boolean;
+  /** Whether at first item horizontally (can't go left/prev) */
+  isAtHorizontalStart?: boolean;
+  /** Whether at last item horizontally (can't go right/next) */
+  isAtHorizontalEnd?: boolean;
   /** Additional className */
   className?: string;
 }
@@ -49,8 +53,13 @@ export function SwipeGestureContainer({
   showEdgeIndicators = true,
   isAtStart = false,
   isAtEnd = false,
+  isAtHorizontalStart,
+  isAtHorizontalEnd,
   className,
 }: SwipeGestureContainerProps) {
+  // Use vertical values as fallback for horizontal if not specified
+  const hStart = isAtHorizontalStart ?? isAtStart;
+  const hEnd = isAtHorizontalEnd ?? isAtEnd;
   const [transform, setTransform] = useState({ x: 0, y: 0 });
   const [isAnimating, setIsAnimating] = useState(false);
   const [activeDirection, setActiveDirection] = useState<"up" | "down" | "left" | "right" | null>(null);
@@ -117,11 +126,11 @@ export function SwipeGestureContainer({
         setActiveDirection(deltaX > 0 ? "left" : "right");
       }
 
-      // Check if at edge and trying to go further
+      // Check if at edge and trying to go further (axis-specific)
       const blockUp = isAtStart && deltaY > 0;
       const blockDown = isAtEnd && deltaY < 0;
-      const blockLeft = isAtStart && deltaX > 0;
-      const blockRight = isAtEnd && deltaX < 0;
+      const blockLeft = hStart && deltaX > 0;
+      const blockRight = hEnd && deltaX < 0;
 
       // Apply extra resistance at edges
       const edgeResistance = 
@@ -180,9 +189,9 @@ export function SwipeGestureContainer({
               onSwipeDown();
             }
           } else {
-            if (deltaX > 0 && onSwipeLeft && !isAtStart) {
+            if (deltaX > 0 && onSwipeLeft && !hStart) {
               onSwipeLeft();
-            } else if (deltaX < 0 && onSwipeRight && !isAtEnd) {
+            } else if (deltaX < 0 && onSwipeRight && !hEnd) {
               onSwipeRight();
             }
           }
@@ -225,6 +234,8 @@ export function SwipeGestureContainer({
     calculateDisplacement,
     isAtStart,
     isAtEnd,
+    hStart,
+    hEnd,
     onSwipeUp,
     onSwipeDown,
     onSwipeLeft,
