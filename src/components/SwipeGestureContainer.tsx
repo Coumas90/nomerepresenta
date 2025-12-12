@@ -253,29 +253,31 @@ export function SwipeGestureContainer({
       ref={containerRef}
       className={cn("relative overflow-hidden touch-pan-x touch-pan-y", className)}
     >
-      {/* Edge indicators */}
+      {/* Edge indicators - high contrast for dark backgrounds */}
       {showEdgeIndicators && (direction === "vertical" || direction === "both") && (
         <>
           {/* Top edge indicator */}
           <div 
             className={cn(
-              "absolute top-0 left-0 right-0 h-1 z-50 transition-opacity duration-200",
-              "bg-gradient-to-b from-foreground/20 to-transparent",
-              activeDirection === "down" && progress > 0.3 ? "opacity-100" : "opacity-0"
+              "absolute top-0 left-0 right-0 h-1.5 z-50 transition-all duration-200",
+              "bg-gradient-to-b from-white/40 to-transparent",
+              activeDirection === "down" && progress > 0.2 ? "opacity-100" : "opacity-0"
             )}
             style={{
-              transform: `scaleY(${1 + progress * 2})`,
+              transform: `scaleY(${1 + progress * 3})`,
+              boxShadow: progress > 0.3 ? "0 0 20px rgba(255,255,255,0.3)" : "none",
             }}
           />
           {/* Bottom edge indicator */}
           <div 
             className={cn(
-              "absolute bottom-0 left-0 right-0 h-1 z-50 transition-opacity duration-200",
-              "bg-gradient-to-t from-foreground/20 to-transparent",
-              activeDirection === "up" && progress > 0.3 ? "opacity-100" : "opacity-0"
+              "absolute bottom-0 left-0 right-0 h-1.5 z-50 transition-all duration-200",
+              "bg-gradient-to-t from-white/40 to-transparent",
+              activeDirection === "up" && progress > 0.2 ? "opacity-100" : "opacity-0"
             )}
             style={{
-              transform: `scaleY(${1 + progress * 2})`,
+              transform: `scaleY(${1 + progress * 3})`,
+              boxShadow: progress > 0.3 ? "0 0 20px rgba(255,255,255,0.3)" : "none",
             }}
           />
         </>
@@ -286,23 +288,25 @@ export function SwipeGestureContainer({
           {/* Left edge indicator */}
           <div 
             className={cn(
-              "absolute top-0 bottom-0 left-0 w-1 z-50 transition-opacity duration-200",
-              "bg-gradient-to-r from-foreground/20 to-transparent",
-              activeDirection === "right" && progress > 0.3 ? "opacity-100" : "opacity-0"
+              "absolute top-0 bottom-0 left-0 w-1.5 z-50 transition-all duration-200",
+              "bg-gradient-to-r from-white/40 to-transparent",
+              activeDirection === "right" && progress > 0.2 ? "opacity-100" : "opacity-0"
             )}
             style={{
-              transform: `scaleX(${1 + progress * 2})`,
+              transform: `scaleX(${1 + progress * 3})`,
+              boxShadow: progress > 0.3 ? "0 0 20px rgba(255,255,255,0.3)" : "none",
             }}
           />
           {/* Right edge indicator */}
           <div 
             className={cn(
-              "absolute top-0 bottom-0 right-0 w-1 z-50 transition-opacity duration-200",
-              "bg-gradient-to-l from-foreground/20 to-transparent",
-              activeDirection === "left" && progress > 0.3 ? "opacity-100" : "opacity-0"
+              "absolute top-0 bottom-0 right-0 w-1.5 z-50 transition-all duration-200",
+              "bg-gradient-to-l from-white/40 to-transparent",
+              activeDirection === "left" && progress > 0.2 ? "opacity-100" : "opacity-0"
             )}
             style={{
-              transform: `scaleX(${1 + progress * 2})`,
+              transform: `scaleX(${1 + progress * 3})`,
+              boxShadow: progress > 0.3 ? "0 0 20px rgba(255,255,255,0.3)" : "none",
             }}
           />
         </>
@@ -322,21 +326,22 @@ export function SwipeGestureContainer({
         {children}
       </div>
 
-      {/* Progress indicator dot */}
+      {/* Progress indicator dot - high contrast */}
       {progress > 0 && activeDirection && (
         <div 
           className={cn(
-            "absolute z-50 w-2 h-2 rounded-full bg-foreground/50 transition-opacity",
-            progress > 0.5 ? "opacity-100" : "opacity-50"
+            "absolute z-50 w-3 h-3 rounded-full bg-white/70 transition-opacity",
+            progress > 0.4 ? "opacity-100" : "opacity-60"
           )}
           style={{
             // Position based on direction
-            ...(activeDirection === "up" && { bottom: "20px", left: "50%", transform: "translateX(-50%)" }),
-            ...(activeDirection === "down" && { top: "20px", left: "50%", transform: "translateX(-50%)" }),
-            ...(activeDirection === "left" && { right: "20px", top: "50%", transform: "translateY(-50%)" }),
-            ...(activeDirection === "right" && { left: "20px", top: "50%", transform: "translateY(-50%)" }),
+            ...(activeDirection === "up" && { bottom: "24px", left: "50%", transform: "translateX(-50%)" }),
+            ...(activeDirection === "down" && { top: "24px", left: "50%", transform: "translateX(-50%)" }),
+            ...(activeDirection === "left" && { right: "24px", top: "50%", transform: "translateY(-50%)" }),
+            ...(activeDirection === "right" && { left: "24px", top: "50%", transform: "translateY(-50%)" }),
             // Scale based on progress
-            scale: `${0.5 + progress * 1.5}`,
+            scale: `${0.6 + progress * 1.4}`,
+            boxShadow: "0 0 10px rgba(255,255,255,0.5)",
           }}
         />
       )}

@@ -6,6 +6,7 @@ import { useImagePreloader } from "@/hooks/useImagePreloader";
 import { ProgressiveImage } from "@/components/ProgressiveImage";
 import { SwipeHint } from "@/components/SwipeHint";
 import { SwipeGestureContainer } from "@/components/SwipeGestureContainer";
+import { cn } from "@/lib/utils";
 
 const Studio = () => {
   const navigate = useNavigate();
@@ -174,8 +175,8 @@ const Studio = () => {
       >
         {/* Background image with AVIF/WebP and responsive srcset */}
         <div
-          className={`absolute inset-0 transition-all duration-700 ease-out will-change-transform ${
-            isTransitioning ? "opacity-0 scale-[1.03]" : "opacity-100 scale-100"
+          className={`absolute inset-0 transition-all duration-500 ease-out will-change-transform ${
+            isTransitioning ? "opacity-0 scale-[1.02]" : "opacity-100 scale-100"
           }`}
         >
           {currentImage?.image_url && (
@@ -232,34 +233,53 @@ const Studio = () => {
 
       {/* Vertical navigation indicators */}
       <div className={`absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3 transition-all duration-500 delay-200 ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-        {/* Up arrow - enhanced touch target */}
-        {hasPrev && (
-          <button
-            onClick={goToPrev}
-            className="min-w-[44px] min-h-[44px] flex items-center justify-center
-                       text-white/40 hover:text-white/70 transition-opacity"
-            aria-label="Previous image"
-          >
-            <ChevronUp className="w-6 h-6" strokeWidth={1.5} />
-          </button>
-        )}
+        {/* Up arrow - always show, dim when disabled */}
+        <button
+          onClick={goToPrev}
+          disabled={!hasPrev}
+          className={cn(
+            "min-w-[44px] min-h-[44px] flex items-center justify-center transition-all",
+            hasPrev ? "text-white/50 hover:text-white/80" : "text-white/20 cursor-default"
+          )}
+          aria-label="Previous image"
+        >
+          <ChevronUp className="w-6 h-6" strokeWidth={1.5} />
+        </button>
+        
+        {/* Image dots */}
+        <div className="flex gap-1.5">
+          {images.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentIndex(index)}
+              className="p-1"
+              aria-label={`View image ${index + 1}`}
+            >
+              <span className={cn(
+                "block w-2 h-2 rounded-full transition-all duration-200",
+                index === currentIndex ? "bg-white scale-110" : "bg-white/30 hover:bg-white/50"
+              )} />
+            </button>
+          ))}
+        </div>
         
         {/* Counter */}
-        <span className="text-white/40 text-xs tracking-widest font-light">
+        <span className="text-white/50 text-xs tracking-widest font-light">
           {currentIndex + 1} / {images.length}
         </span>
         
-        {/* Down arrow - enhanced touch target */}
-        {hasNext && (
-          <button
-            onClick={goToNext}
-            className="min-w-[44px] min-h-[44px] flex items-center justify-center
-                       text-white/40 hover:text-white/70 transition-opacity animate-pulse"
-            aria-label="Next image"
-          >
-            <ChevronDown className="w-6 h-6" strokeWidth={1.5} />
-          </button>
-        )}
+        {/* Down arrow - always show, dim when disabled */}
+        <button
+          onClick={goToNext}
+          disabled={!hasNext}
+          className={cn(
+            "min-w-[44px] min-h-[44px] flex items-center justify-center transition-all",
+            hasNext ? "text-white/50 hover:text-white/80 animate-pulse" : "text-white/20 cursor-default"
+          )}
+          aria-label="Next image"
+        >
+          <ChevronDown className="w-6 h-6" strokeWidth={1.5} />
+        </button>
       </div>
 
       {/* Mobile swipe hint */}

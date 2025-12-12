@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { X } from "lucide-react";
 import { ProgressiveImage } from "@/components/ProgressiveImage";
+import { SwipeGestureContainer } from "@/components/SwipeGestureContainer";
 
 const BioHeroImage = () => {
   return (
@@ -17,18 +18,41 @@ const BioHeroImage = () => {
 const Bio = () => {
   const navigate = useNavigate();
   const [isPageLoaded, setIsPageLoaded] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsPageLoaded(true), 50);
     return () => clearTimeout(timer);
   }, []);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     navigate("/");
-  };
+  }, [navigate]);
+
+  // Check if scrolled to top for swipe-to-close
+  const isAtTop = useCallback(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return true;
+    return container.scrollTop < 50;
+  }, []);
+
+  const handleSwipeClose = useCallback(() => {
+    if (isAtTop()) {
+      handleClose();
+    }
+  }, [isAtTop, handleClose]);
 
   return (
-    <div className={`min-h-screen bg-stone-50 transition-opacity duration-500 ${isPageLoaded ? 'opacity-100' : 'opacity-0'}`}>
+    <SwipeGestureContainer
+      onSwipeRight={handleSwipeClose}
+      enabled
+      direction="horizontal"
+      className="min-h-screen"
+    >
+      <div 
+        ref={scrollContainerRef}
+        className={`min-h-screen bg-stone-50 transition-opacity duration-500 overflow-y-auto ${isPageLoaded ? 'opacity-100' : 'opacity-0'}`}
+      >
       {/* Header */}
       <header className={`fixed top-0 left-0 right-0 z-20 flex items-center justify-between p-6 md:p-8 bg-stone-50/90 backdrop-blur-sm transition-all duration-500 ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
         <span className="text-stone-900 text-sm md:text-base font-medium tracking-widest uppercase">
@@ -187,10 +211,11 @@ const Bio = () => {
             >
               contact@ivancomas.com
             </a>
-          </section>
+        </section>
         </div>
       </main>
-    </div>
+      </div>
+    </SwipeGestureContainer>
   );
 };
 
