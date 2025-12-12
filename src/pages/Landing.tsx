@@ -72,7 +72,7 @@ const Landing = () => {
   }, [isMobile, selectedIndex, navigate]);
 
   const handleMouseEnter = (index: number) => {
-    if (isMobile) return; // Ignore hover on mobile
+    if (isMobile) return;
     if (hoveredIndex !== index) {
       setIsTransitioning(true);
       setHoveredIndex(index);
@@ -81,42 +81,23 @@ const Landing = () => {
   };
 
   const handleMouseLeave = () => {
-    if (isMobile) return; // Ignore hover on mobile
+    if (isMobile) return;
     setIsTransitioning(true);
     setHoveredIndex(null);
     setTimeout(() => setIsTransitioning(false), 300);
   };
 
+  // Get the active index for background-clip effect
+  const activeIndex = hoveredIndex ?? selectedIndex;
+
   return (
     <div className={`relative min-h-screen bg-black overflow-hidden transition-opacity duration-500 ${isPageLoaded ? 'opacity-100' : 'opacity-0'}`}>
-      {/* Background images - one for each menu item */}
-      {menuItems.map((item, index) => (
-        <div
-          key={`bg-${index}`}
-          className={`absolute inset-0 transition-all duration-700 ease-out will-change-opacity ${
-            hoveredIndex === index ? "opacity-40 scale-105" : "opacity-0 scale-100"
-          }`}
-          style={{
-            backgroundImage: `url(${item.image})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        />
-      ))}
-
-      {/* Dark overlay for better text readability when image is shown */}
-      <div 
-        className={`absolute inset-0 bg-black/30 transition-opacity duration-500 ${
-          hoveredIndex !== null ? "opacity-100" : "opacity-0"
-        }`}
-      />
-
-      {/* Menu container */}
-      <nav className="relative z-10 min-h-screen flex items-center justify-center">
-        <ul className="flex flex-col items-center gap-2 md:gap-3">
+      {/* Menu container - left aligned */}
+      <nav className="relative z-10 min-h-screen flex items-center">
+        <ul className="flex flex-col items-start gap-0 pl-8 sm:pl-12 md:pl-16 lg:pl-24">
           {menuItems.map((item, index) => {
             const isClickable = item.type === "link" || item.type === "mailto";
-            const isHovered = hoveredIndex === index;
+            const isActive = activeIndex === index;
 
             return (
               <li 
@@ -135,30 +116,46 @@ const Landing = () => {
                   onMouseLeave={handleMouseLeave}
                   disabled={!isClickable && !isMobile}
                   className={`
-                    text-white font-bold tracking-tight leading-none
-                    text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl
-                    transition-all duration-300 ease-out will-change-transform
+                    font-playfair font-black tracking-tight
+                    text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-[10rem]
+                    leading-[0.85] md:leading-[0.85]
+                    transition-all duration-500 ease-out will-change-transform
                     ${isClickable 
-                      ? "cursor-pointer hover:tracking-normal" 
+                      ? "cursor-pointer" 
                       : "cursor-default"
                     }
-                    ${isHovered || selectedIndex === index
-                      ? "opacity-100 scale-105" 
-                      : hoveredIndex !== null || selectedIndex !== null
-                        ? "opacity-40" 
+                    ${isActive
+                      ? "scale-[1.02]" 
+                      : activeIndex !== null
+                        ? "opacity-30" 
                         : "opacity-100"
                     }
                     focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50
                     disabled:cursor-default
+                    relative
                   `}
                   style={{
-                    textShadow: (isHovered || selectedIndex === index) ? "0 0 60px rgba(255,255,255,0.4)" : "none",
+                    // Background-clip text effect - image shows through text
+                    backgroundImage: isActive ? `url(${item.image})` : 'none',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    WebkitBackgroundClip: isActive ? 'text' : 'unset',
+                    backgroundClip: isActive ? 'text' : 'unset',
+                    color: isActive ? 'transparent' : 'white',
+                    WebkitTextFillColor: isActive ? 'transparent' : 'white',
                   }}
                 >
                   {item.text}
                   {/* Mobile hint: tap again to navigate */}
                   {isMobile && isClickable && selectedIndex === index && (
-                    <span className="block text-xs font-normal tracking-wide opacity-60 mt-2 animate-fade-in">
+                    <span 
+                      className="block text-xs font-sans font-normal tracking-wide mt-2 animate-fade-in"
+                      style={{ 
+                        color: 'white', 
+                        WebkitTextFillColor: 'white',
+                        opacity: 0.6 
+                      }}
+                    >
                       tap again to open
                     </span>
                   )}
