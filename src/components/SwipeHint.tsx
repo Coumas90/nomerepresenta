@@ -135,39 +135,42 @@ export const SwipeHint = ({
       className={`pointer-events-none z-30 flex items-center justify-center ${className}`}
       aria-hidden="true"
     >
-      {direction === "vertical" && (
-        <div className="flex flex-col items-center gap-1 animate-fade-in">
-          <ChevronUp className="w-5 h-5 text-white/40 animate-bounce" style={{ animationDelay: "0.1s" }} />
-          <span className="text-white/40 text-[10px] tracking-widest uppercase text-center max-w-[120px]">
-            {contextText}
-          </span>
-          <ChevronDown className="w-5 h-5 text-white/40 animate-bounce" />
-        </div>
-      )}
-
-      {direction === "horizontal" && (
-        <div className="flex items-center gap-2 animate-fade-in">
-          <ChevronLeft className="w-5 h-5 text-white/40 animate-pulse" />
-          <span className="text-white/40 text-[10px] tracking-widest uppercase text-center max-w-[120px]">
-            {contextText}
-          </span>
-          <ChevronRight className="w-5 h-5 text-white/40 animate-pulse" />
-        </div>
-      )}
-
-      {direction === "both" && (
-        <div className="flex flex-col items-center gap-2 animate-fade-in">
-          <ChevronUp className="w-4 h-4 text-white/40 animate-bounce" />
-          <div className="flex items-center gap-3">
-            <ChevronLeft className="w-4 h-4 text-white/40 animate-pulse" />
-            <span className="text-white/40 text-[10px] tracking-widest uppercase text-center max-w-[100px]">
+      {/* Backdrop for better visibility */}
+      <div className="bg-black/30 backdrop-blur-sm rounded-xl px-4 py-3">
+        {direction === "vertical" && (
+          <div className="flex flex-col items-center gap-1.5 animate-fade-in">
+            <ChevronUp className="w-6 h-6 text-white/70 animate-bounce" style={{ animationDelay: "0.1s" }} />
+            <span className="text-white/80 text-[11px] tracking-widest uppercase text-center max-w-[140px] font-medium">
               {contextText}
             </span>
-            <ChevronRight className="w-4 h-4 text-white/40 animate-pulse" />
+            <ChevronDown className="w-6 h-6 text-white/70 animate-bounce" />
           </div>
-          <ChevronDown className="w-4 h-4 text-white/40 animate-bounce" />
-        </div>
-      )}
+        )}
+
+        {direction === "horizontal" && (
+          <div className="flex items-center gap-2.5 animate-fade-in">
+            <ChevronLeft className="w-6 h-6 text-white/70 animate-pulse" />
+            <span className="text-white/80 text-[11px] tracking-widest uppercase text-center max-w-[140px] font-medium">
+              {contextText}
+            </span>
+            <ChevronRight className="w-6 h-6 text-white/70 animate-pulse" />
+          </div>
+        )}
+
+        {direction === "both" && (
+          <div className="flex flex-col items-center gap-2 animate-fade-in">
+            <ChevronUp className="w-5 h-5 text-white/70 animate-bounce" />
+            <div className="flex items-center gap-3">
+              <ChevronLeft className="w-5 h-5 text-white/70 animate-pulse" />
+              <span className="text-white/80 text-[11px] tracking-widest uppercase text-center max-w-[120px] font-medium">
+                {contextText}
+              </span>
+              <ChevronRight className="w-5 h-5 text-white/70 animate-pulse" />
+            </div>
+            <ChevronDown className="w-5 h-5 text-white/70 animate-bounce" />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
