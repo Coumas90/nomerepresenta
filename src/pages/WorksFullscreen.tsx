@@ -244,41 +244,53 @@ const WorksFullscreen = () => {
         isAtHorizontalStart={!hasPrevImage}
         isAtHorizontalEnd={!hasNextImage}
         showEdgeIndicators
-        className="absolute inset-0 flex items-center justify-center p-8 md:p-16 lg:p-24"
+        className="absolute inset-0 flex flex-col items-center justify-center p-8 md:p-16 lg:p-20"
       >
-        {/* Artwork image as framed gallery piece */}
-        <div
-          className={`relative max-w-[85vw] max-h-[70vh] md:max-w-[75vw] md:max-h-[75vh] transition-all duration-500 ease-out ${
-            isTransitioning ? "opacity-0 scale-[0.98]" : "opacity-100 scale-100"
-          }`}
-        >
-          {/* Gallery frame shadow effect */}
-          <div className="absolute inset-0 shadow-2xl shadow-stone-400/50" />
-          
-          {currentImage && (
-            <ProgressiveImage
-              src={currentImage}
-              alt={currentArtwork?.title || "Artwork"}
-              className="relative z-10 w-auto h-auto max-w-full max-h-[70vh] md:max-h-[75vh] object-contain shadow-xl"
-              eager
-              skipInternalFade
-              blurUp
-              modernFormats
-              responsivePreset="full"
-              sizes="85vw"
-            />
-          )}
+        {/* Artwork container with image and metadata */}
+        <div className="flex flex-col items-start max-w-[85vw] md:max-w-[75vw]">
+          {/* Artwork image as framed gallery piece */}
+          <div
+            className={`relative max-h-[55vh] md:max-h-[60vh] transition-all duration-500 ease-out ${
+              isTransitioning ? "opacity-0 scale-[0.98]" : "opacity-100 scale-100"
+            }`}
+          >
+            {/* Gallery frame shadow effect */}
+            <div className="absolute inset-0 shadow-2xl shadow-stone-400/50" />
+            
+            {currentImage && (
+              <ProgressiveImage
+                src={currentImage}
+                alt={currentArtwork?.title || "Artwork"}
+                className="relative z-10 w-auto h-auto max-w-full max-h-[55vh] md:max-h-[60vh] object-contain shadow-xl"
+                eager
+                skipInternalFade
+                blurUp
+                modernFormats
+                responsivePreset="full"
+                sizes="85vw"
+              />
+            )}
+          </div>
+
+          {/* Artwork metadata - visible below image */}
+          <div className="mt-4 md:mt-6 space-y-1 text-left">
+            <h2 className="text-stone-900 text-sm md:text-base font-bold uppercase tracking-wide">
+              {currentArtwork.title}
+              {isViewingDetail && <span className="font-normal text-stone-500 ml-2">(DETAIL)</span>}
+            </h2>
+            <p className="text-stone-700 text-xs md:text-sm">
+              {currentArtwork.year}
+            </p>
+            <p className="text-stone-500 text-xs md:text-sm uppercase tracking-wide">
+              {currentArtwork.technique}
+              {currentArtwork.materials && `, ${currentArtwork.materials}`}
+            </p>
+            <p className="text-stone-500 text-xs md:text-sm">
+              {currentArtwork.dimensions}
+            </p>
+          </div>
         </div>
       </SwipeGestureContainer>
-      
-      {/* Detail indicator */}
-      {isViewingDetail && (
-        <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20">
-          <span className="text-stone-500 text-xs tracking-widest uppercase animate-fade-in">
-            Detail {currentImageIndex} / {allImages.length - 1}
-          </span>
-        </div>
-      )}
 
       {/* Minimalist Header */}
       <header className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-6 md:p-8">
