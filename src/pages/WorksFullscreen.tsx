@@ -208,11 +208,11 @@ const WorksFullscreen = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="absolute inset-0 skeleton-shimmer bg-stone-900" />
+      <div className="min-h-screen bg-stone-100 flex items-center justify-center">
+        <div className="absolute inset-0 skeleton-shimmer bg-stone-200" />
         <div className="relative z-10 flex flex-col items-center gap-4">
-          <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-          <span className="text-white/40 text-xs tracking-widest uppercase">Loading</span>
+          <div className="w-8 h-8 border-2 border-stone-400/40 border-t-stone-600 rounded-full animate-spin" />
+          <span className="text-stone-500 text-xs tracking-widest uppercase">Loading</span>
         </div>
       </div>
     );
@@ -220,8 +220,8 @@ const WorksFullscreen = () => {
 
   if (!artworks?.length || !currentArtwork) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <p className="text-white/60">No artworks found</p>
+      <div className="min-h-screen bg-stone-100 flex items-center justify-center">
+        <p className="text-stone-500">No artworks found</p>
       </div>
     );
   }
@@ -230,7 +230,7 @@ const WorksFullscreen = () => {
   const isViewingDetail = currentImageIndex > 0;
 
   return (
-    <div className="relative min-h-screen bg-black overflow-hidden">
+    <div className="relative min-h-screen bg-stone-100 overflow-hidden">
       {/* SwipeGestureContainer for rubber-band effect */}
       <SwipeGestureContainer
         onSwipeUp={goToNextArtwork}
@@ -244,43 +244,37 @@ const WorksFullscreen = () => {
         isAtHorizontalStart={!hasPrevImage}
         isAtHorizontalEnd={!hasNextImage}
         showEdgeIndicators
-        className="absolute inset-0"
+        className="absolute inset-0 flex items-center justify-center p-8 md:p-16 lg:p-24"
       >
-        {/* Background artwork image with AVIF/WebP and responsive srcset */}
+        {/* Artwork image as framed gallery piece */}
         <div
-          className={`absolute inset-0 transition-all duration-500 ease-out ${
-            isTransitioning ? "opacity-0 scale-[1.02]" : "opacity-100 scale-100"
+          className={`relative max-w-[85vw] max-h-[70vh] md:max-w-[75vw] md:max-h-[75vh] transition-all duration-500 ease-out ${
+            isTransitioning ? "opacity-0 scale-[0.98]" : "opacity-100 scale-100"
           }`}
         >
+          {/* Gallery frame shadow effect */}
+          <div className="absolute inset-0 shadow-2xl shadow-stone-400/50" />
+          
           {currentImage && (
             <ProgressiveImage
               src={currentImage}
               alt={currentArtwork?.title || "Artwork"}
-              className="w-full h-full"
+              className="relative z-10 w-auto h-auto max-w-full max-h-[70vh] md:max-h-[75vh] object-contain shadow-xl"
               eager
               skipInternalFade
               blurUp
               modernFormats
               responsivePreset="full"
-              sizes="100vw"
+              sizes="85vw"
             />
           )}
         </div>
       </SwipeGestureContainer>
-
-      {/* Subtle vignette overlay - darker when viewing detail */}
-      <div 
-        className={`absolute inset-0 pointer-events-none transition-opacity duration-500 ${
-          isViewingDetail 
-            ? "bg-gradient-to-t from-black/40 via-transparent to-black/30" 
-            : "bg-gradient-to-t from-black/20 via-transparent to-black/20"
-        }`} 
-      />
       
       {/* Detail indicator */}
       {isViewingDetail && (
         <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20">
-          <span className="text-white/50 text-xs tracking-widest uppercase animate-fade-in">
+          <span className="text-stone-500 text-xs tracking-widest uppercase animate-fade-in">
             Detail {currentImageIndex} / {allImages.length - 1}
           </span>
         </div>
@@ -291,7 +285,7 @@ const WorksFullscreen = () => {
         {/* TRI-PEEL - clickable to open overlay */}
         <button
           onClick={handleOpenOverlay}
-          className="text-white text-sm md:text-base font-medium tracking-widest uppercase 
+          className="text-stone-900 text-sm md:text-base font-bold tracking-widest uppercase 
                      hover:opacity-70 transition-opacity duration-200 focus:outline-none"
         >
           TRI-PEEL
@@ -301,7 +295,7 @@ const WorksFullscreen = () => {
         <button
           onClick={handleClose}
           className="min-w-[44px] min-h-[44px] flex items-center justify-center
-                     text-white hover:opacity-70 transition-opacity duration-200 focus:outline-none
+                     text-stone-900 hover:opacity-70 transition-opacity duration-200 focus:outline-none
                      -mr-2 md:-mr-3"
           aria-label="Close and return to landing"
         >
@@ -318,7 +312,7 @@ const WorksFullscreen = () => {
             "absolute left-2 md:left-6 top-1/2 -translate-y-1/2 z-20",
             "min-w-[44px] min-h-[44px] flex items-center justify-center",
             "transition-all duration-200 focus:outline-none group",
-            hasPrevImage ? "text-white/60 hover:text-white" : "text-white/20 cursor-default"
+            hasPrevImage ? "text-stone-600 hover:text-stone-900" : "text-stone-300 cursor-default"
           )}
           aria-label="Previous image"
         >
@@ -341,7 +335,7 @@ const WorksFullscreen = () => {
             "absolute right-2 md:right-6 top-1/2 -translate-y-1/2 z-20",
             "min-w-[44px] min-h-[44px] flex items-center justify-center",
             "transition-all duration-200 focus:outline-none group",
-            hasNextImage ? "text-white/60 hover:text-white" : "text-white/20 cursor-default"
+            hasNextImage ? "text-stone-600 hover:text-stone-900" : "text-stone-300 cursor-default"
           )}
           aria-label="Next image"
         >
@@ -363,7 +357,7 @@ const WorksFullscreen = () => {
           disabled={!hasPrevArtwork}
           className={cn(
             "min-w-[44px] min-h-[44px] flex items-center justify-center transition-all",
-            hasPrevArtwork ? "text-white/50 hover:text-white/80" : "text-white/20 cursor-default"
+            hasPrevArtwork ? "text-stone-500 hover:text-stone-800" : "text-stone-300 cursor-default"
           )}
           aria-label="Previous artwork"
         >
@@ -371,7 +365,7 @@ const WorksFullscreen = () => {
         </button>
         
         {/* Artwork counter */}
-        <span className="text-white/50 text-xs tracking-widest font-light">
+        <span className="text-stone-500 text-xs tracking-widest font-light">
           {currentArtworkIndex + 1} / {artworks.length}
         </span>
         
@@ -381,7 +375,7 @@ const WorksFullscreen = () => {
           disabled={!hasNextArtwork}
           className={cn(
             "min-w-[44px] min-h-[44px] flex items-center justify-center transition-all",
-            hasNextArtwork ? "text-white/50 hover:text-white/80 animate-pulse" : "text-white/20 cursor-default"
+            hasNextArtwork ? "text-stone-500 hover:text-stone-800 animate-pulse" : "text-stone-300 cursor-default"
           )}
           aria-label="Next artwork"
         >
@@ -401,8 +395,8 @@ const WorksFullscreen = () => {
             >
               <span className={`w-2.5 h-2.5 rounded-full transition-all duration-200 ${
                 index === currentImageIndex 
-                  ? "bg-white scale-110" 
-                  : "bg-white/30"
+                  ? "bg-stone-700 scale-110" 
+                  : "bg-stone-400"
               }`} />
             </button>
           ))}
