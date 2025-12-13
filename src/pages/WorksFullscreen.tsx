@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useArtworks } from "@/hooks/useArtworks";
 import { useArtworkImages } from "@/hooks/useArtworkImages";
 import { useImagePreloader } from "@/hooks/useImagePreloader";
@@ -303,105 +303,72 @@ const WorksFullscreen = () => {
         </button>
       </header>
 
-      {/* Left arrow - Previous image/detail - always visible when multiple images */}
+      {/* Left arrow - Previous image/detail - simple text arrow */}
       {allImages.length > 1 && (
         <button
           onClick={goToPrevImage}
           disabled={!hasPrevImage}
           className={cn(
-            "absolute left-2 md:left-6 top-1/2 -translate-y-1/2 z-20",
+            "absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-20",
             "min-w-[44px] min-h-[44px] flex items-center justify-center",
-            "transition-all duration-200 focus:outline-none group",
+            "text-2xl md:text-3xl font-light select-none",
+            "transition-all duration-200 focus:outline-none",
             hasPrevImage ? "text-stone-600 hover:text-stone-900" : "text-stone-300 cursor-default"
           )}
           aria-label="Previous image"
         >
-          <ChevronLeft 
-            className={cn(
-              "w-10 h-10 md:w-12 md:h-12 transition-transform",
-              hasPrevImage && "group-hover:scale-110"
-            )}
-            strokeWidth={1} 
-          />
+          &lt;
         </button>
       )}
 
-      {/* Right arrow - Next image/detail - always visible when multiple images */}
+      {/* Right arrow - Next image/detail - simple text arrow */}
       {allImages.length > 1 && (
         <button
           onClick={goToNextImage}
           disabled={!hasNextImage}
           className={cn(
-            "absolute right-2 md:right-6 top-1/2 -translate-y-1/2 z-20",
+            "absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20",
             "min-w-[44px] min-h-[44px] flex items-center justify-center",
-            "transition-all duration-200 focus:outline-none group",
+            "text-2xl md:text-3xl font-light select-none",
+            "transition-all duration-200 focus:outline-none",
             hasNextImage ? "text-stone-600 hover:text-stone-900" : "text-stone-300 cursor-default"
           )}
           aria-label="Next image"
         >
-          <ChevronRight 
-            className={cn(
-              "w-10 h-10 md:w-12 md:h-12 transition-transform",
-              hasNextImage && "group-hover:scale-110"
-            )}
-            strokeWidth={1} 
-          />
+          &gt;
         </button>
       )}
 
-      {/* Vertical navigation indicators */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3">
-        {/* Up arrow - always visible, dim when at start */}
+      {/* Vertical navigation - simple text arrows */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1">
+        {/* Up arrow */}
         <button
           onClick={goToPrevArtwork}
           disabled={!hasPrevArtwork}
           className={cn(
-            "min-w-[44px] min-h-[44px] flex items-center justify-center transition-all",
+            "min-w-[44px] min-h-[44px] flex items-center justify-center",
+            "text-xl font-light select-none transition-all duration-200 focus:outline-none",
             hasPrevArtwork ? "text-stone-500 hover:text-stone-800" : "text-stone-300 cursor-default"
           )}
           aria-label="Previous artwork"
         >
-          <ChevronUp className="w-6 h-6" strokeWidth={1.5} />
+          ^
         </button>
         
-        {/* Artwork counter */}
-        <span className="text-stone-500 text-xs tracking-widest font-light">
-          {currentArtworkIndex + 1} / {artworks.length}
-        </span>
-        
-        {/* Down arrow - always visible, dim when at end */}
+        {/* Down arrow */}
         <button
           onClick={goToNextArtwork}
           disabled={!hasNextArtwork}
           className={cn(
-            "min-w-[44px] min-h-[44px] flex items-center justify-center transition-all",
-            hasNextArtwork ? "text-stone-500 hover:text-stone-800 animate-pulse" : "text-stone-300 cursor-default"
+            "min-w-[44px] min-h-[44px] flex items-center justify-center",
+            "text-xl font-light select-none transition-all duration-200 focus:outline-none",
+            hasNextArtwork ? "text-stone-500 hover:text-stone-800" : "text-stone-300 cursor-default"
           )}
           aria-label="Next artwork"
         >
-          <ChevronDown className="w-6 h-6" strokeWidth={1.5} />
+          v
         </button>
       </div>
-
-      {/* Image indicators (dots) - enhanced touch targets */}
-      {allImages.length > 1 && (
-        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-20 flex gap-1">
-          {allImages.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentImageIndex(index)}
-              className="min-w-[44px] min-h-[44px] flex items-center justify-center"
-              aria-label={`View image ${index + 1}`}
-            >
-              <span className={`w-2.5 h-2.5 rounded-full transition-all duration-200 ${
-                index === currentImageIndex 
-                  ? "bg-stone-700 scale-110" 
-                  : "bg-stone-400"
-              }`} />
-            </button>
-          ))}
-        </div>
-      )}
 
       {/* Mobile swipe hints */}
       <SwipeHint 
