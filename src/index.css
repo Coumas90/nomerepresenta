@@ -214,4 +214,9 @@ All colors MUST be HSL.
   .blur-0 {
     filter: blur(0);
   }
+
+  /* Vertical writing mode for rotated text */
+  .writing-vertical-lr {
+    writing-mode: vertical-lr;
+  }
 }
