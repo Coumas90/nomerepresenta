@@ -244,13 +244,26 @@ const WorksFullscreen = () => {
         isAtHorizontalStart={!hasPrevImage}
         isAtHorizontalEnd={!hasNextImage}
         showEdgeIndicators
-        className="absolute inset-0 flex flex-col items-center justify-center p-8 md:p-16 lg:p-20"
+        className="absolute inset-0 flex items-center justify-center p-4 pt-20 pb-24 md:p-16 lg:p-20"
       >
-        {/* Artwork container with image and metadata */}
-        <div className="flex flex-col items-start max-w-[85vw] md:max-w-[75vw]">
+        {/* Mobile: horizontal layout with side metadata | Desktop: vertical layout */}
+        <div className="flex flex-row md:flex-col items-center md:items-start gap-4 md:gap-0 max-w-[95vw] md:max-w-[75vw]">
+          {/* Mobile: Left side metadata (rotated) */}
+          <div className="flex md:hidden flex-col justify-end h-[50vh] pb-4">
+            <div className="flex flex-col items-start origin-bottom-left -rotate-90 translate-y-full whitespace-nowrap">
+              <span className="text-stone-900 text-[10px] font-bold uppercase tracking-wide">
+                {currentArtwork.title}
+                {isViewingDetail && <span className="font-normal text-stone-500 ml-1">(DETAIL)</span>}
+              </span>
+              <span className="text-stone-500 text-[9px] uppercase tracking-wide">
+                {currentArtwork.year} · {currentArtwork.technique}
+              </span>
+            </div>
+          </div>
+
           {/* Artwork image as framed gallery piece */}
           <div
-            className={`relative max-h-[55vh] md:max-h-[60vh] transition-all duration-500 ease-out ${
+            className={`relative max-h-[60vh] md:max-h-[60vh] transition-all duration-500 ease-out ${
               isTransitioning ? "opacity-0 scale-[0.98]" : "opacity-100 scale-100"
             }`}
           >
@@ -261,7 +274,7 @@ const WorksFullscreen = () => {
               <ProgressiveImage
                 src={currentImage}
                 alt={currentArtwork?.title || "Artwork"}
-                className="relative z-10 w-auto h-auto max-w-full max-h-[55vh] md:max-h-[60vh] object-contain shadow-xl"
+                className="relative z-10 w-auto h-auto max-w-full max-h-[60vh] object-contain shadow-xl"
                 eager
                 skipInternalFade
                 blurUp
@@ -272,20 +285,20 @@ const WorksFullscreen = () => {
             )}
           </div>
 
-          {/* Artwork metadata - visible below image */}
-          <div className="mt-4 md:mt-6 space-y-1 text-left">
-            <h2 className="text-stone-900 text-sm md:text-base font-bold uppercase tracking-wide">
+          {/* Desktop: Artwork metadata below image */}
+          <div className="hidden md:block mt-6 space-y-1 text-left">
+            <h2 className="text-stone-900 text-base font-bold uppercase tracking-wide">
               {currentArtwork.title}
               {isViewingDetail && <span className="font-normal text-stone-500 ml-2">(DETAIL)</span>}
             </h2>
-            <p className="text-stone-700 text-xs md:text-sm">
+            <p className="text-stone-700 text-sm">
               {currentArtwork.year}
             </p>
-            <p className="text-stone-500 text-xs md:text-sm uppercase tracking-wide">
+            <p className="text-stone-500 text-sm uppercase tracking-wide">
               {currentArtwork.technique}
               {currentArtwork.materials && `, ${currentArtwork.materials}`}
             </p>
-            <p className="text-stone-500 text-xs md:text-sm">
+            <p className="text-stone-500 text-sm">
               {currentArtwork.dimensions}
             </p>
           </div>
@@ -293,14 +306,16 @@ const WorksFullscreen = () => {
       </SwipeGestureContainer>
 
       {/* Minimalist Header */}
-      <header className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-6 md:p-8">
-        {/* TRI-PEEL - clickable to open overlay */}
+      <header className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-4 md:p-8">
+        {/* TRI-PEEL - rotated vertically on mobile */}
         <button
           onClick={handleOpenOverlay}
-          className="text-stone-900 text-sm md:text-base font-bold tracking-widest uppercase 
-                     hover:opacity-70 transition-opacity duration-200 focus:outline-none"
+          className="text-stone-900 text-xs md:text-base font-bold tracking-widest uppercase 
+                     hover:opacity-70 transition-opacity duration-200 focus:outline-none
+                     md:rotate-0 origin-top-left"
         >
-          TRI-PEEL
+          <span className="hidden md:inline">TRI-PEEL</span>
+          <span className="md:hidden writing-vertical-lr rotate-180 text-[10px]">TRI-PEEL</span>
         </button>
 
         {/* Close button - enhanced touch target */}
@@ -308,10 +323,10 @@ const WorksFullscreen = () => {
           onClick={handleClose}
           className="min-w-[44px] min-h-[44px] flex items-center justify-center
                      text-stone-900 hover:opacity-70 transition-opacity duration-200 focus:outline-none
-                     -mr-2 md:-mr-3"
+                     -mr-1 md:-mr-3"
           aria-label="Close and return to landing"
         >
-          <X className="w-6 h-6 md:w-7 md:h-7" strokeWidth={1.5} />
+          <X className="w-5 h-5 md:w-7 md:h-7" strokeWidth={1.5} />
         </button>
       </header>
 
