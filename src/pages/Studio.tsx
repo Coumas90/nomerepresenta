@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronUp, ChevronDown, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useStudioImages } from "@/hooks/useStudioImages";
 import { useImagePreloader } from "@/hooks/useImagePreloader";
 import { ProgressiveImage } from "@/components/ProgressiveImage";
@@ -122,11 +122,11 @@ const Studio = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="absolute inset-0 skeleton-shimmer bg-stone-900" />
+      <div className="min-h-screen bg-stone-100 flex items-center justify-center">
+        <div className="absolute inset-0 skeleton-shimmer bg-stone-200" />
         <div className="relative z-10 flex flex-col items-center gap-4">
-          <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-          <span className="text-white/40 text-xs tracking-widest uppercase">Loading</span>
+          <div className="w-8 h-8 border-2 border-stone-400/40 border-t-stone-600 rounded-full animate-spin" />
+          <span className="text-stone-500 text-xs tracking-widest uppercase">Loading</span>
         </div>
       </div>
     );
@@ -134,15 +134,15 @@ const Studio = () => {
 
   if (!images?.length) {
     return (
-      <div className={`min-h-screen bg-black flex flex-col transition-opacity duration-500 ${isPageLoaded ? 'opacity-100' : 'opacity-0'}`}>
+      <div className={`min-h-screen bg-stone-100 flex flex-col transition-opacity duration-500 ${isPageLoaded ? 'opacity-100' : 'opacity-0'}`}>
         {/* Header */}
         <header className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-6 md:p-8">
-          <span className="text-white text-sm md:text-base font-medium tracking-widest uppercase">
+          <span className="text-stone-900 text-sm md:text-base font-medium tracking-widest uppercase">
             STUDIO
           </span>
           <button
             onClick={handleClose}
-            className="text-white hover:opacity-70 transition-opacity duration-200 focus:outline-none"
+            className="text-stone-900 hover:opacity-70 transition-opacity duration-200 focus:outline-none"
             aria-label="Close and return to landing"
           >
             <X className="w-6 h-6 md:w-7 md:h-7" strokeWidth={1.5} />
@@ -150,7 +150,7 @@ const Studio = () => {
         </header>
         
         <div className="flex-1 flex items-center justify-center">
-          <p className="text-white/60 text-center">
+          <p className="text-stone-500 text-center">
             No studio images available yet.
           </p>
         </div>
@@ -159,7 +159,7 @@ const Studio = () => {
   }
 
   return (
-    <div className={`relative min-h-screen bg-black overflow-hidden transition-opacity duration-500 ${isPageLoaded ? 'opacity-100' : 'opacity-0'}`}>
+    <div className={`relative min-h-screen bg-stone-100 overflow-hidden transition-opacity duration-500 ${isPageLoaded ? 'opacity-100' : 'opacity-0'}`}>
       {/* SwipeGestureContainer for rubber-band effect */}
       <SwipeGestureContainer
         onSwipeUp={goToNext}
@@ -196,22 +196,22 @@ const Studio = () => {
       </SwipeGestureContainer>
 
       {/* Subtle vignette overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/30 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-t from-stone-100/40 via-transparent to-stone-100/30 pointer-events-none" />
 
       {/* Header */}
-      <header className={`absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-6 md:p-8 transition-all duration-500 delay-100 ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
-        <span className="text-white text-sm md:text-base font-medium tracking-widest uppercase">
+      <header className={`absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-4 md:p-8 transition-all duration-500 delay-100 ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
+        <span className="text-stone-900 text-xs md:text-base font-bold tracking-widest uppercase">
           STUDIO
         </span>
 
         <button
           onClick={handleClose}
           className="min-w-[44px] min-h-[44px] flex items-center justify-center
-                     text-white hover:opacity-70 transition-all duration-200 hover:rotate-90 focus:outline-none
-                     -mr-2 md:-mr-3"
+                     text-stone-900 hover:opacity-70 transition-all duration-200 focus:outline-none
+                     -mr-1 md:-mr-3"
           aria-label="Close and return to landing"
         >
-          <X className="w-6 h-6 md:w-7 md:h-7" strokeWidth={1.5} />
+          <X className="w-5 h-5 md:w-7 md:h-7" strokeWidth={1.5} />
         </button>
       </header>
 
@@ -219,66 +219,46 @@ const Studio = () => {
       {(currentImage?.title || currentImage?.description) && (
         <div className={`absolute bottom-24 left-6 md:left-8 right-6 md:right-8 z-20 transition-all duration-500 ${isTransitioning ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'}`}>
           {currentImage.title && (
-            <h2 className="text-white text-lg md:text-xl font-medium mb-2">
+            <h2 className="text-stone-900 text-lg md:text-xl font-medium mb-2">
               {currentImage.title}
             </h2>
           )}
           {currentImage.description && (
-            <p className="text-white/70 text-sm md:text-base max-w-xl">
+            <p className="text-stone-600 text-sm md:text-base max-w-xl">
               {currentImage.description}
             </p>
           )}
         </div>
       )}
 
-      {/* Vertical navigation indicators */}
-      <div className={`absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3 transition-all duration-500 delay-200 ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-        {/* Up arrow - always show, dim when disabled */}
+      {/* Vertical navigation - simple text arrows */}
+      <div className={`absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1 transition-all duration-500 delay-200 ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+        {/* Up arrow */}
         <button
           onClick={goToPrev}
           disabled={!hasPrev}
           className={cn(
-            "min-w-[44px] min-h-[44px] flex items-center justify-center transition-all",
-            hasPrev ? "text-white/50 hover:text-white/80" : "text-white/20 cursor-default"
+            "min-w-[44px] min-h-[44px] flex items-center justify-center",
+            "text-xl font-light select-none transition-all duration-200 focus:outline-none",
+            hasPrev ? "text-stone-500 hover:text-stone-800" : "text-stone-300 cursor-default"
           )}
           aria-label="Previous image"
         >
-          <ChevronUp className="w-6 h-6" strokeWidth={1.5} />
+          ^
         </button>
         
-        {/* Image dots */}
-        <div className="flex gap-1.5">
-          {images.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentIndex(index)}
-              className="p-1"
-              aria-label={`View image ${index + 1}`}
-            >
-              <span className={cn(
-                "block w-2 h-2 rounded-full transition-all duration-200",
-                index === currentIndex ? "bg-white scale-110" : "bg-white/30 hover:bg-white/50"
-              )} />
-            </button>
-          ))}
-        </div>
-        
-        {/* Counter */}
-        <span className="text-white/50 text-xs tracking-widest font-light">
-          {currentIndex + 1} / {images.length}
-        </span>
-        
-        {/* Down arrow - always show, dim when disabled */}
+        {/* Down arrow */}
         <button
           onClick={goToNext}
           disabled={!hasNext}
           className={cn(
-            "min-w-[44px] min-h-[44px] flex items-center justify-center transition-all",
-            hasNext ? "text-white/50 hover:text-white/80 animate-pulse" : "text-white/20 cursor-default"
+            "min-w-[44px] min-h-[44px] flex items-center justify-center",
+            "text-xl font-light select-none transition-all duration-200 focus:outline-none",
+            hasNext ? "text-stone-500 hover:text-stone-800" : "text-stone-300 cursor-default"
           )}
           aria-label="Next image"
         >
-          <ChevronDown className="w-6 h-6" strokeWidth={1.5} />
+          v
         </button>
       </div>
 
