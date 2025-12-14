@@ -19,6 +19,23 @@ const Landing = () => {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isPageLoaded, setIsPageLoaded] = useState(false);
+  const [imagesLoaded, setImagesLoaded] = useState(false);
+
+  // Preload all menu images on mount
+  useEffect(() => {
+    const imagePromises = menuItems.map(item => {
+      return new Promise<void>((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve();
+        img.onerror = () => resolve(); // Continue even if one fails
+        img.src = item.image;
+      });
+    });
+
+    Promise.all(imagePromises).then(() => {
+      setImagesLoaded(true);
+    });
+  }, []);
 
   // Trigger entrance animation
   useEffect(() => {
@@ -135,14 +152,14 @@ const Landing = () => {
                     relative
                   `}
                   style={{
-                    // Background-clip text effect - image shows through text
-                    backgroundImage: isActive ? `url(${item.image})` : 'none',
+                    // Background-clip text effect - image shows through text (only when images are preloaded)
+                    backgroundImage: isActive && imagesLoaded ? `url(${item.image})` : 'none',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
-                    WebkitBackgroundClip: isActive ? 'text' : 'unset',
-                    backgroundClip: isActive ? 'text' : 'unset',
-                    color: isActive ? 'transparent' : 'white',
-                    WebkitTextFillColor: isActive ? 'transparent' : 'white',
+                    WebkitBackgroundClip: isActive && imagesLoaded ? 'text' : 'unset',
+                    backgroundClip: isActive && imagesLoaded ? 'text' : 'unset',
+                    color: isActive && imagesLoaded ? 'transparent' : 'white',
+                    WebkitTextFillColor: isActive && imagesLoaded ? 'transparent' : 'white',
                   }}
                 >
                   {item.text}
