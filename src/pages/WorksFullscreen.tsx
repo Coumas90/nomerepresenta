@@ -85,14 +85,15 @@ const WorksFullscreen = () => {
     setCurrentImageIndex(0);
   }, [currentArtworkIndex]);
 
-  // Handle smooth transitions between images
+  // Handle smooth transitions between images with elegant timing
   useEffect(() => {
     if (currentImage && currentImage !== prevImageRef.current) {
       setIsTransitioning(true);
+      // Longer fade-out for elegance
       const timer = setTimeout(() => {
         setIsTransitioning(false);
         prevImageRef.current = currentImage;
-      }, 100);
+      }, 150);
       return () => clearTimeout(timer);
     }
   }, [currentImage]);
@@ -248,14 +249,17 @@ const WorksFullscreen = () => {
       >
         {/* Centered gallery layout */}
         <div className="flex flex-col items-center justify-center w-full max-w-[85vw] md:max-w-[65vw] lg:max-w-[55vw]">
-          {/* Artwork image as framed gallery piece */}
+          {/* Artwork image as framed gallery piece with elegant transitions */}
           <div
-            className={`relative transition-all duration-500 ease-out ${
-              isTransitioning ? "opacity-0 scale-[0.98]" : "opacity-100 scale-100"
-            }`}
+            className={cn(
+              "relative transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]",
+              isTransitioning 
+                ? "opacity-0 scale-[0.97] blur-[2px]" 
+                : "opacity-100 scale-100 blur-0"
+            )}
           >
-            {/* Gallery frame shadow effect */}
-            <div className="absolute inset-0 shadow-2xl shadow-stone-400/30 rounded-sm" />
+            {/* Gallery frame shadow effect - subtle and refined */}
+            <div className="absolute inset-0 shadow-2xl shadow-stone-900/15 rounded-sm transition-shadow duration-700" />
             
             {currentImage && (
               <ProgressiveImage
@@ -272,8 +276,13 @@ const WorksFullscreen = () => {
             )}
           </div>
 
-          {/* Artwork metadata - centered below image */}
-          <div className="mt-6 md:mt-8 space-y-1 text-center">
+          {/* Artwork metadata - centered below image with staggered fade */}
+          <div 
+            className={cn(
+              "mt-6 md:mt-8 space-y-1.5 text-center transition-all duration-500 delay-100",
+              isTransitioning ? "opacity-0 translate-y-2" : "opacity-100 translate-y-0"
+            )}
+          >
             <h2 className="text-stone-900 text-sm md:text-base font-semibold uppercase tracking-wider">
               {currentArtwork.title}
               {isViewingDetail && <span className="font-normal text-stone-500 ml-2">(DETAIL)</span>}
@@ -292,13 +301,13 @@ const WorksFullscreen = () => {
         </div>
       </SwipeGestureContainer>
 
-      {/* Minimalist Header */}
-      <header className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-4 md:p-8">
+      {/* Minimalist Header with subtle entrance animation */}
+      <header className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-4 md:p-8 animate-fade-in">
         {/* TRI-PEEL - horizontal on all devices, smaller on mobile */}
         <button
           onClick={handleOpenOverlay}
           className="text-stone-900 text-[10px] md:text-base font-bold tracking-widest uppercase 
-                     hover:opacity-70 transition-opacity duration-200 focus:outline-none"
+                     hover:opacity-60 transition-all duration-300 focus:outline-none"
         >
           TRI-PEEL
         </button>
@@ -307,7 +316,7 @@ const WorksFullscreen = () => {
         <button
           onClick={handleClose}
           className="min-w-[44px] min-h-[44px] flex items-center justify-center
-                     text-stone-900 hover:opacity-70 transition-opacity duration-200 focus:outline-none
+                     text-stone-900 hover:opacity-60 hover:rotate-90 transition-all duration-300 focus:outline-none
                      -mr-1 md:-mr-3"
           aria-label="Close and return to landing"
         >
@@ -324,8 +333,10 @@ const WorksFullscreen = () => {
             "hidden md:flex absolute left-8 top-1/2 -translate-y-1/2 z-20",
             "min-w-[44px] min-h-[44px] items-center justify-center",
             "text-3xl font-light select-none",
-            "transition-all duration-200 focus:outline-none",
-            hasPrevImage ? "text-stone-600 hover:text-stone-900" : "text-stone-300 cursor-default"
+            "transition-all duration-300 ease-out focus:outline-none",
+            hasPrevImage 
+              ? "text-stone-500 hover:text-stone-900 hover:-translate-x-1" 
+              : "text-stone-300/50 cursor-default"
           )}
           aria-label="Previous image"
         >
@@ -342,8 +353,10 @@ const WorksFullscreen = () => {
             "hidden md:flex absolute right-8 top-1/2 -translate-y-1/2 z-20",
             "min-w-[44px] min-h-[44px] items-center justify-center",
             "text-3xl font-light select-none",
-            "transition-all duration-200 focus:outline-none",
-            hasNextImage ? "text-stone-600 hover:text-stone-900" : "text-stone-300 cursor-default"
+            "transition-all duration-300 ease-out focus:outline-none",
+            hasNextImage 
+              ? "text-stone-500 hover:text-stone-900 hover:translate-x-1" 
+              : "text-stone-300/50 cursor-default"
           )}
           aria-label="Next image"
         >
@@ -351,16 +364,18 @@ const WorksFullscreen = () => {
         </button>
       )}
 
-      {/* Vertical navigation - simple text arrows */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1">
+      {/* Vertical navigation - simple text arrows with elegant hover */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-0.5">
         {/* Up arrow */}
         <button
           onClick={goToPrevArtwork}
           disabled={!hasPrevArtwork}
           className={cn(
             "min-w-[44px] min-h-[44px] flex items-center justify-center",
-            "text-xl font-light select-none transition-all duration-200 focus:outline-none",
-            hasPrevArtwork ? "text-stone-500 hover:text-stone-800" : "text-stone-300 cursor-default"
+            "text-xl font-light select-none transition-all duration-300 ease-out focus:outline-none",
+            hasPrevArtwork 
+              ? "text-stone-500 hover:text-stone-900 hover:-translate-y-0.5" 
+              : "text-stone-300/50 cursor-default"
           )}
           aria-label="Previous artwork"
         >
@@ -373,8 +388,10 @@ const WorksFullscreen = () => {
           disabled={!hasNextArtwork}
           className={cn(
             "min-w-[44px] min-h-[44px] flex items-center justify-center",
-            "text-xl font-light select-none transition-all duration-200 focus:outline-none",
-            hasNextArtwork ? "text-stone-500 hover:text-stone-800" : "text-stone-300 cursor-default"
+            "text-xl font-light select-none transition-all duration-300 ease-out focus:outline-none",
+            hasNextArtwork 
+              ? "text-stone-500 hover:text-stone-900 hover:translate-y-0.5" 
+              : "text-stone-300/50 cursor-default"
           )}
           aria-label="Next artwork"
         >
