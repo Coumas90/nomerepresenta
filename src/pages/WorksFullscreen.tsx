@@ -244,61 +244,48 @@ const WorksFullscreen = () => {
         isAtHorizontalStart={!hasPrevImage}
         isAtHorizontalEnd={!hasNextImage}
         showEdgeIndicators
-        className="absolute inset-0 flex items-center justify-center p-4 pt-20 pb-24 md:p-16 lg:p-20"
+        className="absolute inset-0 flex items-center justify-center p-4 pt-16 pb-28 md:p-16 lg:p-24"
       >
-        {/* Mobile: horizontal layout with side metadata | Desktop: vertical layout */}
-        <div className="flex flex-row md:flex-col items-center md:items-start gap-4 md:gap-0 max-w-[95vw] md:max-w-[75vw]">
-          {/* Mobile: Left side metadata (rotated) */}
-          <div className="flex md:hidden flex-col justify-end h-[50vh] pb-4">
-            <div className="flex flex-col items-start origin-bottom-left -rotate-90 translate-y-full whitespace-nowrap">
-              <span className="text-stone-900 text-[10px] font-bold uppercase tracking-wide">
-                {currentArtwork.title}
-                {isViewingDetail && <span className="font-normal text-stone-500 ml-1">(DETAIL)</span>}
-              </span>
-              <span className="text-stone-500 text-[9px] uppercase tracking-wide">
-                {currentArtwork.year} · {currentArtwork.technique}
-              </span>
-            </div>
-          </div>
-
+        {/* Centered gallery layout */}
+        <div className="flex flex-col items-center justify-center w-full max-w-[85vw] md:max-w-[65vw] lg:max-w-[55vw]">
           {/* Artwork image as framed gallery piece */}
           <div
-            className={`relative max-h-[60vh] md:max-h-[60vh] transition-all duration-500 ease-out ${
+            className={`relative transition-all duration-500 ease-out ${
               isTransitioning ? "opacity-0 scale-[0.98]" : "opacity-100 scale-100"
             }`}
           >
             {/* Gallery frame shadow effect */}
-            <div className="absolute inset-0 shadow-2xl shadow-stone-400/50" />
+            <div className="absolute inset-0 shadow-2xl shadow-stone-400/30 rounded-sm" />
             
             {currentImage && (
               <ProgressiveImage
                 src={currentImage}
                 alt={currentArtwork?.title || "Artwork"}
-                className="relative z-10 w-auto h-auto max-w-full max-h-[60vh] object-contain shadow-xl"
+                className="relative z-10 w-auto h-auto max-w-full max-h-[50vh] md:max-h-[55vh] lg:max-h-[60vh] object-contain shadow-xl"
                 eager
                 skipInternalFade
                 blurUp
                 modernFormats
                 responsivePreset="full"
-                sizes="85vw"
+                sizes="(max-width: 768px) 85vw, (max-width: 1024px) 65vw, 55vw"
               />
             )}
           </div>
 
-          {/* Desktop: Artwork metadata below image */}
-          <div className="hidden md:block mt-6 space-y-1 text-left">
-            <h2 className="text-stone-900 text-base font-bold uppercase tracking-wide">
+          {/* Artwork metadata - centered below image */}
+          <div className="mt-6 md:mt-8 space-y-1 text-center">
+            <h2 className="text-stone-900 text-sm md:text-base font-semibold uppercase tracking-wider">
               {currentArtwork.title}
               {isViewingDetail && <span className="font-normal text-stone-500 ml-2">(DETAIL)</span>}
             </h2>
-            <p className="text-stone-700 text-sm">
+            <p className="text-stone-600 text-xs md:text-sm">
               {currentArtwork.year}
             </p>
-            <p className="text-stone-500 text-sm uppercase tracking-wide">
+            <p className="text-stone-500 text-xs md:text-sm uppercase tracking-wide">
               {currentArtwork.technique}
-              {currentArtwork.materials && `, ${currentArtwork.materials}`}
+              {currentArtwork.materials && ` · ${currentArtwork.materials}`}
             </p>
-            <p className="text-stone-500 text-sm">
+            <p className="text-stone-400 text-xs md:text-sm">
               {currentArtwork.dimensions}
             </p>
           </div>
