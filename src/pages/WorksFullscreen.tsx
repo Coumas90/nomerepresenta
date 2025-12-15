@@ -294,15 +294,13 @@ const WorksFullscreen = () => {
 
       {/* Minimalist Header */}
       <header className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-4 md:p-8">
-        {/* TRI-PEEL - rotated vertically on mobile */}
+        {/* TRI-PEEL - horizontal on all devices, smaller on mobile */}
         <button
           onClick={handleOpenOverlay}
-          className="text-stone-900 text-xs md:text-base font-bold tracking-widest uppercase 
-                     hover:opacity-70 transition-opacity duration-200 focus:outline-none
-                     md:rotate-0 origin-top-left"
+          className="text-stone-900 text-[10px] md:text-base font-bold tracking-widest uppercase 
+                     hover:opacity-70 transition-opacity duration-200 focus:outline-none"
         >
-          <span className="hidden md:inline">TRI-PEEL</span>
-          <span className="md:hidden writing-vertical-lr rotate-180 text-[10px]">TRI-PEEL</span>
+          TRI-PEEL
         </button>
 
         {/* Close button - enhanced touch target */}
@@ -317,15 +315,15 @@ const WorksFullscreen = () => {
         </button>
       </header>
 
-      {/* Left arrow - Previous image/detail - simple text arrow */}
+      {/* Left arrow - Previous image/detail - hidden on mobile (swipe navigation) */}
       {allImages.length > 1 && (
         <button
           onClick={goToPrevImage}
           disabled={!hasPrevImage}
           className={cn(
-            "absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-20",
-            "min-w-[44px] min-h-[44px] flex items-center justify-center",
-            "text-2xl md:text-3xl font-light select-none",
+            "hidden md:flex absolute left-8 top-1/2 -translate-y-1/2 z-20",
+            "min-w-[44px] min-h-[44px] items-center justify-center",
+            "text-3xl font-light select-none",
             "transition-all duration-200 focus:outline-none",
             hasPrevImage ? "text-stone-600 hover:text-stone-900" : "text-stone-300 cursor-default"
           )}
@@ -335,15 +333,15 @@ const WorksFullscreen = () => {
         </button>
       )}
 
-      {/* Right arrow - Next image/detail - simple text arrow */}
+      {/* Right arrow - Next image/detail - hidden on mobile (swipe navigation) */}
       {allImages.length > 1 && (
         <button
           onClick={goToNextImage}
           disabled={!hasNextImage}
           className={cn(
-            "absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20",
-            "min-w-[44px] min-h-[44px] flex items-center justify-center",
-            "text-2xl md:text-3xl font-light select-none",
+            "hidden md:flex absolute right-8 top-1/2 -translate-y-1/2 z-20",
+            "min-w-[44px] min-h-[44px] items-center justify-center",
+            "text-3xl font-light select-none",
             "transition-all duration-200 focus:outline-none",
             hasNextImage ? "text-stone-600 hover:text-stone-900" : "text-stone-300 cursor-default"
           )}
