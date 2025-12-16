@@ -37,10 +37,9 @@ const Landing = () => {
     });
   }, []);
 
-  // Trigger entrance animation
+  // Trigger entrance animation - instant
   useEffect(() => {
-    const timer = setTimeout(() => setIsPageLoaded(true), 100);
-    return () => clearTimeout(timer);
+    setIsPageLoaded(true);
   }, []);
 
   // Handle tap outside to deselect on mobile
@@ -108,7 +107,7 @@ const Landing = () => {
   const activeIndex = hoveredIndex ?? selectedIndex;
 
   return (
-    <div className={`relative min-h-screen bg-black overflow-hidden transition-opacity duration-500 ${isPageLoaded ? 'opacity-100' : 'opacity-0'}`}>
+    <div className={`relative min-h-screen bg-black overflow-hidden transition-opacity duration-200 ${isPageLoaded ? 'opacity-100' : 'opacity-0'}`}>
       {/* Menu container - left aligned */}
       <nav className="relative z-10 min-h-screen flex items-center">
         <ul className="flex flex-col items-start gap-0 pl-8 sm:pl-12 md:pl-16 lg:pl-24">
@@ -119,10 +118,10 @@ const Landing = () => {
             return (
               <li 
                 key={index}
-                className={`transition-all duration-500 ease-out ${
+                className={`transition-all duration-300 ease-out ${
                   isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
                 }`}
-                style={{ transitionDelay: `${100 + index * 80}ms` }}
+                style={{ transitionDelay: `${index * 50}ms` }}
               >
                 <button
                   onClick={(e) => {

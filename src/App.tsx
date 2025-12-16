@@ -72,30 +72,18 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/works" element={
-              <Suspense fallback={
-                <div className="min-h-screen bg-black flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-                </div>
-              }>
+              <Suspense fallback={<div className="min-h-screen bg-stone-100" />}>
                 <WorksFullscreen />
               </Suspense>
             } />
             <Route path="/artwork/:id" element={<ArtworkDetail />} />
             <Route path="/studio" element={
-              <Suspense fallback={
-                <div className="min-h-screen bg-black flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-                </div>
-              }>
+              <Suspense fallback={<div className="min-h-screen bg-stone-100" />}>
                 <Studio />
               </Suspense>
             } />
             <Route path="/bio" element={
-              <Suspense fallback={
-                <div className="min-h-screen bg-background flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                </div>
-              }>
+              <Suspense fallback={<div className="min-h-screen bg-background" />}>
                 <Bio />
               </Suspense>
             } />
