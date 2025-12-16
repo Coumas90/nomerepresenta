@@ -265,27 +265,26 @@ const WorksFullscreen = () => {
               <ProgressiveImage
                 src={currentImage}
                 alt={currentArtwork?.title || "Artwork"}
-                className="relative z-10 mx-auto w-auto h-auto max-w-[85vw] md:max-w-[60vw] lg:max-w-[50vw] max-h-[50vh] md:max-h-[55vh] lg:max-h-[60vh] object-contain shadow-xl"
+                className="relative z-10 mx-auto w-auto h-auto max-w-[90vw] md:max-w-[70vw] lg:max-w-[60vw] max-h-[55vh] md:max-h-[60vh] lg:max-h-[65vh] object-contain shadow-xl"
                 eager
                 skipInternalFade
                 blurUp
                 modernFormats
                 responsivePreset="full"
-                sizes="(max-width: 768px) 85vw, (max-width: 1024px) 60vw, 50vw"
+                sizes="(max-width: 768px) 90vw, (max-width: 1024px) 70vw, 60vw"
               />
             )}
           </div>
 
-          {/* Artwork metadata - centered below image with staggered fade */}
+          {/* Artwork metadata - left-aligned below image like gallery references */}
           <div 
             className={cn(
-              "mt-6 md:mt-8 space-y-1.5 text-center transition-all duration-500 delay-100",
+              "mt-6 md:mt-8 space-y-0.5 text-left w-full max-w-[90vw] md:max-w-[70vw] lg:max-w-[60vw] mx-auto transition-all duration-500 delay-100",
               isTransitioning ? "opacity-0 translate-y-2" : "opacity-100 translate-y-0"
             )}
           >
             <h2 className="text-stone-900 text-sm md:text-base font-semibold uppercase tracking-wider">
               {currentArtwork.title}
-              {isViewingDetail && <span className="font-normal text-stone-500 ml-2">(DETAIL)</span>}
             </h2>
             <p className="text-stone-600 text-xs md:text-sm">
               {currentArtwork.year}
@@ -297,6 +296,9 @@ const WorksFullscreen = () => {
             <p className="text-stone-400 text-xs md:text-sm">
               {currentArtwork.dimensions}
             </p>
+            {isViewingDetail && (
+              <p className="text-stone-900 text-xs font-medium uppercase tracking-wide pt-1">(DETAIL)</p>
+            )}
           </div>
         </div>
       </SwipeGestureContainer>
@@ -324,19 +326,19 @@ const WorksFullscreen = () => {
         </button>
       </header>
 
-      {/* Left arrow - Previous image/detail - hidden on mobile (swipe navigation) */}
+      {/* Left arrow - Previous image/detail - hidden on mobile, subtle styling */}
       {allImages.length > 1 && (
         <button
           onClick={goToPrevImage}
           disabled={!hasPrevImage}
           className={cn(
-            "hidden md:flex absolute left-8 top-1/2 -translate-y-1/2 z-20",
+            "hidden md:flex absolute left-6 lg:left-10 top-1/2 -translate-y-1/2 z-20",
             "min-w-[44px] min-h-[44px] items-center justify-center",
-            "text-3xl font-light select-none",
+            "text-2xl font-extralight select-none",
             "transition-all duration-300 ease-out focus:outline-none",
             hasPrevImage 
-              ? "text-stone-500 hover:text-stone-900 hover:-translate-x-1" 
-              : "text-stone-300/50 cursor-default"
+              ? "text-stone-400 hover:text-stone-700 hover:-translate-x-0.5" 
+              : "text-stone-300/30 cursor-default"
           )}
           aria-label="Previous image"
         >
@@ -344,19 +346,19 @@ const WorksFullscreen = () => {
         </button>
       )}
 
-      {/* Right arrow - Next image/detail - hidden on mobile (swipe navigation) */}
+      {/* Right arrow - Next image/detail - hidden on mobile, subtle styling */}
       {allImages.length > 1 && (
         <button
           onClick={goToNextImage}
           disabled={!hasNextImage}
           className={cn(
-            "hidden md:flex absolute right-8 top-1/2 -translate-y-1/2 z-20",
+            "hidden md:flex absolute right-6 lg:right-10 top-1/2 -translate-y-1/2 z-20",
             "min-w-[44px] min-h-[44px] items-center justify-center",
-            "text-3xl font-light select-none",
+            "text-2xl font-extralight select-none",
             "transition-all duration-300 ease-out focus:outline-none",
             hasNextImage 
-              ? "text-stone-500 hover:text-stone-900 hover:translate-x-1" 
-              : "text-stone-300/50 cursor-default"
+              ? "text-stone-400 hover:text-stone-700 hover:translate-x-0.5" 
+              : "text-stone-300/30 cursor-default"
           )}
           aria-label="Next image"
         >
@@ -364,40 +366,7 @@ const WorksFullscreen = () => {
         </button>
       )}
 
-      {/* Vertical navigation - simple text arrows with elegant hover */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-0.5">
-        {/* Up arrow */}
-        <button
-          onClick={goToPrevArtwork}
-          disabled={!hasPrevArtwork}
-          className={cn(
-            "min-w-[44px] min-h-[44px] flex items-center justify-center",
-            "text-xl font-light select-none transition-all duration-300 ease-out focus:outline-none",
-            hasPrevArtwork 
-              ? "text-stone-500 hover:text-stone-900 hover:-translate-y-0.5" 
-              : "text-stone-300/50 cursor-default"
-          )}
-          aria-label="Previous artwork"
-        >
-          ^
-        </button>
-        
-        {/* Down arrow */}
-        <button
-          onClick={goToNextArtwork}
-          disabled={!hasNextArtwork}
-          className={cn(
-            "min-w-[44px] min-h-[44px] flex items-center justify-center",
-            "text-xl font-light select-none transition-all duration-300 ease-out focus:outline-none",
-            hasNextArtwork 
-              ? "text-stone-500 hover:text-stone-900 hover:translate-y-0.5" 
-              : "text-stone-300/50 cursor-default"
-          )}
-          aria-label="Next artwork"
-        >
-          v
-        </button>
-      </div>
+      {/* Vertical navigation removed - scroll/swipe only like gallery references */}
 
       {/* Mobile swipe hints */}
       <SwipeHint 
