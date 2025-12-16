@@ -245,14 +245,14 @@ const WorksFullscreen = () => {
         isAtHorizontalStart={!hasPrevImage}
         isAtHorizontalEnd={!hasNextImage}
         showEdgeIndicators
-        className="absolute inset-0 flex items-center justify-center p-4 pt-16 pb-28 md:p-16 lg:p-24"
+        className="absolute inset-0 flex items-center justify-center px-8 py-16 md:px-16 lg:px-24"
       >
-        {/* Centered gallery layout */}
-        <div className="flex flex-col items-center justify-center w-full max-w-[85vw] md:max-w-[65vw] lg:max-w-[55vw]">
+        {/* Centered gallery layout - symmetric padding */}
+        <div className="flex flex-col items-center justify-center w-full">
           {/* Artwork image as framed gallery piece with elegant transitions */}
           <div
             className={cn(
-              "relative transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]",
+              "relative mx-auto transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]",
               isTransitioning 
                 ? "opacity-0 scale-[0.97] blur-[2px]" 
                 : "opacity-100 scale-100 blur-0"
@@ -265,13 +265,13 @@ const WorksFullscreen = () => {
               <ProgressiveImage
                 src={currentImage}
                 alt={currentArtwork?.title || "Artwork"}
-                className="relative z-10 w-auto h-auto max-w-full max-h-[50vh] md:max-h-[55vh] lg:max-h-[60vh] object-contain shadow-xl"
+                className="relative z-10 mx-auto w-auto h-auto max-w-[85vw] md:max-w-[60vw] lg:max-w-[50vw] max-h-[50vh] md:max-h-[55vh] lg:max-h-[60vh] object-contain shadow-xl"
                 eager
                 skipInternalFade
                 blurUp
                 modernFormats
                 responsivePreset="full"
-                sizes="(max-width: 768px) 85vw, (max-width: 1024px) 65vw, 55vw"
+                sizes="(max-width: 768px) 85vw, (max-width: 1024px) 60vw, 50vw"
               />
             )}
           </div>
