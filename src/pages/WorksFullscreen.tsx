@@ -245,7 +245,7 @@ const WorksFullscreen = () => {
         isAtHorizontalStart={!hasPrevImage}
         isAtHorizontalEnd={!hasNextImage}
         showEdgeIndicators
-        className="absolute inset-0 flex items-center justify-center px-8 py-16 md:px-16 lg:px-24"
+        className="absolute inset-0 flex items-center justify-center px-8 pt-20 pb-12 md:px-16 md:pt-24 md:pb-16 lg:px-24 lg:pt-28 lg:pb-20"
       >
         {/* Centered gallery layout - symmetric padding */}
         <div className="flex flex-col items-center justify-center w-full">
@@ -308,7 +308,7 @@ const WorksFullscreen = () => {
         {/* TRI-PEEL - horizontal on all devices, smaller on mobile */}
         <button
           onClick={handleOpenOverlay}
-          className="text-stone-900 text-[10px] md:text-base font-bold tracking-widest uppercase 
+          className="text-stone-900 text-sm md:text-lg lg:text-xl font-bold tracking-widest uppercase 
                      hover:opacity-60 transition-all duration-300 focus:outline-none"
         >
           TRI-PEEL
