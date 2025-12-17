@@ -46,10 +46,19 @@
     <meta name="apple-mobile-web-app-title" content="Ivan Comas" />
     <link rel="manifest" href="/manifest.webmanifest" />
     
-    <!-- Google Fonts - Serif for Landing -->
+    <!-- DNS prefetch and preconnect for external resources -->
+    <link rel="dns-prefetch" href="https://zutguutaaplflximklel.supabase.co">
+    <link rel="preconnect" href="https://zutguutaaplflximklel.supabase.co" crossorigin>
+    
+    <!-- Google Fonts - Async loading to avoid render blocking -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&display=swap" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&display=swap"></noscript>
+    
+    <!-- Preload critical landing image for faster LCP -->
+    <link rel="preload" as="image" href="/images/artworks/tri-peel-3.png" fetchpriority="high">
   </head>
 
   <body>
