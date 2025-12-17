@@ -21,19 +21,42 @@ const Landing = () => {
   const [isPageLoaded, setIsPageLoaded] = useState(false);
   const [imagesLoaded, setImagesLoaded] = useState(false);
 
-  // Preload all menu images on mount
+  // Smart image preloading: priority images first, rest in idle time
   useEffect(() => {
-    const imagePromises = menuItems.map(item => {
+    // Priority: WORKS and STUDIO (most likely to be clicked)
+    const priorityItems = menuItems.filter(item => item.type === 'link');
+    const otherItems = menuItems.filter(item => item.type !== 'link');
+    
+    // Load priority images immediately
+    const priorityPromises = priorityItems.map(item => {
       return new Promise<void>((resolve) => {
         const img = new Image();
         img.onload = () => resolve();
-        img.onerror = () => resolve(); // Continue even if one fails
+        img.onerror = () => resolve();
         img.src = item.image;
       });
     });
 
-    Promise.all(imagePromises).then(() => {
-      setImagesLoaded(true);
+    Promise.all(priorityPromises).then(() => {
+      // Load remaining images in idle time
+      if ('requestIdleCallback' in window) {
+        (window as any).requestIdleCallback(() => {
+          otherItems.forEach(item => {
+            const img = new Image();
+            img.src = item.image;
+          });
+          setImagesLoaded(true);
+        });
+      } else {
+        // Fallback for Safari
+        setTimeout(() => {
+          otherItems.forEach(item => {
+            const img = new Image();
+            img.src = item.image;
+          });
+          setImagesLoaded(true);
+        }, 100);
+      }
     });
   }, []);
 
@@ -93,6 +116,18 @@ const Landing = () => {
       setIsTransitioning(true);
       setHoveredIndex(index);
       setTimeout(() => setIsTransitioning(false), 300);
+    }
+    
+    // Prefetch page chunks on hover for faster navigation
+    const item = menuItems[index];
+    if (item.type === 'link') {
+      if (item.path === '/works') {
+        import('./WorksFullscreen');
+      } else if (item.path === '/studio') {
+        import('./Studio');
+      } else if (item.path === '/bio') {
+        import('./Bio');
+      }
     }
   };
 

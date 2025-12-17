@@ -100,6 +100,12 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Font display optimization */
+  .font-playfair {
+    font-display: swap;
+    font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  }
 }
 
 @layer components {
