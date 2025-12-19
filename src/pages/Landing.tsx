@@ -169,7 +169,7 @@ const Landing = () => {
                   className={`
                     font-helvetica font-bold tracking-tight
                     text-6xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[200px]
-                    leading-[0.85] md:leading-[0.85]
+                    leading-[0.9]
                     transition-all duration-500 ease-out will-change-transform
                     ${isClickable 
                       ? "cursor-pointer" 
