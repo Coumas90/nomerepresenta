@@ -2,19 +2,39 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { StudioImage } from "./useStudioImages";
+import { compressImage, formatFileSize } from "@/lib/imageCompression";
 
 export const useUploadStudioImage = () => {
   return useMutation({
     mutationFn: async ({ file, fileName }: { file: File; fileName: string }) => {
+      const originalSize = file.size;
+      
+      // Compress and convert to WebP before upload
+      const compressedFile = await compressImage(file, {
+        maxSizeMB: 2,
+        maxWidthOrHeight: 2400,
+        fileType: 'image/webp',
+        initialQuality: 0.85,
+      });
+
+      // Update filename to .webp extension
+      const webpFileName = fileName.replace(/\.(jpg|jpeg|png|gif|bmp|tiff?)$/i, '.webp');
+
       const { data, error } = await supabase.storage
         .from("artwork-images")
-        .upload(`studio/${fileName}`, file);
+        .upload(`studio/${webpFileName}`, compressedFile, {
+          contentType: 'image/webp',
+        });
 
       if (error) throw error;
 
       const { data: urlData } = supabase.storage
         .from("artwork-images")
         .getPublicUrl(data.path);
+
+      // Log compression savings
+      const savings = ((1 - compressedFile.size / originalSize) * 100).toFixed(1);
+      console.log(`[Upload] studio/${webpFileName}: ${formatFileSize(originalSize)} → ${formatFileSize(compressedFile.size)} (${savings}% saved)`);
 
       return urlData.publicUrl;
     },
