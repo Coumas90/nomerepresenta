@@ -2,28 +2,29 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { StudioImage } from "./useStudioImages";
-import { compressImage, formatFileSize } from "@/lib/imageCompression";
+import { compressImageWithDetails, formatFileSize } from "@/lib/imageCompression";
 
 export const useUploadStudioImage = () => {
   return useMutation({
     mutationFn: async ({ file, fileName }: { file: File; fileName: string }) => {
-      const originalSize = file.size;
-      
-      // Compress and convert to WebP before upload
-      const compressedFile = await compressImage(file, {
+      // Compress with AVIF fallback if WebP doesn't achieve enough savings
+      const result = await compressImageWithDetails(file, {
         maxSizeMB: 2,
         maxWidthOrHeight: 2400,
-        fileType: 'image/webp',
         initialQuality: 0.85,
+        minSavingsPercent: 20,
       });
 
-      // Update filename to .webp extension
-      const webpFileName = fileName.replace(/\.(jpg|jpeg|png|gif|bmp|tiff?)$/i, '.webp');
+      // Get the correct extension based on format used
+      const extension = result.format === 'avif' ? '.avif' : 
+                       result.format === 'webp' ? '.webp' : 
+                       file.name.substring(file.name.lastIndexOf('.'));
+      const optimizedFileName = fileName.replace(/\.(jpg|jpeg|png|gif|bmp|tiff?)$/i, extension);
 
       const { data, error } = await supabase.storage
         .from("artwork-images")
-        .upload(`studio/${webpFileName}`, compressedFile, {
-          contentType: 'image/webp',
+        .upload(`studio/${optimizedFileName}`, result.file, {
+          contentType: result.file.type,
         });
 
       if (error) throw error;
@@ -32,9 +33,7 @@ export const useUploadStudioImage = () => {
         .from("artwork-images")
         .getPublicUrl(data.path);
 
-      // Log compression savings
-      const savings = ((1 - compressedFile.size / originalSize) * 100).toFixed(1);
-      console.log(`[Upload] studio/${webpFileName}: ${formatFileSize(originalSize)} → ${formatFileSize(compressedFile.size)} (${savings}% saved)`);
+      console.log(`[Upload] studio/${optimizedFileName}: ${formatFileSize(result.originalSize)} → ${formatFileSize(result.compressedSize)} (${result.savingsPercent.toFixed(1)}% saved, format: ${result.format})`);
 
       return urlData.publicUrl;
     },
