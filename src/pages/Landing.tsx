@@ -167,8 +167,8 @@ const Landing = () => {
                   onMouseLeave={handleMouseLeave}
                   disabled={!isClickable && !isMobile}
                   className={`
-                    font-playfair font-black tracking-tight
-                    text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-[10rem]
+                    font-helvetica font-bold tracking-tight
+                    text-6xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[200px]
                     leading-[0.85] md:leading-[0.85]
                     transition-all duration-500 ease-out will-change-transform
                     ${isClickable 
