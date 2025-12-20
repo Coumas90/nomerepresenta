@@ -12,6 +12,7 @@ import { DashboardHome } from "@/components/admin/DashboardHome";
 import AnalyticsOverview from "@/components/admin/analytics/AnalyticsOverview";
 import { DateRange } from "react-day-picker";
 import { LoadingSkeleton } from "@/components/admin/LoadingSkeleton";
+import { ImageCompressionSettings } from "@/components/admin/settings/ImageCompressionSettings";
 
 // Lazy load heavy analytics components
 const RealtimeAnalytics = lazy(() => import("@/components/admin/analytics/RealtimeAnalytics"));
@@ -176,6 +177,9 @@ const Admin = () => {
             <ArtworksList onEdit={handleEdit} onCreateInSeries={handleCreateInSeries} />
           </div>
         );
+      
+      case "settings-compression":
+        return <ImageCompressionSettings />;
       
       default:
         return <DashboardHome />;
