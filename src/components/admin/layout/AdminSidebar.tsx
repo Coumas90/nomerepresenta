@@ -7,7 +7,8 @@ import {
   Users,
   Clock,
   FolderOpen,
-  Camera
+  Camera,
+  Settings
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
@@ -43,6 +44,10 @@ const contentItems = [
   { title: "Artworks", url: "/admin?section=content-artworks", icon: Image },
   { title: "Series", url: "/admin?section=content-series", icon: FolderOpen },
   { title: "Studio", url: "/admin?section=content-studio", icon: Camera },
+];
+
+const settingsItems = [
+  { title: "Compression", url: "/admin?section=settings-compression", icon: Settings },
 ];
 
 export function AdminSidebar() {
@@ -146,6 +151,47 @@ export function AdminSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {contentItems.map((item) => {
+                const menuButton = (
+                  <SidebarMenuButton asChild>
+                    <NavLink 
+                      to={item.url}
+                      className="hover:bg-muted/50 transition-colors" 
+                      activeClassName="bg-muted text-primary font-medium"
+                    >
+                      <item.icon className="h-4 w-4" />
+                      {!collapsed && <span>{item.title}</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                );
+
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    {collapsed ? (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          {menuButton}
+                        </TooltipTrigger>
+                        <TooltipContent side="right">
+                          <p>{item.title}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    ) : (
+                      menuButton
+                    )}
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel className={collapsed ? "opacity-0" : ""}>
+            Settings
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {settingsItems.map((item) => {
                 const menuButton = (
                   <SidebarMenuButton asChild>
                     <NavLink 

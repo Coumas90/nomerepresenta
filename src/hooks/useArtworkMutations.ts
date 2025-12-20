@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ArtworkData } from "./useArtworks";
 import { compressImageWithDetails, formatFileSize } from "@/lib/imageCompression";
+import { getCompressionOptions } from "@/hooks/useCompressionSettings";
 
 export const useCreateArtwork = () => {
   const queryClient = useQueryClient();
@@ -118,13 +119,11 @@ export const useUploadImage = () => {
 
   return useMutation({
     mutationFn: async ({ file, fileName }: { file: File; fileName: string }) => {
+      // Get compression settings from admin panel
+      const compressionOptions = getCompressionOptions();
+      
       // Compress with AVIF fallback if WebP doesn't achieve enough savings
-      const result = await compressImageWithDetails(file, {
-        maxSizeMB: 2,
-        maxWidthOrHeight: 2400,
-        initialQuality: 0.85,
-        minSavingsPercent: 20,
-      });
+      const result = await compressImageWithDetails(file, compressionOptions);
 
       // Get the correct extension based on format used
       const extension = result.format === 'avif' ? '.avif' : 
