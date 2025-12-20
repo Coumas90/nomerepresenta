@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useCompressionSettings } from "@/hooks/useCompressionSettings";
 import { supportsAVIF, supportsWebP } from "@/lib/imageCompression";
 import { RotateCcw, Image, Maximize2, Sparkles, Target } from "lucide-react";
+import { BatchRecompression } from "./BatchRecompression";
 
 export const ImageCompressionSettings = () => {
   const { settings, updateSetting, resetToDefaults, DEFAULT_SETTINGS } = useCompressionSettings();
@@ -164,6 +165,8 @@ export const ImageCompressionSettings = () => {
           </p>
         </CardContent>
       </Card>
+
+      <BatchRecompression />
     </div>
   );
 };
