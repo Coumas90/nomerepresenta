@@ -1,10 +1,11 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { compressImageWithDetails, formatFileSize, CompressionResult } from "@/lib/imageCompression";
 import { getCompressionOptions } from "@/hooks/useCompressionSettings";
-import { Upload, ImageIcon, ArrowRight, X } from "lucide-react";
+import { Upload, ImageIcon, ArrowRight, X, ZoomIn, ZoomOut, Move } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Toggle } from "@/components/ui/toggle";
 
 interface PreviewState {
   originalUrl: string;
@@ -17,12 +18,19 @@ export const CompressionPreview = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [preview, setPreview] = useState<PreviewState | null>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [panPosition, setPanPosition] = useState({ x: 0, y: 0 });
+  const [isPanning, setIsPanning] = useState(false);
+  const [panStart, setPanStart] = useState({ x: 0, y: 0 });
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const processFile = async (file: File) => {
     if (!file.type.startsWith('image/')) return;
 
     setIsProcessing(true);
+    setIsZoomed(false);
+    setPanPosition({ x: 0, y: 0 });
     try {
       const originalUrl = URL.createObjectURL(file);
       const compressionOptions = getCompressionOptions();
@@ -60,6 +68,8 @@ export const CompressionPreview = () => {
       URL.revokeObjectURL(preview.compressedUrl);
     }
     setPreview(null);
+    setIsZoomed(false);
+    setPanPosition({ x: 0, y: 0 });
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
@@ -70,6 +80,41 @@ export const CompressionPreview = () => {
       default: return 'bg-muted text-muted-foreground';
     }
   };
+
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    if (!isZoomed) return;
+    e.preventDefault();
+    setIsPanning(true);
+    setPanStart({ x: e.clientX - panPosition.x, y: e.clientY - panPosition.y });
+  }, [isZoomed, panPosition]);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!isPanning || !isZoomed) return;
+    const newX = e.clientX - panStart.x;
+    const newY = e.clientY - panStart.y;
+    // Limit panning to reasonable bounds
+    const maxPan = 500;
+    setPanPosition({
+      x: Math.max(-maxPan, Math.min(maxPan, newX)),
+      y: Math.max(-maxPan, Math.min(maxPan, newY)),
+    });
+  }, [isPanning, isZoomed, panStart]);
+
+  const handleMouseUp = useCallback(() => {
+    setIsPanning(false);
+  }, []);
+
+  const toggleZoom = () => {
+    if (isZoomed) {
+      setPanPosition({ x: 0, y: 0 });
+    }
+    setIsZoomed(!isZoomed);
+  };
+
+  const imageStyle = isZoomed ? {
+    transform: `scale(2) translate(${panPosition.x / 2}px, ${panPosition.y / 2}px)`,
+    cursor: isPanning ? 'grabbing' : 'grab',
+  } : {};
 
   return (
     <Card>
@@ -107,14 +152,36 @@ export const CompressionPreview = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="flex justify-end">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <Toggle
+                  pressed={isZoomed}
+                  onPressedChange={toggleZoom}
+                  aria-label="Toggle zoom"
+                  className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                >
+                  {isZoomed ? <ZoomOut className="h-4 w-4 mr-1" /> : <ZoomIn className="h-4 w-4 mr-1" />}
+                  {isZoomed ? '100% Zoom' : 'Zoom In'}
+                </Toggle>
+                {isZoomed && (
+                  <span className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Move className="h-3 w-3" /> Drag to pan
+                  </span>
+                )}
+              </div>
               <Button variant="ghost" size="sm" onClick={clearPreview}>
                 <X className="h-4 w-4 mr-1" />
                 Clear
               </Button>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-4">
+            <div 
+              ref={containerRef}
+              className="grid md:grid-cols-2 gap-4"
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+            >
               {/* Original */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -123,11 +190,16 @@ export const CompressionPreview = () => {
                     {formatFileSize(preview.originalSize)}
                   </span>
                 </div>
-                <div className="aspect-square bg-muted rounded-lg overflow-hidden">
+                <div 
+                  className="aspect-square bg-muted rounded-lg overflow-hidden"
+                  onMouseDown={handleMouseDown}
+                >
                   <img
                     src={preview.originalUrl}
                     alt="Original"
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-contain transition-transform duration-150 select-none"
+                    style={imageStyle}
+                    draggable={false}
                   />
                 </div>
               </div>
@@ -145,11 +217,16 @@ export const CompressionPreview = () => {
                     {formatFileSize(preview.result.compressedSize)}
                   </span>
                 </div>
-                <div className="aspect-square bg-muted rounded-lg overflow-hidden">
+                <div 
+                  className="aspect-square bg-muted rounded-lg overflow-hidden"
+                  onMouseDown={handleMouseDown}
+                >
                   <img
                     src={preview.compressedUrl}
                     alt="Compressed"
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-contain transition-transform duration-150 select-none"
+                    style={imageStyle}
+                    draggable={false}
                   />
                 </div>
               </div>
