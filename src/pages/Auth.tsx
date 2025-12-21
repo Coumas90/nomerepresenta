@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useRateLimiter } from "@/hooks/useRateLimiter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, ShieldAlert } from "lucide-react";
 import { z } from "zod";
 import { P5Background } from "@/components/P5Background";
 import { supabase } from "@/integrations/supabase/client";
@@ -31,6 +33,37 @@ const Auth = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
+  const [lockoutCountdown, setLockoutCountdown] = useState(0);
+
+  // Rate limiter for login attempts
+  const loginRateLimiter = useRateLimiter({
+    maxAttempts: 5,
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    lockoutMs: 15 * 60 * 1000, // 15 minute lockout
+    storageKey: 'login_rate_limit',
+  });
+
+  // Rate limiter for password reset attempts
+  const resetRateLimiter = useRateLimiter({
+    maxAttempts: 3,
+    windowMs: 60 * 60 * 1000, // 1 hour
+    lockoutMs: 60 * 60 * 1000, // 1 hour lockout
+    storageKey: 'reset_rate_limit',
+  });
+
+  // Countdown timer for lockout
+  useEffect(() => {
+    if (loginRateLimiter.isLocked()) {
+      const interval = setInterval(() => {
+        const remaining = loginRateLimiter.getRemainingLockoutTime();
+        setLockoutCountdown(remaining);
+        if (remaining <= 0) {
+          clearInterval(interval);
+        }
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [loginRateLimiter]);
 
   useEffect(() => {
     if (user && !loading && !roleLoading) {
@@ -45,11 +78,19 @@ const Auth = () => {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Check rate limit before attempting
+    if (!loginRateLimiter.canAttempt()) {
+      toast({
+        title: "Too Many Attempts",
+        description: `Please wait ${loginRateLimiter.formatRemainingTime()} before trying again.`,
+        variant: "destructive",
+      });
+      return;
+    }
+    
     // Normalize credentials
     const normalizedEmail = email.trim().toLowerCase();
     const normalizedPassword = password.trim();
-    
-    console.log('🔐 Attempting login with email:', normalizedEmail);
     
     const validation = authSchema.safeParse({ 
       email: normalizedEmail, 
@@ -70,14 +111,27 @@ const Auth = () => {
     setIsSubmitting(false);
 
     if (error) {
-      console.error('❌ Login error:', error);
-      toast({
-        title: "Login Failed",
-        description: error.message || "Invalid login credentials. Please check your email and password.",
-        variant: "destructive",
-      });
+      // Record failed attempt
+      const { blocked, remainingAttempts } = loginRateLimiter.recordFailedAttempt(normalizedEmail);
+      
+      if (blocked) {
+        toast({
+          title: "Account Temporarily Locked",
+          description: "Too many failed attempts. Please try again later.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Login Failed",
+          description: remainingAttempts > 0 
+            ? `Invalid credentials. ${remainingAttempts} attempts remaining.`
+            : "Invalid login credentials. Please check your email and password.",
+          variant: "destructive",
+        });
+      }
     } else {
-      console.log('✅ Login successful');
+      // Reset rate limiter on successful login
+      loginRateLimiter.recordSuccess();
       
       // Prefetch admin data while showing toast
       const startDate = subDays(new Date(), 7);
@@ -116,6 +170,16 @@ const Auth = () => {
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Check rate limit for password reset
+    if (!resetRateLimiter.canAttempt()) {
+      toast({
+        title: "Too Many Requests",
+        description: `Please wait ${resetRateLimiter.formatRemainingTime()} before requesting another reset.`,
+        variant: "destructive",
+      });
+      return;
+    }
+    
     const emailValidation = z.string().email().safeParse(resetEmail);
     if (!emailValidation.success) {
       toast({
@@ -139,6 +203,9 @@ const Auth = () => {
     });
     setIsSubmitting(false);
 
+    // Always record the attempt (even on success to prevent enumeration)
+    resetRateLimiter.recordFailedAttempt(resetEmail);
+
     if (error) {
       toast({
         title: "Error",
@@ -148,7 +215,7 @@ const Auth = () => {
     } else {
       toast({
         title: "Email Sent!",
-        description: "Check your email for the password reset link.",
+        description: "If an account exists with this email, you'll receive a password reset link.",
       });
       setShowForgotPassword(false);
       setResetEmail("");
@@ -205,6 +272,25 @@ const Auth = () => {
             </form>
           ) : (
             <form onSubmit={handleSignIn} className="space-y-4">
+              {/* Rate limit warning */}
+              {loginRateLimiter.isLocked() && (
+                <Alert variant="destructive" className="mb-4">
+                  <ShieldAlert className="h-4 w-4" />
+                  <AlertDescription>
+                    Account temporarily locked due to too many failed attempts. 
+                    Please wait {loginRateLimiter.formatRemainingTime()} before trying again.
+                  </AlertDescription>
+                </Alert>
+              )}
+              
+              {/* Attempts remaining warning */}
+              {!loginRateLimiter.isLocked() && loginRateLimiter.attempts > 0 && (
+                <Alert variant="default" className="mb-4 border-yellow-500/50 bg-yellow-500/10">
+                  <AlertDescription className="text-yellow-600 dark:text-yellow-400">
+                    {loginRateLimiter.getRemainingAttempts()} login attempts remaining
+                  </AlertDescription>
+                </Alert>
+              )}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -240,8 +326,12 @@ const Auth = () => {
                 </button>
               </div>
             </div>
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? "Signing in..." : "Sign In"}
+              <Button 
+                type="submit" 
+                className="w-full" 
+                disabled={isSubmitting || loginRateLimiter.isLocked()}
+              >
+                {isSubmitting ? "Signing in..." : loginRateLimiter.isLocked() ? `Locked (${loginRateLimiter.formatRemainingTime()})` : "Sign In"}
               </Button>
               <Button
                 type="button"
