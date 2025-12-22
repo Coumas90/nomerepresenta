@@ -135,6 +135,18 @@ export const useRateLimiter = (config: Partial<RateLimiterConfig> = {}) => {
     return `${remainingSeconds}s`;
   }, [getRemainingLockoutTime]);
 
+  // Check if CAPTCHA should be required (after threshold attempts)
+  const requiresCaptcha = useCallback((threshold: number = 3): boolean => {
+    const now = Date.now();
+    
+    // Reset if window has passed
+    if (now - state.lastAttempt > windowMs) {
+      return false;
+    }
+    
+    return state.attempts >= threshold;
+  }, [state, windowMs]);
+
   return {
     isLocked,
     canAttempt,
@@ -143,6 +155,7 @@ export const useRateLimiter = (config: Partial<RateLimiterConfig> = {}) => {
     formatRemainingTime,
     recordFailedAttempt,
     recordSuccess,
+    requiresCaptcha,
     attempts: state.attempts,
   };
 };
