@@ -78,6 +78,24 @@ const Auth = () => {
     }
   }, [user, loading, roleLoading, userRole, navigate]);
 
+  const verifyCaptcha = async (token: string): Promise<boolean> => {
+    try {
+      const { data, error } = await supabase.functions.invoke('verify-captcha', {
+        body: { token },
+      });
+      
+      if (error) {
+        console.error('CAPTCHA verification error:', error);
+        return false;
+      }
+      
+      return data?.success === true;
+    } catch (err) {
+      console.error('CAPTCHA verification failed:', err);
+      return false;
+    }
+  };
+
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -120,6 +138,23 @@ const Auth = () => {
     }
 
     setIsSubmitting(true);
+
+    // Verify CAPTCHA in backend if required
+    if (loginRateLimiter.requiresCaptcha(3) && captchaToken) {
+      const captchaValid = await verifyCaptcha(captchaToken);
+      if (!captchaValid) {
+        setIsSubmitting(false);
+        setCaptchaToken(null);
+        captchaRef.current?.reset();
+        toast({
+          title: "CAPTCHA Verification Failed",
+          description: "Please complete the CAPTCHA again.",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
     const { error } = await signIn(normalizedEmail, normalizedPassword);
     setIsSubmitting(false);
 
