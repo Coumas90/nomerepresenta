@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -9,12 +9,13 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, EyeOff, ShieldAlert } from "lucide-react";
+import { Eye, EyeOff, ShieldAlert, ShieldCheck } from "lucide-react";
 import { z } from "zod";
 import { P5Background } from "@/components/P5Background";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { subDays } from "date-fns";
+import { HCaptchaComponent, type HCaptchaRef } from "@/components/auth/HCaptcha";
 
 const authSchema = z.object({
   email: z.string().trim().email({ message: "Invalid email address" }).max(255),
@@ -34,6 +35,8 @@ const Auth = () => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
   const [lockoutCountdown, setLockoutCountdown] = useState(0);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const captchaRef = useRef<HCaptchaRef>(null);
 
   // Rate limiter for login attempts
   const loginRateLimiter = useRateLimiter({
@@ -87,6 +90,16 @@ const Auth = () => {
       });
       return;
     }
+
+    // Check if CAPTCHA is required and not completed
+    if (loginRateLimiter.requiresCaptcha(3) && !captchaToken) {
+      toast({
+        title: "CAPTCHA Required",
+        description: "Please complete the CAPTCHA verification.",
+        variant: "destructive",
+      });
+      return;
+    }
     
     // Normalize credentials
     const normalizedEmail = email.trim().toLowerCase();
@@ -114,6 +127,10 @@ const Auth = () => {
       // Record failed attempt
       const { blocked, remainingAttempts } = loginRateLimiter.recordFailedAttempt(normalizedEmail);
       
+      // Reset CAPTCHA after failed attempt
+      setCaptchaToken(null);
+      captchaRef.current?.reset();
+      
       if (blocked) {
         toast({
           title: "Account Temporarily Locked",
@@ -132,6 +149,7 @@ const Auth = () => {
     } else {
       // Reset rate limiter on successful login
       loginRateLimiter.recordSuccess();
+      setCaptchaToken(null);
       
       // Prefetch admin data while showing toast
       const startDate = subDays(new Date(), 7);
@@ -326,10 +344,35 @@ const Auth = () => {
                 </button>
               </div>
             </div>
+              
+              {/* CAPTCHA - shown after 3 failed attempts */}
+              {loginRateLimiter.requiresCaptcha(3) && (
+                <div className="space-y-2">
+                  <Alert variant="default" className="border-blue-500/50 bg-blue-500/10">
+                    <ShieldCheck className="h-4 w-4 text-blue-500" />
+                    <AlertDescription className="text-blue-600 dark:text-blue-400">
+                      Please complete the CAPTCHA to continue
+                    </AlertDescription>
+                  </Alert>
+                  <HCaptchaComponent
+                    ref={captchaRef}
+                    onVerify={(token) => setCaptchaToken(token)}
+                    onExpire={() => setCaptchaToken(null)}
+                    onError={() => setCaptchaToken(null)}
+                  />
+                  {captchaToken && (
+                    <div className="flex items-center gap-2 text-green-600 dark:text-green-400 text-sm justify-center">
+                      <ShieldCheck className="h-4 w-4" />
+                      CAPTCHA verified
+                    </div>
+                  )}
+                </div>
+              )}
+              
               <Button 
                 type="submit" 
                 className="w-full" 
-                disabled={isSubmitting || loginRateLimiter.isLocked()}
+                disabled={isSubmitting || loginRateLimiter.isLocked() || (loginRateLimiter.requiresCaptcha(3) && !captchaToken)}
               >
                 {isSubmitting ? "Signing in..." : loginRateLimiter.isLocked() ? `Locked (${loginRateLimiter.formatRemainingTime()})` : "Sign In"}
               </Button>
