@@ -6,7 +6,7 @@ export const useAuth = () => {
   // Try to get initial user from localStorage for faster loading
   const [user, setUser] = useState<User | null>(() => {
     try {
-      const storedSession = localStorage.getItem('sb-fxdorpiracqhfixbgxlb-auth-token');
+      const storedSession = localStorage.getItem('sb-zutguutaaplflximklel-auth-token');
       if (storedSession) {
         const parsed = JSON.parse(storedSession);
         return parsed.user || null;
