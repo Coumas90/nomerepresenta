@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -153,10 +153,24 @@ const ArtworksList = ({ onEdit, onCreateInSeries }: ArtworksListProps) => {
     }
   };
 
+  // Memoize artworks grouped by series to avoid recomputing on every render
+  const artworksBySeries = useMemo(() => {
+    const grouped: Record<string, ArtworkData[]> = {};
+    artworks.forEach(artwork => {
+      if (!grouped[artwork.series_id]) {
+        grouped[artwork.series_id] = [];
+      }
+      grouped[artwork.series_id].push(artwork);
+    });
+    // Sort each group by display_order
+    Object.keys(grouped).forEach(seriesId => {
+      grouped[seriesId].sort((a, b) => a.display_order - b.display_order);
+    });
+    return grouped;
+  }, [artworks]);
+
   const getArtworksBySeries = (seriesId: string) => {
-    return artworks
-      .filter(a => a.series_id === seriesId)
-      .sort((a, b) => a.display_order - b.display_order);
+    return artworksBySeries[seriesId] || [];
   };
 
   if (artworksLoading || seriesLoading) {

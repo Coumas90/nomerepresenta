@@ -1,5 +1,7 @@
 import { registerSW } from "virtual:pwa-register";
 
+let updateIntervalId: number | undefined;
+
 const updateSW = registerSW({
   onNeedRefresh() {
     if (confirm("New content available. Reload to update?")) {
@@ -12,9 +14,14 @@ const updateSW = registerSW({
   onRegisteredSW(swUrl, registration) {
     console.log("Service Worker registered:", swUrl);
     
+    // Clear any existing interval before creating a new one
+    if (updateIntervalId) {
+      clearInterval(updateIntervalId);
+    }
+    
     // Check for updates every hour
     if (registration) {
-      setInterval(() => {
+      updateIntervalId = window.setInterval(() => {
         registration.update();
       }, 60 * 60 * 1000); // 1 hour
     }
@@ -23,5 +30,14 @@ const updateSW = registerSW({
     console.error("SW registration error:", error);
   },
 });
+
+// Cleanup function for when the module is hot-reloaded
+if (import.meta.hot) {
+  import.meta.hot.dispose(() => {
+    if (updateIntervalId) {
+      clearInterval(updateIntervalId);
+    }
+  });
+}
 
 export default updateSW;
