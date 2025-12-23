@@ -51,6 +51,8 @@ export const useAnalytics = () => {
 
   // Initialize or get session
   useEffect(() => {
+    const abortController = new AbortController();
+
     const initSession = async () => {
       let sessionId = localStorage.getItem(STORAGE_KEY);
       
@@ -58,10 +60,12 @@ export const useAnalytics = () => {
         sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         localStorage.setItem(STORAGE_KEY, sessionId);
         
-        // Get geolocation data
+        // Get geolocation data with AbortController
         let geoData = { country: null, country_name: null, city: null };
         try {
-          const geoResponse = await fetch('https://ipapi.co/json/');
+          const geoResponse = await fetch('https://ipapi.co/json/', {
+            signal: abortController.signal,
+          });
           if (geoResponse.ok) {
             const geo = await geoResponse.json();
             geoData = {
@@ -71,6 +75,10 @@ export const useAnalytics = () => {
             };
           }
         } catch (error) {
+          // Ignore abort errors
+          if (error instanceof Error && error.name === 'AbortError') {
+            return;
+          }
           console.log('Could not fetch geolocation:', error);
         }
         
@@ -111,6 +119,7 @@ export const useAnalytics = () => {
     window.addEventListener('beforeunload', handleBeforeUnload);
 
     return () => {
+      abortController.abort();
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };

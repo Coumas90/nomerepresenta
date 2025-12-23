@@ -42,10 +42,12 @@ export const ImageCompressionSettings = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <Label>Size Limit</Label>
+              <Label htmlFor="size-limit-slider">Size Limit</Label>
               <span className="text-sm font-medium">{settings.maxSizeMB} MB</span>
             </div>
             <Slider
+              id="size-limit-slider"
+              aria-label="Maximum file size in megabytes"
               value={[settings.maxSizeMB]}
               onValueChange={([value]) => updateSetting('maxSizeMB', value)}
               min={0.5}
@@ -70,10 +72,12 @@ export const ImageCompressionSettings = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <Label>Max Width/Height</Label>
+              <Label htmlFor="max-dimensions-slider">Max Width/Height</Label>
               <span className="text-sm font-medium">{settings.maxWidthOrHeight} px</span>
             </div>
             <Slider
+              id="max-dimensions-slider"
+              aria-label="Maximum width or height in pixels"
               value={[settings.maxWidthOrHeight]}
               onValueChange={([value]) => updateSetting('maxWidthOrHeight', value)}
               min={800}
@@ -98,10 +102,12 @@ export const ImageCompressionSettings = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <Label>Quality Level</Label>
+              <Label htmlFor="quality-slider">Quality Level</Label>
               <span className="text-sm font-medium">{Math.round(settings.initialQuality * 100)}%</span>
             </div>
             <Slider
+              id="quality-slider"
+              aria-label="Compression quality percentage"
               value={[settings.initialQuality * 100]}
               onValueChange={([value]) => updateSetting('initialQuality', value / 100)}
               min={50}
@@ -126,10 +132,12 @@ export const ImageCompressionSettings = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <Label>Savings Threshold</Label>
+              <Label htmlFor="savings-slider">Savings Threshold</Label>
               <span className="text-sm font-medium">{settings.minSavingsPercent}%</span>
             </div>
             <Slider
+              id="savings-slider"
+              aria-label="Minimum savings percentage threshold"
               value={[settings.minSavingsPercent]}
               onValueChange={([value]) => updateSetting('minSavingsPercent', value)}
               min={0}
