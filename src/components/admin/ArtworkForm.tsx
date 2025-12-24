@@ -82,6 +82,7 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
       }
     } catch (error) {
       console.error("Error submitting artwork:", error);
+      toast.error("Error al guardar la obra. Por favor intenta de nuevo.");
     }
   };
 

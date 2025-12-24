@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Upload, X, GripVertical, Star, Loader2 } from "lucide-react";
@@ -129,12 +129,22 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
   const [uploading, setUploading] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
   const [uploadingImages, setUploadingImages] = useState<UploadingImage[]>([]);
+  const clearUploadTimeoutRef = useRef<number>();
   const uploadMutation = useUploadImage();
   const addImageMutation = useAddArtworkImage();
   const deleteImageMutation = useDeleteArtworkImage();
   const updateOrderMutation = useUpdateImageOrder();
   const setMainImageMutation = useSetMainImage();
   const { data: images, isLoading } = useArtworkImages(artworkId);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (clearUploadTimeoutRef.current) {
+        clearTimeout(clearUploadTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -223,7 +233,7 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
       if (onImagesChange) onImagesChange();
       
       // Clear uploading images after a brief delay to show completion
-      setTimeout(() => {
+      clearUploadTimeoutRef.current = window.setTimeout(() => {
         setUploadingImages([]);
       }, 1000);
     } catch (error) {

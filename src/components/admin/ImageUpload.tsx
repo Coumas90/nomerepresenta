@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Upload, X } from "lucide-react";
 import { useUploadImage } from "@/hooks/useArtworkMutations";
+import { toast } from "sonner";
 
 interface ImageUploadProps {
   label: string;
@@ -31,7 +32,10 @@ const ImageUpload = ({ label, onUploadComplete, currentUrl }: ImageUploadProps) 
       onUploadComplete(url);
       setIsUploaded(true);
     } catch (error) {
+      console.error("Error uploading image:", error);
+      toast.error("Error al subir la imagen. Por favor intenta de nuevo.");
       setIsUploaded(false);
+      setPreview(null);
     }
   };
 
