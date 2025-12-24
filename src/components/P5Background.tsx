@@ -71,6 +71,7 @@ export const P5Background = () => {
   const [isMouseMoving, setIsMouseMoving] = useState(false);
   const isMouseMovingRef = useRef(false);
   const mouseMoveTimeoutRef = useRef<number>();
+  const lazyLoadTimeoutRef = useRef<number>();
   const [loadError, setLoadError] = useState<string | null>(null);
 
   // Update ref when state changes
@@ -152,7 +153,9 @@ export const P5Background = () => {
               loadedCount++;
               
               if (loadedCount === initialArtworks.length) {
-                console.log(`✅ Initial ${loadedCount} images loaded`);
+                if (import.meta.env.DEV) {
+                  console.log(`✅ Initial ${loadedCount} images loaded`);
+                }
                 initializeTiles();
               }
             },
@@ -169,8 +172,10 @@ export const P5Background = () => {
 
         // Lazy load del resto después de 2 segundos
         if (remainingArtworks.length > 0) {
-          setTimeout(() => {
-            console.log(`🔄 Loading remaining ${remainingArtworks.length} images...`);
+          lazyLoadTimeoutRef.current = window.setTimeout(() => {
+            if (import.meta.env.DEV) {
+              console.log(`🔄 Loading remaining ${remainingArtworks.length} images...`);
+            }
             remainingArtworks.forEach((artwork) => {
               p.loadImage(
                 getAbsoluteUrl(artwork.image_url),
@@ -178,7 +183,9 @@ export const P5Background = () => {
                   images.push(img);
                   if (images.length === artworks.length) {
                     allImagesLoaded = true;
-                    console.log(`✅ All ${artworks.length} images loaded`);
+                    if (import.meta.env.DEV) {
+                      console.log(`✅ All ${artworks.length} images loaded`);
+                    }
                   }
                 },
                 (err) => {
@@ -333,6 +340,9 @@ export const P5Background = () => {
       window.removeEventListener('mousemove', handleMouseMove);
       if (mouseMoveTimeoutRef.current) {
         clearTimeout(mouseMoveTimeoutRef.current);
+      }
+      if (lazyLoadTimeoutRef.current) {
+        clearTimeout(lazyLoadTimeoutRef.current);
       }
     };
   }, [artworks, isLoading]);
