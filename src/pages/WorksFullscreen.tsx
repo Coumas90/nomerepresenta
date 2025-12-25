@@ -309,7 +309,7 @@ const WorksFullscreen = () => {
         <button
           onClick={handleOpenOverlay}
           className="text-stone-900 text-sm md:text-lg lg:text-xl font-bold tracking-widest uppercase 
-                     hover:opacity-60 transition-all duration-300 focus:outline-none"
+                     hover:opacity-60 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/50 focus-visible:ring-offset-2"
         >
           TRI-PEEL
         </button>
@@ -318,7 +318,7 @@ const WorksFullscreen = () => {
         <button
           onClick={handleClose}
           className="min-w-[44px] min-h-[44px] flex items-center justify-center
-                     text-stone-900 hover:opacity-60 hover:rotate-90 transition-all duration-300 focus:outline-none
+                     text-stone-900 hover:opacity-60 hover:rotate-90 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/50 focus-visible:ring-offset-2
                      -mr-1 md:-mr-3"
           aria-label="Close and return to landing"
         >
@@ -335,7 +335,7 @@ const WorksFullscreen = () => {
             "hidden md:flex absolute left-6 lg:left-10 top-1/2 -translate-y-1/2 z-20",
             "min-w-[44px] min-h-[44px] items-center justify-center",
             "text-2xl font-extralight select-none",
-            "transition-all duration-300 ease-out focus:outline-none",
+            "transition-all duration-300 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/50 focus-visible:ring-offset-2",
             hasPrevImage 
               ? "text-stone-400 hover:text-stone-700 hover:-translate-x-0.5" 
               : "text-stone-300/30 cursor-default"
@@ -355,7 +355,7 @@ const WorksFullscreen = () => {
             "hidden md:flex absolute right-6 lg:right-10 top-1/2 -translate-y-1/2 z-20",
             "min-w-[44px] min-h-[44px] items-center justify-center",
             "text-2xl font-extralight select-none",
-            "transition-all duration-300 ease-out focus:outline-none",
+            "transition-all duration-300 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/50 focus-visible:ring-offset-2",
             hasNextImage 
               ? "text-stone-400 hover:text-stone-700 hover:translate-x-0.5" 
               : "text-stone-300/30 cursor-default"

@@ -127,18 +127,34 @@ export const HoverNavigationCarousel = ({
       {/* Clickable left zone - 30% width */}
       {canScrollPrev && images.length > 1 && (
         <div
+          role="button"
+          tabIndex={0}
           onClick={handlePrevious}
-          className="absolute left-0 top-0 bottom-0 w-[30%] z-10"
-          aria-label="Previous image zone"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handlePrevious();
+            }
+          }}
+          className="absolute left-0 top-0 bottom-0 w-[30%] z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+          aria-label="Previous image"
         />
       )}
 
       {/* Clickable right zone - 30% width */}
       {canScrollNext && images.length > 1 && (
         <div
+          role="button"
+          tabIndex={0}
           onClick={handleNext}
-          className="absolute right-0 top-0 bottom-0 w-[30%] z-10"
-          aria-label="Next image zone"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleNext();
+            }
+          }}
+          className="absolute right-0 top-0 bottom-0 w-[30%] z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+          aria-label="Next image"
         />
       )}
 
