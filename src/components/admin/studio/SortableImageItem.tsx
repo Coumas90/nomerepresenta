@@ -29,13 +29,25 @@ export const SortableImageItem = ({ image, onEdit, onDelete, onPreview }: Sortab
             <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
               <GripVertical className="h-5 w-5 text-muted-foreground" />
             </div>
-            <div className="relative group cursor-pointer" onClick={onPreview}>
+            <div 
+              role="button"
+              tabIndex={0}
+              className="relative group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-md" 
+              onClick={onPreview}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onPreview();
+                }
+              }}
+              aria-label={`Preview ${image.title || "Studio image"}`}
+            >
               <img
                 src={image.image_url}
                 alt={image.title || "Studio image"}
                 className="w-20 h-20 object-cover rounded-md transition-opacity group-hover:opacity-75"
               />
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity">
                 <ZoomIn className="h-6 w-6 text-foreground drop-shadow-lg" />
               </div>
             </div>

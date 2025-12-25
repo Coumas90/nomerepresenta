@@ -138,6 +138,23 @@ const Landing = () => {
     setTimeout(() => setIsTransitioning(false), 300);
   };
 
+  // Focus/blur handlers for keyboard accessibility (same effect as hover)
+  const handleFocus = (index: number) => {
+    if (hoveredIndex !== index) {
+      setIsTransitioning(true);
+      setHoveredIndex(index);
+      setTimeout(() => setIsTransitioning(false), 300);
+    }
+  };
+
+  const handleBlur = () => {
+    if (!isMobile) {
+      setIsTransitioning(true);
+      setHoveredIndex(null);
+      setTimeout(() => setIsTransitioning(false), 300);
+    }
+  };
+
   // Get the active index for background-clip effect
   const activeIndex = hoveredIndex ?? selectedIndex;
 
@@ -165,6 +182,8 @@ const Landing = () => {
                   }}
                   onMouseEnter={() => handleMouseEnter(index)}
                   onMouseLeave={handleMouseLeave}
+                  onFocus={() => handleFocus(index)}
+                  onBlur={handleBlur}
                   disabled={!isClickable && !isMobile}
                   className={`
                     font-helvetica font-bold tracking-tight
