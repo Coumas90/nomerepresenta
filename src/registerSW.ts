@@ -9,10 +9,14 @@ const updateSW = registerSW({
     }
   },
   onOfflineReady() {
-    console.log("App ready to work offline");
+    if (import.meta.env.DEV) {
+      console.log("App ready to work offline");
+    }
   },
   onRegisteredSW(swUrl, registration) {
-    console.log("Service Worker registered:", swUrl);
+    if (import.meta.env.DEV) {
+      console.log("Service Worker registered:", swUrl);
+    }
     
     // Clear any existing interval before creating a new one
     if (updateIntervalId) {
