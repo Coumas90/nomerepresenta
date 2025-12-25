@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -7,17 +7,16 @@ type PageContext = "works" | "studio" | "default";
 interface SwipeHintProps {
   direction: "vertical" | "horizontal" | "both";
   show?: boolean;
-  autoHideAfter?: number; // ms to auto-hide, 0 to never auto-hide
-  inactivityDelay?: number; // ms of inactivity before re-showing (default 10000)
-  pageContext?: PageContext; // Contextualizes hint per page
+  autoHideAfter?: number;
+  inactivityDelay?: number;
+  pageContext?: PageContext;
   className?: string;
 }
 
 const STORAGE_KEY_PREFIX = "swipeHint_seen_";
 
-const getStorageKey = (context: PageContext): string => {
-  return `${STORAGE_KEY_PREFIX}${context}`;
-};
+const getStorageKey = (context: PageContext): string => 
+  `${STORAGE_KEY_PREFIX}${context}`;
 
 const getContextualText = (context: PageContext, direction: "vertical" | "horizontal" | "both"): string => {
   if (context === "works") {
@@ -25,9 +24,7 @@ const getContextualText = (context: PageContext, direction: "vertical" | "horizo
     if (direction === "horizontal") return "Swipe for details";
     return "Swipe to explore";
   }
-  if (context === "studio") {
-    return "Swipe to browse studio";
-  }
+  if (context === "studio") return "Swipe to browse studio";
   return "Swipe";
 };
 
@@ -43,50 +40,46 @@ export const SwipeHint = ({
   const [isVisible, setIsVisible] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
 
-  // Check sessionStorage on mount to see if hint was already shown
+  const storageKey = useMemo(() => getStorageKey(pageContext), [pageContext]);
+
+  // Check sessionStorage on mount
   useEffect(() => {
-    const storageKey = getStorageKey(pageContext);
     const seenBefore = sessionStorage.getItem(storageKey) === "true";
-    
     if (!seenBefore && isMobile && show) {
       setIsVisible(true);
     }
-  }, [pageContext, isMobile, show]);
+  }, [storageKey, isMobile, show]);
 
   // Auto-hide after delay
   useEffect(() => {
     if (autoHideAfter > 0 && isVisible) {
       const timer = setTimeout(() => {
         setIsVisible(false);
-        // Mark as seen in sessionStorage
-        const storageKey = getStorageKey(pageContext);
         sessionStorage.setItem(storageKey, "true");
       }, autoHideAfter);
       return () => clearTimeout(timer);
     }
-  }, [autoHideAfter, isVisible, pageContext]);
+  }, [autoHideAfter, isVisible, storageKey]);
 
-  // Hide on interaction and mark as seen
+  // Hide on interaction
   const handleInteraction = useCallback(() => {
     if (!hasInteracted) {
       setHasInteracted(true);
       setIsVisible(false);
-      const storageKey = getStorageKey(pageContext);
       sessionStorage.setItem(storageKey, "true");
     }
-  }, [hasInteracted, pageContext]);
+  }, [hasInteracted, storageKey]);
 
   useEffect(() => {
     window.addEventListener("touchstart", handleInteraction, { once: true });
     window.addEventListener("wheel", handleInteraction, { once: true });
-
     return () => {
       window.removeEventListener("touchstart", handleInteraction);
       window.removeEventListener("wheel", handleInteraction);
     };
   }, [handleInteraction]);
 
-  // Re-show after inactivity (only if hint was already shown once)
+  // Re-show after inactivity
   useEffect(() => {
     if (!isMobile || !show || inactivityDelay <= 0) return;
 
@@ -96,80 +89,67 @@ export const SwipeHint = ({
     const resetInactivityTimer = () => {
       lastActivityTime = Date.now();
       clearTimeout(inactivityTimer);
-      
       inactivityTimer = setTimeout(() => {
-        // Only re-show if enough time passed since last activity
         if (Date.now() - lastActivityTime >= inactivityDelay) {
           setIsVisible(true);
-          setHasInteracted(false); // Allow new interaction to hide it again
+          setHasInteracted(false);
         }
       }, inactivityDelay);
     };
 
-    // Listen for activity
     const activityEvents = ["touchstart", "touchmove", "wheel", "keydown"];
-    activityEvents.forEach(event => {
-      window.addEventListener(event, resetInactivityTimer, { passive: true });
-    });
-
-    // Start initial timer
+    activityEvents.forEach(event => 
+      window.addEventListener(event, resetInactivityTimer, { passive: true })
+    );
     resetInactivityTimer();
 
     return () => {
       clearTimeout(inactivityTimer);
-      activityEvents.forEach(event => {
-        window.removeEventListener(event, resetInactivityTimer);
-      });
+      activityEvents.forEach(event => 
+        window.removeEventListener(event, resetInactivityTimer)
+      );
     };
   }, [isMobile, show, inactivityDelay]);
 
-  // Only show on mobile and when conditions are met
-  if (!isMobile || !show || !isVisible) {
-    return null;
-  }
+  if (!isMobile || !show || !isVisible) return null;
 
   const contextText = getContextualText(pageContext, direction);
+  const showVertical = direction === "vertical" || direction === "both";
+  const showHorizontal = direction === "horizontal" || direction === "both";
+  const isBoth = direction === "both";
+  const iconSize = isBoth ? "w-5 h-5" : "w-6 h-6";
 
   return (
     <div 
       className={`pointer-events-none z-30 flex items-center justify-center ${className}`}
       aria-hidden="true"
     >
-      {/* Backdrop for better visibility */}
       <div className="bg-black/30 backdrop-blur-sm rounded-xl px-4 py-3">
-        {direction === "vertical" && (
-          <div className="flex flex-col items-center gap-1.5 animate-fade-in">
-            <ChevronUp className="w-6 h-6 text-white/70 animate-bounce" style={{ animationDelay: "0.1s" }} />
-            <span className="text-white/80 text-[11px] tracking-widest uppercase text-center max-w-[140px] font-medium">
+        <div className={`flex ${showVertical && !showHorizontal ? "flex-col" : ""} items-center gap-${isBoth ? "2" : "1.5"} animate-fade-in`}>
+          {showVertical && !showHorizontal && (
+            <ChevronUp className={`${iconSize} text-white/70 animate-bounce`} style={{ animationDelay: "0.1s" }} />
+          )}
+          
+          {isBoth && <ChevronUp className={`${iconSize} text-white/70 animate-bounce`} />}
+          
+          <div className={`flex items-center ${isBoth ? "gap-3" : "gap-2.5"}`}>
+            {showHorizontal && (
+              <ChevronLeft className={`${iconSize} text-white/70 animate-pulse`} />
+            )}
+            <span className={`text-white/80 text-[11px] tracking-widest uppercase text-center max-w-[${isBoth ? "120" : "140"}px] font-medium`}>
               {contextText}
             </span>
-            <ChevronDown className="w-6 h-6 text-white/70 animate-bounce" />
+            {showHorizontal && (
+              <ChevronRight className={`${iconSize} text-white/70 animate-pulse`} />
+            )}
           </div>
-        )}
-
-        {direction === "horizontal" && (
-          <div className="flex items-center gap-2.5 animate-fade-in">
-            <ChevronLeft className="w-6 h-6 text-white/70 animate-pulse" />
-            <span className="text-white/80 text-[11px] tracking-widest uppercase text-center max-w-[140px] font-medium">
-              {contextText}
-            </span>
-            <ChevronRight className="w-6 h-6 text-white/70 animate-pulse" />
-          </div>
-        )}
-
-        {direction === "both" && (
-          <div className="flex flex-col items-center gap-2 animate-fade-in">
-            <ChevronUp className="w-5 h-5 text-white/70 animate-bounce" />
-            <div className="flex items-center gap-3">
-              <ChevronLeft className="w-5 h-5 text-white/70 animate-pulse" />
-              <span className="text-white/80 text-[11px] tracking-widest uppercase text-center max-w-[120px] font-medium">
-                {contextText}
-              </span>
-              <ChevronRight className="w-5 h-5 text-white/70 animate-pulse" />
-            </div>
-            <ChevronDown className="w-5 h-5 text-white/70 animate-bounce" />
-          </div>
-        )}
+          
+          {isBoth && <ChevronDown className={`${iconSize} text-white/70 animate-bounce`} />}
+          
+          {showVertical && !showHorizontal && (
+            <ChevronDown className={`${iconSize} text-white/70 animate-bounce`} />
+          )}
+        </div>
       </div>
     </div>
   );
