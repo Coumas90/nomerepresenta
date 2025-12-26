@@ -6,7 +6,36 @@ interface CursorPosition {
   x: number;
   y: number;
   timestamp: number;
+  viewportWidth: number;
+  viewportHeight: number;
 }
+
+// Server-side validated cursor tracking
+const trackCursor = async (artworkId: string, sessionId: string, positions: CursorPosition[]) => {
+  try {
+    const response = await supabase.functions.invoke('track-analytics', {
+      body: {
+        action: 'track_cursor',
+        data: {
+          sessionId,
+          artworkId,
+          positions: positions.map(pos => ({
+            x: pos.x,
+            y: pos.y,
+            viewportWidth: pos.viewportWidth,
+            viewportHeight: pos.viewportHeight,
+          })),
+        },
+      },
+    });
+
+    if (response.error) {
+      console.error('[CursorTracking] Edge function error:', response.error);
+    }
+  } catch (error) {
+    console.error('[CursorTracking] Request error:', error);
+  }
+};
 
 export const useArtworkCursorTracking = (artworkId: string, enabled: boolean = true) => {
   const { sessionId } = useAnalytics();
@@ -17,25 +46,10 @@ export const useArtworkCursorTracking = (artworkId: string, enabled: boolean = t
   const sendBuffer = useCallback(async () => {
     if (bufferRef.current.length === 0 || !sessionId || !imageRefCallback.current) return;
 
-    const imgElement = imageRefCallback.current;
-    const rect = imgElement.getBoundingClientRect();
-    
-    const dataToSend = bufferRef.current.map(pos => ({
-      artwork_id: artworkId,
-      session_id: sessionId,
-      x_position: Math.round(pos.x),
-      y_position: Math.round(pos.y),
-      viewport_width: Math.round(rect.width),
-      viewport_height: Math.round(rect.height),
-    }));
-
+    const positionsToSend = [...bufferRef.current];
     bufferRef.current = [];
 
-    try {
-      await supabase.from('artwork_cursor_tracking').insert(dataToSend);
-    } catch (error) {
-      console.error('Error sending cursor tracking data:', error);
-    }
+    await trackCursor(artworkId, sessionId, positionsToSend);
   }, [artworkId, sessionId]);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
@@ -44,7 +58,7 @@ export const useArtworkCursorTracking = (artworkId: string, enabled: boolean = t
     const imgElement = imageRefCallback.current;
     const rect = imgElement.getBoundingClientRect();
     
-    // Calculate relative position (0-1 range)
+    // Calculate relative position (0-100 range)
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
 
@@ -54,6 +68,8 @@ export const useArtworkCursorTracking = (artworkId: string, enabled: boolean = t
         x,
         y,
         timestamp: Date.now(),
+        viewportWidth: Math.round(rect.width),
+        viewportHeight: Math.round(rect.height),
       });
 
       // Send buffer every 2 seconds
