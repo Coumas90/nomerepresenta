@@ -43,6 +43,25 @@ const getDeviceType = (): string => {
   return 'desktop';
 };
 
+// Server-side validated analytics tracking
+const trackAnalytics = async (action: string, data: Record<string, unknown>) => {
+  try {
+    const response = await supabase.functions.invoke('track-analytics', {
+      body: { action, data }
+    });
+    
+    if (response.error) {
+      console.error('[Analytics] Edge function error:', response.error);
+      return null;
+    }
+    
+    return response.data;
+  } catch (error) {
+    console.error('[Analytics] Request error:', error);
+    return null;
+  }
+};
+
 export const useAnalytics = () => {
   const sessionIdRef = useRef<string | null>(null);
   const sessionStartRef = useRef<Date>(new Date());
@@ -61,7 +80,7 @@ export const useAnalytics = () => {
         localStorage.setItem(STORAGE_KEY, sessionId);
         
         // Get geolocation data with AbortController
-        let geoData = { country: null, country_name: null, city: null };
+        let geoData = { country: null, countryName: null, city: null };
         try {
           const geoResponse = await fetch('https://ipapi.co/json/', {
             signal: abortController.signal,
@@ -70,7 +89,7 @@ export const useAnalytics = () => {
             const geo = await geoResponse.json();
             geoData = {
               country: geo.country_code || null,
-              country_name: geo.country_name || null,
+              countryName: geo.country_name || null,
               city: geo.city || null,
             };
           }
@@ -79,20 +98,18 @@ export const useAnalytics = () => {
           if (error instanceof Error && error.name === 'AbortError') {
             return;
           }
-          console.log('Could not fetch geolocation:', error);
         }
         
-        // Create new session
-        await supabase.from('analytics_sessions').insert({
-          session_id: sessionId,
-          visitor_fingerprint: generateFingerprint(),
+        // Create new session via Edge Function (server-side validated)
+        await trackAnalytics('create_session', {
+          sessionId,
+          fingerprint: generateFingerprint(),
           referrer: document.referrer || null,
-          user_agent: navigator.userAgent,
-          device_type: getDeviceType(),
+          userAgent: navigator.userAgent,
+          deviceType: getDeviceType(),
           country: geoData.country,
-          country_name: geoData.country_name,
+          countryName: geoData.countryName,
           city: geoData.city,
-          started_at: new Date().toISOString(),
         });
       }
       
@@ -130,13 +147,10 @@ export const useAnalytics = () => {
 
     const duration = Math.floor((new Date().getTime() - sessionStartRef.current.getTime()) / 1000);
     
-    await supabase
-      .from('analytics_sessions')
-      .update({
-        ended_at: new Date().toISOString(),
-        total_duration_seconds: duration,
-      })
-      .eq('session_id', sessionIdRef.current);
+    await trackAnalytics('update_session_duration', {
+      sessionId: sessionIdRef.current,
+      duration,
+    });
   }, []);
 
   const updatePageDuration = useCallback(async () => {
@@ -144,13 +158,11 @@ export const useAnalytics = () => {
 
     const duration = Math.floor((new Date().getTime() - currentPageStartRef.current.getTime()) / 1000);
     
-    await supabase
-      .from('page_views')
-      .update({ time_on_page_seconds: duration })
-      .eq('session_id', sessionIdRef.current)
-      .eq('page_path', currentPagePathRef.current)
-      .order('viewed_at', { ascending: false })
-      .limit(1);
+    await trackAnalytics('update_page_duration', {
+      sessionId: sessionIdRef.current,
+      pagePath: currentPagePathRef.current,
+      duration,
+    });
   }, []);
 
   const trackPageView = useCallback(async (pagePath: string, pageName?: string) => {
@@ -164,11 +176,10 @@ export const useAnalytics = () => {
     currentPagePathRef.current = pagePath;
     currentPageStartRef.current = new Date();
 
-    await supabase.from('page_views').insert({
-      session_id: sessionIdRef.current,
-      page_path: pagePath,
-      page_name: pageName || pagePath,
-      viewed_at: new Date().toISOString(),
+    await trackAnalytics('track_page_view', {
+      sessionId: sessionIdRef.current,
+      pagePath,
+      pageName: pageName || pagePath,
     });
   }, [updatePageDuration]);
 
@@ -182,30 +193,25 @@ export const useAnalytics = () => {
   ) => {
     if (!sessionIdRef.current) return;
 
-    const { data } = await supabase
-      .from('artwork_views')
-      .insert({
-        session_id: sessionIdRef.current,
-        artwork_id: artworkId,
-        series_id: seriesId,
-        started_at: new Date().toISOString(),
-        clicked_detail: options.clickedDetail || false,
-        hovered: options.hovered || false,
-      })
-      .select()
-      .single();
+    const result = await trackAnalytics('track_artwork_view', {
+      sessionId: sessionIdRef.current,
+      artworkId,
+      seriesId,
+      clickedDetail: options.clickedDetail || false,
+      hovered: options.hovered || false,
+    });
 
-    return data?.id;
+    return result?.viewId;
   }, []);
 
   const endArtworkView = useCallback(async (viewId: string, duration: number) => {
-    await supabase
-      .from('artwork_views')
-      .update({
-        ended_at: new Date().toISOString(),
-        view_duration_seconds: duration,
-      })
-      .eq('id', viewId);
+    if (!sessionIdRef.current) return;
+    
+    await trackAnalytics('end_artwork_view', {
+      sessionId: sessionIdRef.current,
+      viewId,
+      duration,
+    });
   }, []);
 
   const trackSeriesInteraction = useCallback(async (
@@ -217,12 +223,11 @@ export const useAnalytics = () => {
   ) => {
     if (!sessionIdRef.current) return;
 
-    await supabase.from('series_interactions').insert({
-      session_id: sessionIdRef.current,
-      series_id: seriesId,
-      viewed_at: new Date().toISOString(),
-      expanded_description: options.expandedDescription || false,
-      artworks_viewed_count: options.artworksViewedCount || 0,
+    await trackAnalytics('track_series_interaction', {
+      sessionId: sessionIdRef.current,
+      seriesId,
+      expandedDescription: options.expandedDescription || false,
+      artworksViewedCount: options.artworksViewedCount || 0,
     });
   }, []);
 
