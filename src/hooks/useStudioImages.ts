@@ -1,15 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import type { StudioImage } from "@/types";
 
-export interface StudioImage {
-  id: string;
-  image_url: string;
-  title: string | null;
-  description: string | null;
-  display_order: number;
-  created_at: string;
-  updated_at: string;
-}
+// Re-export for backward compatibility
+export type { StudioImage };
 
 export const useStudioImages = () => {
   return useQuery({

@@ -1,19 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import type { ArtworkData } from "@/types";
 
-export interface ArtworkData {
-  id: string;
-  title: string;
-  year: string;
-  dimensions: string;
-  technique: string;
-  materials: string;
-  description: string;
-  image_url: string;
-  image_detail_url: string;
-  series_id: string;
-  display_order: number;
-}
+// Re-export for backward compatibility
+export type { ArtworkData };
 
 export const useArtworks = () => {
   return useQuery({

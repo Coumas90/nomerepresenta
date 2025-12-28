@@ -1,12 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import type { SeriesData } from "@/types";
 
-export interface SeriesData {
-  id: string;
-  name: string;
-  description: string | null;
-  display_order: number;
-}
+// Re-export for backward compatibility
+export type { SeriesData };
 
 export const useSeries = () => {
   return useQuery({

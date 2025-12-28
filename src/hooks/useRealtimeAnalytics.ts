@@ -1,34 +1,9 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import type { LiveSession, LiveArtworkView, LiveActivity } from "@/types";
 
-export interface LiveSession {
-  id: string;
-  session_id: string;
-  device_type: string | null;
-  country_name: string | null;
-  city: string | null;
-  started_at: string;
-}
-
-export interface LiveArtworkView {
-  id: string;
-  artwork_id: string;
-  session_id: string;
-  started_at: string;
-  artwork?: {
-    title: string;
-    series?: {
-      name: string;
-    };
-  };
-}
-
-export interface LiveActivity {
-  id: string;
-  type: 'session' | 'artwork_view' | 'page_view';
-  timestamp: string;
-  data: any;
-}
+// Re-export for backward compatibility
+export type { LiveSession, LiveArtworkView, LiveActivity };
 
 export const useRealtimeAnalytics = () => {
   const [activeSessions, setActiveSessions] = useState<LiveSession[]>([]);
