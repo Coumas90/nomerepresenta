@@ -1,22 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { subDays, startOfDay, endOfDay, differenceInDays, eachDayOfInterval } from 'date-fns';
+import { subDays, startOfDay, eachDayOfInterval } from 'date-fns';
+import type { AnalyticsOverviewStats, DailyVisitors } from "@/types";
 
-export interface AnalyticsOverviewStats {
-  totalVisitors: number;
-  sessionsToday: number;
-  avgTimeOnSite: number;
-  avgArtworksPerSession: number;
-  totalPageViews: number;
-  uniqueArtworksViewed: number;
-  dailyVisitors: DailyVisitors[];
-}
-
-export interface DailyVisitors {
-  date: string;
-  visitors: number;
-  sessions: number;
-}
+// Re-export for backward compatibility
+export type { AnalyticsOverviewStats, DailyVisitors };
 
 export const useAnalyticsStats = (startDate?: Date, endDate?: Date) => {
   const effectiveStartDate = startDate || subDays(new Date(), 30);

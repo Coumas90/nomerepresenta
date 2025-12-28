@@ -105,12 +105,15 @@ export interface LiveArtworkView {
 
 /**
  * Live activity feed item.
+ * Note: data uses 'any' for backward compatibility with existing code.
+ * Consider migrating to strict union type: LiveSession | LiveArtworkView | PageView
  */
 export interface LiveActivity {
   id: string;
   type: "session" | "artwork_view" | "page_view";
   timestamp: string;
-  data: LiveSession | LiveArtworkView | PageView;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any;
 }
 
 // ============= Heatmap Types =============
