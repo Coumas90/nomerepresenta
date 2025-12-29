@@ -2,9 +2,6 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { LiveSession, LiveArtworkView, LiveActivity } from "@/types";
 
-// Re-export for backward compatibility
-export type { LiveSession, LiveArtworkView, LiveActivity };
-
 export const useRealtimeAnalytics = () => {
   const [activeSessions, setActiveSessions] = useState<LiveSession[]>([]);
   const [recentArtworkViews, setRecentArtworkViews] = useState<LiveArtworkView[]>([]);
