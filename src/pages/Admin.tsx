@@ -2,7 +2,7 @@ import { useState, lazy, Suspense } from "react";
 import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { ArtworkData } from "@/hooks/useArtworks";
+import type { ArtworkData } from "@/types";
 import ArtworkForm from "@/components/admin/ArtworkForm";
 import ArtworksList from "@/components/admin/ArtworksList";
 import SeriesManager from "@/components/admin/SeriesManager";

@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCreateArtwork, useUpdateArtwork } from "@/hooks/useArtworkMutations";
 import { useSeries } from "@/hooks/useSeries";
-import { ArtworkData } from "@/hooks/useArtworks";
+import type { ArtworkData } from "@/types";
 import ImageUpload from "./ImageUpload";
 import MultipleImageUpload from "./MultipleImageUpload";
 import { toast } from "sonner";

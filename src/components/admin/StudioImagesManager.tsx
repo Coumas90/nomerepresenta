@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, Images } from "lucide-react";
-import { useStudioImages, StudioImage } from "@/hooks/useStudioImages";
+import { useStudioImages } from "@/hooks/useStudioImages";
+import type { StudioImage } from "@/types";
 import { useDeleteStudioImage, useUpdateStudioImagesOrder } from "@/hooks/useStudioImageMutations";
 import {
   EditImageForm,

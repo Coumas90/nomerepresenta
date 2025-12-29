@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { SeriesData } from "./useSeries";
+import type { SeriesData } from "@/types";
 
 export const useCreateSeries = () => {
   const queryClient = useQueryClient();

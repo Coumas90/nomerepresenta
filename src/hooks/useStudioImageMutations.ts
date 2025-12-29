@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { StudioImage } from "./useStudioImages";
+import type { StudioImage } from "@/types";
 import { compressImageWithDetails, formatFileSize } from "@/lib/imageCompression";
 import { getCompressionOptions } from "@/hooks/useCompressionSettings";
 

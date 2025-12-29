@@ -3,7 +3,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Eye, Globe, User } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import type { LiveActivity } from "@/hooks/useRealtimeAnalytics";
+import type { LiveActivity } from "@/types";
 
 interface LiveActivityFeedProps {
   activities: LiveActivity[];

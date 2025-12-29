@@ -1,4 +1,4 @@
-import { StudioImage } from "@/hooks/useStudioImages";
+import type { StudioImage } from "@/types";
 
 /**
  * Represents a single item in the bulk upload queue.
