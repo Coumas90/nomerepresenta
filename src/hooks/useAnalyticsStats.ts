@@ -3,9 +3,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { subDays, startOfDay, eachDayOfInterval } from 'date-fns';
 import type { AnalyticsOverviewStats, DailyVisitors } from "@/types";
 
-// Re-export for backward compatibility
-export type { AnalyticsOverviewStats, DailyVisitors };
-
 export const useAnalyticsStats = (startDate?: Date, endDate?: Date) => {
   const effectiveStartDate = startDate || subDays(new Date(), 30);
   const effectiveEndDate = endDate || new Date();

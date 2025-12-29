@@ -2,9 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { ArtworkData } from "@/types";
 
-// Re-export for backward compatibility
-export type { ArtworkData };
-
 export const useArtworks = () => {
   return useQuery({
     queryKey: ["artworks"],
