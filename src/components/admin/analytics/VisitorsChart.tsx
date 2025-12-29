@@ -1,6 +1,6 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { format } from 'date-fns';
-import { DailyVisitors } from "@/hooks/useAnalyticsStats";
+import type { DailyVisitors } from "@/types";
 
 interface VisitorsChartProps {
   data: DailyVisitors[];

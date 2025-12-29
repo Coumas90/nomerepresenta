@@ -1,7 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { ArtworkData } from "@/hooks/useArtworks";
-import { SeriesData } from "@/hooks/useSeries";
+import type { ArtworkData, SeriesData } from "@/types";
 
 interface ArtworkPreviewDialogProps {
   artwork: ArtworkData | null;

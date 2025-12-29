@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, Globe, Smartphone, Monitor, Tablet } from "lucide-react";
-import type { LiveSession } from "@/hooks/useRealtimeAnalytics";
+import type { LiveSession } from "@/types";
 
 interface LiveSessionsPanelProps {
   sessions: LiveSession[];
