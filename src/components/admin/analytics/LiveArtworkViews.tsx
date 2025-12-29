@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Eye } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import type { LiveArtworkView } from "@/hooks/useRealtimeAnalytics";
+import type { LiveArtworkView } from "@/types";
 
 interface LiveArtworkViewsProps {
   artworkViews: LiveArtworkView[];
