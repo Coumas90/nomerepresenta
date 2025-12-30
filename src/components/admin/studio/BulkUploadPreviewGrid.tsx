@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { X, CheckCircle } from "lucide-react";
-import { BulkUploadItem } from "./types";
+import type { BulkUploadItem } from "@/types";
 
 interface BulkUploadPreviewGridProps {
   items: BulkUploadItem[];

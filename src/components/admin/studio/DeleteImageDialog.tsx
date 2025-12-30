@@ -8,7 +8,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { DeleteImageDialogProps } from "./types";
+import type { DeleteImageDialogProps } from "@/types";
 
 export const DeleteImageDialog = ({ open, onConfirm, onCancel, isDeleting }: DeleteImageDialogProps) => {
   return (

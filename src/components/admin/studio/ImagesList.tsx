@@ -15,7 +15,7 @@ import {
 } from "@dnd-kit/sortable";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SortableImageItem } from "./SortableImageItem";
-import { ImagesListProps } from "./types";
+import type { ImagesListProps } from "@/types";
 
 export const ImagesList = ({ images, onEdit, onDelete, onPreview, onReorder }: ImagesListProps) => {
   const sensors = useSensors(

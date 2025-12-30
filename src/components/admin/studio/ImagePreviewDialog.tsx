@@ -1,5 +1,5 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { ImagePreviewDialogProps } from "./types";
+import type { ImagePreviewDialogProps } from "@/types";
 
 export const ImagePreviewDialog = ({ image, open, onOpenChange }: ImagePreviewDialogProps) => {
   return (
