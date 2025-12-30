@@ -1,8 +1,9 @@
 import { useState, useRef, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { compressImageWithDetails, formatFileSize, CompressionResult } from "@/lib/imageCompression";
+import { compressImageWithDetails, formatFileSize } from "@/lib/imageCompression";
 import { getCompressionOptions } from "@/hooks/useCompressionSettings";
+import type { CompressionResult } from "@/types";
 import { Upload, ImageIcon, ArrowRight, X, ZoomIn, ZoomOut, Move } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Toggle } from "@/components/ui/toggle";

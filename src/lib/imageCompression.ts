@@ -1,22 +1,5 @@
 import imageCompression from 'browser-image-compression';
-
-export interface CompressionOptions {
-  maxSizeMB?: number;
-  maxWidthOrHeight?: number;
-  useWebWorker?: boolean;
-  fileType?: 'image/webp' | 'image/avif' | 'image/jpeg' | 'image/png';
-  initialQuality?: number;
-  /** Minimum savings percentage to accept (0-100). If not met, try AVIF fallback */
-  minSavingsPercent?: number;
-}
-
-export interface CompressionResult {
-  file: File;
-  originalSize: number;
-  compressedSize: number;
-  savingsPercent: number;
-  format: 'webp' | 'avif' | 'original';
-}
+import type { CompressionOptions, CompressionResult } from '@/types';
 
 const DEFAULT_OPTIONS: CompressionOptions = {
   maxSizeMB: 2,
