@@ -1,19 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-
-export interface CountryData {
-  country: string;
-  country_name: string;
-  visitors: number;
-  sessions: number;
-  avg_duration: number;
-}
-
-export interface CityData {
-  city: string;
-  country_name: string;
-  visitors: number;
-}
+import type { CountryData, CityData } from '@/types';
 
 export const useCountryDistribution = (startDate: Date, endDate: Date) => {
   return useQuery({

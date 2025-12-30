@@ -1,28 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { startOfDay, format } from 'date-fns';
-
-export interface DeviceDistribution {
-  device_type: string;
-  count: number;
-  percentage: number;
-}
-
-export interface TrafficSource {
-  referrer: string;
-  visitors: number;
-  sessions: number;
-}
-
-export interface HourlyPattern {
-  hour: number;
-  sessions: number;
-}
-
-export interface DailyPattern {
-  day: string;
-  sessions: number;
-}
+import type { DeviceDistribution, TrafficSource, HourlyPattern, DailyPattern } from '@/types';
 
 export const useDeviceDistribution = (startDate: Date, endDate: Date) => {
   return useQuery({

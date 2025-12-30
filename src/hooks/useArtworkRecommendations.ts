@@ -1,11 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAnalytics } from './useAnalytics';
-
-export interface ArtworkRecommendation {
-  artworkId: string;
-  reason: string;
-}
+import type { ArtworkRecommendation } from '@/types';
 
 export const useArtworkRecommendations = () => {
   const { sessionId } = useAnalytics();

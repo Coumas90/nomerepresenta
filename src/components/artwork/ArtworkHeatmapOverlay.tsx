@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import type { HeatmapPoint } from '@/hooks/useArtworkHeatmap';
+import type { HeatmapPoint } from '@/types';
 
 interface ArtworkHeatmapOverlayProps {
   points: HeatmapPoint[];
