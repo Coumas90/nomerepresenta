@@ -1,19 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { subDays } from 'date-fns';
-
-export interface HeatmapPoint {
-  x: number;
-  y: number;
-  value: number;
-}
-
-export interface ArtworkHeatmapData {
-  artworkId: string;
-  points: HeatmapPoint[];
-  totalDataPoints: number;
-  uniqueSessions: number;
-}
+import type { HeatmapPoint, ArtworkHeatmapData } from '@/types';
 
 export const useArtworkHeatmap = (artworkId: string, days: number = 30) => {
   return useQuery({
