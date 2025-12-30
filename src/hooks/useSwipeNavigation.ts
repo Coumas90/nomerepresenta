@@ -1,21 +1,6 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { useHapticFeedback } from "./useHapticFeedback";
-
-/**
- * Progress data during an active swipe gesture
- */
-export interface SwipeProgress {
-  /** Current delta from start position (negative = up/left, positive = down/right) */
-  delta: number;
-  /** Progress as percentage (0-1) towards threshold */
-  progress: number;
-  /** Direction of the swipe */
-  direction: "up" | "down" | "left" | "right" | null;
-  /** Whether the swipe would trigger if released now */
-  wouldTrigger: boolean;
-  /** Current velocity in pixels per millisecond */
-  velocity: number;
-}
+import type { SwipeProgress } from "@/types";
 
 interface UseSwipeNavigationOptions {
   onSwipeUp?: () => void;

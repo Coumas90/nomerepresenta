@@ -86,4 +86,12 @@ export type {
   SignupCredentials,
   PasswordResetRequest,
   PasswordUpdateData,
+  HCaptchaRef,
+  HCaptchaProps,
 } from "./auth";
+
+// Navigation types
+export type {
+  SwipeProgress,
+  SwipeNavigationConfig,
+} from "./navigation";

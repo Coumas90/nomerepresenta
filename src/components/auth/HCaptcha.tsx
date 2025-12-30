@@ -1,21 +1,15 @@
 import HCaptcha from '@hcaptcha/react-hcaptcha';
 import { useRef, useCallback, forwardRef, useImperativeHandle } from 'react';
+import type { HCaptchaRef, HCaptchaProps } from '@/types';
 
-interface HCaptchaComponentProps {
-  onVerify: (token: string) => void;
-  onExpire?: () => void;
-  onError?: (error: string) => void;
-}
-
-export interface HCaptchaRef {
-  reset: () => void;
-}
+// Re-export types for backward compatibility
+export type { HCaptchaRef, HCaptchaProps } from '@/types';
 
 // Using hCaptcha's test site key for development
 // In production, replace with your own site key from https://dashboard.hcaptcha.com
 const HCAPTCHA_SITE_KEY = '10000000-ffff-ffff-ffff-000000000001';
 
-export const HCaptchaComponent = forwardRef<HCaptchaRef, HCaptchaComponentProps>(
+export const HCaptchaComponent = forwardRef<HCaptchaRef, HCaptchaProps>(
   ({ onVerify, onExpire, onError }, ref) => {
     const captchaRef = useRef<HCaptcha>(null);
 
