@@ -2,25 +2,7 @@ import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { compressImageWithDetails, formatFileSize } from '@/lib/imageCompression';
 import { getCompressionOptions } from '@/hooks/useCompressionSettings';
-
-export interface ImageToRecompress {
-  id: string;
-  url: string;
-  table: 'artworks' | 'artwork_images' | 'studio_images';
-  field: 'image_url' | 'image_detail_url';
-  storagePath: string;
-}
-
-export interface RecompressionProgress {
-  total: number;
-  completed: number;
-  current: string | null;
-  errors: string[];
-  savings: {
-    originalTotal: number;
-    compressedTotal: number;
-  };
-}
+import type { ImageToRecompress, RecompressionProgress } from '@/types';
 
 export const useBatchRecompression = () => {
   const [isRunning, setIsRunning] = useState(false);
