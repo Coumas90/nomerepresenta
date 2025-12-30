@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { CompressionOptions } from '@/lib/imageCompression';
+import type { CompressionOptions } from '@/types';
 
 const STORAGE_KEY = 'compression-settings';
 
