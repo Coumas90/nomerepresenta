@@ -48,17 +48,15 @@ export interface CompressionResultWithDetails extends CompressionResult {
 }
 
 /**
- * Compression settings stored in the database or config.
+ * Compression settings stored in localStorage.
  */
 export interface CompressionSettings {
   /** Maximum file size in MB */
   maxSizeMB: number;
   /** Maximum width or height */
   maxWidthOrHeight: number;
-  /** Initial quality percentage (0-100) */
-  quality: number;
-  /** Whether AVIF fallback is enabled */
-  enableAvifFallback: boolean;
+  /** Initial quality (0-1) */
+  initialQuality: number;
   /** Minimum savings threshold to accept compression */
   minSavingsPercent: number;
 }

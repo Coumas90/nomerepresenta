@@ -1,17 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { subDays } from 'date-fns';
-
-export interface ArtworkAnalytics {
-  artwork_id: string;
-  title: string;
-  series_name: string;
-  total_views: number;
-  unique_sessions: number;
-  avg_view_duration: number;
-  total_hovers: number;
-  detail_clicks: number;
-}
+import type { ArtworkAnalytics } from '@/types';
 
 export const useTopArtworks = (startDate?: Date, endDate?: Date, limit: number = 10) => {
   const effectiveStartDate = startDate || subDays(new Date(), 30);

@@ -1,15 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-
-export interface ArtworkImage {
-  id: string;
-  artwork_id: string;
-  image_url: string;
-  display_order: number;
-  is_main: boolean;
-  created_at: string;
-}
+import type { ArtworkImage } from "@/types";
 
 export const useArtworkImages = (artworkId: string | undefined) => {
   return useQuery({

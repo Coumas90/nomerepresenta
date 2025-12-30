@@ -1,16 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { subDays } from 'date-fns';
-
-export interface SeriesHeatData {
-  series_id: string;
-  series_name: string;
-  total_interactions: number;
-  description_expansions: number;
-  total_artwork_views: number;
-  avg_artworks_per_session: number;
-  unique_sessions: number;
-}
+import type { SeriesHeatData } from '@/types';
 
 export const useSeriesHeatmap = (startDate?: Date, endDate?: Date) => {
   const effectiveStartDate = startDate || subDays(new Date(), 30);

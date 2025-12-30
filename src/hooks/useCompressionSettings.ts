@@ -1,14 +1,7 @@
 import { useState, useEffect } from 'react';
-import type { CompressionOptions } from '@/types';
+import type { CompressionOptions, CompressionSettings } from '@/types';
 
 const STORAGE_KEY = 'compression-settings';
-
-export interface CompressionSettings {
-  maxSizeMB: number;
-  maxWidthOrHeight: number;
-  initialQuality: number;
-  minSavingsPercent: number;
-}
 
 const DEFAULT_SETTINGS: CompressionSettings = {
   maxSizeMB: 2,
