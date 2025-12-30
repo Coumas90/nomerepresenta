@@ -69,3 +69,25 @@ export interface PasswordUpdateData {
   password: string;
   confirmPassword?: string;
 }
+
+// ============= Captcha Types =============
+
+/**
+ * Reference handle for HCaptcha component.
+ */
+export interface HCaptchaRef {
+  /** Reset the captcha widget */
+  reset: () => void;
+}
+
+/**
+ * Props for HCaptcha component.
+ */
+export interface HCaptchaProps {
+  /** Callback when captcha is verified */
+  onVerify: (token: string) => void;
+  /** Callback when captcha expires */
+  onExpire?: () => void;
+  /** Callback when captcha errors */
+  onError?: (error: string) => void;
+}
