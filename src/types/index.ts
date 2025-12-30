@@ -70,6 +70,8 @@ export type {
   CompressionResult,
   CompressionResultWithDetails,
   CompressionSettings,
+  ImageToRecompress,
+  RecompressionProgress,
   BatchRecompressionJob,
 } from "./compression";
 

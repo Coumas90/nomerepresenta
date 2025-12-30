@@ -61,6 +61,43 @@ export interface CompressionSettings {
   minSavingsPercent: number;
 }
 
+// ============= Batch Recompression Types =============
+
+/**
+ * Image queued for recompression.
+ */
+export interface ImageToRecompress {
+  /** Unique identifier */
+  id: string;
+  /** Current image URL */
+  url: string;
+  /** Database table containing the image */
+  table: "artworks" | "artwork_images" | "studio_images";
+  /** Field name in the table */
+  field: "image_url" | "image_detail_url";
+  /** Path in storage bucket */
+  storagePath: string;
+}
+
+/**
+ * Progress tracking for batch recompression.
+ */
+export interface RecompressionProgress {
+  /** Total images to process */
+  total: number;
+  /** Completed count */
+  completed: number;
+  /** Currently processing image URL */
+  current: string | null;
+  /** Error messages */
+  errors: string[];
+  /** Savings statistics */
+  savings: {
+    originalTotal: number;
+    compressedTotal: number;
+  };
+}
+
 /**
  * Batch recompression job status.
  */
