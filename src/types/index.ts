@@ -44,8 +44,9 @@ export type {
   HourlyPattern,
   DailyPattern,
   VisitorPatterns,
-  GeoData,
+  CountryData,
   CityData,
+  ArtworkRecommendation,
 } from "./analytics";
 
 // Studio types

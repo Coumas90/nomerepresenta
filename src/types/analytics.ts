@@ -186,14 +186,15 @@ export interface VisitorPatterns {
 // ============= Geographic Types =============
 
 /**
- * Geographic distribution data point.
+ * Country-level geographic distribution data.
+ * Uses snake_case to match database column naming convention.
  */
-export interface GeoData {
+export interface CountryData {
   country: string;
   country_name: string;
   visitors: number;
   sessions: number;
-  avgDuration: number;
+  avg_duration: number;
 }
 
 /**
@@ -201,7 +202,16 @@ export interface GeoData {
  */
 export interface CityData {
   city: string;
-  country: string;
+  country_name: string;
   visitors: number;
-  sessions: number;
+}
+
+// ============= Recommendation Types =============
+
+/**
+ * AI-generated artwork recommendation.
+ */
+export interface ArtworkRecommendation {
+  artworkId: string;
+  reason: string;
 }
