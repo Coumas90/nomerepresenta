@@ -5,7 +5,7 @@ import { X } from "lucide-react";
 import { useCreateStudioImage, useUploadStudioImage } from "@/hooks/useStudioImageMutations";
 import { useFileDrop } from "@/hooks/useFileDrop";
 import { toast } from "@/hooks/use-toast";
-import { BulkUploadItem, BulkUploadSectionProps } from "./types";
+import type { BulkUploadItem, BulkUploadSectionProps } from "@/types";
 import { BulkUploadDropzone } from "./BulkUploadDropzone";
 import { BulkUploadPreviewGrid } from "./BulkUploadPreviewGrid";
 import { BulkUploadEditMode } from "./BulkUploadEditMode";

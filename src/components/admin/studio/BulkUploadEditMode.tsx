@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { CheckCircle } from "lucide-react";
-import { BulkUploadItem } from "./types";
+import type { BulkUploadItem } from "@/types";
 
 interface BulkUploadEditModeProps {
   items: BulkUploadItem[];

@@ -3,7 +3,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Edit, Trash2, GripVertical, ZoomIn } from "lucide-react";
-import { SortableImageItemProps } from "./types";
+import type { SortableImageItemProps } from "@/types";
 
 export const SortableImageItem = ({ image, onEdit, onDelete, onPreview }: SortableImageItemProps) => {
   const {

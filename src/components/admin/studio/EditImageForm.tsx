@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { X, Upload } from "lucide-react";
 import { useCreateStudioImage, useUpdateStudioImage, useUploadStudioImage } from "@/hooks/useStudioImageMutations";
 import { useFileDrop } from "@/hooks/useFileDrop";
-import { EditImageFormProps } from "./types";
+import type { EditImageFormProps } from "@/types";
 
 export const EditImageForm = ({ image, onSuccess, onCancel, imagesCount }: EditImageFormProps) => {
   const createMutation = useCreateStudioImage();
