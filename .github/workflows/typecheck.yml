@@ -1,4 +1,4 @@
-name: TypeScript Type Check
+name: Code Quality
 
 on:
   pull_request:
@@ -7,8 +7,8 @@ on:
     branches: [main, master]
 
 jobs:
-  typecheck:
-    name: Type Check
+  quality:
+    name: Type Check & Lint
     runs-on: ubuntu-latest
     
     steps:
@@ -27,6 +27,9 @@ jobs:
       - name: Run TypeScript type check
         run: npx tsc --noEmit
 
-      - name: Type check passed
+      - name: Run ESLint
+        run: npx eslint . --ext .ts,.tsx --max-warnings 0
+
+      - name: Quality checks passed
         if: success()
-        run: echo "✅ TypeScript compilation successful - no type errors found"
+        run: echo "✅ All quality checks passed - no type or lint errors found"
