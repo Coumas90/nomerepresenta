@@ -30,6 +30,9 @@ jobs:
       - name: Run ESLint
         run: npx eslint . --ext .ts,.tsx --max-warnings 0
 
+      - name: Build application
+        run: npm run build
+
       - name: Quality checks passed
         if: success()
-        run: echo "✅ All quality checks passed - no type or lint errors found"
+        run: echo "✅ All quality checks passed - no type, lint, or build errors found"
