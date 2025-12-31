@@ -33,6 +33,10 @@ jobs:
       - name: Build application
         run: npm run build
 
+      - name: Run tests (if available)
+        run: npm test --if-present
+        continue-on-error: true
+
       - name: Quality checks passed
         if: success()
         run: echo "✅ All quality checks passed - no type, lint, or build errors found"
