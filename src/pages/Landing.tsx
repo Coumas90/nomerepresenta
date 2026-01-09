@@ -122,7 +122,7 @@ const Landing = () => {
     const item = menuItems[index];
     if (item.type === 'link') {
       if (item.path === '/works') {
-        import('./WorksFullscreen');
+        import('./WorksPage');
       } else if (item.path === '/studio') {
         import('./Studio');
       } else if (item.path === '/bio') {
