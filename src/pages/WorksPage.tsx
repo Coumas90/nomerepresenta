@@ -1,11 +1,12 @@
-import { useState, useCallback, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useCallback, useEffect, useRef } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useArtworksBySeries } from "@/hooks/useArtworksBySeries";
 import { SeriesHeader, SeriesSection } from "@/components/works";
 import TriPeelOverlay from "@/components/TriPeelOverlay";
 
 const WorksPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { data: seriesWithArtworks, isLoading } = useArtworksBySeries();
 
   // State para serie activa (detectada por scroll)
@@ -14,21 +15,56 @@ const WorksPage = () => {
   // State para TRI-PEEL overlay
   const [showOverlay, setShowOverlay] = useState(false);
 
-  // Inicializar serie activa al primer render
+  // Track if initial scroll from hash has been performed
+  const hasScrolledToHash = useRef(false);
+
+  // Handle initial hash scroll when data loads
   useEffect(() => {
-    if (seriesWithArtworks?.length && !activeSeriesId) {
+    if (seriesWithArtworks?.length && !hasScrolledToHash.current) {
+      const hash = location.hash.replace("#", "");
+      
+      if (hash) {
+        // Find series by id or by slugified name
+        const targetSeries = seriesWithArtworks.find(
+          (s) => s.id === hash || s.name.toLowerCase().replace(/\s+/g, "-") === hash.toLowerCase()
+        );
+        
+        if (targetSeries) {
+          // Small delay to ensure DOM is ready
+          setTimeout(() => {
+            const section = document.getElementById(`series-${targetSeries.id}`);
+            if (section) {
+              section.scrollIntoView({ behavior: "smooth", block: "start" });
+              setActiveSeriesId(targetSeries.id);
+            }
+          }, 100);
+          hasScrolledToHash.current = true;
+          return;
+        }
+      }
+      
+      // No hash or invalid hash - set first series as active
       setActiveSeriesId(seriesWithArtworks[0].id);
+      hasScrolledToHash.current = true;
     }
-  }, [seriesWithArtworks, activeSeriesId]);
+  }, [seriesWithArtworks, location.hash]);
 
   // Callback para IntersectionObserver de cada SeriesSection
+  // Updates active series and URL hash
   const handleSeriesIntersect = useCallback(
     (seriesId: string, isIntersecting: boolean) => {
       if (isIntersecting) {
         setActiveSeriesId(seriesId);
+        
+        // Update URL hash without triggering scroll
+        const series = seriesWithArtworks?.find((s) => s.id === seriesId);
+        if (series) {
+          const slug = series.name.toLowerCase().replace(/\s+/g, "-");
+          window.history.replaceState(null, "", `/works#${slug}`);
+        }
       }
     },
-    []
+    [seriesWithArtworks]
   );
 
   // Scroll suave al clickear serie en header
