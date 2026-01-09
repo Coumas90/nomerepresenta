@@ -12,7 +12,7 @@ import { OfflineIndicator } from "./components/OfflineIndicator";
 
 // Code splitting para páginas públicas
 const ArtworkDetail = lazy(() => import("./pages/ArtworkDetail"));
-const WorksFullscreen = lazy(() => import("./pages/WorksFullscreen"));
+const WorksPage = lazy(() => import("./pages/WorksPage"));
 const Studio = lazy(() => import("./pages/Studio"));
 const Bio = lazy(() => import("./pages/Bio"));
 const Admin = lazy(() => import("./pages/Admin"));
@@ -73,7 +73,7 @@ const App = () => (
             <Route path="/" element={<Landing />} />
             <Route path="/works" element={
               <Suspense fallback={<div className="min-h-screen bg-stone-100" />}>
-                <WorksFullscreen />
+                <WorksPage />
               </Suspense>
             } />
             <Route path="/artwork/:id" element={<ArtworkDetail />} />
