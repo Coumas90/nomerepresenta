@@ -5,12 +5,16 @@ interface SeriesHeaderProps {
   series: SeriesData[];
   activeSeriesId: string | null;
   onSeriesClick: (seriesId: string) => void;
+  onTriPeelClick?: () => void;
+  onClose?: () => void;
 }
 
 export const SeriesHeader = ({
   series,
   activeSeriesId,
   onSeriesClick,
+  onTriPeelClick,
+  onClose,
 }: SeriesHeaderProps) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   
@@ -33,19 +37,25 @@ export const SeriesHeader = ({
   return (
     <header className="sticky top-0 z-50 bg-stone-100/95 backdrop-blur-sm border-b border-stone-200">
       <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4">
-        {/* Active series - Left side */}
-        <div className="flex-shrink-0">
-          {activeSeries ? (
+        {/* TRI-PEEL button - Left side */}
+        <div className="flex items-center gap-4 md:gap-6 flex-shrink-0">
+          {onTriPeelClick && (
+            <button
+              onClick={onTriPeelClick}
+              className="text-stone-900 font-bold text-sm md:text-base uppercase tracking-widest hover:opacity-60 transition-opacity"
+            >
+              TRI-PEEL
+            </button>
+          )}
+          
+          {/* Active series indicator */}
+          {activeSeries && (
             <button
               onClick={() => onSeriesClick(activeSeries.id)}
-              className="text-stone-900 font-bold text-sm md:text-base uppercase tracking-wider transition-colors hover:text-stone-700"
+              className="text-stone-600 text-sm md:text-base uppercase tracking-wider transition-colors hover:text-stone-900"
             >
               {activeSeries.name}
             </button>
-          ) : (
-            <span className="text-stone-400 text-sm md:text-base uppercase tracking-wider">
-              Works
-            </span>
           )}
         </div>
 
@@ -68,7 +78,7 @@ export const SeriesHeader = ({
 
         {/* Close button */}
         <button
-          onClick={() => window.history.back()}
+          onClick={onClose ?? (() => window.history.back())}
           className="flex-shrink-0 ml-4 text-stone-900 hover:text-stone-600 transition-colors text-lg md:text-xl font-light"
           aria-label="Close works"
         >
