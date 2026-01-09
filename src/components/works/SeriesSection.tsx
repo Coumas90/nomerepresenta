@@ -1,4 +1,4 @@
-import { useRef, useEffect, forwardRef } from "react";
+import { useRef, useEffect, forwardRef, useState } from "react";
 import { ArtworkScrollCard } from "./ArtworkScrollCard";
 import { SerieDivider } from "./SerieDivider";
 import { cn } from "@/lib/utils";
@@ -15,6 +15,8 @@ interface SeriesSectionProps {
 export const SeriesSection = forwardRef<HTMLElement, SeriesSectionProps>(
   ({ series, artworks, isFirst = false, onIntersect, className }, ref) => {
     const sectionRef = useRef<HTMLElement>(null);
+    // Track if section is within extended viewport for lazy loading
+    const [isNearViewport, setIsNearViewport] = useState(false);
 
     // Merge refs
     useEffect(() => {
@@ -27,7 +29,7 @@ export const SeriesSection = forwardRef<HTMLElement, SeriesSectionProps>(
       }
     }, [ref]);
 
-    // IntersectionObserver for detecting active series
+    // IntersectionObserver for detecting active series (header highlight)
     useEffect(() => {
       if (!onIntersect || !sectionRef.current) return;
 
@@ -51,6 +53,35 @@ export const SeriesSection = forwardRef<HTMLElement, SeriesSectionProps>(
       };
     }, [series.id, onIntersect]);
 
+    // Separate IntersectionObserver for lazy loading images
+    // Uses larger margins to preload content before it's visible
+    useEffect(() => {
+      if (!sectionRef.current) return;
+
+      const lazyLoadObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              setIsNearViewport(true);
+              // Once loaded, we don't need to observe anymore
+              lazyLoadObserver.unobserve(entry.target);
+            }
+          });
+        },
+        {
+          // Preload when section is within 100% viewport height above/below
+          rootMargin: "100% 0px 100% 0px",
+          threshold: 0,
+        }
+      );
+
+      lazyLoadObserver.observe(sectionRef.current);
+
+      return () => {
+        lazyLoadObserver.disconnect();
+      };
+    }, []);
+
     return (
       <section
         ref={sectionRef}
@@ -61,13 +92,13 @@ export const SeriesSection = forwardRef<HTMLElement, SeriesSectionProps>(
         {/* Series divider - skip for first series */}
         {!isFirst && <SerieDivider seriesName={series.name} showName />}
 
-        {/* Artworks in this series */}
+        {/* Artworks in this series - only render when near viewport */}
         <div className="space-y-16 md:space-y-24">
           {artworks.map((artwork) => (
             <ArtworkScrollCard
               key={artwork.id}
               artwork={artwork}
-              isVisible
+              isVisible={isNearViewport}
             />
           ))}
         </div>
