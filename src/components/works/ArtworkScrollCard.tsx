@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ProgressiveImage } from "@/components/ProgressiveImage";
+import { ImageSkeleton } from "@/components/ImageSkeleton";
 import { useArtworkImages } from "@/hooks/useArtworkImages";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
@@ -91,6 +92,28 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
   const leftArrowX = Math.max(32, Math.min(mousePosition.x, containerWidth * 0.3 - 24));
   const rightArrowX = Math.max(containerWidth * 0.7 + 24, Math.min(mousePosition.x, containerWidth - 32));
 
+  // Skeleton placeholder when not visible yet
+  if (!isVisible) {
+    return (
+      <article className="w-full flex flex-col items-center">
+        <div className="relative w-full max-w-[90vw] md:max-w-[70vw] lg:max-w-[60vw] mx-auto">
+          {/* Skeleton image placeholder */}
+          <ImageSkeleton 
+            className="w-full h-[55vh] md:h-[60vh] lg:h-[65vh] rounded-sm"
+            variant="shimmer"
+          />
+        </div>
+        
+        {/* Skeleton metadata */}
+        <div className="mt-6 md:mt-8 space-y-2 w-full max-w-[90vw] md:max-w-[70vw] lg:max-w-[60vw] mx-auto">
+          <div className="h-4 w-48 bg-stone-200 rounded animate-pulse" />
+          <div className="h-3 w-16 bg-stone-200/70 rounded animate-pulse" />
+          <div className="h-3 w-32 bg-stone-200/50 rounded animate-pulse" />
+        </div>
+      </article>
+    );
+  }
+
   return (
     <article className="w-full flex flex-col items-center">
       {/* Image container with carousel functionality */}
@@ -107,8 +130,8 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
         {/* Gallery frame shadow effect */}
         <div className="absolute inset-0 shadow-2xl shadow-stone-900/15 rounded-sm" />
         
-        {/* Main image with lazy loading */}
-        {isVisible && currentImage && (
+        {/* Main image */}
+        {currentImage && (
           <ProgressiveImage
             src={currentImage}
             alt={artwork.title || "Artwork"}
