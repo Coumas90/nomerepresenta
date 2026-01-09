@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useArtworksBySeries } from "@/hooks/useArtworksBySeries";
+import { useScrollRestoration } from "@/hooks/useScrollRestoration";
 import { SeriesHeader, SeriesSection } from "@/components/works";
 import TriPeelOverlay from "@/components/TriPeelOverlay";
 
@@ -15,12 +16,26 @@ const WorksPage = () => {
   // State para TRI-PEEL overlay
   const [showOverlay, setShowOverlay] = useState(false);
 
-  // Track if initial scroll from hash has been performed
-  const hasScrolledToHash = useRef(false);
+  // Track if initial scroll handling has been performed
+  const hasInitialized = useRef(false);
 
-  // Handle initial hash scroll when data loads
+  // Scroll restoration hook
+  const { restoreScrollPosition, clearScrollPosition } = useScrollRestoration(activeSeriesId);
+
+  // Handle initial scroll: restore saved position OR scroll to hash
   useEffect(() => {
-    if (seriesWithArtworks?.length && !hasScrolledToHash.current) {
+    if (seriesWithArtworks?.length && !hasInitialized.current) {
+      // First try to restore saved scroll position (coming back from detail)
+      const restored = restoreScrollPosition();
+      
+      if (restored) {
+        // If restored, just set first series as active (will update via intersection)
+        setActiveSeriesId(seriesWithArtworks[0].id);
+        hasInitialized.current = true;
+        return;
+      }
+
+      // Otherwise, handle hash-based navigation
       const hash = location.hash.replace("#", "");
       
       if (hash) {
@@ -38,16 +53,16 @@ const WorksPage = () => {
               setActiveSeriesId(targetSeries.id);
             }
           }, 100);
-          hasScrolledToHash.current = true;
+          hasInitialized.current = true;
           return;
         }
       }
       
       // No hash or invalid hash - set first series as active
       setActiveSeriesId(seriesWithArtworks[0].id);
-      hasScrolledToHash.current = true;
+      hasInitialized.current = true;
     }
-  }, [seriesWithArtworks, location.hash]);
+  }, [seriesWithArtworks, location.hash, restoreScrollPosition]);
 
   // Callback para IntersectionObserver de cada SeriesSection
   // Updates active series and URL hash
@@ -79,8 +94,11 @@ const WorksPage = () => {
   const handleOpenOverlay = useCallback(() => setShowOverlay(true), []);
   const handleCloseOverlay = useCallback(() => setShowOverlay(false), []);
 
-  // Handler para cerrar página
-  const handleClose = useCallback(() => navigate("/"), [navigate]);
+  // Handler para cerrar página - clear scroll position when intentionally leaving
+  const handleClose = useCallback(() => {
+    clearScrollPosition();
+    navigate("/");
+  }, [navigate, clearScrollPosition]);
 
   // Keyboard listeners: ESC y SPACE
   useEffect(() => {
