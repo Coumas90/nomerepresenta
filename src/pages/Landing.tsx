@@ -160,8 +160,8 @@ const Landing = () => {
 
   return (
     <div className={`relative min-h-screen bg-black overflow-hidden transition-opacity duration-200 ${isPageLoaded ? 'opacity-100' : 'opacity-0'}`}>
-      {/* Menu container - centered */}
-      <nav className="relative z-10 min-h-screen flex items-center justify-center">
+      {/* Menu container - centered with vertical padding for "framed" effect */}
+      <nav className="relative z-10 min-h-screen flex items-center justify-center py-16 md:py-24">
         <ul className="flex flex-col items-start gap-0">
           {menuItems.map((item, index) => {
             const isClickable = item.type === "link" || item.type === "mailto";
@@ -187,8 +187,8 @@ const Landing = () => {
                   disabled={!isClickable && !isMobile}
                   className={`
                     font-helvetica font-bold tracking-tight
-                    text-6xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[200px]
-                    leading-[0.75] md:leading-[0.72]
+                    text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[120px]
+                    leading-[0.85] md:leading-[0.82]
                     transition-all duration-500 ease-out will-change-transform
                     ${isClickable 
                       ? "cursor-pointer" 
