@@ -186,9 +186,8 @@ const Landing = () => {
                   onBlur={handleBlur}
                   disabled={!isClickable && !isMobile}
                   className={`
-                    font-helvetica font-bold tracking-tight
-                    text-6xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[200px]
-                    leading-[0.75] md:leading-[0.72]
+                    font-anton uppercase tracking-tight
+                    leading-[0.85] md:leading-[0.8]
                     transition-all duration-500 ease-out will-change-transform
                     ${isClickable 
                       ? "cursor-pointer" 
@@ -205,6 +204,7 @@ const Landing = () => {
                     relative
                   `}
                   style={{
+                    fontSize: 'clamp(3.5rem, 14vw, 12rem)',
                     // Background-clip text effect - image shows through text (only when images are preloaded)
                     backgroundImage: isActive && imagesLoaded ? `url(${item.image})` : 'none',
                     backgroundSize: 'cover',
