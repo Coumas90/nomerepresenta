@@ -159,7 +159,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
                   goToPrevImage();
                 }
               }}
-              className="absolute left-0 top-0 bottom-0 w-[30%] z-20 focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/50"
+              className="absolute left-0 top-0 bottom-0 w-[30%] z-20 cursor-none focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/50"
               aria-label="Previous image"
             />
           )}
@@ -176,7 +176,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
                   goToNextImage();
                 }
               }}
-              className="absolute right-0 top-0 bottom-0 w-[30%] z-20 focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/50"
+              className="absolute right-0 top-0 bottom-0 w-[30%] z-20 cursor-none focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/50"
               aria-label="Next image"
             />
           )}
@@ -203,7 +203,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
               <div className={cn(isMobile && "bg-black/30 backdrop-blur-sm rounded-full p-2")}>
                 <ChevronLeft 
                   size={isMobile ? 32 : 40} 
-                  className="text-white drop-shadow-lg" 
+                  className="text-stone-600 drop-shadow-lg" 
                   strokeWidth={1.5} 
                 />
               </div>
@@ -232,7 +232,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
               <div className={cn(isMobile && "bg-black/30 backdrop-blur-sm rounded-full p-2")}>
                 <ChevronRight 
                   size={isMobile ? 32 : 40} 
-                  className="text-white drop-shadow-lg" 
+                  className="text-stone-600 drop-shadow-lg" 
                   strokeWidth={1.5} 
                 />
               </div>
