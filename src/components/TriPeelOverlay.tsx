@@ -43,15 +43,9 @@ const TriPeelOverlay = ({
       {/* Overlay Content */}
       <div className="flex-1 flex items-center justify-center px-6 md:px-16 lg:px-32">
         <div className="max-w-2xl text-center">
-          <h2 className="text-stone-900 text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-8">
+          <h2 className="text-stone-900 text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
             {title}
           </h2>
-          <p className="text-stone-600 text-base md:text-lg leading-relaxed">
-            {description}
-          </p>
-          <p className="text-stone-500 text-sm mt-8 tracking-wide">
-            {metadata}
-          </p>
         </div>
       </div>
     </div>
