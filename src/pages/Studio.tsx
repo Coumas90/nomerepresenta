@@ -122,7 +122,7 @@ const Studio = () => {
         onClose={handleClose}
       />
 
-      <main>
+      <main className="pt-10">
         {groups.map((group) => (
           <section
             key={group.id}
