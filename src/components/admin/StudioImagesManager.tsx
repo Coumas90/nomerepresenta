@@ -96,18 +96,17 @@ const StudioImagesManager = () => {
     }
   };
 
-  // Group images by series
+  // Group images by series (only grouped ones)
   const imagesBySeries = new Map<string, StudioImage[]>();
   for (const img of images) {
-    const key = img.series_id || "__ungrouped";
-    if (!imagesBySeries.has(key)) imagesBySeries.set(key, []);
-    imagesBySeries.get(key)!.push(img);
+    if (img.series_id) {
+      if (!imagesBySeries.has(img.series_id)) imagesBySeries.set(img.series_id, []);
+      imagesBySeries.get(img.series_id)!.push(img);
+    }
   }
 
-  // All series in display order (both with and without images)
+  // All series in display order
   const sortedSeries = [...allSeries].sort((a, b) => a.display_order - b.display_order);
-
-  const ungroupedImages = imagesBySeries.get("__ungrouped") || [];
 
   const isLoading = imagesLoading || seriesLoading;
 
@@ -189,19 +188,7 @@ const StudioImagesManager = () => {
             ))}
           </SortableContext>
         </DndContext>
-
-        {/* Ungrouped images */}
-        {ungroupedImages.length > 0 && (
-          <SeriesStudioSection
-            seriesId=""
-            seriesName="Ungrouped"
-            images={ungroupedImages}
-            onPreviewImage={setPreviewImage}
-            onDeleteImage={handleDeleteClick}
-          />
-        )}
       </div>
-
       <ImagePreviewDialog
         image={previewImage}
         open={!!previewImage}
