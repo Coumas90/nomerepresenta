@@ -295,26 +295,26 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
               </div>
             </div>
           )}
-
-          {/* Image indicator dots — bottom-left, minimal b&w */}
-          {allImages.length > 1 && (
-            <div className="absolute bottom-3 left-3 z-30 flex gap-1.5">
-              {allImages.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentImageIndex(index)}
-                  className={cn(
-                    "w-1 h-1 rounded-full transition-all duration-300",
-                    index === currentImageIndex 
-                      ? "bg-stone-900" 
-                      : "bg-stone-400"
-                  )}
-                  aria-label={`Go to image ${index + 1}`}
-                />
-              ))}
-            </div>
-          )}
         </div>
+
+        {/* Image indicator dots — below image, above title */}
+        {allImages.length > 1 && (
+          <div className="mt-3 flex gap-1.5">
+            {allImages.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentImageIndex(index)}
+                className={cn(
+                  "w-1 h-1 rounded-full transition-all duration-300",
+                  index === currentImageIndex 
+                    ? "bg-stone-900" 
+                    : "bg-stone-400"
+                )}
+                aria-label={`Go to image ${index + 1}`}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Caption - normal flow, directly under image */}
         <figcaption className="mt-6 md:mt-8 space-y-0 text-left leading-snug">
