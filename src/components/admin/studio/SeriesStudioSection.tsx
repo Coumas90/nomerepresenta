@@ -1,0 +1,189 @@
+import { useState, useCallback, useRef } from "react";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  rectSortingStrategy,
+} from "@dnd-kit/sortable";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Upload, Trash2, X } from "lucide-react";
+import { SortableThumb } from "./SortableThumb";
+import { useUploadStudioImage, useCreateStudioImage, useDeleteStudioImage, useUpdateStudioImagesOrder } from "@/hooks/useStudioImageMutations";
+import { toast } from "@/hooks/use-toast";
+import type { StudioImage } from "@/types";
+
+interface SeriesStudioSectionProps {
+  seriesId: string;
+  seriesName: string;
+  images: StudioImage[];
+  onDeleteSeries?: () => void;
+  onPreviewImage: (image: StudioImage) => void;
+  onDeleteImage: (id: string) => void;
+}
+
+export const SeriesStudioSection = ({
+  seriesId,
+  seriesName,
+  images,
+  onDeleteSeries,
+  onPreviewImage,
+  onDeleteImage,
+}: SeriesStudioSectionProps) => {
+  const uploadMutation = useUploadStudioImage();
+  const createMutation = useCreateStudioImage();
+  const updateOrderMutation = useUpdateStudioImagesOrder();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+  );
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setSelectedFiles(Array.from(e.target.files));
+    }
+  };
+
+  const handleUpload = useCallback(async () => {
+    if (selectedFiles.length === 0) return;
+    setIsUploading(true);
+    let successCount = 0;
+
+    for (const file of selectedFiles) {
+      try {
+        const fileName = `${Date.now()}-${file.name}`;
+        const url = await uploadMutation.mutateAsync({ file, fileName });
+        await createMutation.mutateAsync({
+          image_url: url,
+          title: null,
+          description: null,
+          display_order: images.length + successCount,
+          series_id: seriesId,
+        });
+        successCount++;
+      } catch {
+        // error toast handled by mutation
+      }
+    }
+
+    setIsUploading(false);
+    setSelectedFiles([]);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+
+    if (successCount > 0) {
+      toast({
+        title: `${successCount} image${successCount > 1 ? "s" : ""} uploaded`,
+        description: `Added to ${seriesName}`,
+      });
+    }
+  }, [selectedFiles, images.length, seriesId, seriesName, uploadMutation, createMutation]);
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = images.findIndex((img) => img.id === active.id);
+      const newIndex = images.findIndex((img) => img.id === over.id);
+      const newOrder = arrayMove(images, oldIndex, newIndex);
+      const updates = newOrder.map((img, index) => ({
+        id: img.id,
+        display_order: index,
+      }));
+      updateOrderMutation.mutate(updates);
+    }
+  };
+
+  return (
+    <Card className="border border-border">
+      <CardContent className="p-5 space-y-4">
+        {/* Series header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <h3 className="font-bold text-base uppercase tracking-wide">
+              {seriesName}
+            </h3>
+            <span className="text-xs text-muted-foreground">
+              {images.length} image{images.length !== 1 ? "s" : ""}
+            </span>
+          </div>
+          {onDeleteSeries && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-destructive hover:text-destructive"
+              onClick={onDeleteSeries}
+            >
+              <X className="h-4 w-4 mr-1" />
+              DELETE
+            </Button>
+          )}
+        </div>
+
+        {/* Upload area */}
+        <div className="space-y-2">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            Upload Images
+          </p>
+          <div className="flex gap-3 items-center">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleFileSelect}
+              className="flex-1 text-sm file:mr-3 file:py-2 file:px-4 file:rounded-md file:border file:border-input file:bg-background file:text-sm file:font-medium hover:file:bg-accent cursor-pointer"
+            />
+            <Button
+              onClick={handleUpload}
+              disabled={selectedFiles.length === 0 || isUploading}
+              size="sm"
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              {isUploading ? "Uploading..." : "UPLOAD"}
+            </Button>
+          </div>
+        </div>
+
+        {/* Sortable image grid */}
+        {images.length > 0 && (
+          <div className="space-y-2">
+            <p className="text-xs text-muted-foreground">
+              Current images (drag to reorder): {images.length}
+            </p>
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={images.map((img) => img.id)}
+                strategy={rectSortingStrategy}
+              >
+                <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
+                  {images.map((img, idx) => (
+                    <SortableThumb
+                      key={img.id}
+                      image={img}
+                      index={idx + 1}
+                      onPreview={() => onPreviewImage(img)}
+                      onDelete={() => onDeleteImage(img.id)}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
