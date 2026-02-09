@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ProgressiveImage } from "@/components/ProgressiveImage";
 import { ImageSkeleton } from "@/components/ImageSkeleton";
@@ -47,17 +47,69 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
   }, [artwork.id]);
 
   // Navigation handlers
-  const goToPrevImage = () => {
+  const goToPrevImage = useCallback(() => {
     if (hasPrevImage) {
       setCurrentImageIndex(prev => prev - 1);
     }
-  };
+  }, [hasPrevImage]);
 
-  const goToNextImage = () => {
+  const goToNextImage = useCallback(() => {
     if (hasNextImage) {
       setCurrentImageIndex(prev => prev + 1);
     }
-  };
+  }, [hasNextImage]);
+
+  // Mobile swipe handling for horizontal image navigation
+  const swipeStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
+  const swipeLockedRef = useRef<"horizontal" | "vertical" | null>(null);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (!isMobile || allImages.length <= 1) return;
+    const touch = e.touches[0];
+    swipeStartRef.current = { x: touch.clientX, y: touch.clientY, time: Date.now() };
+    swipeLockedRef.current = null;
+  }, [isMobile, allImages.length]);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!isMobile || !swipeStartRef.current || allImages.length <= 1) return;
+    const touch = e.touches[0];
+    const deltaX = touch.clientX - swipeStartRef.current.x;
+    const deltaY = touch.clientY - swipeStartRef.current.y;
+
+    // Lock direction on first significant movement
+    if (!swipeLockedRef.current && (Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10)) {
+      swipeLockedRef.current = Math.abs(deltaX) > Math.abs(deltaY) ? "horizontal" : "vertical";
+    }
+
+    // Prevent vertical scroll when swiping horizontally on the image
+    if (swipeLockedRef.current === "horizontal") {
+      e.stopPropagation();
+    }
+  }, [isMobile, allImages.length]);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (!isMobile || !swipeStartRef.current || allImages.length <= 1) return;
+    if (swipeLockedRef.current !== "horizontal") {
+      swipeStartRef.current = null;
+      return;
+    }
+
+    const touch = e.changedTouches[0];
+    const deltaX = touch.clientX - swipeStartRef.current.x;
+    const elapsed = Date.now() - swipeStartRef.current.time;
+    const velocity = Math.abs(deltaX) / elapsed;
+    const threshold = 40;
+
+    const triggered = Math.abs(deltaX) > threshold || (velocity > 0.4 && Math.abs(deltaX) > 15);
+
+    if (triggered) {
+      if (deltaX < 0) goToNextImage();
+      else goToPrevImage();
+    }
+
+    swipeStartRef.current = null;
+    swipeLockedRef.current = null;
+  }, [isMobile, allImages.length, goToNextImage, goToPrevImage]);
 
   // Mouse zone detection for desktop arrow following
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -128,6 +180,9 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
           onMouseMove={handleMouseMove}
           onMouseEnter={() => !isMobile && setIsHovering(true)}
           onMouseLeave={() => !isMobile && setIsHovering(false)}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         >
           {/* Gallery frame shadow effect */}
           <div className="absolute inset-0 shadow-2xl shadow-stone-900/15 rounded-sm" />
