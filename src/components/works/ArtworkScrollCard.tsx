@@ -317,7 +317,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
         )}
 
         {/* Caption - normal flow, directly under image */}
-        <figcaption className="mt-6 md:mt-8 space-y-0 text-left leading-snug">
+        <figcaption className="mt-3 md:mt-4 space-y-0 text-left leading-snug">
           {allImages[currentImageIndex]?.caption ? (
             <p className="text-stone-600 text-xs md:text-sm font-bold">
               {allImages[currentImageIndex].caption}
