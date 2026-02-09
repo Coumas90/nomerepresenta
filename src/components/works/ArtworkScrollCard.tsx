@@ -261,18 +261,18 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
 
         {/* Caption - normal flow, directly under image */}
         <figcaption className="mt-6 md:mt-8 space-y-0 text-left leading-snug">
-          <p className="text-stone-900 text-sm md:text-base">
-            <span className="font-semibold">{artwork.title}</span>
+          <p className="font-playfair text-stone-900 text-sm md:text-base font-medium">
+            {artwork.title}
             {artwork.year && <>, {artwork.year}</>}
             {isViewingDetail && <span className="font-normal"> (DETAIL)</span>}
           </p>
           {artwork.materials && (
-            <p className="text-stone-900 text-xs md:text-sm">
+            <p className="text-stone-500 text-xs md:text-sm">
               {artwork.materials}
             </p>
           )}
           {artwork.dimensions && (
-            <p className="text-stone-900 text-xs md:text-sm">
+            <p className="text-stone-500 text-xs md:text-sm">
               {artwork.dimensions}
             </p>
           )}
