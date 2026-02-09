@@ -93,7 +93,7 @@ export const SeriesSection = forwardRef<HTMLElement, SeriesSectionProps>(
         
 
         {/* Artworks in this series - only render when near viewport */}
-        <div className="space-y-28 md:space-y-48">
+        <div className="space-y-36 md:space-y-56">
           {artworks.map((artwork) => (
             <ArtworkScrollCard
               key={artwork.id}

@@ -150,7 +150,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
       <article className="w-full flex flex-col items-center">
         <div className="relative w-full max-w-[90vw] md:max-w-[70vw] lg:max-w-[60vw] mx-auto">
           {/* Skeleton image placeholder */}
-          <ImageSkeleton 
+          <ImageSkeleton
             className="w-full h-[55vh] md:h-[60vh] lg:h-[65vh] rounded-sm"
             variant="shimmer"
           />
@@ -169,7 +169,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
   return (
     <article className="w-full flex flex-col items-center">
       {/* Figure: image + caption stacked vertically, normal flow */}
-      <figure className="inline-flex flex-col items-start max-w-[90vw] md:max-w-[70vw] lg:max-w-[60vw] mx-auto">
+      <figure className="inline-flex flex-col items-start max-w-[80vw] md:max-w-[60vw] lg:max-w-[50vw] mx-auto">
         {/* Image container with carousel overlays */}
         <div
           ref={containerRef}
