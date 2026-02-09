@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useStudioImages, type StudioImageWithSeries } from "@/hooks/useStudioImages";
 import { useSeries } from "@/hooks/useSeries";
 import { ProgressiveImage } from "@/components/ProgressiveImage";
+import { StudioHeader } from "@/components/studio/StudioHeader";
 import type { SeriesData } from "@/types";
 
 const Studio = () => {
@@ -16,7 +17,6 @@ const Studio = () => {
   const { groups, seriesList } = useMemo(() => {
     if (!images?.length) return { groups: [], seriesList: [] as SeriesData[] };
 
-    // Group by series
     const bySeriesMap = new Map<string, StudioImageWithSeries[]>();
     const ungrouped: StudioImageWithSeries[] = [];
 
@@ -29,7 +29,6 @@ const Studio = () => {
       }
     }
 
-    // Get series objects in display order
     const seriesInOrder = (allSeries || [])
       .filter((s) => bySeriesMap.has(s.id))
       .sort((a, b) => a.display_order - b.display_order);
@@ -40,7 +39,6 @@ const Studio = () => {
       result.push({ id: s.id, label: s.name, images: bySeriesMap.get(s.id)! });
     }
 
-    // Ungrouped images go at the end
     if (ungrouped.length) {
       result.push({ id: "__ungrouped", label: "", images: ungrouped });
     }
@@ -108,7 +106,7 @@ const Studio = () => {
   if (!groups.length) {
     return (
       <div className="min-h-screen bg-stone-100 flex flex-col">
-        <StudioSeriesHeader
+        <StudioHeader
           series={[]}
           activeSeriesId={null}
           onSeriesClick={() => {}}
@@ -123,7 +121,7 @@ const Studio = () => {
 
   return (
     <div className="min-h-screen bg-stone-100 overflow-x-hidden">
-      <StudioSeriesHeader
+      <StudioHeader
         series={seriesList}
         activeSeriesId={activeSeriesId}
         onSeriesClick={handleSeriesClick}
@@ -162,61 +160,5 @@ const Studio = () => {
     </div>
   );
 };
-
-/** Studio header — shows "STUDIO" + series names with active bold state */
-function StudioSeriesHeader(props: {
-  series: SeriesData[];
-  activeSeriesId: string | null;
-  onSeriesClick: (id: string) => void;
-  onClose: () => void;
-}) {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (scrollContainerRef.current && props.activeSeriesId) {
-      const btn = scrollContainerRef.current.querySelector(
-        `[data-series-id="${props.activeSeriesId}"]`
-      );
-      if (btn) btn.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-    }
-  }, [props.activeSeriesId]);
-
-  return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-transparent">
-      <div className="flex items-center justify-between px-4 py-2 md:px-6 md:py-3">
-        <div
-          ref={scrollContainerRef}
-          className="flex items-center gap-4 md:gap-6 overflow-x-auto scrollbar-hide"
-        >
-          <span className="text-stone-700 font-bold text-sm md:text-base uppercase tracking-widest flex-shrink-0">
-            STUDIO
-          </span>
-          {props.series.map((s) => (
-            <button
-              key={s.id}
-              data-series-id={s.id}
-              onClick={() => props.onSeriesClick(s.id)}
-              className={`text-sm md:text-base uppercase tracking-wider transition-colors whitespace-nowrap flex-shrink-0 ${
-                s.id === props.activeSeriesId
-                  ? "text-stone-600 font-bold"
-                  : "text-stone-400 hover:text-stone-600"
-              }`}
-            >
-              {s.name}
-            </button>
-          ))}
-        </div>
-
-        <button
-          onClick={props.onClose}
-          className="flex-shrink-0 ml-4 text-stone-900 hover:text-stone-600 transition-colors text-lg md:text-xl font-light"
-          aria-label="Close studio"
-        >
-          ✕
-        </button>
-      </div>
-    </header>
-  );
-}
 
 export default Studio;

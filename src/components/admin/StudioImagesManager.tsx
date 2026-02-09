@@ -1,34 +1,20 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Plus, Images } from "lucide-react";
+import { Layers } from "lucide-react";
 import { useStudioImages } from "@/hooks/useStudioImages";
-import type { StudioImage } from "@/types";
-import { useDeleteStudioImage, useUpdateStudioImagesOrder } from "@/hooks/useStudioImageMutations";
-import {
-  EditImageForm,
-  BulkUploadSection,
-  ImagesList,
-  ImagePreviewDialog,
-  DeleteImageDialog,
-} from "./studio";
+import { useSeries } from "@/hooks/useSeries";
+import { useDeleteStudioImage } from "@/hooks/useStudioImageMutations";
+import type { StudioImage, SeriesData } from "@/types";
+import { SeriesStudioSection } from "./studio/SeriesStudioSection";
+import { ImagePreviewDialog, DeleteImageDialog } from "./studio";
 
 const StudioImagesManager = () => {
-  const { data: images = [], isLoading } = useStudioImages();
+  const { data: images = [], isLoading: imagesLoading } = useStudioImages();
+  const { data: allSeries = [], isLoading: seriesLoading } = useSeries();
   const deleteMutation = useDeleteStudioImage();
-  const updateOrderMutation = useUpdateStudioImagesOrder();
 
-  const [showForm, setShowForm] = useState(false);
-  const [showBulkUpload, setShowBulkUpload] = useState(false);
-  const [editingImage, setEditingImage] = useState<StudioImage | null>(null);
   const [previewImage, setPreviewImage] = useState<StudioImage | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [imageToDelete, setImageToDelete] = useState<string | null>(null);
-
-  const handleEdit = (image: StudioImage) => {
-    setEditingImage(image);
-    setShowForm(true);
-    setShowBulkUpload(false);
-  };
 
   const handleDeleteClick = (id: string) => {
     setImageToDelete(id);
@@ -43,86 +29,90 @@ const StudioImagesManager = () => {
     }
   };
 
-  const handleFormSuccess = () => {
-    setShowForm(false);
-    setEditingImage(null);
-  };
+  // Group images by series
+  const imagesBySeries = new Map<string, StudioImage[]>();
+  for (const img of images) {
+    const key = img.series_id || "__ungrouped";
+    if (!imagesBySeries.has(key)) imagesBySeries.set(key, []);
+    imagesBySeries.get(key)!.push(img);
+  }
 
-  const handleFormCancel = () => {
-    setShowForm(false);
-    setEditingImage(null);
-  };
+  // Get series that have images, in display order
+  const seriesWithImages = allSeries
+    .filter((s) => imagesBySeries.has(s.id))
+    .sort((a, b) => a.display_order - b.display_order);
 
-  const handleBulkComplete = () => {
-    setShowBulkUpload(false);
-  };
+  // Series without images (available for upload)
+  const seriesWithoutImages = allSeries
+    .filter((s) => !imagesBySeries.has(s.id))
+    .sort((a, b) => a.display_order - b.display_order);
 
-  const handleBulkCancel = () => {
-    setShowBulkUpload(false);
-  };
+  const ungroupedImages = imagesBySeries.get("__ungrouped") || [];
 
-  const handleReorder = (updates: { id: string; display_order: number }[]) => {
-    updateOrderMutation.mutate(updates);
-  };
+  const isLoading = imagesLoading || seriesLoading;
 
   if (isLoading) {
-    return <div className="text-center py-8">Loading studio images...</div>;
+    return <div className="text-center py-8 text-muted-foreground">Loading studio images...</div>;
   }
 
   return (
     <>
       <div className="space-y-6">
-        {/* Single Image Form */}
-        {showForm && !showBulkUpload && (
-          <EditImageForm
-            image={editingImage}
-            onSuccess={handleFormSuccess}
-            onCancel={handleFormCancel}
-            imagesCount={images.length}
-          />
-        )}
-
-        {/* Bulk Upload */}
-        {showBulkUpload && !showForm && (
-          <BulkUploadSection
-            onComplete={handleBulkComplete}
-            onCancel={handleBulkCancel}
-            existingImagesCount={images.length}
-          />
-        )}
-
-        {/* Action buttons */}
-        {!showForm && !showBulkUpload && (
-          <div className="flex gap-3">
-            <Button onClick={() => setShowForm(true)} className="flex-1">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Single Image
-            </Button>
-            <Button onClick={() => setShowBulkUpload(true)} variant="secondary" className="flex-1">
-              <Images className="mr-2 h-4 w-4" />
-              Bulk Upload
-            </Button>
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-bold uppercase tracking-wider flex items-center gap-2">
+              <Layers className="h-5 w-5" />
+              Manage Studio
+            </h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              {allSeries.length} Series · {images.length} Images
+            </p>
           </div>
-        )}
+        </div>
 
-        {/* Images List */}
-        <ImagesList
-          images={images}
-          onEdit={handleEdit}
-          onDelete={handleDeleteClick}
-          onPreview={setPreviewImage}
-          onReorder={handleReorder}
-        />
+        {/* Series with images */}
+        {seriesWithImages.map((series) => (
+          <SeriesStudioSection
+            key={series.id}
+            seriesId={series.id}
+            seriesName={series.name}
+            images={imagesBySeries.get(series.id) || []}
+            onPreviewImage={setPreviewImage}
+            onDeleteImage={handleDeleteClick}
+          />
+        ))}
+
+        {/* Empty series (still show for uploading) */}
+        {seriesWithoutImages.map((series) => (
+          <SeriesStudioSection
+            key={series.id}
+            seriesId={series.id}
+            seriesName={series.name}
+            images={[]}
+            onPreviewImage={setPreviewImage}
+            onDeleteImage={handleDeleteClick}
+          />
+        ))}
+
+        {/* Ungrouped images */}
+        {ungroupedImages.length > 0 && (
+          <SeriesStudioSection
+            seriesId=""
+            seriesName="Ungrouped"
+            images={ungroupedImages}
+            onPreviewImage={setPreviewImage}
+            onDeleteImage={handleDeleteClick}
+          />
+        )}
       </div>
 
-      {/* Image Preview Modal */}
       <ImagePreviewDialog
         image={previewImage}
         open={!!previewImage}
         onOpenChange={(open) => !open && setPreviewImage(null)}
       />
 
-      {/* Delete Confirmation Dialog */}
       <DeleteImageDialog
         open={deleteDialogOpen}
         onConfirm={handleDeleteConfirm}

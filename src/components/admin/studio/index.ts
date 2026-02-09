@@ -1,4 +1,5 @@
 export * from "./SortableImageItem";
+export * from "./SortableThumb";
 export * from "./EditImageForm";
 export * from "./BulkUploadSection";
 export * from "./BulkUploadDropzone";
@@ -7,3 +8,4 @@ export * from "./BulkUploadEditMode";
 export * from "./ImagesList";
 export * from "./ImagePreviewDialog";
 export * from "./DeleteImageDialog";
+export * from "./SeriesStudioSection";
