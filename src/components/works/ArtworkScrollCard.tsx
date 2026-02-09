@@ -168,30 +168,6 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
 
   return (
     <article className="relative w-full flex flex-col items-center">
-      {/* Mobile arrows — outside image, at screen edges */}
-      {isMobile && allImages.length > 1 && (
-        <>
-          {hasPrevImage && (
-            <button
-              onClick={goToPrevImage}
-              className="absolute left-2 top-1/2 -translate-y-1/2 z-30 p-1"
-              aria-label="Previous image"
-            >
-              <ChevronLeft size={24} className="text-stone-600" strokeWidth={1.5} />
-            </button>
-          )}
-          {hasNextImage && (
-            <button
-              onClick={goToNextImage}
-              className="absolute right-2 top-1/2 -translate-y-1/2 z-30 p-1"
-              aria-label="Next image"
-            >
-              <ChevronRight size={24} className="text-stone-600" strokeWidth={1.5} />
-            </button>
-          )}
-        </>
-      )}
-
       {/* Figure: image + caption stacked vertically, normal flow */}
       <figure className="inline-flex flex-col items-start max-w-[80vw] md:max-w-[60vw] lg:max-w-[50vw] mx-auto">
         {/* Image container with carousel overlays */}
@@ -226,8 +202,8 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
             />
           )}
 
-          {/* Clickable left zone - 30% width (desktop only) */}
-          {!isMobile && hasPrevImage && allImages.length > 1 && (
+          {/* Clickable left zone */}
+          {hasPrevImage && allImages.length > 1 && (
             <div
               role="button"
               tabIndex={0}
@@ -238,13 +214,16 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
                   goToPrevImage();
                 }
               }}
-              className="absolute left-0 top-0 bottom-0 w-[30%] z-20 cursor-none focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/50"
+              className={cn(
+                "absolute left-0 top-0 bottom-0 w-[30%] z-20 focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/50",
+                !isMobile && "cursor-none"
+              )}
               aria-label="Previous image"
             />
           )}
 
-          {/* Clickable right zone - 30% width (desktop only) */}
-          {!isMobile && hasNextImage && allImages.length > 1 && (
+          {/* Clickable right zone */}
+          {hasNextImage && allImages.length > 1 && (
             <div
               role="button"
               tabIndex={0}
@@ -255,9 +234,34 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
                   goToNextImage();
                 }
               }}
-              className="absolute right-0 top-0 bottom-0 w-[30%] z-20 cursor-none focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/50"
+              className={cn(
+                "absolute right-0 top-0 bottom-0 w-[30%] z-20 focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/50",
+                !isMobile && "cursor-none"
+              )}
               aria-label="Next image"
             />
+          )}
+
+          {/* Mobile arrows — centered on image */}
+          {isMobile && allImages.length > 1 && (
+            <>
+              {hasPrevImage && (
+                <div
+                  className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-full z-30 p-1"
+                  aria-hidden
+                >
+                  <ChevronLeft size={24} className="text-stone-600" strokeWidth={1.5} />
+                </div>
+              )}
+              {hasNextImage && (
+                <div
+                  className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-full z-30 p-1"
+                  aria-hidden
+                >
+                  <ChevronRight size={24} className="text-stone-600" strokeWidth={1.5} />
+                </div>
+              )}
+            </>
           )}
 
           {/* Desktop Left Arrow */}
