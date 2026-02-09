@@ -44,7 +44,7 @@ export const SeriesHeader = ({
           {activeSeries && (
             <button
               onClick={() => onSeriesClick(activeSeries.id)}
-              className="text-stone-600 text-sm md:text-base uppercase tracking-wider transition-colors hover:text-stone-900"
+              className="text-stone-700 font-bold text-sm md:text-base uppercase tracking-wider transition-colors hover:text-stone-900"
             >
               {activeSeries.name}
             </button>
