@@ -4,8 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { X, Upload } from "lucide-react";
 import { useCreateStudioImage, useUpdateStudioImage, useUploadStudioImage } from "@/hooks/useStudioImageMutations";
+import { useSeries } from "@/hooks/useSeries";
 import { useFileDrop } from "@/hooks/useFileDrop";
 import type { EditImageFormProps } from "@/types";
 
@@ -13,11 +15,13 @@ export const EditImageForm = ({ image, onSuccess, onCancel, imagesCount }: EditI
   const createMutation = useCreateStudioImage();
   const updateMutation = useUpdateStudioImage();
   const uploadMutation = useUploadStudioImage();
+  const { data: seriesList = [] } = useSeries();
 
   const [formData, setFormData] = useState({
     title: image?.title || "",
     description: image?.description || "",
     image_url: image?.image_url || "",
+    series_id: image?.series_id || "",
   });
   const [preview, setPreview] = useState<string | null>(image?.image_url || null);
 
@@ -50,6 +54,7 @@ export const EditImageForm = ({ image, onSuccess, onCancel, imagesCount }: EditI
         title: formData.title || null,
         description: formData.description || null,
         image_url: formData.image_url,
+        series_id: formData.series_id || null,
       });
     } else {
       await createMutation.mutateAsync({
@@ -57,7 +62,7 @@ export const EditImageForm = ({ image, onSuccess, onCancel, imagesCount }: EditI
         description: formData.description || null,
         image_url: formData.image_url,
         display_order: imagesCount,
-        series_id: null,
+        series_id: formData.series_id || null,
       });
     }
 
@@ -149,6 +154,24 @@ export const EditImageForm = ({ image, onSuccess, onCancel, imagesCount }: EditI
               placeholder="Brief description"
               rows={3}
             />
+          </div>
+
+          <div>
+            <Label htmlFor="series">Series</Label>
+            <Select
+              value={formData.series_id || "none"}
+              onValueChange={(value) => setFormData((prev) => ({ ...prev, series_id: value === "none" ? "" : value }))}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="No series" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No series</SelectItem>
+                {seriesList.map((s) => (
+                  <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="flex gap-2">
