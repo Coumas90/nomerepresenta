@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useStudioImages, type StudioImageWithSeries } from "@/hooks/useStudioImages";
 import { useSeries } from "@/hooks/useSeries";
 import { ProgressiveImage } from "@/components/ProgressiveImage";
-import { SeriesHeader } from "@/components/works/SeriesHeader";
 import type { SeriesData } from "@/types";
 
 const Studio = () => {
@@ -13,37 +12,48 @@ const Studio = () => {
   const [activeSeriesId, setActiveSeriesId] = useState<string | null>(null);
   const sectionRefs = useRef<Map<string, HTMLElement>>(new Map());
 
-  // Build series list that have studio images
-  const seriesWithImages = useMemo(() => {
-    if (!images?.length || !allSeries?.length) return [];
+  // Build ordered groups: series with images + ungrouped
+  const { groups, seriesList } = useMemo(() => {
+    if (!images?.length) return { groups: [], seriesList: [] as SeriesData[] };
 
-    const seriesIdsWithImages = new Set(
-      images.filter((img) => img.series_id).map((img) => img.series_id!)
-    );
+    // Group by series
+    const bySeriesMap = new Map<string, StudioImageWithSeries[]>();
+    const ungrouped: StudioImageWithSeries[] = [];
 
-    return allSeries
-      .filter((s) => seriesIdsWithImages.has(s.id))
-      .sort((a, b) => a.display_order - b.display_order);
-  }, [images, allSeries]);
-
-  // Group images by series_id
-  const imagesBySeries = useMemo(() => {
-    if (!images?.length) return new Map<string, StudioImageWithSeries[]>();
-    const map = new Map<string, StudioImageWithSeries[]>();
     for (const img of images) {
-      if (!img.series_id) continue;
-      if (!map.has(img.series_id)) map.set(img.series_id, []);
-      map.get(img.series_id)!.push(img);
+      if (img.series_id) {
+        if (!bySeriesMap.has(img.series_id)) bySeriesMap.set(img.series_id, []);
+        bySeriesMap.get(img.series_id)!.push(img);
+      } else {
+        ungrouped.push(img);
+      }
     }
-    return map;
-  }, [images]);
+
+    // Get series objects in display order
+    const seriesInOrder = (allSeries || [])
+      .filter((s) => bySeriesMap.has(s.id))
+      .sort((a, b) => a.display_order - b.display_order);
+
+    const result: { id: string; label: string; images: StudioImageWithSeries[] }[] = [];
+
+    for (const s of seriesInOrder) {
+      result.push({ id: s.id, label: s.name, images: bySeriesMap.get(s.id)! });
+    }
+
+    // Ungrouped images go at the end
+    if (ungrouped.length) {
+      result.push({ id: "__ungrouped", label: "", images: ungrouped });
+    }
+
+    return { groups: result, seriesList: seriesInOrder };
+  }, [images, allSeries]);
 
   // Set initial active series
   useEffect(() => {
-    if (seriesWithImages.length && !activeSeriesId) {
-      setActiveSeriesId(seriesWithImages[0].id);
+    if (groups.length && !activeSeriesId) {
+      setActiveSeriesId(groups[0].id);
     }
-  }, [seriesWithImages, activeSeriesId]);
+  }, [groups, activeSeriesId]);
 
   // IntersectionObserver for active series detection
   useEffect(() => {
@@ -61,7 +71,7 @@ const Studio = () => {
 
     sectionRefs.current.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, [seriesWithImages, imagesBySeries]);
+  }, [groups]);
 
   const handleSeriesClick = useCallback((seriesId: string) => {
     const section = document.getElementById(`series-${seriesId}`);
@@ -87,7 +97,7 @@ const Studio = () => {
     );
   }
 
-  if (!seriesWithImages.length) {
+  if (!groups.length) {
     return (
       <div className="min-h-screen bg-stone-100 flex flex-col">
         <StudioSeriesHeader
@@ -106,50 +116,46 @@ const Studio = () => {
   return (
     <div className="min-h-screen bg-stone-100">
       <StudioSeriesHeader
-        series={seriesWithImages}
+        series={seriesList}
         activeSeriesId={activeSeriesId}
         onSeriesClick={handleSeriesClick}
         onClose={handleClose}
       />
 
       <main className="pt-[52px] md:pt-[60px]">
-        {seriesWithImages.map((series) => {
-          const seriesImages = imagesBySeries.get(series.id) || [];
-          return (
-            <section
-              key={series.id}
-              id={`series-${series.id}`}
-              ref={(el) => setRef(series.id, el)}
-              data-series-id={series.id}
-              className="scroll-mt-[52px] md:scroll-mt-[60px]"
-            >
-              {/* Images edge-to-edge, no gaps */}
-              <div className="flex flex-col">
-                {seriesImages.map((img) => (
-                  <div key={img.id} className="w-full leading-[0]">
-                    <ProgressiveImage
-                      src={img.image_url}
-                      alt={img.title || "Studio image"}
-                      className="w-full [&_img]:w-full [&_img]:h-auto [&_img]:block"
-                      objectFit="contain"
-                      eager={false}
-                      blurUp
-                      modernFormats
-                      responsivePreset="full"
-                      sizes="100vw"
-                    />
-                  </div>
-                ))}
-              </div>
-            </section>
-          );
-        })}
+        {groups.map((group) => (
+          <section
+            key={group.id}
+            id={`series-${group.id}`}
+            ref={(el) => setRef(group.id, el)}
+            data-series-id={group.id}
+            className="scroll-mt-[52px] md:scroll-mt-[60px]"
+          >
+            <div className="flex flex-col">
+              {group.images.map((img) => (
+                <div key={img.id} className="w-full leading-[0]">
+                  <ProgressiveImage
+                    src={img.image_url}
+                    alt={img.title || "Studio image"}
+                    className="w-full [&_img]:w-full [&_img]:h-auto [&_img]:block"
+                    objectFit="contain"
+                    eager={false}
+                    blurUp
+                    modernFormats
+                    responsivePreset="full"
+                    sizes="100vw"
+                  />
+                </div>
+              ))}
+            </div>
+          </section>
+        ))}
       </main>
     </div>
   );
 };
 
-/** Studio variant of SeriesHeader - shows "STUDIO" instead of "WORKS" */
+/** Studio header — shows "STUDIO" + series names with active bold state */
 function StudioSeriesHeader(props: {
   series: SeriesData[];
   activeSeriesId: string | null;
