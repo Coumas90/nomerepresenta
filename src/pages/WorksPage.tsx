@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useArtworksBySeries } from "@/hooks/useArtworksBySeries";
 import { useScrollRestoration } from "@/hooks/useScrollRestoration";
 import { SeriesHeader, SeriesSection } from "@/components/works";
-import TriPeelOverlay from "@/components/TriPeelOverlay";
+
 
 const WorksPage = () => {
   const navigate = useNavigate();
@@ -13,8 +13,6 @@ const WorksPage = () => {
   // State para serie activa (detectada por scroll)
   const [activeSeriesId, setActiveSeriesId] = useState<string | null>(null);
 
-  // State para TRI-PEEL overlay
-  const [showOverlay, setShowOverlay] = useState(false);
 
   // Track if initial scroll handling has been performed
   const hasInitialized = useRef(false);
@@ -90,9 +88,6 @@ const WorksPage = () => {
     }
   }, []);
 
-  // Handlers para TRI-PEEL overlay
-  const handleOpenOverlay = useCallback(() => setShowOverlay(true), []);
-  const handleCloseOverlay = useCallback(() => setShowOverlay(false), []);
 
   // Handler para cerrar página - clear scroll position when intentionally leaving
   const handleClose = useCallback(() => {
@@ -100,25 +95,17 @@ const WorksPage = () => {
     navigate("/");
   }, [navigate, clearScrollPosition]);
 
-  // Keyboard listeners: ESC y SPACE
+  // Keyboard listener: ESC
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        if (showOverlay) {
-          handleCloseOverlay();
-        } else {
-          navigate("/");
-        }
-      }
-      if (e.key === " " && !showOverlay) {
-        e.preventDefault();
-        handleOpenOverlay();
+        navigate("/");
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [showOverlay, handleCloseOverlay, handleOpenOverlay, navigate]);
+  }, [navigate]);
 
   // Loading state
   if (isLoading) {
@@ -150,7 +137,6 @@ const WorksPage = () => {
         series={seriesWithArtworks}
         activeSeriesId={activeSeriesId}
         onSeriesClick={handleSeriesClick}
-        onTriPeelClick={handleOpenOverlay}
         onClose={handleClose}
       />
 
@@ -167,8 +153,6 @@ const WorksPage = () => {
         ))}
       </main>
 
-      {/* TRI-PEEL Overlay */}
-      <TriPeelOverlay isOpen={showOverlay} onClose={handleCloseOverlay} />
     </div>
   );
 };
