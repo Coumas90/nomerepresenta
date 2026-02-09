@@ -122,14 +122,14 @@ const Studio = () => {
         onClose={handleClose}
       />
 
-      <main className="pt-[52px] md:pt-[60px]">
+      <main className="pt-[40px] md:pt-[44px]">
         {groups.map((group) => (
           <section
             key={group.id}
             id={`series-${group.id}`}
             ref={(el) => setRef(group.id, el)}
             data-series-id={group.id}
-            className="scroll-mt-[52px] md:scroll-mt-[60px]"
+            className="scroll-mt-[40px] md:scroll-mt-[44px]"
           >
             <div className="flex flex-col">
               {group.images.map((img) => (
@@ -174,8 +174,8 @@ function StudioSeriesHeader(props: {
   }, [props.activeSeriesId]);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-stone-100/95 backdrop-blur-sm border-b border-stone-200">
-      <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-transparent">
+      <div className="flex items-center justify-between px-4 py-2 md:px-6 md:py-3">
         <div
           ref={scrollContainerRef}
           className="flex items-center gap-4 md:gap-6 overflow-x-auto scrollbar-hide"
