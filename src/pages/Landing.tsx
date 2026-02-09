@@ -164,7 +164,7 @@ const Landing = () => {
                     relative
                   `}
                   style={{
-                    fontSize: 'clamp(3.5rem, 14vw, 12rem)',
+                    fontSize: 'clamp(4.5rem, 20vw, 12rem)',
                     color: 'white',
                   }}
                 >
