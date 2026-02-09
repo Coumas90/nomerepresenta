@@ -60,13 +60,11 @@ const SortableImage = ({ image, index, onDelete, onSetMain, onCaptionChange }: S
       ref={setNodeRef} 
       style={style} 
       className="relative group hover:ring-2 hover:ring-primary/50 transition-all"
-      {...attributes} 
-      {...listeners}
     >
       {isDragging && (
         <div className="absolute inset-0 bg-primary/10 border-2 border-primary border-dashed rounded-lg z-20" />
       )}
-      <div className="relative overflow-hidden rounded-t-lg">
+      <div className="relative overflow-hidden rounded-t-lg" {...attributes} {...listeners}>
         <img
           src={image.image_url}
           alt={`Artwork image ${index + 1}`}
@@ -80,6 +78,7 @@ const SortableImage = ({ image, index, onDelete, onSetMain, onCaptionChange }: S
         <div 
           className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1"
           onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
         >
           <Button
             type="button"
@@ -116,8 +115,8 @@ const SortableImage = ({ image, index, onDelete, onSetMain, onCaptionChange }: S
           #{image.display_order}
         </div>
       </div>
-      {/* Caption input */}
-      <div className="p-2 border-t" onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()}>
+      {/* Caption input - outside drag handle area */}
+      <div className="p-2 border-t">
         <Input
           placeholder="Caption (opcional)"
           defaultValue={image.caption || ""}
