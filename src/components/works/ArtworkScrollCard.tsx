@@ -296,18 +296,18 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
             </div>
           )}
 
-          {/* Image indicator dots */}
+          {/* Image indicator dots — bottom-left, minimal b&w */}
           {allImages.length > 1 && (
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex gap-2">
+            <div className="absolute bottom-3 left-3 z-30 flex gap-1.5">
               {allImages.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentImageIndex(index)}
                   className={cn(
-                    "w-1.5 h-1.5 rounded-full transition-all duration-300",
+                    "w-1 h-1 rounded-full transition-all duration-300",
                     index === currentImageIndex 
-                      ? "bg-white scale-125" 
-                      : "bg-white/50 hover:bg-white/75"
+                      ? "bg-stone-900" 
+                      : "bg-stone-400"
                   )}
                   aria-label={`Go to image ${index + 1}`}
                 />
