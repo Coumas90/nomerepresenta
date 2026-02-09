@@ -15,6 +15,7 @@ export default {
     extend: {
       fontFamily: {
         'playfair': ['Playfair Display', 'serif'],
+        'baskerville': ['Libre Baskerville', 'Georgia', 'serif'],
         'helvetica': ['Helvetica', 'Arial', 'sans-serif'],
         'anton': ['Anton', 'Helvetica', 'Arial', 'sans-serif'],
       },
