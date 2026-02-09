@@ -4,12 +4,12 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 // Menu items with their associated artwork images
 const menuItems = [
-  { text: "IVAN", type: "title" as const, image: "/images/artworks/tri-peel-1.png" },
-  { text: "COMAS", type: "title" as const, image: "/images/artworks/tri-peel-2.png" },
-  { text: "WORKS", type: "link" as const, path: "/works", image: "/images/artworks/tri-peel-3.png" },
-  { text: "STUDIO", type: "link" as const, path: "/studio", image: "/images/artworks/tri-peel-4.jpg" },
-  { text: "CONTACT", type: "mailto" as const, email: "contact@ivancomas.com", image: "/images/artworks/tri-peel-5.jpg" },
-  { text: "BIO", type: "link" as const, path: "/bio", image: "/images/artworks/tri-peel-6.jpg" },
+  { text: "IVAN", type: "title" as const },
+  { text: "COMAS", type: "title" as const },
+  { text: "WORKS", type: "link" as const, path: "/works" },
+  { text: "STUDIO", type: "link" as const, path: "/studio" },
+  { text: "CONTACT", type: "mailto" as const, email: "contact@ivancomas.com" },
+  { text: "BIO", type: "link" as const, path: "/bio" },
 ];
 
 const Landing = () => {
@@ -19,46 +19,6 @@ const Landing = () => {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isPageLoaded, setIsPageLoaded] = useState(false);
-  const [imagesLoaded, setImagesLoaded] = useState(false);
-
-  // Smart image preloading: priority images first, rest in idle time
-  useEffect(() => {
-    // Priority: WORKS and STUDIO (most likely to be clicked)
-    const priorityItems = menuItems.filter(item => item.type === 'link');
-    const otherItems = menuItems.filter(item => item.type !== 'link');
-    
-    // Load priority images immediately
-    const priorityPromises = priorityItems.map(item => {
-      return new Promise<void>((resolve) => {
-        const img = new Image();
-        img.onload = () => resolve();
-        img.onerror = () => resolve();
-        img.src = item.image;
-      });
-    });
-
-    Promise.all(priorityPromises).then(() => {
-      // Load remaining images in idle time
-      if ('requestIdleCallback' in window) {
-        (window as any).requestIdleCallback(() => {
-          otherItems.forEach(item => {
-            const img = new Image();
-            img.src = item.image;
-          });
-          setImagesLoaded(true);
-        });
-      } else {
-        // Fallback for Safari
-        setTimeout(() => {
-          otherItems.forEach(item => {
-            const img = new Image();
-            img.src = item.image;
-          });
-          setImagesLoaded(true);
-        }, 100);
-      }
-    });
-  }, []);
 
   // Trigger entrance animation - instant
   useEffect(() => {
@@ -205,13 +165,7 @@ const Landing = () => {
                   `}
                   style={{
                     fontSize: 'clamp(3.5rem, 14vw, 12rem)',
-                    backgroundImage: isActive && imagesLoaded ? `url(${item.image})` : 'none',
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    WebkitBackgroundClip: isActive && imagesLoaded ? 'text' : 'unset',
-                    backgroundClip: isActive && imagesLoaded ? 'text' : 'unset',
-                    color: isActive && imagesLoaded ? 'transparent' : 'white',
-                    WebkitTextFillColor: isActive && imagesLoaded ? 'transparent' : 'white',
+                    color: 'white',
                   }}
                 >
                   {item.text}
