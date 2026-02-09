@@ -132,7 +132,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
         
         {/* Main image */}
         {currentImage && (
-          <div style={{ maxHeight: 'calc(100vh - 320px)' }}>
+          <div style={{ maxHeight: isViewingDetail ? 'calc(100vh - 420px)' : 'calc(100vh - 320px)' }}>
             <ProgressiveImage
               src={currentImage}
               alt={artwork.title || "Artwork"}
