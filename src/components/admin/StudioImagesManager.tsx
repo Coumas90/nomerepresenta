@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Layers } from "lucide-react";
+import { Layers, Plus, Check, X } from "lucide-react";
 import {
   DndContext,
   closestCenter,
@@ -18,8 +18,10 @@ import { CSS } from "@dnd-kit/utilities";
 import { useStudioImages } from "@/hooks/useStudioImages";
 import { useSeries } from "@/hooks/useSeries";
 import { useDeleteStudioImage } from "@/hooks/useStudioImageMutations";
-import { useUpdateSeriesOrder } from "@/hooks/useSeriesMutations";
+import { useUpdateSeriesOrder, useCreateSeries } from "@/hooks/useSeriesMutations";
 import type { StudioImage, SeriesData } from "@/types";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { SeriesStudioSection } from "./studio/SeriesStudioSection";
 import { ImagePreviewDialog, DeleteImageDialog } from "./studio";
 
@@ -69,7 +71,10 @@ const StudioImagesManager = () => {
   const { data: allSeries = [], isLoading: seriesLoading } = useSeries();
   const deleteMutation = useDeleteStudioImage();
   const updateSeriesOrderMutation = useUpdateSeriesOrder();
+  const createSeriesMutation = useCreateSeries();
 
+  const [showNewSeries, setShowNewSeries] = useState(false);
+  const [newSeriesName, setNewSeriesName] = useState("");
   const [previewImage, setPreviewImage] = useState<StudioImage | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [imageToDelete, setImageToDelete] = useState<string | null>(null);
@@ -135,7 +140,33 @@ const StudioImagesManager = () => {
               {allSeries.length} Series · {images.length} Images · Drag to reorder
             </p>
           </div>
+          <Button variant="outline" size="sm" onClick={() => setShowNewSeries(true)} disabled={showNewSeries}>
+            <Plus className="h-4 w-4 mr-1" /> New Series
+          </Button>
         </div>
+
+        {/* Inline new series form */}
+        {showNewSeries && (
+          <form
+            className="flex items-center gap-2"
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const name = newSeriesName.trim();
+              if (!name) return;
+              await createSeriesMutation.mutateAsync({ name, description: null, display_order: allSeries.length });
+              setNewSeriesName("");
+              setShowNewSeries(false);
+            }}
+          >
+            <Input autoFocus placeholder="Series name…" value={newSeriesName} onChange={(e) => setNewSeriesName(e.target.value)} className="max-w-xs" />
+            <Button type="submit" size="icon" variant="ghost" disabled={!newSeriesName.trim() || createSeriesMutation.isPending}>
+              <Check className="h-4 w-4" />
+            </Button>
+            <Button type="button" size="icon" variant="ghost" onClick={() => { setShowNewSeries(false); setNewSeriesName(""); }}>
+              <X className="h-4 w-4" />
+            </Button>
+          </form>
+        )}
 
         {/* Sortable series */}
         <DndContext
