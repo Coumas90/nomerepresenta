@@ -146,8 +146,8 @@ const Landing = () => {
                   onBlur={handleBlur}
                   disabled={!isClickable && !isMobile}
                   className={`
-                    font-anton tracking-tight
-                    leading-[0.85] md:leading-[0.80]
+                    font-helvetica font-bold tracking-tight
+                    leading-[0.95] md:leading-[0.90]
                     transition-all duration-500 ease-out will-change-transform
                     ${isClickable 
                       ? "cursor-pointer" 
