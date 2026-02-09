@@ -21,6 +21,7 @@ export interface StudioImage {
   title: string | null;
   description: string | null;
   display_order: number;
+  series_id: string | null;
   created_at: string;
   updated_at: string;
 }
