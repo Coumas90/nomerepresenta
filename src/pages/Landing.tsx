@@ -147,7 +147,7 @@ const Landing = () => {
                   disabled={!isClickable && !isMobile}
                   className={`
                     font-helvetica font-bold tracking-tight
-                    leading-[0.88] md:leading-[0.84]
+                    leading-[0.88] md:leading-[0.80]
                     transition-all duration-500 ease-out will-change-transform
                     ${isClickable 
                       ? "cursor-pointer" 
@@ -164,7 +164,7 @@ const Landing = () => {
                     relative
                   `}
                   style={{
-                    fontSize: 'clamp(4.5rem, 20vw, 12rem)',
+                    fontSize: isMobile ? 'clamp(4.5rem, 20vw, 12rem)' : 'clamp(3.5rem, 12vw, 9rem)',
                     color: 'white',
                   }}
                 >
