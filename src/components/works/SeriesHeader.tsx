@@ -36,7 +36,7 @@ export const SeriesHeader = ({
     <header className="sticky top-0 z-50 bg-stone-100/95 backdrop-blur-sm border-b border-stone-200">
       <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4">
         <div className="flex items-center gap-4 md:gap-6 flex-shrink-0">
-          <span className="text-stone-900 font-bold text-sm md:text-base uppercase tracking-widest">
+          <span className="text-stone-600 font-bold text-sm md:text-base uppercase tracking-widest">
             WORKS
           </span>
           
