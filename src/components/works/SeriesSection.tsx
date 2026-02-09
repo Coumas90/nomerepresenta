@@ -87,7 +87,7 @@ export const SeriesSection = forwardRef<HTMLElement, SeriesSectionProps>(
         ref={sectionRef}
         id={`series-${series.id}`}
         data-series-id={series.id}
-        className={cn("scroll-mt-20", className)}
+        className={cn("scroll-mt-20 pb-28 md:pb-48", className)}
       >
         {/* Series divider - skip for first series */}
         {!isFirst && <SerieDivider />}
