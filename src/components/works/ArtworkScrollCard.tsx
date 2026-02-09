@@ -14,10 +14,9 @@ interface ArtworkScrollCardProps {
 
 export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCardProps) => {
   const isMobile = useIsMobile();
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null); // kept for potential future use
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [mouseZone, setMouseZone] = useState<"left" | "right" | "center">("center");
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
 
   // Fetch additional images for this artwork
@@ -59,16 +58,13 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
     }
   };
 
-  // Mouse zone detection for desktop arrow following
+  // Mouse zone detection for desktop
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (isMobile) return;
     
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
     const percentage = (x / rect.width) * 100;
-
-    setMousePosition({ x, y });
 
     if (percentage < 30) {
       setMouseZone("left");
@@ -87,10 +83,6 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
   const showRightArrow = isMobile 
     ? hasNextImage && allImages.length > 1
     : isHovering && mouseZone === "right" && hasNextImage && allImages.length > 1;
-
-  const containerWidth = containerRef.current?.offsetWidth || 0;
-  const leftArrowX = Math.max(32, Math.min(mousePosition.x, containerWidth * 0.3 - 24));
-  const rightArrowX = Math.max(containerWidth * 0.7 + 24, Math.min(mousePosition.x, containerWidth - 32));
 
   // Skeleton placeholder when not visible yet
   if (!isVisible) {
@@ -185,19 +177,10 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
           {allImages.length > 1 && hasPrevImage && (
             <div
               className={cn(
-                "absolute z-30 transition-opacity duration-300 ease-in-out",
+                "absolute z-30 left-6 top-1/2 -translate-y-1/2 transition-opacity duration-300 ease-in-out",
                 isMobile ? "pointer-events-auto" : "pointer-events-none",
                 showLeftArrow ? "opacity-100" : "opacity-0"
               )}
-              style={isMobile ? {
-                left: '16px',
-                top: '50%',
-                transform: 'translateY(-50%)'
-              } : {
-                left: `${leftArrowX}px`,
-                top: `${mousePosition.y}px`,
-                transform: 'translate(-50%, -50%)'
-              }}
               onClick={isMobile ? goToPrevImage : undefined}
               aria-hidden={!isMobile}
             >
@@ -215,19 +198,10 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
           {allImages.length > 1 && hasNextImage && (
             <div
               className={cn(
-                "absolute z-30 transition-opacity duration-300 ease-in-out",
+                "absolute z-30 right-6 top-1/2 -translate-y-1/2 transition-opacity duration-300 ease-in-out",
                 isMobile ? "pointer-events-auto" : "pointer-events-none",
                 showRightArrow ? "opacity-100" : "opacity-0"
               )}
-              style={isMobile ? {
-                right: '16px',
-                top: '50%',
-                transform: 'translateY(-50%)'
-              } : {
-                left: `${rightArrowX}px`,
-                top: `${mousePosition.y}px`,
-                transform: 'translate(-50%, -50%)'
-              }}
               onClick={isMobile ? goToNextImage : undefined}
               aria-hidden={!isMobile}
             >
