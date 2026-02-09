@@ -51,7 +51,7 @@ export const SeriesHeader = ({
               onClick={() => onSeriesClick(s.id)}
               className={`text-sm md:text-base uppercase tracking-wider transition-colors whitespace-nowrap flex-shrink-0 ${
                 s.id === activeSeriesId
-                  ? "text-stone-700 font-bold"
+                  ? "text-stone-600 font-bold"
                   : "text-stone-400 hover:text-stone-600"
               }`}
             >
