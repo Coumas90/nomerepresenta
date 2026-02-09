@@ -27,11 +27,12 @@ export const StudioHeader = ({
   }, [activeSeriesId]);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-transparent">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-transparent" style={{ touchAction: "manipulation" }}>
       <div className="flex items-center justify-between px-4 py-2 md:px-6 md:py-3">
         <div
           ref={scrollContainerRef}
           className="flex items-center gap-4 md:gap-6 overflow-x-auto scrollbar-hide"
+          style={{ touchAction: "pan-x" }}
         >
           <span className="text-stone-700 font-bold text-sm md:text-base uppercase tracking-widest flex-shrink-0">
             STUDIO
