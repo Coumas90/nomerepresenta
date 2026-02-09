@@ -117,7 +117,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
   return (
     <article className="w-full flex flex-col items-center">
       {/* Figure: image + caption stacked vertically, normal flow */}
-      <figure className="inline-flex flex-col items-start max-w-[90vw] md:max-w-[70vw] lg:max-w-[60vw] mx-auto">
+      <figure className="relative inline-flex flex-col items-start max-w-[90vw] md:max-w-[70vw] lg:max-w-[60vw] mx-auto">
         {/* Image container with carousel overlays */}
         <div
           ref={containerRef}
@@ -147,7 +147,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
             />
           )}
 
-          {/* Clickable left zone - 30% width */}
+          {/* Clickable left zone - extends beyond image */}
           {hasPrevImage && allImages.length > 1 && (
             <div
               role="button"
@@ -159,12 +159,12 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
                   goToPrevImage();
                 }
               }}
-              className="absolute left-0 top-0 bottom-0 w-[30%] z-20 cursor-none focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/50"
+              className="absolute -left-[10vw] md:-left-[5vw] top-0 bottom-0 w-[calc(30%+10vw)] md:w-[calc(30%+5vw)] z-20 cursor-none focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/50"
               aria-label="Previous image"
             />
           )}
 
-          {/* Clickable right zone - 30% width */}
+          {/* Clickable right zone - extends beyond image */}
           {hasNextImage && allImages.length > 1 && (
             <div
               role="button"
@@ -176,7 +176,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
                   goToNextImage();
                 }
               }}
-              className="absolute right-0 top-0 bottom-0 w-[30%] z-20 cursor-none focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/50"
+              className="absolute -right-[10vw] md:-right-[5vw] top-0 bottom-0 w-[calc(30%+10vw)] md:w-[calc(30%+5vw)] z-20 cursor-none focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/50"
               aria-label="Next image"
             />
           )}
