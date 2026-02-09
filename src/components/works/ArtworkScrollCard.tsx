@@ -264,7 +264,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
           <p className="text-stone-600 text-sm md:text-base font-bold">
             {artwork.title}
             {artwork.year && <>, {artwork.year}</>}
-            {isViewingDetail && <span className="font-normal"> (DETAIL)</span>}
+            {isViewingDetail && <span className="font-normal text-stone-500"> (DETAIL)</span>}
           </p>
           {artwork.materials && (
             <p className="text-stone-500 text-xs md:text-sm">
