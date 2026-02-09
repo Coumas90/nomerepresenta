@@ -35,33 +35,30 @@ export const SeriesHeader = ({
   return (
     <header className="sticky top-0 z-50 bg-stone-100/95 backdrop-blur-sm border-b border-stone-200">
       <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4">
-        <div className="flex items-center gap-4 md:gap-6 flex-shrink-0">
-          <span className="text-stone-700 font-bold text-sm md:text-base uppercase tracking-widest">
+        {/* Series navigation: WORKS > active > others */}
+        <div
+          ref={scrollContainerRef}
+          className="flex items-center gap-4 md:gap-6 overflow-x-auto scrollbar-hide"
+        >
+          <span className="text-stone-700 font-bold text-sm md:text-base uppercase tracking-widest flex-shrink-0">
             WORKS
           </span>
-          
-          {/* Active series indicator */}
+
           {activeSeries && (
             <button
               onClick={() => onSeriesClick(activeSeries.id)}
-              className="text-stone-700 font-bold text-sm md:text-base uppercase tracking-wider transition-colors hover:text-stone-900"
+              className="text-stone-700 font-bold text-sm md:text-base uppercase tracking-wider transition-colors hover:text-stone-900 flex-shrink-0"
             >
               {activeSeries.name}
             </button>
           )}
-        </div>
 
-        {/* Other series - Right side with horizontal scroll */}
-        <div
-          ref={scrollContainerRef}
-          className="flex items-center gap-4 md:gap-6 overflow-x-auto scrollbar-hide ml-4 md:ml-6"
-        >
           {otherSeries.map((s) => (
             <button
               key={s.id}
               data-series-id={s.id}
               onClick={() => onSeriesClick(s.id)}
-              className="text-orange-500 hover:text-orange-600 text-sm md:text-base uppercase tracking-wider transition-colors whitespace-nowrap flex-shrink-0"
+              className="text-stone-400 text-sm md:text-base uppercase tracking-wider transition-colors hover:text-stone-600 whitespace-nowrap flex-shrink-0"
             >
               {s.name}
             </button>
