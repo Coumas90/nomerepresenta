@@ -137,7 +137,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
             <ProgressiveImage
               src={currentImage}
               alt={artwork.title || "Artwork"}
-              className="relative z-10 w-full h-auto max-h-[55vh] md:max-h-[60vh] lg:max-h-[65vh]"
+              className="relative z-10 w-full [&_img]:max-h-[55vh] [&_img]:md:max-h-[60vh] [&_img]:lg:max-h-[65vh]"
               objectFit="contain"
               eager={false}
               blurUp
