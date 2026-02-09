@@ -1,6 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Carousel, CarouselContent, CarouselItem, CarouselApi } from "@/components/ui/carousel";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface HoverNavigationCarouselProps {
@@ -21,31 +20,16 @@ export const HoverNavigationCarousel = ({
   registerImageRef,
 }: HoverNavigationCarouselProps) => {
   const isMobile = useIsMobile();
-  const [api, setApi] = useState<CarouselApi>();
   const [mouseZone, setMouseZone] = useState<"left" | "right" | "center">("center");
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
-  const [canScrollPrev, setCanScrollPrev] = useState(false);
-  const [canScrollNext, setCanScrollNext] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!api) return;
-
-    const updateScrollState = () => {
-      setCanScrollPrev(api.canScrollPrev());
-      setCanScrollNext(api.canScrollNext());
-    };
-
-    updateScrollState();
-    api.on("select", () => {
-      onIndexChange(api.selectedScrollSnap());
-      updateScrollState();
-    });
-  }, [api, onIndexChange]);
+  const canScrollPrev = currentIndex > 0;
+  const canScrollNext = currentIndex < images.length - 1;
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (isMobile) return; // Ignore mouse events on mobile
+    if (isMobile) return;
     
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -64,19 +48,13 @@ export const HoverNavigationCarousel = ({
   };
 
   const handlePrevious = () => {
-    if (api && canScrollPrev) {
-      api.scrollPrev();
-    }
+    if (canScrollPrev) onIndexChange(currentIndex - 1);
   };
 
   const handleNext = () => {
-    if (api && canScrollNext) {
-      api.scrollNext();
-    }
+    if (canScrollNext) onIndexChange(currentIndex + 1);
   };
 
-  // Desktop: show arrows following cursor in hover zones
-  // Mobile: always show arrows when navigation is possible
   const showLeftArrow = isMobile 
     ? canScrollPrev && images.length > 1
     : isHovering && mouseZone === "left" && canScrollPrev && images.length > 1;
@@ -89,6 +67,8 @@ export const HoverNavigationCarousel = ({
   const leftArrowX = Math.max(32, Math.min(mousePosition.x, containerWidth * 0.3 - 24));
   const rightArrowX = Math.max(containerWidth * 0.7 + 24, Math.min(mousePosition.x, containerWidth - 32));
 
+  const currentImage = images[currentIndex];
+
   return (
     <div
       ref={containerRef}
@@ -99,32 +79,20 @@ export const HoverNavigationCarousel = ({
       onMouseEnter={() => !isMobile && setIsHovering(true)}
       onMouseLeave={() => !isMobile && setIsHovering(false)}
     >
-      <Carousel className="w-full overflow-visible [&>div]:overflow-visible [&>div>div]:overflow-visible" setApi={setApi}>
-        <CarouselContent>
-          {images.map((image, index) => {
-            const shouldLoad = Math.abs(index - currentIndex) <= 1;
+      {/* Image — no fixed aspect ratio, adapts to content */}
+      {currentImage && (
+        <img
+          key={currentImage.id}
+          src={currentImage.image_url}
+          alt={artwork.title}
+          loading="eager"
+          decoding="async"
+          ref={registerImageRef}
+          className="w-full h-auto max-h-[90vh] object-contain transition-opacity duration-300"
+        />
+      )}
 
-            return (
-              <CarouselItem key={image.id} className="flex items-center justify-center">
-                {shouldLoad ? (
-                  <img
-                    src={image.image_url}
-                    alt={artwork.title}
-                    loading={index === 0 ? "eager" : "lazy"}
-                    decoding="async"
-                    ref={index === currentIndex && registerImageRef ? registerImageRef : undefined}
-                    className="w-full h-auto max-h-[90vh] object-contain transition-opacity duration-300"
-                  />
-                ) : (
-                  <div className="w-full aspect-[3/4] bg-muted animate-pulse" />
-                )}
-              </CarouselItem>
-            );
-          })}
-        </CarouselContent>
-      </Carousel>
-
-      {/* Clickable left zone - 30% width */}
+      {/* Clickable left zone */}
       {canScrollPrev && images.length > 1 && (
         <div
           role="button"
@@ -141,7 +109,7 @@ export const HoverNavigationCarousel = ({
         />
       )}
 
-      {/* Clickable right zone - 30% width */}
+      {/* Clickable right zone */}
       {canScrollNext && images.length > 1 && (
         <div
           role="button"
@@ -158,7 +126,7 @@ export const HoverNavigationCarousel = ({
         />
       )}
 
-      {/* Left Arrow - Mobile: fixed position, Desktop: follows cursor */}
+      {/* Left Arrow */}
       {showLeftArrow && (
         <div
           className={`absolute z-20 ${isMobile ? 'pointer-events-auto' : 'pointer-events-none'}`}
@@ -184,7 +152,7 @@ export const HoverNavigationCarousel = ({
         </div>
       )}
 
-      {/* Right Arrow - Mobile: fixed position, Desktop: follows cursor */}
+      {/* Right Arrow */}
       {showRightArrow && (
         <div
           className={`absolute z-20 ${isMobile ? 'pointer-events-auto' : 'pointer-events-none'}`}
