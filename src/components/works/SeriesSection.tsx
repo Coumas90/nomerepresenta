@@ -90,7 +90,7 @@ export const SeriesSection = forwardRef<HTMLElement, SeriesSectionProps>(
         className={cn("scroll-mt-20 pb-28 md:pb-48", className)}
       >
         {/* Series divider - skip for first series */}
-        {!isFirst && <SerieDivider />}
+        
 
         {/* Artworks in this series - only render when near viewport */}
         <div className="space-y-28 md:space-y-48">
