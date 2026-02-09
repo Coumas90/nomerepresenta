@@ -182,11 +182,12 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
           )}
 
           {/* Left Arrow */}
-          {showLeftArrow && (
+          {allImages.length > 1 && hasPrevImage && (
             <div
               className={cn(
-                "absolute z-30",
-                isMobile ? "pointer-events-auto" : "pointer-events-none"
+                "absolute z-30 transition-opacity duration-300 ease-in-out",
+                isMobile ? "pointer-events-auto" : "pointer-events-none",
+                showLeftArrow ? "opacity-100" : "opacity-0"
               )}
               style={isMobile ? {
                 left: '16px',
@@ -211,11 +212,12 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
           )}
 
           {/* Right Arrow */}
-          {showRightArrow && (
+          {allImages.length > 1 && hasNextImage && (
             <div
               className={cn(
-                "absolute z-30",
-                isMobile ? "pointer-events-auto" : "pointer-events-none"
+                "absolute z-30 transition-opacity duration-300 ease-in-out",
+                isMobile ? "pointer-events-auto" : "pointer-events-none",
+                showRightArrow ? "opacity-100" : "opacity-0"
               )}
               style={isMobile ? {
                 right: '16px',
