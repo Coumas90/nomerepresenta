@@ -147,7 +147,7 @@ const Landing = () => {
                   disabled={!isClickable && !isMobile}
                   className={`
                     font-helvetica font-bold tracking-tight
-                    leading-[0.95] md:leading-[0.90]
+                    leading-[0.88] md:leading-[0.84]
                     transition-all duration-500 ease-out will-change-transform
                     ${isClickable 
                       ? "cursor-pointer" 
