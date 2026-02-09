@@ -106,6 +106,7 @@ export type Database = {
       artwork_images: {
         Row: {
           artwork_id: string
+          caption: string | null
           created_at: string | null
           display_order: number
           id: string
@@ -114,6 +115,7 @@ export type Database = {
         }
         Insert: {
           artwork_id: string
+          caption?: string | null
           created_at?: string | null
           display_order?: number
           id?: string
@@ -122,6 +124,7 @@ export type Database = {
         }
         Update: {
           artwork_id?: string
+          caption?: string | null
           created_at?: string | null
           display_order?: number
           id?: string

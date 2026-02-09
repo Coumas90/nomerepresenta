@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Upload, X, GripVertical, Star, Loader2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useUploadImage } from "@/hooks/useArtworkMutations";
-import { useArtworkImages, useAddArtworkImage, useDeleteArtworkImage, useUpdateImageOrder, useSetMainImage } from "@/hooks/useArtworkImages";
+import { useArtworkImages, useAddArtworkImage, useDeleteArtworkImage, useUpdateImageOrder, useSetMainImage, useUpdateImageCaption } from "@/hooks/useArtworkImages";
 import { Card } from "@/components/ui/card";
 import {
   DndContext,
@@ -34,9 +35,10 @@ interface SortableImageProps {
   index: number;
   onDelete: (id: string) => void;
   onSetMain: (id: string) => void;
+  onCaptionChange: (id: string, caption: string) => void;
 }
 
-const SortableImage = ({ image, index, onDelete, onSetMain }: SortableImageProps) => {
+const SortableImage = ({ image, index, onDelete, onSetMain, onCaptionChange }: SortableImageProps) => {
   const {
     attributes,
     listeners,
@@ -112,6 +114,20 @@ const SortableImage = ({ image, index, onDelete, onSetMain }: SortableImageProps
       <div className="absolute bottom-2 right-2 bg-background/80 text-xs px-2 py-1 rounded">
         #{image.display_order}
       </div>
+      {/* Caption input */}
+      <div className="p-2 border-t" onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()}>
+        <Input
+          placeholder="Caption (opcional)"
+          defaultValue={image.caption || ""}
+          onBlur={(e) => {
+            const val = e.target.value.trim();
+            if (val !== (image.caption || "")) {
+              onCaptionChange(image.id, val);
+            }
+          }}
+          className="text-xs h-7"
+        />
+      </div>
     </Card>
   );
 };
@@ -135,6 +151,7 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
   const deleteImageMutation = useDeleteArtworkImage();
   const updateOrderMutation = useUpdateImageOrder();
   const setMainImageMutation = useSetMainImage();
+  const updateCaptionMutation = useUpdateImageCaption();
   const { data: images, isLoading } = useArtworkImages(artworkId);
 
   // Cleanup timeout on unmount
@@ -291,6 +308,11 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
     if (onImagesChange) onImagesChange();
   };
 
+  const handleCaptionChange = async (imageId: string, caption: string) => {
+    if (!artworkId) return;
+    await updateCaptionMutation.mutateAsync({ imageId, artworkId, caption: caption || null });
+  };
+
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
 
@@ -434,6 +456,7 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
                       index={index}
                       onDelete={handleDelete}
                       onSetMain={handleSetMain}
+                      onCaptionChange={handleCaptionChange}
                     />
                   ))}
                 </div>
