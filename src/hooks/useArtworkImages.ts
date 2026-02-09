@@ -101,7 +101,6 @@ export const useSetMainImage = () => {
 
   return useMutation({
     mutationFn: async ({ imageId, artworkId }: { imageId: string; artworkId: string }) => {
-      // First, set all images for this artwork to is_main = false
       const { error: resetError } = await supabase
         .from("artwork_images")
         .update({ is_main: false })
@@ -109,7 +108,6 @@ export const useSetMainImage = () => {
 
       if (resetError) throw resetError;
 
-      // Then, set the selected image to is_main = true
       const { error: setError } = await supabase
         .from("artwork_images")
         .update({ is_main: true })
@@ -123,6 +121,29 @@ export const useSetMainImage = () => {
     },
     onError: (error: Error) => {
       toast.error(`Error al actualizar imagen principal: ${error.message}`);
+    },
+  });
+};
+
+export const useUpdateImageCaption = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ imageId, artworkId, caption }: { imageId: string; artworkId: string; caption: string | null }) => {
+      const { error } = await supabase
+        .from("artwork_images")
+        .update({ caption })
+        .eq("id", imageId);
+
+      if (error) throw error;
+      return { artworkId };
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["artwork-images", data.artworkId] });
+      toast.success("Caption actualizado");
+    },
+    onError: (error: Error) => {
+      toast.error(`Error al actualizar caption: ${error.message}`);
     },
   });
 };

@@ -26,9 +26,9 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
   // Build all images array: main image first, then detail, then additional images
   const allImages = useMemo(() => {
     const images = [
-      { url: artwork.image_url, isMain: true },
-      { url: artwork.image_detail_url, isMain: false },
-      ...(artworkImages?.map(img => ({ url: img.image_url, isMain: img.is_main })) || [])
+      { url: artwork.image_url, isMain: true, caption: null as string | null },
+      { url: artwork.image_detail_url, isMain: false, caption: null as string | null },
+      ...(artworkImages?.map(img => ({ url: img.image_url, isMain: img.is_main, caption: img.caption ?? null })) || [])
     ].filter((img, index, self) => 
       // Remove duplicates and nulls
       img.url && index === self.findIndex(i => i.url === img.url)
@@ -318,20 +318,28 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
 
         {/* Caption - normal flow, directly under image */}
         <figcaption className="mt-6 md:mt-8 space-y-0 text-left leading-snug">
-          <p className="text-stone-600 text-xs md:text-sm font-bold">
-            {artwork.title}
-            {artwork.year && <>, {artwork.year}</>}
-            {isViewingDetail && <span className="font-normal text-stone-500"> (DETAIL)</span>}
-          </p>
-          {artwork.materials && (
-            <p className="text-stone-500 text-xs md:text-sm">
-              {artwork.materials}
+          {allImages[currentImageIndex]?.caption ? (
+            <p className="text-stone-600 text-xs md:text-sm font-bold">
+              {allImages[currentImageIndex].caption}
             </p>
-          )}
-          {artwork.dimensions && (
-            <p className="text-stone-500 text-xs md:text-sm">
-              {artwork.dimensions}
-            </p>
+          ) : (
+            <>
+              <p className="text-stone-600 text-xs md:text-sm font-bold">
+                {artwork.title}
+                {artwork.year && <>, {artwork.year}</>}
+                {isViewingDetail && <span className="font-normal text-stone-500"> (DETAIL)</span>}
+              </p>
+              {artwork.materials && (
+                <p className="text-stone-500 text-xs md:text-sm">
+                  {artwork.materials}
+                </p>
+              )}
+              {artwork.dimensions && (
+                <p className="text-stone-500 text-xs md:text-sm">
+                  {artwork.dimensions}
+                </p>
+              )}
+            </>
           )}
         </figcaption>
       </figure>

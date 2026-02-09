@@ -56,6 +56,7 @@ export interface ArtworkImage {
   display_order: number;
   is_main: boolean;
   created_at: string;
+  caption: string | null;
 }
 
 /**

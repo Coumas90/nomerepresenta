@@ -1,0 +1,1 @@
+ALTER TABLE public.artwork_images ADD COLUMN caption text DEFAULT NULL;
