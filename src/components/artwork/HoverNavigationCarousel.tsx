@@ -99,7 +99,7 @@ export const HoverNavigationCarousel = ({
       onMouseEnter={() => !isMobile && setIsHovering(true)}
       onMouseLeave={() => !isMobile && setIsHovering(false)}
     >
-      <Carousel className="w-full" setApi={setApi}>
+      <Carousel className="w-full overflow-visible [&>div]:overflow-visible [&>div>div]:overflow-visible" setApi={setApi}>
         <CarouselContent>
           {images.map((image, index) => {
             const shouldLoad = Math.abs(index - currentIndex) <= 1;
