@@ -128,14 +128,14 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
         onMouseLeave={() => !isMobile && setIsHovering(false)}
       >
         {/* Gallery frame shadow effect */}
-        <div className="absolute inset-0 shadow-2xl shadow-stone-900/15 rounded-sm pointer-events-none z-0" />
+        <div className="absolute inset-0 shadow-2xl shadow-stone-900/15 rounded-sm" />
         
         {/* Main image */}
         {currentImage && (
           <ProgressiveImage
             src={currentImage}
             alt={artwork.title || "Artwork"}
-            className="w-full h-auto max-h-[55vh] md:max-h-[60vh] lg:max-h-[65vh]"
+            className="relative z-10 w-full h-auto max-h-[55vh] md:max-h-[60vh] lg:max-h-[65vh]"
             objectFit="contain"
             eager={false}
             blurUp
