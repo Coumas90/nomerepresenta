@@ -128,14 +128,14 @@ const Studio = () => {
         onClose={handleClose}
       />
 
-      <main className="pt-10">
+      <main>
         {groups.map((group) => (
           <section
             key={group.id}
             id={`series-${group.id}`}
             ref={(el) => setRef(group.id, el)}
             data-series-id={group.id}
-            className="scroll-mt-[40px] md:scroll-mt-[44px]"
+            className="scroll-mt-[48px] md:scroll-mt-[56px]"
           >
             <div className="flex flex-col">
               {group.images.map((img) => (
