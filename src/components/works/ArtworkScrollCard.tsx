@@ -167,7 +167,31 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
   }
 
   return (
-    <article className="w-full flex flex-col items-center">
+    <article className="relative w-full flex flex-col items-center">
+      {/* Mobile arrows — outside image, at screen edges */}
+      {isMobile && allImages.length > 1 && (
+        <>
+          {hasPrevImage && (
+            <button
+              onClick={goToPrevImage}
+              className="absolute left-2 top-1/2 -translate-y-1/2 z-30 p-1"
+              aria-label="Previous image"
+            >
+              <ChevronLeft size={24} className="text-stone-600" strokeWidth={1.5} />
+            </button>
+          )}
+          {hasNextImage && (
+            <button
+              onClick={goToNextImage}
+              className="absolute right-2 top-1/2 -translate-y-1/2 z-30 p-1"
+              aria-label="Next image"
+            >
+              <ChevronRight size={24} className="text-stone-600" strokeWidth={1.5} />
+            </button>
+          )}
+        </>
+      )}
+
       {/* Figure: image + caption stacked vertically, normal flow */}
       <figure className="inline-flex flex-col items-start max-w-[80vw] md:max-w-[60vw] lg:max-w-[50vw] mx-auto">
         {/* Image container with carousel overlays */}
@@ -202,8 +226,8 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
             />
           )}
 
-          {/* Clickable left zone - 30% width */}
-          {hasPrevImage && allImages.length > 1 && (
+          {/* Clickable left zone - 30% width (desktop only) */}
+          {!isMobile && hasPrevImage && allImages.length > 1 && (
             <div
               role="button"
               tabIndex={0}
@@ -219,8 +243,8 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
             />
           )}
 
-          {/* Clickable right zone - 30% width */}
-          {hasNextImage && allImages.length > 1 && (
+          {/* Clickable right zone - 30% width (desktop only) */}
+          {!isMobile && hasNextImage && allImages.length > 1 && (
             <div
               role="button"
               tabIndex={0}
@@ -236,63 +260,47 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
             />
           )}
 
-          {/* Left Arrow */}
-          {allImages.length > 1 && hasPrevImage && (
+          {/* Desktop Left Arrow */}
+          {!isMobile && allImages.length > 1 && hasPrevImage && (
             <div
               className={cn(
-                "absolute z-30 transition-opacity duration-300 ease-in-out",
-                isMobile ? "pointer-events-auto" : "pointer-events-none",
+                "absolute z-30 pointer-events-none transition-opacity duration-300 ease-in-out",
                 showLeftArrow ? "opacity-100" : "opacity-0"
               )}
-              style={isMobile ? {
-                left: '16px',
-                top: '50%',
-                transform: 'translateY(-50%)'
-              } : {
+              style={{
                 left: `${leftArrowX}px`,
                 top: `${mousePosition.y}px`,
                 transform: 'translate(-50%, -50%)'
               }}
-              onClick={isMobile ? goToPrevImage : undefined}
-              aria-hidden={!isMobile}
+              aria-hidden
             >
-              <div className={cn(isMobile && "bg-black/30 backdrop-blur-sm rounded-full p-2")}>
-                <ChevronLeft 
-                  size={isMobile ? 32 : 40} 
-                  className="text-stone-600 drop-shadow-lg" 
-                  strokeWidth={1.5} 
-                />
-              </div>
+              <ChevronLeft 
+                size={40} 
+                className="text-stone-600 drop-shadow-lg" 
+                strokeWidth={1.5} 
+              />
             </div>
           )}
 
-          {/* Right Arrow */}
-          {allImages.length > 1 && hasNextImage && (
+          {/* Desktop Right Arrow */}
+          {!isMobile && allImages.length > 1 && hasNextImage && (
             <div
               className={cn(
-                "absolute z-30 transition-opacity duration-300 ease-in-out",
-                isMobile ? "pointer-events-auto" : "pointer-events-none",
+                "absolute z-30 pointer-events-none transition-opacity duration-300 ease-in-out",
                 showRightArrow ? "opacity-100" : "opacity-0"
               )}
-              style={isMobile ? {
-                right: '16px',
-                top: '50%',
-                transform: 'translateY(-50%)'
-              } : {
+              style={{
                 left: `${rightArrowX}px`,
                 top: `${mousePosition.y}px`,
                 transform: 'translate(-50%, -50%)'
               }}
-              onClick={isMobile ? goToNextImage : undefined}
-              aria-hidden={!isMobile}
+              aria-hidden
             >
-              <div className={cn(isMobile && "bg-black/30 backdrop-blur-sm rounded-full p-2")}>
-                <ChevronRight 
-                  size={isMobile ? 32 : 40} 
-                  className="text-stone-600 drop-shadow-lg" 
-                  strokeWidth={1.5} 
-                />
-              </div>
+              <ChevronRight 
+                size={40} 
+                className="text-stone-600 drop-shadow-lg" 
+                strokeWidth={1.5} 
+              />
             </div>
           )}
         </div>
