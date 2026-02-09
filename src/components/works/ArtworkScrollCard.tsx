@@ -116,14 +116,13 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
 
   return (
     <article className="w-full flex flex-col items-center">
-      {/* Stage wrapper: contains both image and caption */}
+      {/* Image container with carousel functionality */}
       <div
         ref={containerRef}
         className={cn(
           "relative w-full max-w-[90vw] md:max-w-[70vw] lg:max-w-[60vw] mx-auto",
           !isMobile && (mouseZone === "left" || mouseZone === "right") ? "cursor-none" : ""
         )}
-        style={{ maxHeight: '90vh' }}
         onMouseMove={handleMouseMove}
         onMouseEnter={() => !isMobile && setIsHovering(true)}
         onMouseLeave={() => !isMobile && setIsHovering(false)}
@@ -131,19 +130,21 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
         {/* Gallery frame shadow effect */}
         <div className="absolute inset-0 shadow-2xl shadow-stone-900/15 rounded-sm pointer-events-none z-0" />
         
-        {/* Main image - fills stage, centered */}
+        {/* Main image */}
         {currentImage && (
-          <ProgressiveImage
-            src={currentImage}
-            alt={artwork.title || "Artwork"}
-            className="w-full max-h-[calc(90vh-100px)] h-auto"
-            objectFit="contain"
-            eager={false}
-            blurUp
-            modernFormats
-            responsivePreset="full"
-            sizes="(max-width: 768px) 90vw, (max-width: 1024px) 70vw, 60vw"
-          />
+          <div style={{ maxHeight: isViewingDetail ? 'calc(100vh - 420px)' : 'calc(100vh - 320px)' }}>
+            <ProgressiveImage
+              src={currentImage}
+              alt={artwork.title || "Artwork"}
+              className="w-full h-auto"
+              objectFit="contain"
+              eager={false}
+              blurUp
+              modernFormats
+              responsivePreset="full"
+              sizes="(max-width: 768px) 90vw, (max-width: 1024px) 70vw, 60vw"
+            />
+          </div>
         )}
 
         {/* Clickable left zone - 30% width */}
@@ -240,7 +241,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
 
         {/* Image indicator dots for multiple images */}
         {allImages.length > 1 && (
-          <div className="absolute bottom-[100px] left-1/2 -translate-x-1/2 z-30 flex gap-2">
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex gap-2">
             {allImages.map((_, index) => (
               <button
                 key={index}
@@ -256,28 +257,28 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
             ))}
           </div>
         )}
+      </div>
 
-        {/* Caption block - positioned at bottom-left of the stage */}
-        <div className="absolute left-0 bottom-0 z-10 pb-4 pl-1 space-y-0.5 text-left">
-          <h2 className="text-stone-900 text-sm md:text-base font-semibold uppercase tracking-wider">
-            {artwork.title}
-            {isViewingDetail && <span className="font-medium"> (DETAIL)</span>}
-          </h2>
-          <p className="text-stone-600 text-xs md:text-sm">
-            {artwork.year}
+      {/* Artwork metadata - left-aligned below image */}
+      <div className="mt-6 md:mt-8 space-y-0.5 text-left w-full max-w-[90vw] md:max-w-[70vw] lg:max-w-[60vw] mx-auto">
+        <h2 className="text-stone-900 text-sm md:text-base font-semibold uppercase tracking-wider">
+          {artwork.title}
+          {isViewingDetail && <span className="font-medium"> (DETAIL)</span>}
+        </h2>
+        <p className="text-stone-600 text-xs md:text-sm">
+          {artwork.year}
+        </p>
+        {(artwork.technique || artwork.materials) && (
+          <p className="text-stone-500 text-xs md:text-sm uppercase tracking-wide">
+            {artwork.technique}
+            {artwork.materials && ` · ${artwork.materials}`}
           </p>
-          {(artwork.technique || artwork.materials) && (
-            <p className="text-stone-500 text-xs md:text-sm uppercase tracking-wide">
-              {artwork.technique}
-              {artwork.materials && ` · ${artwork.materials}`}
-            </p>
-          )}
-          {artwork.dimensions && (
-            <p className="text-stone-400 text-xs md:text-sm">
-              {artwork.dimensions}
-            </p>
-          )}
-        </div>
+        )}
+        {artwork.dimensions && (
+          <p className="text-stone-400 text-xs md:text-sm">
+            {artwork.dimensions}
+          </p>
+        )}
       </div>
     </article>
   );
