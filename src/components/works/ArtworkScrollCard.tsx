@@ -215,8 +215,8 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
                 }
               }}
               className={cn(
-                "absolute left-0 top-0 bottom-0 w-[30%] z-20 focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/50",
-                !isMobile && "cursor-none"
+                "absolute top-0 bottom-0 z-20 focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/50",
+                isMobile ? "left-0 w-[30%]" : "-left-[15vw] w-[calc(30%+15vw)] cursor-none"
               )}
               aria-label="Previous image"
             />
@@ -235,8 +235,8 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
                 }
               }}
               className={cn(
-                "absolute right-0 top-0 bottom-0 w-[30%] z-20 focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/50",
-                !isMobile && "cursor-none"
+                "absolute top-0 bottom-0 z-20 focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/50",
+                isMobile ? "right-0 w-[30%]" : "-right-[15vw] w-[calc(30%+15vw)] cursor-none"
               )}
               aria-label="Next image"
             />
