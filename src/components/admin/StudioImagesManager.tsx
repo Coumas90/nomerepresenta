@@ -1,20 +1,82 @@
 import { useState } from "react";
 import { Layers } from "lucide-react";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { useStudioImages } from "@/hooks/useStudioImages";
 import { useSeries } from "@/hooks/useSeries";
 import { useDeleteStudioImage } from "@/hooks/useStudioImageMutations";
+import { useUpdateSeriesOrder } from "@/hooks/useSeriesMutations";
 import type { StudioImage, SeriesData } from "@/types";
 import { SeriesStudioSection } from "./studio/SeriesStudioSection";
 import { ImagePreviewDialog, DeleteImageDialog } from "./studio";
+
+// Wrapper to make each series section sortable
+const SortableSeriesItem = ({
+  series,
+  images,
+  onPreviewImage,
+  onDeleteImage,
+}: {
+  series: SeriesData;
+  images: StudioImage[];
+  onPreviewImage: (img: StudioImage) => void;
+  onDeleteImage: (id: string) => void;
+}) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: series.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} {...attributes}>
+      <SeriesStudioSection
+        seriesId={series.id}
+        seriesName={series.name}
+        images={images}
+        onPreviewImage={onPreviewImage}
+        onDeleteImage={onDeleteImage}
+        dragHandleProps={listeners}
+      />
+    </div>
+  );
+};
 
 const StudioImagesManager = () => {
   const { data: images = [], isLoading: imagesLoading } = useStudioImages();
   const { data: allSeries = [], isLoading: seriesLoading } = useSeries();
   const deleteMutation = useDeleteStudioImage();
+  const updateSeriesOrderMutation = useUpdateSeriesOrder();
 
   const [previewImage, setPreviewImage] = useState<StudioImage | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [imageToDelete, setImageToDelete] = useState<string | null>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+  );
 
   const handleDeleteClick = (id: string) => {
     setImageToDelete(id);
@@ -37,19 +99,23 @@ const StudioImagesManager = () => {
     imagesBySeries.get(key)!.push(img);
   }
 
-  // Get series that have images, in display order
-  const seriesWithImages = allSeries
-    .filter((s) => imagesBySeries.has(s.id))
-    .sort((a, b) => a.display_order - b.display_order);
-
-  // Series without images (available for upload)
-  const seriesWithoutImages = allSeries
-    .filter((s) => !imagesBySeries.has(s.id))
-    .sort((a, b) => a.display_order - b.display_order);
+  // All series in display order (both with and without images)
+  const sortedSeries = [...allSeries].sort((a, b) => a.display_order - b.display_order);
 
   const ungroupedImages = imagesBySeries.get("__ungrouped") || [];
 
   const isLoading = imagesLoading || seriesLoading;
+
+  const handleSeriesDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = sortedSeries.findIndex((s) => s.id === active.id);
+    const newIndex = sortedSeries.findIndex((s) => s.id === over.id);
+    const reordered = arrayMove(sortedSeries, oldIndex, newIndex);
+    const updates = reordered.map((s, i) => ({ id: s.id, display_order: i }));
+    updateSeriesOrderMutation.mutate(updates);
+  };
 
   if (isLoading) {
     return <div className="text-center py-8 text-muted-foreground">Loading studio images...</div>;
@@ -66,34 +132,32 @@ const StudioImagesManager = () => {
               Manage Studio
             </h2>
             <p className="text-sm text-muted-foreground mt-1">
-              {allSeries.length} Series · {images.length} Images
+              {allSeries.length} Series · {images.length} Images · Drag to reorder
             </p>
           </div>
         </div>
 
-        {/* Series with images */}
-        {seriesWithImages.map((series) => (
-          <SeriesStudioSection
-            key={series.id}
-            seriesId={series.id}
-            seriesName={series.name}
-            images={imagesBySeries.get(series.id) || []}
-            onPreviewImage={setPreviewImage}
-            onDeleteImage={handleDeleteClick}
-          />
-        ))}
-
-        {/* Empty series (still show for uploading) */}
-        {seriesWithoutImages.map((series) => (
-          <SeriesStudioSection
-            key={series.id}
-            seriesId={series.id}
-            seriesName={series.name}
-            images={[]}
-            onPreviewImage={setPreviewImage}
-            onDeleteImage={handleDeleteClick}
-          />
-        ))}
+        {/* Sortable series */}
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleSeriesDragEnd}
+        >
+          <SortableContext
+            items={sortedSeries.map((s) => s.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            {sortedSeries.map((series) => (
+              <SortableSeriesItem
+                key={series.id}
+                series={series}
+                images={imagesBySeries.get(series.id) || []}
+                onPreviewImage={setPreviewImage}
+                onDeleteImage={handleDeleteClick}
+              />
+            ))}
+          </SortableContext>
+        </DndContext>
 
         {/* Ungrouped images */}
         {ungroupedImages.length > 0 && (

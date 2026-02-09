@@ -14,9 +14,11 @@ import {
 } from "@dnd-kit/sortable";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Upload, Trash2, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Upload, Trash2, X, Pencil, Check, GripVertical } from "lucide-react";
 import { SortableThumb } from "./SortableThumb";
 import { useUploadStudioImage, useCreateStudioImage, useDeleteStudioImage, useUpdateStudioImagesOrder } from "@/hooks/useStudioImageMutations";
+import { useUpdateSeries } from "@/hooks/useSeriesMutations";
 import { toast } from "@/hooks/use-toast";
 import type { StudioImage } from "@/types";
 
@@ -27,6 +29,7 @@ interface SeriesStudioSectionProps {
   onDeleteSeries?: () => void;
   onPreviewImage: (image: StudioImage) => void;
   onDeleteImage: (id: string) => void;
+  dragHandleProps?: Record<string, unknown>;
 }
 
 export const SeriesStudioSection = ({
@@ -36,13 +39,17 @@ export const SeriesStudioSection = ({
   onDeleteSeries,
   onPreviewImage,
   onDeleteImage,
+  dragHandleProps,
 }: SeriesStudioSectionProps) => {
   const uploadMutation = useUploadStudioImage();
   const createMutation = useCreateStudioImage();
   const updateOrderMutation = useUpdateStudioImagesOrder();
+  const updateSeriesMutation = useUpdateSeries();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editName, setEditName] = useState(seriesName);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
@@ -102,15 +109,49 @@ export const SeriesStudioSection = ({
     }
   };
 
+  const handleSaveName = () => {
+    if (editName.trim() && editName !== seriesName && seriesId) {
+      updateSeriesMutation.mutate({ id: seriesId, name: editName.trim() });
+    }
+    setIsEditing(false);
+  };
+
   return (
     <Card className="border border-border">
       <CardContent className="p-5 space-y-4">
         {/* Series header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <h3 className="font-bold text-base uppercase tracking-wide">
-              {seriesName}
-            </h3>
+            {dragHandleProps && seriesId && (
+              <div {...dragHandleProps} className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground">
+                <GripVertical className="h-5 w-5" />
+              </div>
+            )}
+            {isEditing && seriesId ? (
+              <div className="flex items-center gap-2">
+                <Input
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") handleSaveName(); if (e.key === "Escape") setIsEditing(false); }}
+                  className="h-8 w-32 text-sm font-bold uppercase"
+                  autoFocus
+                />
+                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleSaveName}>
+                  <Check className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <h3 className="font-bold text-base uppercase tracking-wide">
+                  {seriesName}
+                </h3>
+                {seriesId && (
+                  <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => { setEditName(seriesName); setIsEditing(true); }}>
+                    <Pencil className="h-3.5 w-3.5" />
+                  </Button>
+                )}
+              </div>
+            )}
             <span className="text-xs text-muted-foreground">
               {images.length} image{images.length !== 1 ? "s" : ""}
             </span>
