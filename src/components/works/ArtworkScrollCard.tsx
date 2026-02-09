@@ -132,17 +132,19 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
         
         {/* Main image */}
         {currentImage && (
-          <ProgressiveImage
-            src={currentImage}
-            alt={artwork.title || "Artwork"}
-            className="w-full h-auto max-h-[55vh] md:max-h-[60vh] lg:max-h-[65vh]"
-            objectFit="contain"
-            eager={false}
-            blurUp
-            modernFormats
-            responsivePreset="full"
-            sizes="(max-width: 768px) 90vw, (max-width: 1024px) 70vw, 60vw"
-          />
+          <div style={{ maxHeight: 'calc(100vh - 320px)' }}>
+            <ProgressiveImage
+              src={currentImage}
+              alt={artwork.title || "Artwork"}
+              className="w-full h-auto"
+              objectFit="contain"
+              eager={false}
+              blurUp
+              modernFormats
+              responsivePreset="full"
+              sizes="(max-width: 768px) 90vw, (max-width: 1024px) 70vw, 60vw"
+            />
+          </div>
         )}
 
         {/* Clickable left zone - 30% width */}
