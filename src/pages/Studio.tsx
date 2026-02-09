@@ -122,7 +122,7 @@ const Studio = () => {
         onClose={handleClose}
       />
 
-      <main className="pt-[40px] md:pt-[44px]">
+      <main>
         {groups.map((group) => (
           <section
             key={group.id}
