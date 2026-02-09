@@ -1,85 +1,83 @@
-import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { X } from "lucide-react";
 import { useStudioImages, type StudioImageWithSeries } from "@/hooks/useStudioImages";
+import { useSeries } from "@/hooks/useSeries";
 import { ProgressiveImage } from "@/components/ProgressiveImage";
-import { cn } from "@/lib/utils";
-
-/** Map series display_order to Roman numeral labels */
-const ROMAN: Record<number, string> = { 0: "I", 1: "II", 2: "III", 3: "IV", 4: "V", 5: "VI" };
+import { SeriesHeader } from "@/components/works/SeriesHeader";
+import type { SeriesData } from "@/types";
 
 const Studio = () => {
   const navigate = useNavigate();
-  const { data: images, isLoading } = useStudioImages();
-  const [isPageLoaded, setIsPageLoaded] = useState(false);
-  const [activeSeriesIdx, setActiveSeriesIdx] = useState(0);
-  const sectionRefs = useRef<Map<number, HTMLElement>>(new Map());
+  const { data: images, isLoading: imagesLoading } = useStudioImages();
+  const { data: allSeries, isLoading: seriesLoading } = useSeries();
+  const [activeSeriesId, setActiveSeriesId] = useState<string | null>(null);
+  const sectionRefs = useRef<Map<string, HTMLElement>>(new Map());
 
-  useEffect(() => {
-    const t = setTimeout(() => setIsPageLoaded(true), 100);
-    return () => clearTimeout(t);
-  }, []);
+  // Build series list that have studio images
+  const seriesWithImages = useMemo(() => {
+    if (!images?.length || !allSeries?.length) return [];
 
-  // Group images by series (sorted by series display_order, ungrouped last)
-  const groups = useMemo(() => {
-    if (!images?.length) return [];
-    const map = new Map<string, { label: string; order: number; images: StudioImageWithSeries[] }>();
-    const ungrouped: StudioImageWithSeries[] = [];
+    const seriesIdsWithImages = new Set(
+      images.filter((img) => img.series_id).map((img) => img.series_id!)
+    );
 
+    return allSeries
+      .filter((s) => seriesIdsWithImages.has(s.id))
+      .sort((a, b) => a.display_order - b.display_order);
+  }, [images, allSeries]);
+
+  // Group images by series_id
+  const imagesBySeries = useMemo(() => {
+    if (!images?.length) return new Map<string, StudioImageWithSeries[]>();
+    const map = new Map<string, StudioImageWithSeries[]>();
     for (const img of images) {
-      if (!img.series_id) {
-        ungrouped.push(img);
-        continue;
-      }
-      const key = img.series_id;
-      if (!map.has(key)) {
-        map.set(key, {
-          label: img.series_name || "Untitled",
-          order: img.series_display_order ?? 999,
-          images: [],
-        });
-      }
-      map.get(key)!.images.push(img);
+      if (!img.series_id) continue;
+      if (!map.has(img.series_id)) map.set(img.series_id, []);
+      map.get(img.series_id)!.push(img);
     }
-
-    const sorted = [...map.values()].sort((a, b) => a.order - b.order);
-    // Assign roman numerals based on sorted position
-    const result = sorted.map((g, i) => ({
-      ...g,
-      roman: ROMAN[i] || `${i + 1}`,
-    }));
-
-    if (ungrouped.length) {
-      result.push({ label: "Other", order: 999, images: ungrouped, roman: "" });
-    }
-
-    return result;
+    return map;
   }, [images]);
 
-  // Intersection observer to detect current series while scrolling
-  const setRef = useCallback((idx: number, el: HTMLElement | null) => {
-    if (el) sectionRefs.current.set(idx, el);
-    else sectionRefs.current.delete(idx);
-  }, []);
+  // Set initial active series
+  useEffect(() => {
+    if (seriesWithImages.length && !activeSeriesId) {
+      setActiveSeriesId(seriesWithImages[0].id);
+    }
+  }, [seriesWithImages, activeSeriesId]);
 
+  // IntersectionObserver for active series detection
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) {
-            const idx = Number(entry.target.getAttribute("data-series-idx"));
-            if (!isNaN(idx)) setActiveSeriesIdx(idx);
+            const id = entry.target.getAttribute("data-series-id");
+            if (id) setActiveSeriesId(id);
           }
         }
       },
-      { threshold: 0.3 }
+      { rootMargin: "-20% 0px -60% 0px", threshold: 0 }
     );
 
     sectionRefs.current.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, [groups]);
+  }, [seriesWithImages, imagesBySeries]);
+
+  const handleSeriesClick = useCallback((seriesId: string) => {
+    const section = document.getElementById(`series-${seriesId}`);
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, []);
 
   const handleClose = useCallback(() => navigate("/"), [navigate]);
+
+  const setRef = useCallback((id: string, el: HTMLElement | null) => {
+    if (el) sectionRefs.current.set(id, el);
+    else sectionRefs.current.delete(id);
+  }, []);
+
+  const isLoading = imagesLoading || seriesLoading;
 
   if (isLoading) {
     return (
@@ -89,10 +87,15 @@ const Studio = () => {
     );
   }
 
-  if (!groups.length) {
+  if (!seriesWithImages.length) {
     return (
-      <div className={cn("min-h-screen bg-stone-100 flex flex-col transition-opacity duration-500", isPageLoaded ? "opacity-100" : "opacity-0")}>
-        <StudioHeader onClose={handleClose} isPageLoaded={isPageLoaded} />
+      <div className="min-h-screen bg-stone-100 flex flex-col">
+        <StudioSeriesHeader
+          series={[]}
+          activeSeriesId={null}
+          onSeriesClick={() => {}}
+          onClose={handleClose}
+        />
         <div className="flex-1 flex items-center justify-center">
           <p className="text-stone-500">No studio images available yet.</p>
         </div>
@@ -101,78 +104,103 @@ const Studio = () => {
   }
 
   return (
-    <div className={cn("min-h-screen bg-stone-100 transition-opacity duration-500", isPageLoaded ? "opacity-100" : "opacity-0")}>
-      <StudioHeader onClose={handleClose} isPageLoaded={isPageLoaded} />
+    <div className="min-h-screen bg-stone-100">
+      <StudioSeriesHeader
+        series={seriesWithImages}
+        activeSeriesId={activeSeriesId}
+        onSeriesClick={handleSeriesClick}
+        onClose={handleClose}
+      />
 
-      {/* Content column */}
-      <div className="max-w-[90vw] md:max-w-[70vw] lg:max-w-[55vw] mx-auto pt-20 md:pt-24">
-        {groups.map((group, idx) => (
-          <section
-            key={idx}
-            ref={(el) => setRef(idx, el)}
-            data-series-idx={idx}
-          >
-            {/* Series label */}
-            {group.roman && (
-              <div className="py-6 md:py-8">
-                <span
-                  className={cn(
-                    "text-stone-400 text-xs tracking-[0.3em] uppercase transition-all duration-300",
-                    activeSeriesIdx === idx && "text-stone-700 font-bold"
-                  )}
-                >
-                  {group.roman}
-                </span>
+      <main className="pt-[52px] md:pt-[60px]">
+        {seriesWithImages.map((series) => {
+          const seriesImages = imagesBySeries.get(series.id) || [];
+          return (
+            <section
+              key={series.id}
+              id={`series-${series.id}`}
+              ref={(el) => setRef(series.id, el)}
+              data-series-id={series.id}
+              className="scroll-mt-[52px] md:scroll-mt-[60px]"
+            >
+              {/* Images edge-to-edge, no gaps */}
+              <div className="flex flex-col">
+                {seriesImages.map((img) => (
+                  <div key={img.id} className="w-full leading-[0]">
+                    <ProgressiveImage
+                      src={img.image_url}
+                      alt={img.title || "Studio image"}
+                      className="w-full [&_img]:w-full [&_img]:h-auto [&_img]:block"
+                      objectFit="contain"
+                      eager={false}
+                      blurUp
+                      modernFormats
+                      responsivePreset="full"
+                      sizes="100vw"
+                    />
+                  </div>
+                ))}
               </div>
-            )}
-
-            {/* Images stacked with no gap */}
-            <div className="flex flex-col">
-              {group.images.map((img) => (
-                <div key={img.id} className="w-full leading-[0]">
-                  <ProgressiveImage
-                    src={img.image_url}
-                    alt={img.title || "Studio image"}
-                    className="w-full [&_img]:w-full [&_img]:h-auto [&_img]:block"
-                    objectFit="contain"
-                    eager={false}
-                    blurUp
-                    modernFormats
-                    responsivePreset="full"
-                    sizes="(max-width: 768px) 90vw, (max-width: 1024px) 70vw, 55vw"
-                  />
-                </div>
-              ))}
-            </div>
-          </section>
-        ))}
-
-        {/* Bottom breathing room */}
-        <div className="h-24" />
-      </div>
+            </section>
+          );
+        })}
+      </main>
     </div>
   );
 };
 
-/** Minimal sticky header with STUDIO label and close button */
-function StudioHeader({ onClose, isPageLoaded }: { onClose: () => void; isPageLoaded: boolean }) {
+/** Studio variant of SeriesHeader - shows "STUDIO" instead of "WORKS" */
+function StudioSeriesHeader(props: {
+  series: SeriesData[];
+  activeSeriesId: string | null;
+  onSeriesClick: (id: string) => void;
+  onClose: () => void;
+}) {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollContainerRef.current && props.activeSeriesId) {
+      const btn = scrollContainerRef.current.querySelector(
+        `[data-series-id="${props.activeSeriesId}"]`
+      );
+      if (btn) btn.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+    }
+  }, [props.activeSeriesId]);
+
   return (
-    <header
-      className={cn(
-        "fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 md:p-8 bg-stone-100/80 backdrop-blur-sm transition-all duration-500 delay-100",
-        isPageLoaded ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
-      )}
-    >
-      <span className="text-stone-900 text-xs md:text-base font-bold tracking-widest uppercase">
-        STUDIO
-      </span>
-      <button
-        onClick={onClose}
-        className="min-w-[44px] min-h-[44px] flex items-center justify-center text-stone-900 hover:opacity-70 transition-opacity duration-200 focus:outline-none"
-        aria-label="Close and return to landing"
-      >
-        <X className="w-5 h-5 md:w-7 md:h-7" strokeWidth={1.5} />
-      </button>
+    <header className="fixed top-0 left-0 right-0 z-50 bg-stone-100/95 backdrop-blur-sm border-b border-stone-200">
+      <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4">
+        <div
+          ref={scrollContainerRef}
+          className="flex items-center gap-4 md:gap-6 overflow-x-auto scrollbar-hide"
+        >
+          <span className="text-stone-700 font-bold text-sm md:text-base uppercase tracking-widest flex-shrink-0">
+            STUDIO
+          </span>
+          {props.series.map((s) => (
+            <button
+              key={s.id}
+              data-series-id={s.id}
+              onClick={() => props.onSeriesClick(s.id)}
+              className={`text-sm md:text-base uppercase tracking-wider transition-colors whitespace-nowrap flex-shrink-0 ${
+                s.id === props.activeSeriesId
+                  ? "text-stone-600 font-bold"
+                  : "text-stone-400 hover:text-stone-600"
+              }`}
+            >
+              {s.name}
+            </button>
+          ))}
+        </div>
+
+        <button
+          onClick={props.onClose}
+          className="flex-shrink-0 ml-4 text-stone-900 hover:text-stone-600 transition-colors text-lg md:text-xl font-light"
+          aria-label="Close studio"
+        >
+          ✕
+        </button>
+      </div>
     </header>
   );
 }
