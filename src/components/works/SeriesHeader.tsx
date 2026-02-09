@@ -35,7 +35,7 @@ export const SeriesHeader = ({
   return (
     <header className="sticky top-0 z-50 bg-stone-100/95 backdrop-blur-sm border-b border-stone-200">
       <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4">
-        {/* Series navigation: WORKS > active > others */}
+        {/* Series navigation: WORKS then all series in fixed order */}
         <div
           ref={scrollContainerRef}
           className="flex items-center gap-4 md:gap-6 overflow-x-auto scrollbar-hide"
@@ -44,21 +44,16 @@ export const SeriesHeader = ({
             WORKS
           </span>
 
-          {activeSeries && (
-            <button
-              onClick={() => onSeriesClick(activeSeries.id)}
-              className="text-stone-700 font-bold text-sm md:text-base uppercase tracking-wider transition-colors hover:text-stone-900 flex-shrink-0"
-            >
-              {activeSeries.name}
-            </button>
-          )}
-
-          {otherSeries.map((s) => (
+          {series.map((s) => (
             <button
               key={s.id}
               data-series-id={s.id}
               onClick={() => onSeriesClick(s.id)}
-              className="text-stone-400 text-sm md:text-base uppercase tracking-wider transition-colors hover:text-stone-600 whitespace-nowrap flex-shrink-0"
+              className={`text-sm md:text-base uppercase tracking-wider transition-colors whitespace-nowrap flex-shrink-0 ${
+                s.id === activeSeriesId
+                  ? "text-stone-700 font-bold"
+                  : "text-stone-400 hover:text-stone-600"
+              }`}
             >
               {s.name}
             </button>
