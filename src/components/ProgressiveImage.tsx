@@ -148,7 +148,7 @@ export const ProgressiveImage = ({
 
   const objectFitClass = objectFit === "contain" ? "object-contain" : objectFit === "fill" ? "object-fill" : objectFit === "none" ? "object-none" : objectFit === "scale-down" ? "object-scale-down" : "object-cover";
   const heightClass = objectFit === "contain" ? "h-auto" : "h-full";
-  const imageClasses = `w-full ${heightClass} ${objectFitClass} transition-all duration-500 ease-out z-20 relative ${
+  const imageClasses = `w-full ${heightClass} ${objectFitClass} transition-all duration-500 ease-out ${objectFit === "contain" ? "relative z-0" : "z-20 relative"} ${
     skipInternalFade ? "opacity-100" : (isLoaded ? "opacity-100 blur-0" : "opacity-0")
   } ${onClick ? 'cursor-pointer' : ''}`;
 
