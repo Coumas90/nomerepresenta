@@ -147,7 +147,8 @@ export const ProgressiveImage = ({
   };
 
   const objectFitClass = objectFit === "contain" ? "object-contain" : objectFit === "fill" ? "object-fill" : objectFit === "none" ? "object-none" : objectFit === "scale-down" ? "object-scale-down" : "object-cover";
-  const imageClasses = `w-full h-full ${objectFitClass} transition-all duration-500 ease-out z-20 relative ${
+  const heightClass = objectFit === "contain" ? "h-auto" : "h-full";
+  const imageClasses = `w-full ${heightClass} ${objectFitClass} transition-all duration-500 ease-out z-20 relative ${
     skipInternalFade ? "opacity-100" : (isLoaded ? "opacity-100 blur-0" : "opacity-0")
   } ${onClick ? 'cursor-pointer' : ''}`;
 
@@ -156,7 +157,7 @@ export const ProgressiveImage = ({
   const showWebp = (webpSrcSet || webpSrc) && !webpFailed;
 
   return (
-    <div ref={imgRef} className={`relative overflow-hidden ${className}`}>
+    <div ref={imgRef} className={`relative ${objectFit === "contain" ? "" : "overflow-hidden"} ${className}`}>
       {/* Skeleton loading state - shown until placeholder or main image loads */}
       {!isLoaded && !placeholderLoaded && !skipInternalFade && (
         <ImageSkeleton 
