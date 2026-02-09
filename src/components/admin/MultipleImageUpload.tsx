@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Upload, X, Loader2 } from "lucide-react";
+import { Upload, X, GripVertical, Star, Loader2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useUploadImage } from "@/hooks/useArtworkMutations";
 import { useArtworkImages, useAddArtworkImage, useDeleteArtworkImage, useUpdateImageOrder, useSetMainImage, useUpdateImageCaption } from "@/hooks/useArtworkImages";
@@ -19,14 +20,117 @@ import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
+  useSortable,
   rectSortingStrategy,
 } from "@dnd-kit/sortable";
-import SortableImageCard from "./artwork-images/SortableImageCard";
+import { CSS } from "@dnd-kit/utilities";
 
 interface MultipleImageUploadProps {
   artworkId?: string;
   onImagesChange?: () => void;
 }
+
+interface SortableImageProps {
+  image: any;
+  index: number;
+  onDelete: (id: string) => void;
+  onSetMain: (id: string) => void;
+  onCaptionChange: (id: string, caption: string) => void;
+}
+
+const SortableImage = ({ image, index, onDelete, onSetMain, onCaptionChange }: SortableImageProps) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: image.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    cursor: isDragging ? 'grabbing' : 'grab',
+  };
+
+  return (
+    <Card 
+      ref={setNodeRef} 
+      style={style} 
+      className="relative group overflow-hidden hover:ring-2 hover:ring-primary/50 transition-all"
+      {...attributes} 
+      {...listeners}
+    >
+      <div className="absolute top-2 left-2 z-10 pointer-events-none">
+        <div className="bg-background/90 p-1.5 rounded shadow-sm">
+          <GripVertical className="h-4 w-4 text-primary" />
+        </div>
+      </div>
+      {isDragging && (
+        <div className="absolute inset-0 bg-primary/10 border-2 border-primary border-dashed rounded-lg" />
+      )}
+      <img
+        src={image.image_url}
+        alt={`Artwork image ${index + 1}`}
+        className="w-full h-40 object-cover pointer-events-none"
+      />
+      <div 
+        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <Button
+          type="button"
+          variant={image.is_main ? "default" : "secondary"}
+          size="icon"
+          className="h-8 w-8 pointer-events-auto"
+          onClick={(e) => {
+            e.stopPropagation();
+            onSetMain(image.id);
+          }}
+          title="Marcar como principal"
+        >
+          <Star className={`h-4 w-4 ${image.is_main ? 'fill-current' : ''}`} />
+        </Button>
+        <Button
+          type="button"
+          variant="destructive"
+          size="icon"
+          className="h-8 w-8 pointer-events-auto"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(image.id);
+          }}
+        >
+          <X className="h-4 w-4" />
+        </Button>
+      </div>
+      {image.is_main && (
+        <div className="absolute bottom-2 left-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded">
+          Principal
+        </div>
+      )}
+      <div className="absolute bottom-2 right-2 bg-background/80 text-xs px-2 py-1 rounded">
+        #{image.display_order}
+      </div>
+      {/* Caption input */}
+      <div className="p-2 border-t" onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()}>
+        <Input
+          placeholder="Caption (opcional)"
+          defaultValue={image.caption || ""}
+          onBlur={(e) => {
+            const val = e.target.value.trim();
+            if (val !== (image.caption || "")) {
+              onCaptionChange(image.id, val);
+            }
+          }}
+          className="text-xs h-7"
+        />
+      </div>
+    </Card>
+  );
+};
 
 interface UploadingImage {
   id: string;
@@ -71,6 +175,7 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
 
     setUploading(true);
     
+    // Create preview objects for each file
     const newUploadingImages: UploadingImage[] = Array.from(files)
       .filter(file => file.type.startsWith('image/'))
       .map(file => ({
@@ -88,6 +193,7 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
         const uploadingImage = newUploadingImages[i];
         
         try {
+          // Update progress: uploading
           setUploadingImages(prev => 
             prev.map(img => 
               img.id === uploadingImage.id 
@@ -102,6 +208,7 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
             fileName 
           });
 
+          // Update progress: processing
           setUploadingImages(prev => 
             prev.map(img => 
               img.id === uploadingImage.id 
@@ -117,6 +224,7 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
             is_main: (images?.length || 0) === 0 && i === 0,
           });
 
+          // Update progress: complete
           setUploadingImages(prev => 
             prev.map(img => 
               img.id === uploadingImage.id 
@@ -125,6 +233,7 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
             )
           );
 
+          // Clean up preview URL
           URL.revokeObjectURL(uploadingImage.preview);
         } catch (error) {
           console.error("Error uploading image:", error);
@@ -140,6 +249,7 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
       
       if (onImagesChange) onImagesChange();
       
+      // Clear uploading images after a brief delay to show completion
       clearUploadTimeoutRef.current = window.setTimeout(() => {
         setUploadingImages([]);
       }, 1000);
@@ -198,9 +308,9 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
     if (onImagesChange) onImagesChange();
   };
 
-  const handleCaptionChange = async (imageId: string, caption: string | null) => {
+  const handleCaptionChange = async (imageId: string, caption: string) => {
     if (!artworkId) return;
-    await updateCaptionMutation.mutateAsync({ imageId, artworkId, caption });
+    await updateCaptionMutation.mutateAsync({ imageId, artworkId, caption: caption || null });
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
@@ -263,7 +373,7 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
         </div>
       </div>
 
-      {/* Drag & Drop Zone */}
+      {/* Drag & Drop Zone - visible cuando hay imágenes */}
       {images && images.length > 0 && (
         <div
           className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors ${
@@ -338,9 +448,9 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
               onDragEnd={handleDragEnd}
             >
               <SortableContext items={images.map((img) => img.id)} strategy={rectSortingStrategy}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {images.map((image, index) => (
-                    <SortableImageCard
+                    <SortableImage
                       key={image.id}
                       image={image}
                       index={index}
