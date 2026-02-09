@@ -70,7 +70,8 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
     swipeLockedRef.current = null;
   }, [isMobile, allImages.length]);
 
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+  // Use a native event listener for touchmove so we can set { passive: false } and call preventDefault
+  const touchMoveHandler = useCallback((e: TouchEvent) => {
     if (!isMobile || !swipeStartRef.current || allImages.length <= 1) return;
     const touch = e.touches[0];
     const deltaX = touch.clientX - swipeStartRef.current.x;
@@ -83,9 +84,18 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
 
     // Prevent vertical scroll when swiping horizontally on the image
     if (swipeLockedRef.current === "horizontal") {
+      e.preventDefault();
       e.stopPropagation();
     }
   }, [isMobile, allImages.length]);
+
+  // Attach native touchmove with { passive: false } to allow preventDefault
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || !isMobile || allImages.length <= 1) return;
+    el.addEventListener("touchmove", touchMoveHandler, { passive: false });
+    return () => el.removeEventListener("touchmove", touchMoveHandler);
+  }, [touchMoveHandler, isMobile, allImages.length]);
 
   const handleTouchEnd = useCallback((e: React.TouchEvent) => {
     if (!isMobile || !swipeStartRef.current || allImages.length <= 1) return;
@@ -181,7 +191,6 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
           onMouseEnter={() => !isMobile && setIsHovering(true)}
           onMouseLeave={() => !isMobile && setIsHovering(false)}
           onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
           {/* Gallery frame shadow effect */}
