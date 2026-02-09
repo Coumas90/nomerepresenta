@@ -27,8 +27,8 @@ export const StudioHeader = ({
   }, [activeSeriesId]);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-transparent" style={{ touchAction: "manipulation" }}>
-      <div className="flex items-center justify-between px-4 py-2 md:px-6 md:py-3">
+    <header className="sticky top-0 left-0 right-0 z-50 bg-stone-100/95 backdrop-blur-sm border-b border-stone-200" style={{ touchAction: "manipulation" }}>
+      <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4">
         <div
           ref={scrollContainerRef}
           className="flex items-center gap-4 md:gap-6 overflow-x-auto scrollbar-hide"
