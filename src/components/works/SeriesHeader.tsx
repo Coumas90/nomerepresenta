@@ -54,7 +54,7 @@ export const SeriesHeader = ({
         {/* Other series - Right side with horizontal scroll */}
         <div
           ref={scrollContainerRef}
-          className="flex items-center gap-4 md:gap-6 overflow-x-auto scrollbar-hide ml-4"
+          className="flex items-center gap-4 md:gap-6 overflow-x-auto scrollbar-hide ml-4 md:ml-6"
         >
           {otherSeries.map((s) => (
             <button
