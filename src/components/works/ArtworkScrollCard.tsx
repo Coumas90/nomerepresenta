@@ -318,29 +318,39 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
 
         {/* Caption - normal flow, directly under image */}
         <figcaption className="mt-6 md:mt-8 space-y-0 text-left leading-snug">
-          {allImages[currentImageIndex]?.caption ? (
-            <p className="text-stone-600 text-xs md:text-sm font-bold">
-              {allImages[currentImageIndex].caption}
-            </p>
-          ) : (
-            <>
-              <p className="text-stone-600 text-xs md:text-sm font-bold">
-                {artwork.title}
-                {artwork.year && <>, {artwork.year}</>}
-                {isViewingDetail && <span className="font-normal text-stone-500"> (DETAIL)</span>}
-              </p>
-              {artwork.materials && (
-                <p className="text-stone-500 text-xs md:text-sm">
-                  {artwork.materials}
+          {(() => {
+            const currentCaption = allImages[currentImageIndex]?.caption;
+            const showDetail = currentCaption === "(DETAIL)" || (!currentCaption && isViewingDetail);
+            const hasCustomCaption = currentCaption && currentCaption !== "(DETAIL)";
+
+            if (hasCustomCaption) {
+              return (
+                <p className="text-stone-600 text-xs md:text-sm font-bold">
+                  {currentCaption}
                 </p>
-              )}
-              {artwork.dimensions && (
-                <p className="text-stone-500 text-xs md:text-sm">
-                  {artwork.dimensions}
+              );
+            }
+
+            return (
+              <>
+                <p className="text-stone-600 text-xs md:text-sm font-bold">
+                  {artwork.title}
+                  {artwork.year && <>, {artwork.year}</>}
+                  {showDetail && <span className="font-normal text-stone-500"> (DETAIL)</span>}
                 </p>
-              )}
-            </>
-          )}
+                {artwork.materials && (
+                  <p className="text-stone-500 text-xs md:text-sm">
+                    {artwork.materials}
+                  </p>
+                )}
+                {artwork.dimensions && (
+                  <p className="text-stone-500 text-xs md:text-sm">
+                    {artwork.dimensions}
+                  </p>
+                )}
+              </>
+            );
+          })()}
         </figcaption>
       </figure>
     </article>
