@@ -122,6 +122,7 @@ export const BulkUploadSection = ({ onComplete, onCancel, existingImagesCount }:
           description: item.description.trim() || null,
           image_url: item.url!,
           display_order: currentOrder,
+          series_id: null,
         });
 
         currentOrder++;

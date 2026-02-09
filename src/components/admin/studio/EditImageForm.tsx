@@ -57,6 +57,7 @@ export const EditImageForm = ({ image, onSuccess, onCancel, imagesCount }: EditI
         description: formData.description || null,
         image_url: formData.image_url,
         display_order: imagesCount,
+        series_id: null,
       });
     }
 

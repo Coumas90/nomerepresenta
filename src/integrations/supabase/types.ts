@@ -374,6 +374,7 @@ export type Database = {
           display_order: number
           id: string
           image_url: string
+          series_id: string | null
           title: string | null
           updated_at: string
         }
@@ -383,6 +384,7 @@ export type Database = {
           display_order?: number
           id?: string
           image_url: string
+          series_id?: string | null
           title?: string | null
           updated_at?: string
         }
@@ -392,10 +394,19 @@ export type Database = {
           display_order?: number
           id?: string
           image_url?: string
+          series_id?: string | null
           title?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "studio_images_series_id_fkey"
+            columns: ["series_id"]
+            isOneToOne: false
+            referencedRelation: "series"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
