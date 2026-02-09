@@ -92,20 +92,20 @@ export const HoverNavigationCarousel = ({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full h-full ${
+      className={`relative w-full ${
         !isMobile && (mouseZone === "left" || mouseZone === "right") ? "cursor-none" : ""
       }`}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => !isMobile && setIsHovering(true)}
       onMouseLeave={() => !isMobile && setIsHovering(false)}
     >
-      <Carousel className="w-full h-full max-h-[calc(100vh-200px)]" setApi={setApi}>
-        <CarouselContent className="h-full">
+      <Carousel className="w-full" setApi={setApi}>
+        <CarouselContent>
           {images.map((image, index) => {
             const shouldLoad = Math.abs(index - currentIndex) <= 1;
 
             return (
-              <CarouselItem key={image.id} className="flex items-center justify-center h-full">
+              <CarouselItem key={image.id} className="flex items-center justify-center">
                 {shouldLoad ? (
                   <img
                     src={image.image_url}
@@ -113,10 +113,10 @@ export const HoverNavigationCarousel = ({
                     loading={index === 0 ? "eager" : "lazy"}
                     decoding="async"
                     ref={index === currentIndex && registerImageRef ? registerImageRef : undefined}
-                    className="w-full h-full max-h-[calc(100vh-200px)] object-contain transition-opacity duration-300"
+                    className="w-full h-auto max-h-[90vh] object-contain transition-opacity duration-300"
                   />
                 ) : (
-                  <div className="w-full aspect-square bg-muted animate-pulse" />
+                  <div className="w-full aspect-[3/4] bg-muted animate-pulse" />
                 )}
               </CarouselItem>
             );

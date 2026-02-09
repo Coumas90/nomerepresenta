@@ -134,8 +134,8 @@ const ArtworkDetail = () => {
         <div className="hidden lg:grid place-items-center w-full">
           <div className="grid grid-cols-[1fr_auto] items-end gap-[60px]">
             {/* Contenedor de la imagen */}
-            <div className="relative max-w-[60vw] max-h-[calc(100vh-200px)]">
-              {images && images.length > 0 ? <HoverNavigationCarousel images={images} artwork={artwork} currentIndex={current} onIndexChange={setCurrent} registerImageRef={registerImageElement} /> : <img src={artwork.image_url} alt={artwork.title} loading="eager" decoding="async" ref={registerImageElement} className="w-full h-full max-h-[calc(100vh-200px)] object-contain" />}
+            <div className="relative max-w-[60vw]" style={{ maxHeight: '90vh' }}>
+              {images && images.length > 0 ? <HoverNavigationCarousel images={images} artwork={artwork} currentIndex={current} onIndexChange={setCurrent} registerImageRef={registerImageElement} /> : <img src={artwork.image_url} alt={artwork.title} loading="eager" decoding="async" ref={registerImageElement} className="w-full h-auto max-h-[90vh] object-contain" />}
             </div>
 
             {/* Info del artwork */}
