@@ -59,60 +59,62 @@ const SortableImage = ({ image, index, onDelete, onSetMain, onCaptionChange }: S
     <Card 
       ref={setNodeRef} 
       style={style} 
-      className="relative group overflow-hidden hover:ring-2 hover:ring-primary/50 transition-all"
+      className="relative group hover:ring-2 hover:ring-primary/50 transition-all"
       {...attributes} 
       {...listeners}
     >
-      <div className="absolute top-2 left-2 z-10 pointer-events-none">
-        <div className="bg-background/90 p-1.5 rounded shadow-sm">
-          <GripVertical className="h-4 w-4 text-primary" />
-        </div>
-      </div>
       {isDragging && (
-        <div className="absolute inset-0 bg-primary/10 border-2 border-primary border-dashed rounded-lg" />
+        <div className="absolute inset-0 bg-primary/10 border-2 border-primary border-dashed rounded-lg z-20" />
       )}
-      <img
-        src={image.image_url}
-        alt={`Artwork image ${index + 1}`}
-        className="w-full h-40 object-cover pointer-events-none"
-      />
-      <div 
-        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <Button
-          type="button"
-          variant={image.is_main ? "default" : "secondary"}
-          size="icon"
-          className="h-8 w-8 pointer-events-auto"
-          onClick={(e) => {
-            e.stopPropagation();
-            onSetMain(image.id);
-          }}
-          title="Marcar como principal"
-        >
-          <Star className={`h-4 w-4 ${image.is_main ? 'fill-current' : ''}`} />
-        </Button>
-        <Button
-          type="button"
-          variant="destructive"
-          size="icon"
-          className="h-8 w-8 pointer-events-auto"
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete(image.id);
-          }}
-        >
-          <X className="h-4 w-4" />
-        </Button>
-      </div>
-      {image.is_main && (
-        <div className="absolute bottom-2 left-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded">
-          Principal
+      <div className="relative overflow-hidden rounded-t-lg">
+        <img
+          src={image.image_url}
+          alt={`Artwork image ${index + 1}`}
+          className="w-full h-40 object-cover pointer-events-none"
+        />
+        <div className="absolute top-2 left-2 z-10 pointer-events-none">
+          <div className="bg-background/90 p-1.5 rounded shadow-sm">
+            <GripVertical className="h-4 w-4 text-primary" />
+          </div>
         </div>
-      )}
-      <div className="absolute bottom-2 right-2 bg-background/80 text-xs px-2 py-1 rounded">
-        #{image.display_order}
+        <div 
+          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Button
+            type="button"
+            variant={image.is_main ? "default" : "secondary"}
+            size="icon"
+            className="h-8 w-8 pointer-events-auto"
+            onClick={(e) => {
+              e.stopPropagation();
+              onSetMain(image.id);
+            }}
+            title="Marcar como principal"
+          >
+            <Star className={`h-4 w-4 ${image.is_main ? 'fill-current' : ''}`} />
+          </Button>
+          <Button
+            type="button"
+            variant="destructive"
+            size="icon"
+            className="h-8 w-8 pointer-events-auto"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(image.id);
+            }}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+        {image.is_main && (
+          <div className="absolute bottom-2 left-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded">
+            Principal
+          </div>
+        )}
+        <div className="absolute bottom-2 right-2 bg-background/80 text-xs px-2 py-1 rounded">
+          #{image.display_order}
+        </div>
       </div>
       {/* Caption input */}
       <div className="p-2 border-t" onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()}>
