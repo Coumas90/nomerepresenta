@@ -56,6 +56,8 @@ const Studio = () => {
   }, [groups, activeSeriesId]);
 
   // IntersectionObserver for active series detection
+  const observerRef = useRef<IntersectionObserver | null>(null);
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -68,7 +70,7 @@ const Studio = () => {
       },
       { rootMargin: "-20% 0px -60% 0px", threshold: 0 }
     );
-
+    observerRef.current = observer;
     sectionRefs.current.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, [groups]);
@@ -83,8 +85,14 @@ const Studio = () => {
   const handleClose = useCallback(() => navigate("/"), [navigate]);
 
   const setRef = useCallback((id: string, el: HTMLElement | null) => {
-    if (el) sectionRefs.current.set(id, el);
-    else sectionRefs.current.delete(id);
+    if (el) {
+      sectionRefs.current.set(id, el);
+      observerRef.current?.observe(el);
+    } else {
+      const prev = sectionRefs.current.get(id);
+      if (prev) observerRef.current?.unobserve(prev);
+      sectionRefs.current.delete(id);
+    }
   }, []);
 
   const isLoading = imagesLoading || seriesLoading;
