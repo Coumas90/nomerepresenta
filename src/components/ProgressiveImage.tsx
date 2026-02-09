@@ -39,6 +39,8 @@ interface ProgressiveImageProps {
   responsive?: boolean;
   /** Preset for responsive widths */
   responsivePreset?: keyof typeof RESPONSIVE_WIDTHS;
+  /** Object-fit mode for the image (default: "cover") */
+  objectFit?: "cover" | "contain" | "fill" | "none" | "scale-down";
 }
 
 // Generate a placeholder URL based on image type
@@ -73,6 +75,7 @@ export const ProgressiveImage = ({
   sizes = RESPONSIVE_SIZES.fullWidth,
   responsive = true,
   responsivePreset = "large",
+  objectFit = "cover",
 }: ProgressiveImageProps) => {
   const { imgRef, isVisible, isLoaded, setIsLoaded } = useImageLazyLoad();
   const [error, setError] = useState(false);
@@ -143,7 +146,8 @@ export const ProgressiveImage = ({
     }
   };
 
-  const imageClasses = `w-full h-full object-cover transition-all duration-500 ease-out z-20 relative ${
+  const objectFitClass = objectFit === "contain" ? "object-contain" : objectFit === "fill" ? "object-fill" : objectFit === "none" ? "object-none" : objectFit === "scale-down" ? "object-scale-down" : "object-cover";
+  const imageClasses = `w-full h-full ${objectFitClass} transition-all duration-500 ease-out z-20 relative ${
     skipInternalFade ? "opacity-100" : (isLoaded ? "opacity-100 blur-0" : "opacity-0")
   } ${onClick ? 'cursor-pointer' : ''}`;
 
@@ -168,7 +172,7 @@ export const ProgressiveImage = ({
           alt=""
           aria-hidden="true"
           onLoad={() => setPlaceholderLoaded(true)}
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 z-10 blur-up-placeholder ${
+          className={`absolute inset-0 w-full h-full ${objectFitClass} transition-opacity duration-300 z-10 blur-up-placeholder ${
             placeholderLoaded && !isLoaded ? 'opacity-100' : 'opacity-0'
           }`}
         />
