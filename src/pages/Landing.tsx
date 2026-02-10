@@ -10,7 +10,7 @@ const menuItems = [
   { text: "COMAS", type: "title" as const },
   { text: "WORKS", type: "link" as const, path: "/works" },
   { text: "STUDIO", type: "link" as const, path: "/studio" },
-  { text: "CONTACT", type: "mailto" as const, email: "contact@ivancomas.studio" },
+  { text: "CONTACT", type: "link" as const, path: "/contact" },
   { text: "BIO", type: "link" as const, path: "/bio" },
 ];
 
@@ -45,16 +45,14 @@ const Landing = () => {
   }, [isMobile, selectedIndex]);
 
   const handleItemClick = (item: typeof menuItems[0]) => {
-    if (item.type === "mailto") {
-      window.location.href = `mailto:${item.email}`;
-    } else if (item.type === "link" && item.path) {
+    if (item.type === "link" && item.path) {
       navigate(item.path);
     }
   };
 
   // Mobile tap handler: first tap = preview, second tap = navigate
   const handleItemTap = useCallback((index: number, item: typeof menuItems[0]) => {
-    const isClickable = item.type === "link" || item.type === "mailto";
+    const isClickable = item.type === "link";
     
     if (isMobile && isClickable) {
       if (selectedIndex === index) {
@@ -191,7 +189,7 @@ const Landing = () => {
       <nav className="relative z-10 min-h-dvh flex items-center">
         <ul className="flex flex-col items-start gap-0 pl-px sm:pl-12 md:pl-16 lg:pl-24">
           {menuItems.map((item, index) => {
-            const isClickable = item.type === "link" || item.type === "mailto";
+            const isClickable = item.type === "link";
             const isActive = activeIndex === index;
 
             return (
