@@ -16,9 +16,6 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
   const isMobile = useIsMobile();
   const containerRef = useRef<HTMLDivElement>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [mouseZone, setMouseZone] = useState<"left" | "right" | "center">("center");
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isHovering, setIsHovering] = useState(false);
 
   // Fetch additional images for this artwork
   const { data: artworkImages } = useArtworkImages(artwork.id);
@@ -121,38 +118,6 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
     swipeLockedRef.current = null;
   }, [isMobile, allImages.length, goToNextImage, goToPrevImage]);
 
-  // Mouse zone detection for desktop arrow following
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (isMobile) return;
-    
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const percentage = (x / rect.width) * 100;
-
-    setMousePosition({ x, y });
-
-    if (percentage < 30) {
-      setMouseZone("left");
-    } else if (percentage > 70) {
-      setMouseZone("right");
-    } else {
-      setMouseZone("center");
-    }
-  };
-
-  // Arrow visibility logic
-  const showLeftArrow = isMobile 
-    ? hasPrevImage && allImages.length > 1
-    : isHovering && mouseZone === "left" && hasPrevImage && allImages.length > 1;
-  
-  const showRightArrow = isMobile 
-    ? hasNextImage && allImages.length > 1
-    : isHovering && mouseZone === "right" && hasNextImage && allImages.length > 1;
-
-  const containerWidth = containerRef.current?.offsetWidth || 0;
-  const leftArrowX = Math.max(32, Math.min(mousePosition.x, containerWidth * 0.3 - 24));
-  const rightArrowX = Math.max(containerWidth * 0.7 + 24, Math.min(mousePosition.x, containerWidth - 32));
 
   // Skeleton placeholder when not visible yet
   if (!isVisible) {
@@ -183,13 +148,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
         {/* Image container with carousel overlays */}
         <div
           ref={containerRef}
-          className={cn(
-            "relative w-full",
-            !isMobile && (mouseZone === "left" || mouseZone === "right") ? "cursor-none" : ""
-          )}
-          onMouseMove={handleMouseMove}
-          onMouseEnter={() => !isMobile && setIsHovering(true)}
-          onMouseLeave={() => !isMobile && setIsHovering(false)}
+          className="relative w-full"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
@@ -213,108 +172,52 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
 
           {/* Clickable left zone */}
           {hasPrevImage && allImages.length > 1 && (
-            <div
-              role="button"
-              tabIndex={0}
+            <button
               onClick={goToPrevImage}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  goToPrevImage();
-                }
-              }}
               className={cn(
-                "absolute top-0 bottom-0 z-20 focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/50",
-                isMobile ? "left-0 w-[30%]" : "-left-[50vw] w-[calc(50%+50vw)] cursor-none"
+                "absolute top-0 bottom-0 z-20 focus:outline-none group",
+                isMobile
+                  ? "left-0 w-[30%]"
+                  : "-left-[50vw] w-[calc(50%+50vw)] cursor-pointer"
               )}
               aria-label="Previous image"
-            />
+            >
+              <ChevronLeft
+                size={20}
+                className={cn(
+                  "absolute top-1/2 -translate-y-1/2 text-stone-400 transition-opacity",
+                  isMobile
+                    ? "left-2"
+                    : "right-4 opacity-0 group-hover:opacity-100"
+                )}
+                strokeWidth={1.5}
+              />
+            </button>
           )}
 
           {/* Clickable right zone */}
           {hasNextImage && allImages.length > 1 && (
-            <div
-              role="button"
-              tabIndex={0}
+            <button
               onClick={goToNextImage}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  goToNextImage();
-                }
-              }}
               className={cn(
-                "absolute top-0 bottom-0 z-20 focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/50",
-                isMobile ? "right-0 w-[30%]" : "-right-[50vw] w-[calc(50%+50vw)] cursor-none"
+                "absolute top-0 bottom-0 z-20 focus:outline-none group",
+                isMobile
+                  ? "right-0 w-[30%]"
+                  : "-right-[50vw] w-[calc(50%+50vw)] cursor-pointer"
               )}
               aria-label="Next image"
-            />
-          )}
-
-          {/* Mobile arrows — centered vertically on image */}
-          {isMobile && allImages.length > 1 && (
-            <>
-              {hasPrevImage && (
-                <div
-                  className="absolute left-2 top-1/2 -translate-y-1/2 z-30"
-                  aria-hidden
-                >
-                  <ChevronLeft size={20} className="text-stone-500" strokeWidth={1.5} />
-                </div>
-              )}
-              {hasNextImage && (
-                <div
-                  className="absolute right-2 top-1/2 -translate-y-1/2 z-30"
-                  aria-hidden
-                >
-                  <ChevronRight size={20} className="text-stone-500" strokeWidth={1.5} />
-                </div>
-              )}
-            </>
-          )}
-
-          {/* Desktop Left Arrow */}
-          {!isMobile && allImages.length > 1 && hasPrevImage && (
-            <div
-              className={cn(
-                "absolute z-30 pointer-events-none transition-opacity duration-300 ease-in-out",
-                showLeftArrow ? "opacity-100" : "opacity-0"
-              )}
-              style={{
-                left: `${leftArrowX}px`,
-                top: `${mousePosition.y}px`,
-                transform: 'translate(-50%, -50%)'
-              }}
-              aria-hidden
             >
-              <ChevronLeft 
-                size={40} 
-                className="text-stone-600 drop-shadow-lg" 
-                strokeWidth={1.5} 
+              <ChevronRight
+                size={20}
+                className={cn(
+                  "absolute top-1/2 -translate-y-1/2 text-stone-400 transition-opacity",
+                  isMobile
+                    ? "right-2"
+                    : "left-4 opacity-0 group-hover:opacity-100"
+                )}
+                strokeWidth={1.5}
               />
-            </div>
-          )}
-
-          {/* Desktop Right Arrow */}
-          {!isMobile && allImages.length > 1 && hasNextImage && (
-            <div
-              className={cn(
-                "absolute z-30 pointer-events-none transition-opacity duration-300 ease-in-out",
-                showRightArrow ? "opacity-100" : "opacity-0"
-              )}
-              style={{
-                left: `${rightArrowX}px`,
-                top: `${mousePosition.y}px`,
-                transform: 'translate(-50%, -50%)'
-              }}
-              aria-hidden
-            >
-              <ChevronRight 
-                size={40} 
-                className="text-stone-600 drop-shadow-lg" 
-                strokeWidth={1.5} 
-              />
-            </div>
+            </button>
           )}
         </div>
 
