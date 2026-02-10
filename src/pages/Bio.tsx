@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { X } from "lucide-react";
+import { Undo2 } from "lucide-react";
 import { ProgressiveImage } from "@/components/ProgressiveImage";
 import { SwipeGestureContainer } from "@/components/SwipeGestureContainer";
 
@@ -63,7 +63,7 @@ const Bio = () => {
           className="text-stone-900 hover:opacity-70 transition-all duration-200 hover:rotate-90 focus:outline-none"
           aria-label="Close and return to landing"
         >
-          <X className="w-6 h-6 md:w-7 md:h-7" strokeWidth={1.5} />
+          <Undo2 className="w-6 h-6 md:w-7 md:h-7" strokeWidth={1.5} />
         </button>
       </header>
 
