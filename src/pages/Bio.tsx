@@ -16,6 +16,7 @@ const BioHeroImage = () => {
       className="aspect-[16/9] md:aspect-[21/9] w-full"
       blurUp
       eager
+      priority
     />
   );
 };

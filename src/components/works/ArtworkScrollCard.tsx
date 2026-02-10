@@ -181,8 +181,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
                   className="relative z-10 w-full [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh]"
                   objectFit="contain"
                   eager={false}
-                  skipInternalFade
-                  blurUp={false}
+                  blurUp
                   modernFormats
                   responsivePreset="full"
                   sizes="(max-width: 768px) 90vw, (max-width: 1024px) 70vw, 60vw"
