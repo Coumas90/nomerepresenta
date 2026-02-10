@@ -17,8 +17,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Upload, Trash2, X, Pencil, Check, GripVertical } from "lucide-react";
 import { SortableThumb } from "./SortableThumb";
-import { useUploadStudioImage, useCreateStudioImage, useDeleteStudioImage, useUpdateStudioImagesOrder } from "@/hooks/useStudioImageMutations";
-import { useUpdateSeries } from "@/hooks/useSeriesMutations";
+import { useUploadStudioImage, useCreateStudioImage, useDeleteStudioImage, useUpdateStudioImagesOrder, useUpdateStudioImage } from "@/hooks/useStudioImageMutations";
+import { useUpdateStudioSeries } from "@/hooks/useStudioSeriesMutations";
+import { useStudioSeries } from "@/hooks/useStudioSeries";
 import { toast } from "@/hooks/use-toast";
 import type { StudioImage } from "@/types";
 
@@ -44,7 +45,9 @@ export const SeriesStudioSection = ({
   const uploadMutation = useUploadStudioImage();
   const createMutation = useCreateStudioImage();
   const updateOrderMutation = useUpdateStudioImagesOrder();
-  const updateSeriesMutation = useUpdateSeries();
+  const updateSeriesMutation = useUpdateStudioSeries();
+  const updateImageMutation = useUpdateStudioImage();
+  const { data: allStudioSeries = [] } = useStudioSeries();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -115,6 +118,12 @@ export const SeriesStudioSection = ({
     }
     setIsEditing(false);
   };
+
+  const handleMoveImage = (imageId: string, targetSeriesId: string) => {
+    updateImageMutation.mutate({ id: imageId, series_id: targetSeriesId });
+  };
+
+  const seriesOptions = allStudioSeries.map(s => ({ id: s.id, name: s.name }));
 
   return (
     <Card className="border border-border">
@@ -217,6 +226,9 @@ export const SeriesStudioSection = ({
                       index={idx + 1}
                       onPreview={() => onPreviewImage(img)}
                       onDelete={() => onDeleteImage(img.id)}
+                      seriesOptions={seriesOptions}
+                      currentSeriesId={seriesId}
+                      onMoveTo={handleMoveImage}
                     />
                   ))}
                 </div>

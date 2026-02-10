@@ -96,12 +96,15 @@ const StudioImagesManager = () => {
     }
   };
 
-  // Group images by series (only grouped ones)
+  // Group images by series
   const imagesBySeries = new Map<string, StudioImage[]>();
+  const ungroupedImages: StudioImage[] = [];
   for (const img of images) {
     if (img.series_id) {
       if (!imagesBySeries.has(img.series_id)) imagesBySeries.set(img.series_id, []);
       imagesBySeries.get(img.series_id)!.push(img);
+    } else {
+      ungroupedImages.push(img);
     }
   }
 
@@ -188,6 +191,17 @@ const StudioImagesManager = () => {
             ))}
           </SortableContext>
         </DndContext>
+
+        {/* Ungrouped images — need to be assigned to a series */}
+        {ungroupedImages.length > 0 && (
+          <SeriesStudioSection
+            seriesId="__ungrouped"
+            seriesName="Unassigned"
+            images={ungroupedImages}
+            onPreviewImage={setPreviewImage}
+            onDeleteImage={handleDeleteClick}
+          />
+        )}
       </div>
       <ImagePreviewDialog
         image={previewImage}
