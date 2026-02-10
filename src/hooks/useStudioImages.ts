@@ -13,7 +13,7 @@ export const useStudioImages = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("studio_images")
-        .select("*, series:series_id(name, display_order)")
+        .select("*, series:studio_series!studio_images_series_id_fkey(name, display_order)")
         .order("display_order", { ascending: true });
 
       if (error) {
