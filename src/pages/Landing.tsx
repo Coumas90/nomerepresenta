@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 // Menu items with their associated artwork images
@@ -14,6 +16,7 @@ const menuItems = [
 
 const Landing = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const isMobile = useIsMobile();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -58,11 +61,18 @@ const Landing = () => {
         // Second tap - navigate
         handleItemClick(item);
       } else {
-        // First tap - show preview
+        // First tap - show preview + prefetch data
         setIsTransitioning(true);
         setSelectedIndex(index);
         setHoveredIndex(index);
         setTimeout(() => setIsTransitioning(false), 300);
+        
+        // Prefetch data for the target page
+        if (item.type === 'link') {
+          if (item.path === '/works') { import('./WorksPage'); prefetchWorksData(); }
+          else if (item.path === '/studio') { import('./Studio'); prefetchStudioData(); }
+          else if (item.path === '/bio') { import('./Bio'); }
+        }
       }
     } else {
       // Desktop or non-clickable - direct action
@@ -78,17 +88,74 @@ const Landing = () => {
       setTimeout(() => setIsTransitioning(false), 300);
     }
     
-    // Prefetch page chunks on hover for faster navigation
+    // Prefetch data + page chunks on hover for faster navigation
     const item = menuItems[index];
     if (item.type === 'link') {
       if (item.path === '/works') {
         import('./WorksPage');
+        prefetchWorksData();
       } else if (item.path === '/studio') {
         import('./Studio');
+        prefetchStudioData();
       } else if (item.path === '/bio') {
         import('./Bio');
       }
     }
+  };
+
+  const prefetchWorksData = () => {
+    queryClient.prefetchQuery({
+      queryKey: ["artworks"],
+      queryFn: async () => {
+        const { data, error } = await supabase.from("artworks").select("*").order("display_order", { ascending: true });
+        if (error) throw error;
+        return data;
+      },
+    });
+    queryClient.prefetchQuery({
+      queryKey: ["series"],
+      queryFn: async () => {
+        const { data, error } = await supabase.from("series").select("*").order("display_order", { ascending: true });
+        if (error) throw error;
+        return data;
+      },
+    });
+    queryClient.prefetchQuery({
+      queryKey: ["all-artwork-images"],
+      queryFn: async () => {
+        const { data, error } = await supabase.from("artwork_images").select("*").order("display_order", { ascending: true });
+        if (error) throw error;
+        const grouped: Record<string, any[]> = {};
+        for (const img of data || []) {
+          if (!grouped[img.artwork_id]) grouped[img.artwork_id] = [];
+          grouped[img.artwork_id].push(img);
+        }
+        return grouped;
+      },
+    });
+  };
+
+  const prefetchStudioData = () => {
+    queryClient.prefetchQuery({
+      queryKey: ["studio-images"],
+      queryFn: async () => {
+        const { data, error } = await supabase.from("studio_images").select("*, series:studio_series!studio_images_series_id_fkey(name, display_order)").order("display_order", { ascending: true });
+        if (error) throw error;
+        return (data as any[]).map((img: any) => ({
+          id: img.id, image_url: img.image_url, title: img.title, description: img.description,
+          display_order: img.display_order, series_id: img.series_id, created_at: img.created_at,
+          updated_at: img.updated_at, series_name: img.series?.name ?? null, series_display_order: img.series?.display_order ?? null,
+        }));
+      },
+    });
+    queryClient.prefetchQuery({
+      queryKey: ["studio-series"],
+      queryFn: async () => {
+        const { data, error } = await supabase.from("studio_series").select("*").order("display_order", { ascending: true });
+        if (error) throw error;
+        return data;
+      },
+    });
   };
 
   const handleMouseLeave = () => {
