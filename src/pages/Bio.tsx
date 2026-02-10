@@ -53,21 +53,23 @@ const Bio = () => {
         ref={scrollContainerRef}
         className={`min-h-screen bg-stone-50 transition-opacity duration-500 overflow-y-auto ${isPageLoaded ? 'opacity-100' : 'opacity-0'}`}
       >
-      {/* Header */}
-      <header className={`fixed top-0 left-0 right-0 z-20 flex items-center justify-between p-6 md:p-8 bg-stone-50/90 backdrop-blur-sm transition-all duration-500 ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
-        <span className="text-stone-900 text-sm md:text-base font-medium tracking-widest uppercase">
-          BIO
-        </span>
-        <button
-          onClick={handleClose}
-          className="text-stone-900 hover:opacity-70 transition-all duration-200 hover:rotate-90 focus:outline-none"
-          aria-label="Close and return to landing"
-        >
-          <Undo2 className="w-6 h-6 md:w-7 md:h-7" strokeWidth={1.5} />
-        </button>
+      {/* Header — matches Works & Studio */}
+      <header className="sticky top-0 z-50 bg-stone-100/95 backdrop-blur-sm border-b border-stone-200">
+        <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4">
+          <span className="text-stone-700 font-bold text-sm md:text-base uppercase tracking-widest flex-shrink-0">
+            BIO
+          </span>
+          <button
+            onClick={handleClose}
+            className="flex-shrink-0 ml-4 text-stone-900 hover:text-stone-600 transition-colors text-lg md:text-xl font-light"
+            aria-label="Close and return to landing"
+          >
+            <Undo2 className="w-5 h-5 md:w-6 md:h-6" strokeWidth={1.5} />
+          </button>
+        </div>
       </header>
 
-      <main className="pt-24 pb-16">
+      <main className="pb-16">
         {/* Artist Photo */}
         <div className={`w-full mb-12 md:mb-16 overflow-hidden transition-all duration-700 delay-100 ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <BioHeroImage />
