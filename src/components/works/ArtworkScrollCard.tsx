@@ -188,13 +188,14 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
               
               {/* Main image */}
               {currentImage && (
-                <ProgressiveImage
+              <ProgressiveImage
                   src={currentImage}
                   alt={artwork.title || "Artwork"}
                   className="relative z-10 w-full [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh]"
                   objectFit="contain"
                   eager={false}
-                  blurUp
+                  skipInternalFade
+                  blurUp={false}
                   modernFormats
                   responsivePreset="full"
                   sizes="(max-width: 768px) 90vw, (max-width: 1024px) 70vw, 60vw"
