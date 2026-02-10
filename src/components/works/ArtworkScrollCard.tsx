@@ -165,61 +165,64 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
           {/* Image + touch/click zones */}
           <div
             ref={containerRef}
-            className="relative flex-1 min-w-0 select-none"
+            className="flex-1 min-w-0 select-none"
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
-            {/* Gallery frame shadow effect */}
-            <div className="absolute inset-0 shadow-2xl shadow-stone-900/15 rounded-sm" />
-            
-            {/* Main image */}
-            {currentImage && (
-              <ProgressiveImage
-                src={currentImage}
-                alt={artwork.title || "Artwork"}
-                className="relative z-10 w-full [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh]"
-                objectFit="contain"
-                eager={false}
-                blurUp
-                modernFormats
-                responsivePreset="full"
-                sizes="(max-width: 768px) 90vw, (max-width: 1024px) 70vw, 60vw"
-              />
-            )}
+            {/* Image wrapper — shadow and navigation scoped here */}
+            <div className="relative">
+              {/* Gallery frame shadow effect */}
+              <div className="absolute inset-0 shadow-2xl shadow-stone-900/15 rounded-sm" />
+              
+              {/* Main image */}
+              {currentImage && (
+                <ProgressiveImage
+                  src={currentImage}
+                  alt={artwork.title || "Artwork"}
+                  className="relative z-10 w-full [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh]"
+                  objectFit="contain"
+                  eager={false}
+                  blurUp
+                  modernFormats
+                  responsivePreset="full"
+                  sizes="(max-width: 768px) 90vw, (max-width: 1024px) 70vw, 60vw"
+                />
+              )}
 
-            {/* Mobile tap zones (invisible, no arrows) */}
-            {isMobile && hasPrevImage && allImages.length > 1 && (
-              <button
-                onClick={goToPrevImage}
-                className="absolute left-0 top-0 bottom-0 w-[30%] z-20 focus:outline-none"
-                aria-label="Previous image"
-              />
-            )}
-            {isMobile && hasNextImage && allImages.length > 1 && (
-              <button
-                onClick={goToNextImage}
-                className="absolute right-0 top-0 bottom-0 w-[30%] z-20 focus:outline-none"
-                aria-label="Next image"
-              />
-            )}
+              {/* Mobile tap zones (invisible, no arrows) */}
+              {isMobile && hasPrevImage && allImages.length > 1 && (
+                <button
+                  onClick={goToPrevImage}
+                  className="absolute left-0 top-0 bottom-0 w-[30%] z-20 focus:outline-none"
+                  aria-label="Previous image"
+                />
+              )}
+              {isMobile && hasNextImage && allImages.length > 1 && (
+                <button
+                  onClick={goToNextImage}
+                  className="absolute right-0 top-0 bottom-0 w-[30%] z-20 focus:outline-none"
+                  aria-label="Next image"
+                />
+              )}
 
-            {/* Desktop clickable zones with custom cursors */}
-            {!isMobile && hasPrevImage && allImages.length > 1 && (
-              <button
-                onClick={goToPrevImage}
-                className="absolute top-0 bottom-0 z-20 focus:outline-none -left-[50vw] w-[calc(50%+50vw)]"
-                style={{ cursor: cursorLeftSvg }}
-                aria-label="Previous image"
-              />
-            )}
-            {!isMobile && hasNextImage && allImages.length > 1 && (
-              <button
-                onClick={goToNextImage}
-                className="absolute top-0 bottom-0 z-20 focus:outline-none -right-[50vw] w-[calc(50%+50vw)]"
-                style={{ cursor: cursorRightSvg }}
-                aria-label="Next image"
-              />
-            )}
+              {/* Desktop clickable zones with custom cursors */}
+              {!isMobile && hasPrevImage && allImages.length > 1 && (
+                <button
+                  onClick={goToPrevImage}
+                  className="absolute top-0 bottom-0 z-20 focus:outline-none -left-[50vw] w-[calc(50%+50vw)]"
+                  style={{ cursor: cursorLeftSvg }}
+                  aria-label="Previous image"
+                />
+              )}
+              {!isMobile && hasNextImage && allImages.length > 1 && (
+                <button
+                  onClick={goToNextImage}
+                  className="absolute top-0 bottom-0 z-20 focus:outline-none -right-[50vw] w-[calc(50%+50vw)]"
+                  style={{ cursor: cursorRightSvg }}
+                  aria-label="Next image"
+                />
+              )}
+            </div>
             {/* Image indicator dots — aligned with image */}
             {allImages.length > 1 && (
               <div className="mt-3 flex gap-1.5">
