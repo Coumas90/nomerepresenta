@@ -32,6 +32,36 @@ export const useCreateStudioSeries = () => {
   });
 };
 
+export const useUpdateStudioSeries = () => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async ({ id, ...updates }: Partial<SeriesData> & { id: string }) => {
+      const { data, error } = await supabase
+        .from("studio_series")
+        .update(updates)
+        .eq("id", id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["studio-series"] });
+      toast({ title: "Series Updated", description: "Studio series updated successfully." });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to update series",
+        variant: "destructive",
+      });
+    },
+  });
+};
+
 export const useUpdateStudioSeriesOrder = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
