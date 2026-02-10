@@ -160,14 +160,17 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
       <figure className="inline-flex flex-col items-start max-w-[80vw] md:max-w-[60vw] lg:max-w-[50vw] mx-auto overflow-visible">
         {/* Image container with navigation */}
         <div className="relative w-full flex items-center">
-          {/* Mobile left arrow — outside image */}
-          {isMobile && hasPrevImage && allImages.length > 1 && (
+          {/* Mobile left arrow — always rendered for centering, invisible when not needed */}
+          {isMobile && allImages.length > 1 && (
             <button
-              onClick={goToPrevImage}
+              onClick={hasPrevImage ? goToPrevImage : undefined}
               className="flex-shrink-0 w-8 flex items-center justify-center focus:outline-none"
               aria-label="Previous image"
+              aria-hidden={!hasPrevImage}
             >
-              <ChevronLeft size={18} className="text-stone-400" strokeWidth={1.5} />
+              {hasPrevImage && (
+                <ChevronLeft size={18} className="text-stone-400" strokeWidth={1.5} />
+              )}
             </button>
           )}
 
@@ -279,14 +282,17 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
             </figcaption>
           </div>
 
-          {/* Mobile right arrow — outside image */}
-          {isMobile && hasNextImage && allImages.length > 1 && (
+          {/* Mobile right arrow — always rendered for centering, invisible when not needed */}
+          {isMobile && allImages.length > 1 && (
             <button
-              onClick={goToNextImage}
+              onClick={hasNextImage ? goToNextImage : undefined}
               className="flex-shrink-0 w-8 flex items-center justify-center focus:outline-none"
               aria-label="Next image"
+              aria-hidden={!hasNextImage}
             >
-              <ChevronRight size={18} className="text-stone-400" strokeWidth={1.5} />
+              {hasNextImage && (
+                <ChevronRight size={18} className="text-stone-400" strokeWidth={1.5} />
+              )}
             </button>
           )}
         </div>
