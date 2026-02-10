@@ -1,21 +1,21 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStudioImages, type StudioImageWithSeries } from "@/hooks/useStudioImages";
-import { useSeries } from "@/hooks/useSeries";
+import { useStudioSeries } from "@/hooks/useStudioSeries";
 import { ProgressiveImage } from "@/components/ProgressiveImage";
 import { StudioHeader } from "@/components/studio/StudioHeader";
-import type { SeriesData } from "@/types";
+import type { StudioSeriesData } from "@/types";
 
 const Studio = () => {
   const navigate = useNavigate();
   const { data: images, isLoading: imagesLoading } = useStudioImages();
-  const { data: allSeries, isLoading: seriesLoading } = useSeries();
+  const { data: allSeries, isLoading: seriesLoading } = useStudioSeries();
   const [activeSeriesId, setActiveSeriesId] = useState<string | null>(null);
   const sectionRefs = useRef<Map<string, HTMLElement>>(new Map());
 
   // Build ordered groups: series with images + ungrouped
   const { groups, seriesList } = useMemo(() => {
-    if (!images?.length) return { groups: [], seriesList: [] as SeriesData[] };
+    if (!images?.length) return { groups: [], seriesList: [] as StudioSeriesData[] };
 
     const bySeriesMap = new Map<string, StudioImageWithSeries[]>();
     const ungrouped: StudioImageWithSeries[] = [];

@@ -403,10 +403,44 @@ export type Database = {
             foreignKeyName: "studio_images_series_id_fkey"
             columns: ["series_id"]
             isOneToOne: false
-            referencedRelation: "series"
+            referencedRelation: "studio_series"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "studio_images_studio_series_id_fkey"
+            columns: ["series_id"]
+            isOneToOne: false
+            referencedRelation: "studio_series"
             referencedColumns: ["id"]
           },
         ]
+      }
+      studio_series: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
