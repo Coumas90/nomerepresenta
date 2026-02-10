@@ -56,6 +56,11 @@ export interface ArtworkImage {
   is_main: boolean;
   created_at: string;
   caption: string | null;
+  title: string | null;
+  year: string | null;
+  dimensions: string | null;
+  materials: string | null;
+  is_detail: boolean;
 }
 
 /**

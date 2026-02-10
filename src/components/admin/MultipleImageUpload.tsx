@@ -2,11 +2,12 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Upload, X, GripVertical, Star, Loader2 } from "lucide-react";
+import { Upload, X, GripVertical, Star, Loader2, ChevronDown, ChevronUp, Eye } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useUploadImage } from "@/hooks/useArtworkMutations";
-import { useArtworkImages, useAddArtworkImage, useDeleteArtworkImage, useUpdateImageOrder, useSetMainImage, useUpdateImageCaption } from "@/hooks/useArtworkImages";
+import { useArtworkImages, useAddArtworkImage, useDeleteArtworkImage, useUpdateImageOrder, useSetMainImage, useUpdateImageCaption, useUpdateImageMetadata } from "@/hooks/useArtworkImages";
 import { Card } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
 import {
   DndContext,
   closestCenter,
@@ -25,20 +26,30 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-interface MultipleImageUploadProps {
+export interface MultipleImageUploadProps {
   artworkId?: string;
+  artworkData?: {
+    title: string;
+    year: string;
+    dimensions: string;
+    materials: string;
+  };
   onImagesChange?: () => void;
 }
 
 interface SortableImageProps {
   image: any;
   index: number;
+  artworkData?: MultipleImageUploadProps["artworkData"];
   onDelete: (id: string) => void;
   onSetMain: (id: string) => void;
   onCaptionChange: (id: string, caption: string) => void;
+  onMetadataChange: (id: string, updates: Record<string, any>) => void;
+  onToggleDetail: (id: string, isDetail: boolean) => void;
 }
 
-const SortableImage = ({ image, index, onDelete, onSetMain, onCaptionChange }: SortableImageProps) => {
+const SortableImage = ({ image, index, artworkData, onDelete, onSetMain, onCaptionChange, onMetadataChange, onToggleDetail }: SortableImageProps) => {
+  const [expanded, setExpanded] = useState(false);
   const {
     attributes,
     listeners,
@@ -53,6 +64,22 @@ const SortableImage = ({ image, index, onDelete, onSetMain, onCaptionChange }: S
     transition,
     opacity: isDragging ? 0.5 : 1,
     cursor: isDragging ? 'grabbing' : 'grab',
+  };
+
+  const handleDetailToggle = (checked: boolean) => {
+    onToggleDetail(image.id, checked);
+    if (checked && artworkData) {
+      // Auto-fill metadata from artwork
+      onMetadataChange(image.id, {
+        title: artworkData.title,
+        year: artworkData.year,
+        dimensions: artworkData.dimensions,
+        materials: artworkData.materials,
+        is_detail: true,
+      });
+    } else {
+      onMetadataChange(image.id, { is_detail: false });
+    }
   };
 
   return (
@@ -89,7 +116,7 @@ const SortableImage = ({ image, index, onDelete, onSetMain, onCaptionChange }: S
               e.stopPropagation();
               onSetMain(image.id);
             }}
-            title="Marcar como principal"
+            title="Set as main image"
           >
             <Star className={`h-4 w-4 ${image.is_main ? 'fill-current' : ''}`} />
           </Button>
@@ -106,23 +133,102 @@ const SortableImage = ({ image, index, onDelete, onSetMain, onCaptionChange }: S
             <X className="h-4 w-4" />
           </Button>
         </div>
-        <div className="absolute bottom-2 left-2 bg-background/90 text-xs px-2 py-1 rounded font-medium">
-          {index === 0 ? "Main Image" : `Image ${index + 1}`}
+        <div className="absolute bottom-2 left-2 flex gap-1">
+          <span className="bg-background/90 text-xs px-2 py-1 rounded font-medium">
+            {image.is_main ? "Main Image" : `Image ${index + 1}`}
+          </span>
+          {image.is_detail && (
+            <span className="bg-primary/90 text-primary-foreground text-xs px-2 py-1 rounded font-medium">
+              DETAIL
+            </span>
+          )}
         </div>
       </div>
-      {/* Caption input - outside drag handle area */}
-      <div className="p-2 border-t">
-        <Input
-          placeholder="Caption (opcional)"
-          defaultValue={image.caption || ""}
-          onBlur={(e) => {
-            const val = e.target.value.trim();
-            if (val !== (image.caption || "")) {
-              onCaptionChange(image.id, val);
-            }
-          }}
-          className="text-xs h-7"
-        />
+
+      {/* Metadata section */}
+      <div className="p-2 border-t space-y-2" onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()}>
+        {/* DETAIL toggle */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Eye className="h-3.5 w-3.5 text-muted-foreground" />
+            <Label className="text-xs font-medium cursor-pointer">Detail</Label>
+          </div>
+          <Switch
+            checked={image.is_detail || false}
+            onCheckedChange={handleDetailToggle}
+            className="scale-75"
+          />
+        </div>
+
+        {/* Expand/collapse metadata */}
+        <button
+          type="button"
+          className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground w-full"
+          onClick={() => setExpanded(!expanded)}
+        >
+          {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+          {expanded ? "Hide metadata" : "Edit metadata"}
+        </button>
+
+        {expanded && (
+          <div className="space-y-2 pt-1">
+            <Input
+              placeholder="Title"
+              defaultValue={image.title || ""}
+              onBlur={(e) => {
+                const val = e.target.value.trim();
+                if (val !== (image.title || "")) {
+                  onMetadataChange(image.id, { title: val || null });
+                }
+              }}
+              className="text-xs h-7"
+            />
+            <Input
+              placeholder="Year"
+              defaultValue={image.year || ""}
+              onBlur={(e) => {
+                const val = e.target.value.trim();
+                if (val !== (image.year || "")) {
+                  onMetadataChange(image.id, { year: val || null });
+                }
+              }}
+              className="text-xs h-7"
+            />
+            <Input
+              placeholder="Dimensions"
+              defaultValue={image.dimensions || ""}
+              onBlur={(e) => {
+                const val = e.target.value.trim();
+                if (val !== (image.dimensions || "")) {
+                  onMetadataChange(image.id, { dimensions: val || null });
+                }
+              }}
+              className="text-xs h-7"
+            />
+            <Input
+              placeholder="Materials"
+              defaultValue={image.materials || ""}
+              onBlur={(e) => {
+                const val = e.target.value.trim();
+                if (val !== (image.materials || "")) {
+                  onMetadataChange(image.id, { materials: val || null });
+                }
+              }}
+              className="text-xs h-7"
+            />
+            <Input
+              placeholder="Caption (optional override)"
+              defaultValue={image.caption || ""}
+              onBlur={(e) => {
+                const val = e.target.value.trim();
+                if (val !== (image.caption || "")) {
+                  onCaptionChange(image.id, val);
+                }
+              }}
+              className="text-xs h-7"
+            />
+          </div>
+        )}
       </div>
     </Card>
   );
@@ -137,7 +243,7 @@ interface UploadingImage {
   error?: string;
 }
 
-const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadProps) => {
+const MultipleImageUpload = ({ artworkId, artworkData, onImagesChange }: MultipleImageUploadProps) => {
   const [uploading, setUploading] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
   const [uploadingImages, setUploadingImages] = useState<UploadingImage[]>([]);
@@ -148,9 +254,9 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
   const updateOrderMutation = useUpdateImageOrder();
   const setMainImageMutation = useSetMainImage();
   const updateCaptionMutation = useUpdateImageCaption();
+  const updateMetadataMutation = useUpdateImageMetadata();
   const { data: images, isLoading } = useArtworkImages(artworkId);
 
-  // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
       if (clearUploadTimeoutRef.current) {
@@ -171,7 +277,6 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
 
     setUploading(true);
     
-    // Create preview objects for each file
     const newUploadingImages: UploadingImage[] = Array.from(files)
       .filter(file => file.type.startsWith('image/'))
       .map(file => ({
@@ -189,7 +294,6 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
         const uploadingImage = newUploadingImages[i];
         
         try {
-          // Update progress: uploading
           setUploadingImages(prev => 
             prev.map(img => 
               img.id === uploadingImage.id 
@@ -204,7 +308,6 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
             fileName 
           });
 
-          // Update progress: processing
           setUploadingImages(prev => 
             prev.map(img => 
               img.id === uploadingImage.id 
@@ -220,7 +323,6 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
             is_main: (images?.length || 0) === 0 && i === 0,
           });
 
-          // Update progress: complete
           setUploadingImages(prev => 
             prev.map(img => 
               img.id === uploadingImage.id 
@@ -229,7 +331,6 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
             )
           );
 
-          // Clean up preview URL
           URL.revokeObjectURL(uploadingImage.preview);
         } catch (error) {
           console.error("Error uploading image:", error);
@@ -245,7 +346,6 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
       
       if (onImagesChange) onImagesChange();
       
-      // Clear uploading images after a brief delay to show completion
       clearUploadTimeoutRef.current = window.setTimeout(() => {
         setUploadingImages([]);
       }, 1000);
@@ -309,6 +409,16 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
     await updateCaptionMutation.mutateAsync({ imageId, artworkId, caption: caption || null });
   };
 
+  const handleMetadataChange = async (imageId: string, updates: Record<string, any>) => {
+    if (!artworkId) return;
+    await updateMetadataMutation.mutateAsync({ imageId, artworkId, updates });
+    if (onImagesChange) onImagesChange();
+  };
+
+  const handleToggleDetail = async (imageId: string, isDetail: boolean) => {
+    // The actual update is handled by handleMetadataChange called from SortableImage
+  };
+
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
 
@@ -332,10 +442,10 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
   if (!artworkId) {
     return (
       <div className="space-y-2">
-        <Label>Galería de Imágenes</Label>
+        <Label>Image Gallery</Label>
         <div className="border-2 border-dashed rounded-lg p-8 text-center bg-muted/50">
           <p className="text-sm text-muted-foreground">
-            Guarda la obra primero para poder subir imágenes
+            Save the artwork first to upload images
           </p>
         </div>
       </div>
@@ -345,7 +455,7 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <Label>Galería de Imágenes ({images?.length || 0})</Label>
+        <Label>Image Gallery ({images?.length || 0})</Label>
         <div>
           <input
             type="file"
@@ -364,12 +474,12 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
             disabled={uploading}
           >
             <Upload className="h-4 w-4 mr-2" />
-            {uploading ? "Subiendo..." : "Agregar Imágenes"}
+            {uploading ? "Uploading..." : "Add Images"}
           </Button>
         </div>
       </div>
 
-      {/* Drag & Drop Zone - visible cuando hay imágenes */}
+      {/* Drag & Drop Zone */}
       {images && images.length > 0 && (
         <div
           className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors ${
@@ -386,19 +496,19 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
             isDragOver ? 'text-primary' : 'text-muted-foreground'
           }`} />
           <p className="text-sm text-muted-foreground">
-            {isDragOver ? 'Suelta las imágenes aquí' : 'Arrastra imágenes aquí o usa el botón de arriba'}
+            {isDragOver ? 'Drop images here' : 'Drag images here or use the button above'}
           </p>
         </div>
       )}
 
       {isLoading ? (
-        <p className="text-sm text-muted-foreground">Cargando imágenes...</p>
+        <p className="text-sm text-muted-foreground">Loading images...</p>
       ) : (
         <>
           {/* Uploading Images Preview */}
           {uploadingImages.length > 0 && (
             <div className="space-y-2">
-              <Label className="text-sm text-muted-foreground">Subiendo...</Label>
+              <Label className="text-sm text-muted-foreground">Uploading...</Label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {uploadingImages.map((uploadingImg) => (
                   <Card key={uploadingImg.id} className="relative overflow-hidden">
@@ -418,14 +528,14 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
                           <div className="h-8 w-8 rounded-full bg-green-600 flex items-center justify-center mx-auto mb-2">
                             <span className="text-white text-lg">✓</span>
                           </div>
-                          <p className="text-xs text-muted-foreground">Completado</p>
+                          <p className="text-xs text-muted-foreground">Complete</p>
                         </div>
                       ) : (
                         <div className="w-full text-center">
                           <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2 text-primary" />
                           <Progress value={uploadingImg.progress} className="w-full mb-2" />
                           <p className="text-xs text-muted-foreground">
-                            {uploadingImg.status === 'uploading' ? 'Subiendo...' : 'Procesando...'}
+                            {uploadingImg.status === 'uploading' ? 'Uploading...' : 'Processing...'}
                           </p>
                         </div>
                       )}
@@ -450,9 +560,12 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
                       key={image.id}
                       image={image}
                       index={index}
+                      artworkData={artworkData}
                       onDelete={handleDelete}
                       onSetMain={handleSetMain}
                       onCaptionChange={handleCaptionChange}
+                      onMetadataChange={handleMetadataChange}
+                      onToggleDetail={handleToggleDetail}
                     />
                   ))}
                 </div>
@@ -474,7 +587,7 @@ const MultipleImageUpload = ({ artworkId, onImagesChange }: MultipleImageUploadP
                 isDragOver ? 'text-primary' : 'text-muted-foreground'
               }`} />
               <p className="text-sm text-muted-foreground">
-                {isDragOver ? 'Suelta las imágenes aquí' : 'Arrastra imágenes aquí o haz clic en "Agregar Imágenes"'}
+                {isDragOver ? 'Drop images here' : 'Drag images here or click "Add Images"'}
               </p>
             </div>
           )}

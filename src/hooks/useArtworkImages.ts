@@ -147,3 +147,29 @@ export const useUpdateImageCaption = () => {
     },
   });
 };
+
+export const useUpdateImageMetadata = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ imageId, artworkId, updates }: { 
+      imageId: string; 
+      artworkId: string; 
+      updates: { title?: string | null; year?: string | null; dimensions?: string | null; materials?: string | null; is_detail?: boolean };
+    }) => {
+      const { error } = await supabase
+        .from("artwork_images")
+        .update(updates)
+        .eq("id", imageId);
+
+      if (error) throw error;
+      return { artworkId };
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["artwork-images", data.artworkId] });
+    },
+    onError: (error: Error) => {
+      toast.error(`Error al actualizar metadata: ${error.message}`);
+    },
+  });
+};

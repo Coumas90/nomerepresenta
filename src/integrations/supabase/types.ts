@@ -108,28 +108,43 @@ export type Database = {
           artwork_id: string
           caption: string | null
           created_at: string | null
+          dimensions: string | null
           display_order: number
           id: string
           image_url: string
+          is_detail: boolean
           is_main: boolean | null
+          materials: string | null
+          title: string | null
+          year: string | null
         }
         Insert: {
           artwork_id: string
           caption?: string | null
           created_at?: string | null
+          dimensions?: string | null
           display_order?: number
           id?: string
           image_url: string
+          is_detail?: boolean
           is_main?: boolean | null
+          materials?: string | null
+          title?: string | null
+          year?: string | null
         }
         Update: {
           artwork_id?: string
           caption?: string | null
           created_at?: string | null
+          dimensions?: string | null
           display_order?: number
           id?: string
           image_url?: string
+          is_detail?: boolean
           is_main?: boolean | null
+          materials?: string | null
+          title?: string | null
+          year?: string | null
         }
         Relationships: [
           {
