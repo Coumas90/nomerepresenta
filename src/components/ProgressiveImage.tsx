@@ -41,13 +41,15 @@ interface ProgressiveImageProps {
   responsivePreset?: keyof typeof RESPONSIVE_WIDTHS;
   /** Object-fit mode for the image (default: "cover") */
   objectFit?: "cover" | "contain" | "fill" | "none" | "scale-down";
+  /** Set fetchpriority="high" for LCP-critical images */
+  priority?: boolean;
 }
 
 // Generate a placeholder URL based on image type
-const getTinyPlaceholder = (src: string, width = 20): string => {
+const getTinyPlaceholder = (src: string, width = 48): string => {
   // For Supabase images, use server-side transform for tiny version
   if (supportsImageTransforms(src)) {
-    return getOptimizedImageUrl(src, { width, quality: 20 });
+    return getOptimizedImageUrl(src, { width, quality: 30 });
   }
   
   // For local images, use a gradient placeholder (works well with blur-up)
@@ -76,6 +78,7 @@ export const ProgressiveImage = ({
   responsive = true,
   responsivePreset = "large",
   objectFit = "cover",
+  priority = false,
 }: ProgressiveImageProps) => {
   const { imgRef, isVisible, isLoaded, setIsLoaded } = useImageLazyLoad();
   const [error, setError] = useState(false);
@@ -148,8 +151,8 @@ export const ProgressiveImage = ({
 
   const objectFitClass = objectFit === "contain" ? "object-contain" : objectFit === "fill" ? "object-fill" : objectFit === "none" ? "object-none" : objectFit === "scale-down" ? "object-scale-down" : "object-cover";
   const heightClass = objectFit === "contain" ? "h-auto" : "h-full";
-  const imageClasses = `w-full ${heightClass} ${objectFitClass} transition-all duration-500 ease-out ${objectFit === "contain" ? "relative z-0" : "z-20 relative"} ${
-    skipInternalFade ? "opacity-100" : (isLoaded ? "opacity-100 blur-0" : "opacity-0")
+  const imageClasses = `w-full ${heightClass} ${objectFitClass} transition-all duration-300 ease-out ${objectFit === "contain" ? "relative z-0" : "z-20 relative"} ${
+    skipInternalFade ? "opacity-100" : (isLoaded ? "opacity-100 blur-0" : "opacity-0 blur-sm")
   } ${onClick ? 'cursor-pointer' : ''}`;
 
   // Determine which formats to show (browsers pick the first supported)
@@ -225,9 +228,10 @@ export const ProgressiveImage = ({
             onLoad={handleImageLoad}
             onError={handleImageError}
             className={imageClasses}
-            loading={eager ? "eager" : "lazy"}
-            decoding="async"
+            loading={eager || priority ? "eager" : "lazy"}
+            decoding={priority ? "sync" : "async"}
             sizes={sizes}
+            {...(priority ? { fetchPriority: "high" } : {})}
           />
         </picture>
       )}
