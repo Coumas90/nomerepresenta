@@ -18,10 +18,11 @@ import { CSS } from "@dnd-kit/utilities";
 import { useStudioImages } from "@/hooks/useStudioImages";
 import { useStudioSeries } from "@/hooks/useStudioSeries";
 import { useDeleteStudioImage } from "@/hooks/useStudioImageMutations";
-import { useUpdateStudioSeriesOrder, useCreateStudioSeries } from "@/hooks/useStudioSeriesMutations";
+import { useUpdateStudioSeriesOrder, useCreateStudioSeries, useDeleteStudioSeries } from "@/hooks/useStudioSeriesMutations";
 import type { StudioImage, SeriesData } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { SeriesStudioSection } from "./studio/SeriesStudioSection";
 import { ImagePreviewDialog, DeleteImageDialog } from "./studio";
 
@@ -31,11 +32,13 @@ const SortableSeriesItem = ({
   images,
   onPreviewImage,
   onDeleteImage,
+  onDeleteSeries,
 }: {
   series: SeriesData;
   images: StudioImage[];
   onPreviewImage: (img: StudioImage) => void;
   onDeleteImage: (id: string) => void;
+  onDeleteSeries: () => void;
 }) => {
   const {
     attributes,
@@ -60,6 +63,7 @@ const SortableSeriesItem = ({
         images={images}
         onPreviewImage={onPreviewImage}
         onDeleteImage={onDeleteImage}
+        onDeleteSeries={onDeleteSeries}
         dragHandleProps={listeners}
       />
     </div>
@@ -72,12 +76,15 @@ const StudioImagesManager = () => {
   const deleteMutation = useDeleteStudioImage();
   const updateSeriesOrderMutation = useUpdateStudioSeriesOrder();
   const createSeriesMutation = useCreateStudioSeries();
+  const deleteSeriesMutation = useDeleteStudioSeries();
 
   const [showNewSeries, setShowNewSeries] = useState(false);
   const [newSeriesName, setNewSeriesName] = useState("");
   const [previewImage, setPreviewImage] = useState<StudioImage | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [imageToDelete, setImageToDelete] = useState<string | null>(null);
+  const [seriesToDelete, setSeriesToDelete] = useState<string | null>(null);
+  const [seriesDeleteDialogOpen, setSeriesDeleteDialogOpen] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
@@ -187,6 +194,7 @@ const StudioImagesManager = () => {
                 images={imagesBySeries.get(series.id) || []}
                 onPreviewImage={setPreviewImage}
                 onDeleteImage={handleDeleteClick}
+                onDeleteSeries={() => { setSeriesToDelete(series.id); setSeriesDeleteDialogOpen(true); }}
               />
             ))}
           </SortableContext>
@@ -215,6 +223,31 @@ const StudioImagesManager = () => {
         onCancel={() => setDeleteDialogOpen(false)}
         isDeleting={deleteMutation.isPending}
       />
+
+      <AlertDialog open={seriesDeleteDialogOpen} onOpenChange={setSeriesDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Series?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete this series. You cannot delete a series that still has images — remove or move them first.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={async () => {
+                if (seriesToDelete) {
+                  await deleteSeriesMutation.mutateAsync(seriesToDelete);
+                  setSeriesDeleteDialogOpen(false);
+                  setSeriesToDelete(null);
+                }
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };
