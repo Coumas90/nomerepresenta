@@ -109,17 +109,10 @@ const WorksPage = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [navigate]);
 
-  // Loading state
+  // Loading state - render page shell immediately, no blocking spinner
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-stone-100 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-8 h-8 border-2 border-stone-400/40 border-t-stone-600 rounded-full animate-spin" />
-          <span className="text-stone-500 text-xs tracking-widest uppercase">
-            Loading
-          </span>
-        </div>
-      </div>
+      <div className="min-h-screen bg-stone-100" />
     );
   }
 
