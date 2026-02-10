@@ -57,6 +57,18 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
     setCurrentImageIndex(0);
   }, [artwork.id]);
 
+  // Preload adjacent images so carousel transitions are instant
+  useEffect(() => {
+    const preloadIndexes = [currentImageIndex - 1, currentImageIndex + 1];
+    preloadIndexes.forEach(i => {
+      const url = allImages[i]?.url;
+      if (url) {
+        const img = new Image();
+        img.src = url;
+      }
+    });
+  }, [currentImageIndex, allImages]);
+
   // Navigation handlers
   const goToPrevImage = useCallback(() => {
     if (hasPrevImage) {
