@@ -51,7 +51,8 @@ const Bio = () => {
       onSwipeRight={handleSwipeClose}
       enabled
       direction="horizontal"
-      className="min-h-screen"
+      showEdgeIndicators={false}
+      className="min-h-screen overflow-visible"
     >
       <div 
         ref={scrollContainerRef}
