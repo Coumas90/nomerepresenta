@@ -157,22 +157,9 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
   return (
     <article className="relative w-full flex flex-col items-center">
       {/* Figure: image + caption stacked vertically, normal flow */}
-      <figure className="inline-flex flex-col items-start max-w-[80vw] md:max-w-[60vw] lg:max-w-[50vw] mx-auto overflow-visible">
+      <figure className="inline-flex flex-col items-start max-w-[95vw] md:max-w-[60vw] lg:max-w-[50vw] mx-auto overflow-visible">
         {/* Image container with navigation */}
         <div className="relative w-full flex items-center">
-          {/* Mobile left arrow — always rendered for centering, invisible when not needed */}
-          {isMobile && allImages.length > 1 && (
-            <button
-              onClick={hasPrevImage ? goToPrevImage : undefined}
-              className="flex-shrink-0 w-8 flex items-center justify-center focus:outline-none"
-              aria-label="Previous image"
-              aria-hidden={!hasPrevImage}
-            >
-              {hasPrevImage && (
-                <ChevronLeft size={18} className="text-stone-400" strokeWidth={1.5} />
-              )}
-            </button>
-          )}
 
           {/* Image + touch/click zones */}
           <div
@@ -283,19 +270,6 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
             </figcaption>
           </div>
 
-          {/* Mobile right arrow — always rendered for centering, invisible when not needed */}
-          {isMobile && allImages.length > 1 && (
-            <button
-              onClick={hasNextImage ? goToNextImage : undefined}
-              className="flex-shrink-0 w-8 flex items-center justify-center focus:outline-none"
-              aria-label="Next image"
-              aria-hidden={!hasNextImage}
-            >
-              {hasNextImage && (
-                <ChevronRight size={18} className="text-stone-400" strokeWidth={1.5} />
-              )}
-            </button>
-          )}
         </div>
       </figure>
     </article>
