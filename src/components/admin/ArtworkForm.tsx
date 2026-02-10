@@ -23,7 +23,6 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
     title: artwork?.title || "",
     year: artwork?.year || "",
     dimensions: artwork?.dimensions || "",
-    technique: artwork?.technique || "",
     materials: artwork?.materials || "",
     description: artwork?.description || "",
     image_url: artwork?.image_url || "",
@@ -42,7 +41,6 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
         title: artwork.title,
         year: artwork.year,
         dimensions: artwork.dimensions,
-        technique: artwork.technique,
         materials: artwork.materials,
         description: artwork.description,
         image_url: artwork.image_url,
@@ -107,33 +105,21 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="year">Year *</Label>
+              <Label htmlFor="year">Year</Label>
               <Input
                 id="year"
                 value={formData.year}
                 onChange={(e) => setFormData({ ...formData, year: e.target.value })}
-                required
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="dimensions">Dimensions *</Label>
+              <Label htmlFor="dimensions">Dimensions</Label>
               <Input
                 id="dimensions"
                 value={formData.dimensions}
                 onChange={(e) => setFormData({ ...formData, dimensions: e.target.value })}
                 placeholder="e.g., 120 x 100 cm"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="technique">Technique *</Label>
-              <Input
-                id="technique"
-                value={formData.technique}
-                onChange={(e) => setFormData({ ...formData, technique: e.target.value })}
-                required
               />
             </div>
 
@@ -170,12 +156,11 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="materials">Materials *</Label>
+            <Label htmlFor="materials">Materials</Label>
             <Input
               id="materials"
               value={formData.materials}
               onChange={(e) => setFormData({ ...formData, materials: e.target.value })}
-              required
             />
           </div>
 

@@ -199,47 +199,44 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
-          dimensions: string
+          dimensions: string | null
           display_order: number
           id: string
-          image_detail_url: string
+          image_detail_url: string | null
           image_url: string
-          materials: string
+          materials: string | null
           series_id: string
-          technique: string
           title: string
           updated_at: string
-          year: string
+          year: string | null
         }
         Insert: {
           created_at?: string
           description?: string | null
-          dimensions: string
+          dimensions?: string | null
           display_order?: number
           id?: string
-          image_detail_url: string
+          image_detail_url?: string | null
           image_url: string
-          materials: string
+          materials?: string | null
           series_id: string
-          technique: string
           title: string
           updated_at?: string
-          year: string
+          year?: string | null
         }
         Update: {
           created_at?: string
           description?: string | null
-          dimensions?: string
+          dimensions?: string | null
           display_order?: number
           id?: string
-          image_detail_url?: string
+          image_detail_url?: string | null
           image_url?: string
-          materials?: string
+          materials?: string | null
           series_id?: string
-          technique?: string
           title?: string
           updated_at?: string
-          year?: string
+          year?: string | null
         }
         Relationships: [
           {
