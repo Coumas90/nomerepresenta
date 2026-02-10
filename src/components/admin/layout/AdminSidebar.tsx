@@ -44,6 +44,7 @@ const contentItems = [
   { title: "Artworks", url: "/admin?section=content-artworks", icon: Image },
   { title: "Series (Works)", url: "/admin?section=content-series", icon: FolderOpen },
   { title: "Studio", url: "/admin?section=content-studio", icon: Camera },
+  { title: "Bio", url: "/admin?section=content-bio", icon: Users },
 ];
 
 const settingsItems = [

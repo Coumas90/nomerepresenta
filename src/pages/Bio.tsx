@@ -3,11 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { Undo2 } from "lucide-react";
 import { ProgressiveImage } from "@/components/ProgressiveImage";
 import { SwipeGestureContainer } from "@/components/SwipeGestureContainer";
+import { useBioSettings } from "@/hooks/useBioSettings";
 
 const BioHeroImage = () => {
+  const { data: settings } = useBioSettings();
+  const imageUrl = settings?.bio_hero_image || "/images/bio-hero.jpeg";
+  
   return (
     <ProgressiveImage
-      src="/images/artworks/tri-peel-1.png"
+      src={imageUrl}
       alt="Ivan Comas - Artist"
       className="aspect-[16/9] md:aspect-[21/9] w-full"
       blurUp

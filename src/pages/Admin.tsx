@@ -14,6 +14,8 @@ import { DateRange } from "react-day-picker";
 import { LoadingSkeleton } from "@/components/admin/LoadingSkeleton";
 import { ImageCompressionSettings } from "@/components/admin/settings/ImageCompressionSettings";
 
+const BioManager = lazy(() => import("@/components/admin/BioManager"));
+
 // Lazy load heavy analytics components
 const RealtimeAnalytics = lazy(() => import("@/components/admin/analytics/RealtimeAnalytics"));
 const ArtworksAnalytics = lazy(() => import("@/components/admin/analytics/ArtworksAnalytics"));
@@ -142,6 +144,13 @@ const Admin = () => {
       
       case "content-studio":
         return <StudioImagesManager />;
+      
+      case "content-bio":
+        return (
+          <Suspense fallback={<LoadingSkeleton type="analytics" />}>
+            <BioManager />
+          </Suspense>
+        );
       
       case "content-artworks":
         return (
