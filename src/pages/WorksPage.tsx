@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useArtworksBySeries } from "@/hooks/useArtworksBySeries";
+import { useAllArtworkImages } from "@/hooks/useAllArtworkImages";
 import { useScrollRestoration } from "@/hooks/useScrollRestoration";
 import { SeriesHeader, SeriesSection } from "@/components/works";
 
@@ -9,6 +10,7 @@ const WorksPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { data: seriesWithArtworks, isLoading } = useArtworksBySeries();
+  const { data: allArtworkImages } = useAllArtworkImages();
 
   // State para serie activa (detectada por scroll)
   const [activeSeriesId, setActiveSeriesId] = useState<string | null>(null);
@@ -149,6 +151,7 @@ const WorksPage = () => {
             artworks={series.artworks}
             isFirst={index === 0}
             onIntersect={handleSeriesIntersect}
+            allArtworkImages={allArtworkImages}
           />
         ))}
       </main>
