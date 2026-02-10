@@ -19,6 +19,14 @@ const BioHeroImage = () => {
     />
   );
 };
+
+const CVEntry = ({ year, children }: { year: string; children: React.ReactNode }) => (
+  <div className="grid grid-cols-[80px_1fr] md:grid-cols-[100px_1fr] gap-x-3 items-baseline">
+    <span className="text-stone-500 text-sm">{year}</span>
+    <div className="text-sm md:text-base">{children}</div>
+  </div>
+);
+
 const Bio = () => {
   const navigate = useNavigate();
   const [isPageLoaded, setIsPageLoaded] = useState(false);
@@ -33,7 +41,6 @@ const Bio = () => {
     navigate("/");
   }, [navigate]);
 
-  // Check if scrolled to top for swipe-to-close
   const isAtTop = useCallback(() => {
     const container = scrollContainerRef.current;
     if (!container) return true;
@@ -107,21 +114,15 @@ const Bio = () => {
             <h2 className="text-lg md:text-xl font-bold tracking-wide uppercase mb-6 text-stone-900">
               Education
             </h2>
-            <div className="space-y-4">
-              <div className="grid grid-cols-[100px_1fr] md:grid-cols-[120px_1fr] gap-2">
-                <span className="text-stone-500 text-sm">2007-2012</span>
-                <div className="text-sm md:text-base">
-                  <span className="font-medium text-stone-900">MFA</span>
-                  <span className="text-stone-600">, École Nationale Supérieure des Beaux Arts de Paris</span>
-                </div>
-              </div>
-              <div className="grid grid-cols-[100px_1fr] md:grid-cols-[120px_1fr] gap-2">
-                <span className="text-stone-500 text-sm">2011</span>
-                <div className="text-sm md:text-base">
-                  <span className="font-medium text-stone-900">Exchange program</span>
-                  <span className="text-stone-600">, Cooper Union, New York</span>
-                </div>
-              </div>
+            <div className="space-y-3">
+              <CVEntry year="2007-2012">
+                <span className="font-medium text-stone-900">MFA</span>
+                <span className="text-stone-600">, École Nationale Supérieure des Beaux Arts de Paris</span>
+              </CVEntry>
+              <CVEntry year="2011">
+                <span className="font-medium text-stone-900">Exchange program</span>
+                <span className="text-stone-600">, Cooper Union, New York</span>
+              </CVEntry>
             </div>
           </section>
 
@@ -130,29 +131,20 @@ const Bio = () => {
             <h2 className="text-lg md:text-xl font-bold tracking-wide uppercase mb-6 text-stone-900">
               Solo and Two Person Exhibitions
             </h2>
-            <div className="space-y-4">
-              <div className="grid grid-cols-[100px_1fr] md:grid-cols-[120px_1fr] gap-2">
-                <span className="text-stone-500 text-sm">2024</span>
-                <div className="text-sm md:text-base">
-                  <span className="font-medium text-stone-900">Metronomo</span>
-                  <span className="text-stone-600">, Instituto Alto, São Paulo</span>
-                </div>
-              </div>
-              <div className="grid grid-cols-[100px_1fr] md:grid-cols-[120px_1fr] gap-2">
-                <span className="text-stone-500 text-sm">2019</span>
-                <div className="text-sm md:text-base">
-                  <span className="font-medium text-stone-900">A hole in the wall</span>
-                  <span className="text-stone-600">, Espacio Abierto, CDMX</span>
-                </div>
-              </div>
-              <div className="grid grid-cols-[100px_1fr] md:grid-cols-[120px_1fr] gap-2">
-                <span className="text-stone-500 text-sm">2016</span>
-                <div className="text-sm md:text-base">
-                  <span className="font-medium text-stone-900">After Sonora</span>
-                  <span className="text-stone-600">, Steve Turner, Los Angeles</span>
-                </div>
-              </div>
-              <div className="grid grid-cols-[100px_1fr] md:grid-cols-[120px_1fr] gap-2">
+            <div className="space-y-3">
+              <CVEntry year="2024">
+                <span className="font-medium text-stone-900">Metronomo</span>
+                <span className="text-stone-600">, Instituto Alto, São Paulo</span>
+              </CVEntry>
+              <CVEntry year="2019">
+                <span className="font-medium text-stone-900">A hole in the wall</span>
+                <span className="text-stone-600">, Espacio Abierto, CDMX</span>
+              </CVEntry>
+              <CVEntry year="2016">
+                <span className="font-medium text-stone-900">After Sonora</span>
+                <span className="text-stone-600">, Steve Turner, Los Angeles</span>
+              </CVEntry>
+              <div className="grid grid-cols-[80px_1fr] md:grid-cols-[100px_1fr] gap-x-3 items-baseline">
                 <span className="text-stone-500 text-sm">2015</span>
                 <div className="space-y-2 text-sm md:text-base">
                   <div>
@@ -173,13 +165,10 @@ const Bio = () => {
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-[100px_1fr] md:grid-cols-[120px_1fr] gap-2">
-                <span className="text-stone-500 text-sm">2014</span>
-                <div className="text-sm md:text-base">
-                  <span className="font-medium text-stone-900">Recent Works</span>
-                  <span className="text-stone-600">, Vergez Collection, Buenos Aires</span>
-                </div>
-              </div>
+              <CVEntry year="2014">
+                <span className="font-medium text-stone-900">Recent Works</span>
+                <span className="text-stone-600">, Vergez Collection, Buenos Aires</span>
+              </CVEntry>
             </div>
           </section>
 
@@ -188,28 +177,19 @@ const Bio = () => {
             <h2 className="text-lg md:text-xl font-bold tracking-wide uppercase mb-6 text-stone-900">
               Selected Group Exhibitions
             </h2>
-            <div className="space-y-4">
-              <div className="grid grid-cols-[100px_1fr] md:grid-cols-[120px_1fr] gap-2">
-                <span className="text-stone-500 text-sm">2018</span>
-                <div className="text-sm md:text-base">
-                  <span className="font-medium text-stone-900">Sun Kiss Choked</span>
-                  <span className="text-stone-600">, Y53, Los Angeles</span>
-                </div>
-              </div>
-              <div className="grid grid-cols-[100px_1fr] md:grid-cols-[120px_1fr] gap-2">
-                <span className="text-stone-500 text-sm">2017</span>
-                <div className="text-sm md:text-base">
-                  <span className="font-medium text-stone-900">Monet is my church</span>
-                  <span className="text-stone-600">, Dittrich & Schlectriem, Berlin</span>
-                </div>
-              </div>
-              <div className="grid grid-cols-[100px_1fr] md:grid-cols-[120px_1fr] gap-2">
-                <span className="text-stone-500 text-sm">2015</span>
-                <div className="text-sm md:text-base">
-                  <span className="font-medium text-stone-900">UNTITLED</span>
-                  <span className="text-stone-600"> (with Steve Turner), Miami Beach</span>
-                </div>
-              </div>
+            <div className="space-y-3">
+              <CVEntry year="2018">
+                <span className="font-medium text-stone-900">Sun Kiss Choked</span>
+                <span className="text-stone-600">, Y53, Los Angeles</span>
+              </CVEntry>
+              <CVEntry year="2017">
+                <span className="font-medium text-stone-900">Monet is my church</span>
+                <span className="text-stone-600">, Dittrich & Schlectriem, Berlin</span>
+              </CVEntry>
+              <CVEntry year="2015">
+                <span className="font-medium text-stone-900">UNTITLED</span>
+                <span className="text-stone-600"> (with Steve Turner), Miami Beach</span>
+              </CVEntry>
             </div>
           </section>
 
