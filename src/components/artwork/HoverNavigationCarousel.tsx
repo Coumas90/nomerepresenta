@@ -88,7 +88,7 @@ export const HoverNavigationCarousel = ({
           loading="eager"
           decoding="async"
           ref={registerImageRef}
-          className="w-full h-auto max-h-[90vh] object-contain transition-opacity duration-300"
+          className="w-full h-auto max-h-[90vh] object-contain"
         />
       )}
 
