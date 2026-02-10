@@ -83,18 +83,21 @@ const Bio = () => {
         <div className="container mx-auto px-6 md:px-8 max-w-4xl">
           {/* Artist Name & Info */}
           <div className={`mb-12 md:mb-16 transition-all duration-700 delay-200 ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-6">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4">
               Ivan Comas
             </h1>
+            <p className="text-stone-500 text-sm md:text-base mb-1">
+              Franco-Argentine
+            </p>
             <p className="text-stone-500 text-sm md:text-base mb-8">
-              b. 1987, Buenos Aires
+              São Paulo / Paris
             </p>
             <div className="space-y-4 text-stone-700 text-base md:text-lg leading-relaxed">
               <p>
-                Ivan Comas is a Franco-Argentine artist working between São Paulo and Paris. His practice evolves through layered procedures that merge industrial materials, fragmented text, and the visual residue of dense urban environments. Comas builds stratified surfaces through cycles of inscription, burial, and rupture, developing a material language shaped by years of movement between major cities and long periods of photographic and observational research.
+                Comas's practice develops through layered procedures that combine industrial materials, fragmented text, and the visual residue of dense urban environments. Through cycles of inscription, burial, and rupture, he builds stratified surfaces that translate prolonged exposure to cities into material structure.
               </p>
               <p>
-                Educated at the École des Beaux-Arts de Paris, Comas has developed a body of work that intersects painting, photography, and writing, forming a coherent investigation into memory, architecture, and the rhythm of collapsing structures. His work has been exhibited in Los Angeles, Berlin, Paris, and São Paulo, and is held in private collections in Latin America, Europe, and the United States, including the Jumex and Vergez & Pearson collections.
+                Educated at the École des Beaux-Arts de Paris, Comas works across painting, photography, and writing as a single investigative field focused on material systems, residual language, and stratified time. His work has been exhibited in Los Angeles, Berlin, Paris, and São Paulo, and is held in private collections in Latin America, Europe, and the United States, including the Colección Jumex and the Vergez &amp; Pearson collections.
               </p>
             </div>
           </div>
