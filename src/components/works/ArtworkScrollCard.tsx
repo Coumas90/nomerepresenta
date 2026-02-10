@@ -179,7 +179,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
   return (
     <article className="relative w-full flex flex-col items-center">
       {/* Figure: image + caption stacked vertically, normal flow */}
-      <figure className="inline-flex flex-col items-start max-w-[80vw] md:max-w-[60vw] lg:max-w-[50vw] mx-auto">
+      <figure className="inline-flex flex-col items-start max-w-[80vw] md:max-w-[60vw] lg:max-w-[50vw] mx-auto overflow-visible">
         {/* Image container with carousel overlays */}
         <div
           ref={containerRef}
@@ -225,7 +225,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
               }}
               className={cn(
                 "absolute top-0 bottom-0 z-20 focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/50",
-                isMobile ? "left-0 w-[30%]" : "-left-[15vw] w-[calc(30%+15vw)] cursor-none"
+                isMobile ? "left-0 w-[30%]" : "-left-[50vw] w-[calc(50%+50vw)] cursor-none"
               )}
               aria-label="Previous image"
             />
@@ -245,7 +245,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
               }}
               className={cn(
                 "absolute top-0 bottom-0 z-20 focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/50",
-                isMobile ? "right-0 w-[30%]" : "-right-[15vw] w-[calc(30%+15vw)] cursor-none"
+                isMobile ? "right-0 w-[30%]" : "-right-[50vw] w-[calc(50%+50vw)] cursor-none"
               )}
               aria-label="Next image"
             />
