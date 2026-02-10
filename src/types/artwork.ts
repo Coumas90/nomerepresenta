@@ -27,7 +27,6 @@ export interface ArtworkData {
   title: string;
   year: string;
   dimensions: string;
-  technique: string;
   materials: string;
   description: string;
   image_url: string;
@@ -73,13 +72,12 @@ export interface ArtworkWithSeries extends ArtworkData {
  */
 export interface CreateArtworkInput {
   title: string;
-  year: string;
-  dimensions: string;
-  technique: string;
-  materials: string;
+  year?: string;
+  dimensions?: string;
+  materials?: string;
   description?: string;
   image_url: string;
-  image_detail_url: string;
+  image_detail_url?: string;
   series_id: string;
   display_order?: number;
 }

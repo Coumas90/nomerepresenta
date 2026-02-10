@@ -66,17 +66,13 @@ const ArtworkPreviewDialog = ({ artwork, series, open, onOpenChange }: ArtworkPr
             </div>
           </div>
 
-          {/* Technique and Materials */}
-          <div className="space-y-4">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Technique</p>
-              <p className="text-base mt-1">{artwork.technique}</p>
-            </div>
+          {/* Materials */}
+          {artwork.materials && (
             <div>
               <p className="text-sm font-medium text-muted-foreground">Materials</p>
               <p className="text-base mt-1">{artwork.materials}</p>
             </div>
-          </div>
+          )}
 
           {/* Description */}
           <div>
