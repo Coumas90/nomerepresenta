@@ -6,7 +6,7 @@ interface UseImageLazyLoadOptions {
 }
 
 export const useImageLazyLoad = (options: UseImageLazyLoadOptions = {}) => {
-  const { threshold = 0.01, rootMargin = "600px" } = options;
+  const { threshold = 0.01, rootMargin = "200px" } = options;
   const [isVisible, setIsVisible] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
