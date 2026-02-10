@@ -59,11 +59,18 @@ const Studio = () => {
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
+        // Find the topmost intersecting entry
+        let topEntry: IntersectionObserverEntry | null = null;
         for (const entry of entries) {
           if (entry.isIntersecting) {
-            const id = entry.target.getAttribute("data-series-id");
-            if (id) setActiveSeriesId(id);
+            if (!topEntry || entry.boundingClientRect.top < topEntry.boundingClientRect.top) {
+              topEntry = entry;
+            }
           }
+        }
+        if (topEntry) {
+          const id = topEntry.target.getAttribute("data-series-id");
+          if (id) setActiveSeriesId(id);
         }
       },
       { rootMargin: "-56px 0px -70% 0px", threshold: 0 }
