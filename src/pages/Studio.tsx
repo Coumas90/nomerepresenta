@@ -120,7 +120,7 @@ const Studio = () => {
   }
 
   return (
-    <div className="min-h-screen bg-stone-100 overflow-x-clip">
+    <div className="min-h-screen bg-stone-100">
       <StudioHeader
         series={seriesList}
         activeSeriesId={activeSeriesId}
@@ -128,7 +128,7 @@ const Studio = () => {
         onClose={handleClose}
       />
 
-      <main>
+      <main className="overflow-x-clip">
         {groups.map((group) => (
           <section
             key={group.id}
