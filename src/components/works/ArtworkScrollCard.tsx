@@ -187,16 +187,13 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
               style={!isMobile ? { cursor: cursorLeftSvg } : undefined}
               aria-label="Previous image"
             >
-              <ChevronLeft
-                size={20}
-                className={cn(
-                  "absolute top-1/2 -translate-y-1/2 text-stone-400 transition-opacity",
-                  isMobile
-                    ? "left-2"
-                    : "right-4 opacity-0 group-hover:opacity-100"
-                )}
-                strokeWidth={1.5}
-              />
+              {isMobile && (
+                <ChevronLeft
+                  size={20}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 text-stone-400"
+                  strokeWidth={1.5}
+                />
+              )}
             </button>
           )}
 
@@ -213,16 +210,13 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
               style={!isMobile ? { cursor: cursorRightSvg } : undefined}
               aria-label="Next image"
             >
-              <ChevronRight
-                size={20}
-                className={cn(
-                  "absolute top-1/2 -translate-y-1/2 text-stone-400 transition-opacity",
-                  isMobile
-                    ? "right-2"
-                    : "left-4 opacity-0 group-hover:opacity-100"
-                )}
-                strokeWidth={1.5}
-              />
+              {isMobile && (
+                <ChevronRight
+                  size={20}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400"
+                  strokeWidth={1.5}
+                />
+              )}
             </button>
           )}
         </div>
