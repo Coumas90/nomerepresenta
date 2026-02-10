@@ -52,8 +52,6 @@ export type {
 // Studio types
 export type {
   StudioImageRow,
-  StudioSeriesRow,
-  StudioSeriesData,
   StudioImage,
   BulkUploadItem,
   CreateStudioImageInput,

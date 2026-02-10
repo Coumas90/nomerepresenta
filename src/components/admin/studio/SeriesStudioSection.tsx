@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Upload, Trash2, X, Pencil, Check, GripVertical } from "lucide-react";
 import { SortableThumb } from "./SortableThumb";
 import { useUploadStudioImage, useCreateStudioImage, useDeleteStudioImage, useUpdateStudioImagesOrder } from "@/hooks/useStudioImageMutations";
-import { useUpdateStudioSeries } from "@/hooks/useStudioSeriesMutations";
+import { useUpdateSeries } from "@/hooks/useSeriesMutations";
 import { toast } from "@/hooks/use-toast";
 import type { StudioImage } from "@/types";
 
@@ -44,7 +44,7 @@ export const SeriesStudioSection = ({
   const uploadMutation = useUploadStudioImage();
   const createMutation = useCreateStudioImage();
   const updateOrderMutation = useUpdateStudioImagesOrder();
-  const updateSeriesMutation = useUpdateStudioSeries();
+  const updateSeriesMutation = useUpdateSeries();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);

@@ -131,7 +131,7 @@ const WorksPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-stone-100 overflow-x-hidden">
+    <div className="min-h-screen bg-stone-100">
       {/* Header sticky con navegación de series */}
       <SeriesHeader
         series={seriesWithArtworks}
