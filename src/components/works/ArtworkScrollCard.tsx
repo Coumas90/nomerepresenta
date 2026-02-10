@@ -152,7 +152,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
         {/* Image container with carousel overlays */}
         <div
           ref={containerRef}
-          className="relative w-full"
+          className="relative w-full select-none"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
