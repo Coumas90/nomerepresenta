@@ -406,13 +406,6 @@ export type Database = {
             referencedRelation: "studio_series"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "studio_images_studio_series_id_fkey"
-            columns: ["series_id"]
-            isOneToOne: false
-            referencedRelation: "studio_series"
-            referencedColumns: ["id"]
-          },
         ]
       }
       studio_series: {
