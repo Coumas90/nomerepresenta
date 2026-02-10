@@ -16,9 +16,9 @@ import {
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useStudioImages } from "@/hooks/useStudioImages";
-import { useSeries } from "@/hooks/useSeries";
+import { useStudioSeries } from "@/hooks/useStudioSeries";
 import { useDeleteStudioImage } from "@/hooks/useStudioImageMutations";
-import { useUpdateSeriesOrder, useCreateSeries } from "@/hooks/useSeriesMutations";
+import { useUpdateStudioSeriesOrder, useCreateStudioSeries } from "@/hooks/useStudioSeriesMutations";
 import type { StudioImage, SeriesData } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -68,10 +68,10 @@ const SortableSeriesItem = ({
 
 const StudioImagesManager = () => {
   const { data: images = [], isLoading: imagesLoading } = useStudioImages();
-  const { data: allSeries = [], isLoading: seriesLoading } = useSeries();
+  const { data: allSeries = [], isLoading: seriesLoading } = useStudioSeries();
   const deleteMutation = useDeleteStudioImage();
-  const updateSeriesOrderMutation = useUpdateSeriesOrder();
-  const createSeriesMutation = useCreateSeries();
+  const updateSeriesOrderMutation = useUpdateStudioSeriesOrder();
+  const createSeriesMutation = useCreateStudioSeries();
 
   const [showNewSeries, setShowNewSeries] = useState(false);
   const [newSeriesName, setNewSeriesName] = useState("");
