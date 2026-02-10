@@ -106,13 +106,8 @@ const SortableImage = ({ image, index, onDelete, onSetMain, onCaptionChange }: S
             <X className="h-4 w-4" />
           </Button>
         </div>
-        {image.is_main && (
-          <div className="absolute bottom-2 left-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded">
-            Principal
-          </div>
-        )}
-        <div className="absolute bottom-2 right-2 bg-background/80 text-xs px-2 py-1 rounded">
-          #{image.display_order}
+        <div className="absolute bottom-2 left-2 bg-background/90 text-xs px-2 py-1 rounded font-medium">
+          {index === 0 ? "Main Image" : `Image ${index + 1}`}
         </div>
       </div>
       {/* Caption input - outside drag handle area */}
