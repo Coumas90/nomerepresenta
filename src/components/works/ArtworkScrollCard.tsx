@@ -12,6 +12,10 @@ interface ArtworkScrollCardProps {
   isVisible?: boolean;
 }
 
+// SVG cursor data URIs — minimal chevron arrows
+const cursorLeftSvg = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23787874' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m15 18-6-6 6-6'/%3E%3C/svg%3E") 12 12, pointer`;
+const cursorRightSvg = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23787874' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E") 12 12, pointer`;
+
 export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCardProps) => {
   const isMobile = useIsMobile();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -178,8 +182,9 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
                 "absolute top-0 bottom-0 z-20 focus:outline-none group",
                 isMobile
                   ? "left-0 w-[30%]"
-                  : "-left-[50vw] w-[calc(50%+50vw)] cursor-pointer"
+                  : "-left-[50vw] w-[calc(50%+50vw)]"
               )}
+              style={!isMobile ? { cursor: cursorLeftSvg } : undefined}
               aria-label="Previous image"
             >
               <ChevronLeft
@@ -203,8 +208,9 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
                 "absolute top-0 bottom-0 z-20 focus:outline-none group",
                 isMobile
                   ? "right-0 w-[30%]"
-                  : "-right-[50vw] w-[calc(50%+50vw)] cursor-pointer"
+                  : "-right-[50vw] w-[calc(50%+50vw)]"
               )}
+              style={!isMobile ? { cursor: cursorRightSvg } : undefined}
               aria-label="Next image"
             >
               <ChevronRight
