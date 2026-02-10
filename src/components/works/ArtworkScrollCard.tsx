@@ -4,7 +4,7 @@ import { ProgressiveImage } from "@/components/ProgressiveImage";
 import { ImageSkeleton } from "@/components/ImageSkeleton";
 import { useArtworkImages } from "@/hooks/useArtworkImages";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"; // used for indicator dots
 import type { ArtworkData } from "@/types";
 
 interface ArtworkScrollCardProps {
@@ -149,74 +149,87 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
     <article className="relative w-full flex flex-col items-center">
       {/* Figure: image + caption stacked vertically, normal flow */}
       <figure className="inline-flex flex-col items-start max-w-[80vw] md:max-w-[60vw] lg:max-w-[50vw] mx-auto overflow-visible">
-        {/* Image container with carousel overlays */}
-        <div
-          ref={containerRef}
-          className="relative w-full select-none"
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-        >
-          {/* Gallery frame shadow effect */}
-          <div className="absolute inset-0 shadow-2xl shadow-stone-900/15 rounded-sm" />
-          
-          {/* Main image */}
-          {currentImage && (
-            <ProgressiveImage
-              src={currentImage}
-              alt={artwork.title || "Artwork"}
-              className="relative z-10 w-full [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh]"
-              objectFit="contain"
-              eager={false}
-              blurUp
-              modernFormats
-              responsivePreset="full"
-              sizes="(max-width: 768px) 90vw, (max-width: 1024px) 70vw, 60vw"
-            />
-          )}
-
-          {/* Clickable left zone */}
-          {hasPrevImage && allImages.length > 1 && (
+        {/* Image container with navigation */}
+        <div className="relative w-full flex items-center">
+          {/* Mobile left arrow — outside image */}
+          {isMobile && hasPrevImage && allImages.length > 1 && (
             <button
               onClick={goToPrevImage}
-              className={cn(
-                "absolute top-0 bottom-0 z-20 focus:outline-none group",
-                isMobile
-                  ? "left-0 w-[30%]"
-                  : "-left-[50vw] w-[calc(50%+50vw)]"
-              )}
-              style={!isMobile ? { cursor: cursorLeftSvg } : undefined}
+              className="flex-shrink-0 w-8 flex items-center justify-center focus:outline-none"
               aria-label="Previous image"
             >
-              {isMobile && (
-                <ChevronLeft
-                  size={20}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 text-stone-400"
-                  strokeWidth={1.5}
-                />
-              )}
+              <ChevronLeft size={18} className="text-stone-400" strokeWidth={1.5} />
             </button>
           )}
 
-          {/* Clickable right zone */}
-          {hasNextImage && allImages.length > 1 && (
+          {/* Image + touch/click zones */}
+          <div
+            ref={containerRef}
+            className="relative flex-1 min-w-0 select-none"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
+            {/* Gallery frame shadow effect */}
+            <div className="absolute inset-0 shadow-2xl shadow-stone-900/15 rounded-sm" />
+            
+            {/* Main image */}
+            {currentImage && (
+              <ProgressiveImage
+                src={currentImage}
+                alt={artwork.title || "Artwork"}
+                className="relative z-10 w-full [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh]"
+                objectFit="contain"
+                eager={false}
+                blurUp
+                modernFormats
+                responsivePreset="full"
+                sizes="(max-width: 768px) 90vw, (max-width: 1024px) 70vw, 60vw"
+              />
+            )}
+
+            {/* Mobile tap zones (invisible, no arrows) */}
+            {isMobile && hasPrevImage && allImages.length > 1 && (
+              <button
+                onClick={goToPrevImage}
+                className="absolute left-0 top-0 bottom-0 w-[30%] z-20 focus:outline-none"
+                aria-label="Previous image"
+              />
+            )}
+            {isMobile && hasNextImage && allImages.length > 1 && (
+              <button
+                onClick={goToNextImage}
+                className="absolute right-0 top-0 bottom-0 w-[30%] z-20 focus:outline-none"
+                aria-label="Next image"
+              />
+            )}
+
+            {/* Desktop clickable zones with custom cursors */}
+            {!isMobile && hasPrevImage && allImages.length > 1 && (
+              <button
+                onClick={goToPrevImage}
+                className="absolute top-0 bottom-0 z-20 focus:outline-none -left-[50vw] w-[calc(50%+50vw)]"
+                style={{ cursor: cursorLeftSvg }}
+                aria-label="Previous image"
+              />
+            )}
+            {!isMobile && hasNextImage && allImages.length > 1 && (
+              <button
+                onClick={goToNextImage}
+                className="absolute top-0 bottom-0 z-20 focus:outline-none -right-[50vw] w-[calc(50%+50vw)]"
+                style={{ cursor: cursorRightSvg }}
+                aria-label="Next image"
+              />
+            )}
+          </div>
+
+          {/* Mobile right arrow — outside image */}
+          {isMobile && hasNextImage && allImages.length > 1 && (
             <button
               onClick={goToNextImage}
-              className={cn(
-                "absolute top-0 bottom-0 z-20 focus:outline-none group",
-                isMobile
-                  ? "right-0 w-[30%]"
-                  : "-right-[50vw] w-[calc(50%+50vw)]"
-              )}
-              style={!isMobile ? { cursor: cursorRightSvg } : undefined}
+              className="flex-shrink-0 w-8 flex items-center justify-center focus:outline-none"
               aria-label="Next image"
             >
-              {isMobile && (
-                <ChevronRight
-                  size={20}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400"
-                  strokeWidth={1.5}
-                />
-              )}
+              <ChevronRight size={18} className="text-stone-400" strokeWidth={1.5} />
             </button>
           )}
         </div>
