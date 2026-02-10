@@ -10,6 +10,21 @@ import type { Tables } from "@/integrations/supabase/types";
 /** Studio image row from database */
 export type StudioImageRow = Tables<"studio_images">;
 
+/** Studio series row from database */
+export type StudioSeriesRow = Tables<"studio_series">;
+
+// ============= Application Types =============
+
+/**
+ * Studio series as used throughout the application.
+ */
+export interface StudioSeriesData {
+  id: string;
+  name: string;
+  description: string | null;
+  display_order: number;
+}
+
 // ============= Application Types =============
 
 /**
