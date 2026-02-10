@@ -131,7 +131,7 @@ export const HoverNavigationCarousel = ({
         <div
           className={`absolute z-20 ${isMobile ? 'pointer-events-auto' : 'pointer-events-none'}`}
           style={isMobile ? {
-            left: '16px',
+            left: '-4px',
             top: '50%',
             transform: 'translateY(-50%)'
           } : {
@@ -142,13 +142,11 @@ export const HoverNavigationCarousel = ({
           onClick={isMobile ? handlePrevious : undefined}
           aria-hidden={!isMobile}
         >
-          <div className={`${isMobile ? 'bg-black/30 backdrop-blur-sm rounded-full p-2' : ''}`}>
-            <ChevronLeft 
-              size={isMobile ? 32 : 40} 
-              className="text-white drop-shadow-lg" 
-              strokeWidth={1.5} 
-            />
-          </div>
+          <ChevronLeft 
+            size={isMobile ? 20 : 40} 
+            className={isMobile ? "text-stone-500" : "text-white drop-shadow-lg"}
+            strokeWidth={1.5} 
+          />
         </div>
       )}
 
@@ -157,7 +155,7 @@ export const HoverNavigationCarousel = ({
         <div
           className={`absolute z-20 ${isMobile ? 'pointer-events-auto' : 'pointer-events-none'}`}
           style={isMobile ? {
-            right: '16px',
+            right: '-4px',
             top: '50%',
             transform: 'translateY(-50%)'
           } : {
@@ -168,13 +166,11 @@ export const HoverNavigationCarousel = ({
           onClick={isMobile ? handleNext : undefined}
           aria-hidden={!isMobile}
         >
-          <div className={`${isMobile ? 'bg-black/30 backdrop-blur-sm rounded-full p-2' : ''}`}>
-            <ChevronRight 
-              size={isMobile ? 32 : 40} 
-              className="text-white drop-shadow-lg" 
-              strokeWidth={1.5} 
-            />
-          </div>
+          <ChevronRight 
+            size={isMobile ? 20 : 40} 
+            className={isMobile ? "text-stone-500" : "text-white drop-shadow-lg"}
+            strokeWidth={1.5} 
+          />
         </div>
       )}
     </div>
