@@ -8,7 +8,7 @@ const menuItems = [
   { text: "COMAS", type: "title" as const },
   { text: "WORKS", type: "link" as const, path: "/works" },
   { text: "STUDIO", type: "link" as const, path: "/studio" },
-  { text: "CONTACT", type: "mailto" as const, email: "contact@ivancomas.com" },
+  { text: "CONTACT", type: "mailto" as const, email: "contact@ivancomas.studio" },
   { text: "BIO", type: "link" as const, path: "/bio" },
 ];
 
