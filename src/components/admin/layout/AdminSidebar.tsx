@@ -42,7 +42,7 @@ const analyticsItems = [
 
 const contentItems = [
   { title: "Artworks", url: "/admin?section=content-artworks", icon: Image },
-  { title: "Series", url: "/admin?section=content-series", icon: FolderOpen },
+  { title: "Series (Works)", url: "/admin?section=content-series", icon: FolderOpen },
   { title: "Studio", url: "/admin?section=content-studio", icon: Camera },
 ];
 
