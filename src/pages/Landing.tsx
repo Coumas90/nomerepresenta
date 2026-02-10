@@ -61,11 +61,18 @@ const Landing = () => {
         // Second tap - navigate
         handleItemClick(item);
       } else {
-        // First tap - show preview
+        // First tap - show preview + prefetch data
         setIsTransitioning(true);
         setSelectedIndex(index);
         setHoveredIndex(index);
         setTimeout(() => setIsTransitioning(false), 300);
+        
+        // Prefetch data for the target page
+        if (item.type === 'link') {
+          if (item.path === '/works') { import('./WorksPage'); prefetchWorksData(); }
+          else if (item.path === '/studio') { import('./Studio'); prefetchStudioData(); }
+          else if (item.path === '/bio') { import('./Bio'); }
+        }
       }
     } else {
       // Desktop or non-clickable - direct action
