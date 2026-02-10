@@ -141,7 +141,7 @@ const Bio = () => {
                 <span className="text-stone-600">, Espacio Abierto, CDMX</span>
               </CVEntry>
               <CVEntry year="2016">
-                <span className="font-medium text-stone-900">After Sonora</span>
+                <a href="http://steveturner.la/exhibition/ivan-comas-3#1" target="_blank" rel="noopener noreferrer" className="font-medium text-stone-900 underline underline-offset-2 hover:text-stone-600 transition-colors">After Sonora</a>
                 <span className="text-stone-600">, Steve Turner, Los Angeles</span>
               </CVEntry>
               <div className="grid grid-cols-[80px_1fr] md:grid-cols-[100px_1fr] gap-x-3 items-baseline">
