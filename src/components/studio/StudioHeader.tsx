@@ -1,4 +1,5 @@
 import { useRef, useEffect } from "react";
+import { Undo2 } from "lucide-react";
 import type { SeriesData } from "@/types";
 
 interface StudioHeaderProps {
@@ -59,7 +60,7 @@ export const StudioHeader = ({
           className="flex-shrink-0 ml-4 text-stone-900 hover:text-stone-600 transition-colors text-lg md:text-xl font-light"
           aria-label="Close studio"
         >
-          ✕
+          <Undo2 className="w-5 h-5 md:w-6 md:h-6" strokeWidth={1.5} />
         </button>
       </div>
     </header>
