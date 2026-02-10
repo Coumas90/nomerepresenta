@@ -66,7 +66,7 @@ const Studio = () => {
           }
         }
       },
-      { rootMargin: "-20% 0px -60% 0px", threshold: 0 }
+      { rootMargin: "-56px 0px -70% 0px", threshold: 0 }
     );
     observerRef.current = observer;
     sectionRefs.current.forEach((el) => observer.observe(el));
@@ -133,13 +133,18 @@ const Studio = () => {
           <section
             key={group.id}
             id={`series-${group.id}`}
-            ref={(el) => setRef(group.id, el)}
-            data-series-id={group.id}
             className="scroll-mt-[48px] md:scroll-mt-[56px]"
           >
             <div className="flex flex-col">
-              {group.images.map((img) => (
-                <div key={img.id} className="w-full leading-[0]">
+              {group.images.map((img, imgIndex) => (
+                <div
+                  key={img.id}
+                  className="w-full leading-[0]"
+                  {...(imgIndex === 0 ? {
+                    ref: (el: HTMLDivElement | null) => setRef(group.id, el),
+                    "data-series-id": group.id
+                  } : {})}
+                >
                   <ProgressiveImage
                     src={img.image_url}
                     alt={img.title || "Studio image"}
