@@ -251,23 +251,23 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
             />
           )}
 
-          {/* Mobile arrows — centered on image */}
+          {/* Mobile arrows — centered vertically on image */}
           {isMobile && allImages.length > 1 && (
             <>
               {hasPrevImage && (
                 <div
-                  className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-full z-30 p-1"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 z-30"
                   aria-hidden
                 >
-                  <ChevronLeft size={24} className="text-stone-600" strokeWidth={1.5} />
+                  <ChevronLeft size={20} className="text-stone-500" strokeWidth={1.5} />
                 </div>
               )}
               {hasNextImage && (
                 <div
-                  className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-full z-30 p-1"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 z-30"
                   aria-hidden
                 >
-                  <ChevronRight size={24} className="text-stone-600" strokeWidth={1.5} />
+                  <ChevronRight size={20} className="text-stone-500" strokeWidth={1.5} />
                 </div>
               )}
             </>
