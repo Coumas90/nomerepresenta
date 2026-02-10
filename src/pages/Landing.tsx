@@ -122,7 +122,7 @@ const Landing = () => {
     <div className={`relative min-h-dvh bg-black overflow-hidden transition-opacity duration-200 ${isPageLoaded ? 'opacity-100' : 'opacity-0'}`}>
       {/* Menu container - left aligned */}
       <nav className="relative z-10 min-h-dvh flex items-center">
-        <ul className="flex flex-col items-start gap-0 pl-4 sm:pl-12 md:pl-16 lg:pl-24">
+        <ul className="flex flex-col items-start gap-0 pl-2 sm:pl-12 md:pl-16 lg:pl-24">
           {menuItems.map((item, index) => {
             const isClickable = item.type === "link" || item.type === "mailto";
             const isActive = activeIndex === index;
