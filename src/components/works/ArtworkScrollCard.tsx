@@ -27,9 +27,18 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
   // Build all images array: main image first, then detail, then additional images
   const allImages = useMemo(() => {
     const images = [
-      { url: artwork.image_url, isMain: true, caption: null as string | null },
-      { url: artwork.image_detail_url, isMain: false, caption: null as string | null },
-      ...(artworkImages?.map(img => ({ url: img.image_url, isMain: img.is_main, caption: img.caption ?? null })) || [])
+      { url: artwork.image_url, isMain: true, caption: null as string | null, title: null as string | null, year: null as string | null, dimensions: null as string | null, materials: null as string | null, isDetail: false },
+      { url: artwork.image_detail_url, isMain: false, caption: null as string | null, title: null as string | null, year: null as string | null, dimensions: null as string | null, materials: null as string | null, isDetail: true },
+      ...(artworkImages?.map(img => ({ 
+        url: img.image_url, 
+        isMain: img.is_main, 
+        caption: img.caption ?? null,
+        title: img.title ?? null,
+        year: img.year ?? null,
+        dimensions: img.dimensions ?? null,
+        materials: img.materials ?? null,
+        isDetail: img.is_detail ?? false,
+      })) || [])
     ].filter((img, index, self) => 
       // Remove duplicates and nulls
       img.url && index === self.findIndex(i => i.url === img.url)
@@ -40,7 +49,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
   const currentImage = allImages[currentImageIndex]?.url || artwork.image_url;
   const hasNextImage = currentImageIndex < allImages.length - 1;
   const hasPrevImage = currentImageIndex > 0;
-  const isViewingDetail = currentImageIndex > 0;
+  const isViewingDetail = allImages[currentImageIndex]?.isDetail || false;
 
   // Reset image index when artwork changes
   useEffect(() => {
@@ -251,18 +260,18 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
               ) : (
                 <>
                   <p className="text-stone-600 text-xs md:text-sm font-bold">
-                    {artwork.title}
-                    {artwork.year && <>, {artwork.year}</>}
+                    {allImages[currentImageIndex]?.title || artwork.title}
+                    {(allImages[currentImageIndex]?.year || artwork.year) && <>, {allImages[currentImageIndex]?.year || artwork.year}</>}
                     {isViewingDetail && <span className="font-normal text-stone-500"> (DETAIL)</span>}
                   </p>
-                  {artwork.materials && (
+                  {(allImages[currentImageIndex]?.materials || artwork.materials) && (
                     <p className="text-stone-500 text-xs md:text-sm">
-                      {artwork.materials}
+                      {allImages[currentImageIndex]?.materials || artwork.materials}
                     </p>
                   )}
-                  {artwork.dimensions && (
+                  {(allImages[currentImageIndex]?.dimensions || artwork.dimensions) && (
                     <p className="text-stone-500 text-xs md:text-sm">
-                      {artwork.dimensions}
+                      {allImages[currentImageIndex]?.dimensions || artwork.dimensions}
                     </p>
                   )}
                 </>

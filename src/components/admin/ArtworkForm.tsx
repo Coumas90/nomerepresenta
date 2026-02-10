@@ -8,9 +8,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCreateArtwork, useUpdateArtwork } from "@/hooks/useArtworkMutations";
 import { useSeries } from "@/hooks/useSeries";
 import type { ArtworkData } from "@/types";
-import ImageUpload from "./ImageUpload";
 import MultipleImageUpload from "./MultipleImageUpload";
 import { toast } from "sonner";
+import { useArtworkImages } from "@/hooks/useArtworkImages";
 
 interface ArtworkFormProps {
   artwork?: ArtworkData;
@@ -25,13 +25,16 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
     dimensions: artwork?.dimensions || "",
     materials: artwork?.materials || "",
     description: artwork?.description || "",
-    image_url: artwork?.image_url || "",
-    image_detail_url: artwork?.image_detail_url || "",
     series_id: artwork?.series_id || preselectedSeriesId || "",
     display_order: artwork?.display_order || 0,
   });
 
+  // Track if artwork was just created (to show gallery immediately)
+  const [createdArtworkId, setCreatedArtworkId] = useState<string | undefined>(artwork?.id);
+  const artworkId = createdArtworkId || artwork?.id;
+
   const { data: seriesList } = useSeries();
+  const { data: artworkImages } = useArtworkImages(artworkId);
   const createMutation = useCreateArtwork();
   const updateMutation = useUpdateArtwork();
 
@@ -43,11 +46,10 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
         dimensions: artwork.dimensions,
         materials: artwork.materials,
         description: artwork.description,
-        image_url: artwork.image_url,
-        image_detail_url: artwork.image_detail_url,
         series_id: artwork.series_id,
         display_order: artwork.display_order,
       });
+      setCreatedArtworkId(artwork.id);
     } else if (preselectedSeriesId) {
       setFormData(prev => ({
         ...prev,
@@ -56,26 +58,57 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
     }
   }, [artwork, preselectedSeriesId]);
 
+  // Sync image_url and image_detail_url from gallery images
+  const syncImageUrls = () => {
+    if (!artworkId || !artworkImages?.length) return;
+    
+    const mainImage = artworkImages.find(img => img.is_main) || artworkImages[0];
+    const detailImage = artworkImages.find(img => img.is_detail);
+    
+    const updates: Partial<ArtworkData> & { id: string } = {
+      id: artworkId,
+      image_url: mainImage?.image_url || "",
+    };
+    if (detailImage) {
+      updates.image_detail_url = detailImage.image_url;
+    }
+    
+    updateMutation.mutate(updates);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log("Submitting with formData:", formData);
-
-    if (!formData.image_url || !formData.image_detail_url) {
-      toast.error("Por favor sube ambas imágenes antes de continuar");
-      return;
-    }
-
+    // For new artworks, create with a placeholder image_url first
+    // Gallery images will be added after creation
     try {
-      if (artwork) {
-        await updateMutation.mutateAsync({ id: artwork.id, ...formData });
-        if (onSuccess) {
-          onSuccess();
-        }
+      if (artwork || createdArtworkId) {
+        const id = artwork?.id || createdArtworkId!;
+        // Get main image from gallery
+        const mainImage = artworkImages?.find(img => img.is_main) || artworkImages?.[0];
+        const detailImage = artworkImages?.find(img => img.is_detail);
+        
+        await updateMutation.mutateAsync({ 
+          id, 
+          ...formData,
+          image_url: mainImage?.image_url || artwork?.image_url || "",
+          image_detail_url: detailImage?.image_url || artwork?.image_detail_url || "",
+        });
+        if (onSuccess) onSuccess();
       } else {
-        const newArtwork = await createMutation.mutateAsync(formData);
-        if (onSuccess && newArtwork?.id) {
-          onSuccess(newArtwork.id);
+        // Create new artwork - need at least a title and series
+        if (!formData.title || !formData.series_id) {
+          toast.error("Title and Series are required");
+          return;
+        }
+        const newArtwork = await createMutation.mutateAsync({
+          ...formData,
+          image_url: "placeholder", // Will be updated when images are added
+          image_detail_url: "",
+        });
+        if (newArtwork?.id) {
+          setCreatedArtworkId(newArtwork.id);
+          toast.success("Artwork created! Now add images below.");
         }
       }
     } catch (error) {
@@ -85,11 +118,12 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
   };
 
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
+  const isEditing = !!(artwork || createdArtworkId);
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{artwork ? "Edit Artwork" : "Create New Artwork"}</CardTitle>
+        <CardTitle>{artwork ? "Edit Artwork" : createdArtworkId ? "Edit New Artwork" : "Create New Artwork"}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -142,17 +176,17 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
               </Select>
             </div>
 
-          {artwork && (
-            <div className="space-y-2">
-              <Label htmlFor="display_order">Display Order</Label>
-              <Input
-                id="display_order"
-                type="number"
-                value={formData.display_order}
-                onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) })}
-              />
-            </div>
-          )}
+            {isEditing && (
+              <div className="space-y-2">
+                <Label htmlFor="display_order">Display Order</Label>
+                <Input
+                  id="display_order"
+                  type="number"
+                  value={formData.display_order}
+                  onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) })}
+                />
+              </div>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -175,49 +209,23 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
             />
           </div>
 
-          <div className="space-y-2">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <ImageUpload
-                label="Main Image *"
-                onUploadComplete={(url) => {
-                  console.log("Main image uploaded:", url);
-                  setFormData(prev => {
-                    const updated = { ...prev, image_url: url };
-                    console.log("Updated formData after main image:", updated);
-                    return updated;
-                  });
-                }}
-                currentUrl={formData.image_url}
-              />
-
-              <ImageUpload
-                label="Detail Image *"
-                onUploadComplete={(url) => {
-                  console.log("Detail image uploaded:", url);
-                  setFormData(prev => {
-                    const updated = { ...prev, image_detail_url: url };
-                    console.log("Updated formData after detail image:", updated);
-                    return updated;
-                  });
-                }}
-                currentUrl={formData.image_detail_url}
-              />
-            </div>
-            {!artwork && (
-              <p className="text-sm text-muted-foreground text-center">
-                Después de crear la obra, podrás agregar más imágenes a la galería
+          {/* Image Gallery */}
+          {artworkId ? (
+            <MultipleImageUpload 
+              artworkId={artworkId} 
+              artworkData={formData}
+              onImagesChange={syncImageUrls}
+            />
+          ) : (
+            <div className="border-2 border-dashed rounded-lg p-8 text-center bg-muted/50">
+              <p className="text-sm text-muted-foreground">
+                Save the artwork first to start uploading images
               </p>
-            )}
-          </div>
-
-          {artwork && (
-            <div className="col-span-full">
-              <MultipleImageUpload artworkId={artwork.id} />
             </div>
           )}
 
           <Button type="submit" disabled={isSubmitting} className="w-full">
-            {isSubmitting ? "Saving..." : artwork ? "Update Artwork" : "Create Artwork"}
+            {isSubmitting ? "Saving..." : isEditing ? "Update Artwork" : "Create Artwork"}
           </Button>
         </form>
       </CardContent>
