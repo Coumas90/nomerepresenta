@@ -55,7 +55,7 @@ const Bio = () => {
     >
       <div 
         ref={scrollContainerRef}
-        className={`min-h-screen bg-stone-50 transition-opacity duration-500 overflow-y-auto ${isPageLoaded ? 'opacity-100' : 'opacity-0'}`}
+        className={`min-h-screen bg-stone-50 transition-opacity duration-500 ${isPageLoaded ? 'opacity-100' : 'opacity-0'}`}
       >
       {/* Header — matches Works & Studio */}
       <header className="sticky top-0 z-50 bg-stone-100/95 backdrop-blur-sm border-b border-stone-200">
