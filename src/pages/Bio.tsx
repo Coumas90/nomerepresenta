@@ -148,7 +148,7 @@ const Bio = () => {
                 <span className="text-stone-500 text-sm">2015</span>
                 <div className="space-y-2 text-sm md:text-base">
                   <div>
-                    <span className="font-medium text-stone-900">Days go by</span>
+                    <a href="https://www.duveberlin.com/exhibition/days-go-by" target="_blank" rel="noopener noreferrer" className="font-medium text-stone-900 underline underline-offset-2 hover:text-stone-600 transition-colors">Days go by</a>
                     <span className="text-stone-600">, Duve, Berlin</span>
                   </div>
                   <div>
@@ -160,7 +160,7 @@ const Bio = () => {
                     <span className="text-stone-600">, Bogotá (with Steve Turner)</span>
                   </div>
                   <div>
-                    <span className="font-medium text-stone-900">La Brea</span>
+                    <a href="http://steveturner.la/exhibition/ivan-comas#1" target="_blank" rel="noopener noreferrer" className="font-medium text-stone-900 underline underline-offset-2 hover:text-stone-600 transition-colors">La Brea</a>
                     <span className="text-stone-600">, Steve Turner, Los Angeles</span>
                   </div>
                 </div>
@@ -183,7 +183,7 @@ const Bio = () => {
                 <span className="text-stone-600">, Y53, Los Angeles</span>
               </CVEntry>
               <CVEntry year="2017">
-                <span className="font-medium text-stone-900">Monet is my church</span>
+                <a href="https://dittrich-schlechtriem.com/monet-is-my-church/" target="_blank" rel="noopener noreferrer" className="font-medium text-stone-900 underline underline-offset-2 hover:text-stone-600 transition-colors">Monet is my church</a>
                 <span className="text-stone-600">, Dittrich & Schlectriem, Berlin</span>
               </CVEntry>
               <CVEntry year="2015">
