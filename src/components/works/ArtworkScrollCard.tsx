@@ -220,6 +220,51 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
                 aria-label="Next image"
               />
             )}
+            {/* Image indicator dots — aligned with image */}
+            {allImages.length > 1 && (
+              <div className="mt-3 flex gap-1.5">
+                {allImages.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentImageIndex(index)}
+                    className={cn(
+                      "w-1 h-1 rounded-full transition-all duration-300",
+                      index === currentImageIndex 
+                        ? "bg-stone-900" 
+                        : "bg-stone-400"
+                    )}
+                    aria-label={`Go to image ${index + 1}`}
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* Caption — aligned with image */}
+            <figcaption className="mt-3 md:mt-4 space-y-0 text-left leading-snug">
+              {allImages[currentImageIndex]?.caption ? (
+                <p className="text-stone-600 text-xs md:text-sm font-bold">
+                  {allImages[currentImageIndex].caption}
+                </p>
+              ) : (
+                <>
+                  <p className="text-stone-600 text-xs md:text-sm font-bold">
+                    {artwork.title}
+                    {artwork.year && <>, {artwork.year}</>}
+                    {isViewingDetail && <span className="font-normal text-stone-500"> (DETAIL)</span>}
+                  </p>
+                  {artwork.materials && (
+                    <p className="text-stone-500 text-xs md:text-sm">
+                      {artwork.materials}
+                    </p>
+                  )}
+                  {artwork.dimensions && (
+                    <p className="text-stone-500 text-xs md:text-sm">
+                      {artwork.dimensions}
+                    </p>
+                  )}
+                </>
+              )}
+            </figcaption>
           </div>
 
           {/* Mobile right arrow — outside image */}
@@ -233,52 +278,6 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
             </button>
           )}
         </div>
-
-        {/* Image indicator dots — below image, above title */}
-        {allImages.length > 1 && (
-          <div className="mt-3 flex gap-1.5">
-            {allImages.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentImageIndex(index)}
-                className={cn(
-                  "w-1 h-1 rounded-full transition-all duration-300",
-                  index === currentImageIndex 
-                    ? "bg-stone-900" 
-                    : "bg-stone-400"
-                )}
-                aria-label={`Go to image ${index + 1}`}
-              />
-            ))}
-          </div>
-        )}
-
-        {/* Caption - normal flow, directly under image */}
-        <figcaption className="mt-3 md:mt-4 space-y-0 text-left leading-snug">
-          {allImages[currentImageIndex]?.caption ? (
-            <p className="text-stone-600 text-xs md:text-sm font-bold">
-              {allImages[currentImageIndex].caption}
-            </p>
-          ) : (
-            <>
-              <p className="text-stone-600 text-xs md:text-sm font-bold">
-                {artwork.title}
-                {artwork.year && <>, {artwork.year}</>}
-                {isViewingDetail && <span className="font-normal text-stone-500"> (DETAIL)</span>}
-              </p>
-              {artwork.materials && (
-                <p className="text-stone-500 text-xs md:text-sm">
-                  {artwork.materials}
-                </p>
-              )}
-              {artwork.dimensions && (
-                <p className="text-stone-500 text-xs md:text-sm">
-                  {artwork.dimensions}
-                </p>
-              )}
-            </>
-          )}
-        </figcaption>
       </figure>
     </article>
   );
