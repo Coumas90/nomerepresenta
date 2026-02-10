@@ -72,7 +72,7 @@ export const HoverNavigationCarousel = ({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full ${
+      className={`relative w-full overflow-visible ${
         !isMobile && (mouseZone === "left" || mouseZone === "right") ? "cursor-none" : ""
       }`}
       onMouseMove={handleMouseMove}
@@ -104,7 +104,7 @@ export const HoverNavigationCarousel = ({
               handlePrevious();
             }
           }}
-          className="absolute left-0 top-0 bottom-0 w-[30%] z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+          className="absolute -left-[15vw] top-0 bottom-0 w-[calc(30%+15vw)] z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
           aria-label="Previous image"
         />
       )}
@@ -121,7 +121,7 @@ export const HoverNavigationCarousel = ({
               handleNext();
             }
           }}
-          className="absolute right-0 top-0 bottom-0 w-[30%] z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+          className="absolute -right-[15vw] top-0 bottom-0 w-[calc(30%+15vw)] z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
           aria-label="Next image"
         />
       )}
