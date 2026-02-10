@@ -2,27 +2,28 @@ import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ProgressiveImage } from "@/components/ProgressiveImage";
 import { ImageSkeleton } from "@/components/ImageSkeleton";
-import { useArtworkImages } from "@/hooks/useArtworkImages";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { cn } from "@/lib/utils"; // used for indicator dots
-import type { ArtworkData } from "@/types";
+import { cn } from "@/lib/utils";
+import type { ArtworkData, ArtworkImage } from "@/types";
 
 interface ArtworkScrollCardProps {
   artwork: ArtworkData;
   isVisible?: boolean;
+  preloadedImages?: ArtworkImage[];
+  eager?: boolean;
 }
 
 // SVG cursor data URIs — minimal chevron arrows
 const cursorLeftSvg = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23787874' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m15 18-6-6 6-6'/%3E%3C/svg%3E") 12 12, pointer`;
 const cursorRightSvg = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23787874' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E") 12 12, pointer`;
 
-export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCardProps) => {
+export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, eager = false }: ArtworkScrollCardProps) => {
   const isMobile = useIsMobile();
   const containerRef = useRef<HTMLDivElement>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // Fetch additional images for this artwork
-  const { data: artworkImages } = useArtworkImages(artwork.id);
+  // Use preloaded images (from batch query) instead of per-artwork query
+  const artworkImages = preloadedImages;
 
   // Build all images array: main image first, then detail, then additional images
   const allImages = useMemo(() => {
@@ -180,7 +181,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true }: ArtworkScrollCa
                   alt={artwork.title || "Artwork"}
                   className="relative z-10 w-full [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh]"
                   objectFit="contain"
-                  eager={false}
+                  eager={eager}
                   skipInternalFade
                   blurUp={false}
                   modernFormats
