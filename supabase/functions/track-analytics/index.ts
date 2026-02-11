@@ -143,6 +143,9 @@ serve(async (req) => {
           country: data.country ? sanitizeString(data.country, 10) : null,
           country_name: data.countryName ? sanitizeString(data.countryName, 100) : null,
           city: data.city ? sanitizeString(data.city, 100) : null,
+          utm_source: data.utmSource ? sanitizeString(data.utmSource, 200) : null,
+          utm_medium: data.utmMedium ? sanitizeString(data.utmMedium, 200) : null,
+          utm_campaign: data.utmCampaign ? sanitizeString(data.utmCampaign, 200) : null,
           started_at: new Date().toISOString(),
         });
 

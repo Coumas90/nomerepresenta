@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- This is a placeholder. The dynamic sitemap is served via edge function at /sitemap.xml -->
-<!-- Visit https://ivancomas.lovable.app/sitemap.xml for the live version -->
+<!-- Visit https://ivancomas.studio/sitemap.xml for the live version -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://ivancomas.lovable.app</loc>
+    <loc>https://ivancomas.studio</loc>
     <priority>1.0</priority>
   </url>
 </urlset>

@@ -39,7 +39,7 @@ export const useTrafficSources = (startDate: Date, endDate: Date) => {
     queryFn: async (): Promise<TrafficSource[]> => {
       const { data: sessions } = await supabase
         .from('analytics_sessions')
-        .select('referrer, visitor_fingerprint')
+        .select('referrer, visitor_fingerprint, utm_source')
         .gte('started_at', startDate.toISOString())
         .lte('started_at', endDate.toISOString());
 
@@ -51,8 +51,11 @@ export const useTrafficSources = (startDate: Date, endDate: Date) => {
       }>();
 
       sessions.forEach(session => {
+        // Prefer utm_source over referrer for attribution
         let source = 'Direct';
-        if (session.referrer) {
+        if (session.utm_source) {
+          source = session.utm_source;
+        } else if (session.referrer) {
           try {
             const url = new URL(session.referrer);
             source = url.hostname;
