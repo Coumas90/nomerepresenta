@@ -21,11 +21,13 @@ import { useUploadStudioImage, useCreateStudioImage, useDeleteStudioImage, useUp
 import { useUpdateStudioSeries } from "@/hooks/useStudioSeriesMutations";
 import { useStudioSeries } from "@/hooks/useStudioSeries";
 import { toast } from "@/hooks/use-toast";
+import { Switch } from "@/components/ui/switch";
 import type { StudioImage } from "@/types";
 
 interface SeriesStudioSectionProps {
   seriesId: string;
   seriesName: string;
+  isVisible?: boolean;
   images: StudioImage[];
   onDeleteSeries?: () => void;
   onPreviewImage: (image: StudioImage) => void;
@@ -36,6 +38,7 @@ interface SeriesStudioSectionProps {
 export const SeriesStudioSection = ({
   seriesId,
   seriesName,
+  isVisible = true,
   images,
   onDeleteSeries,
   onPreviewImage,
@@ -123,10 +126,16 @@ export const SeriesStudioSection = ({
     updateImageMutation.mutate({ id: imageId, series_id: targetSeriesId });
   };
 
+  const handleToggleVisibility = () => {
+    if (seriesId && seriesId !== "__ungrouped") {
+      updateSeriesMutation.mutate({ id: seriesId, is_visible: !isVisible });
+    }
+  };
+
   const seriesOptions = allStudioSeries.map(s => ({ id: s.id, name: s.name }));
 
   return (
-    <Card className="border border-border">
+    <Card className={`border border-border ${!isVisible ? "opacity-60" : ""}`}>
       <CardContent className="p-5 space-y-4">
         {/* Series header */}
         <div className="flex items-center justify-between">
@@ -165,17 +174,29 @@ export const SeriesStudioSection = ({
               {images.length} image{images.length !== 1 ? "s" : ""}
             </span>
           </div>
-          {onDeleteSeries && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-destructive hover:text-destructive"
-              onClick={onDeleteSeries}
-            >
-              <X className="h-4 w-4 mr-1" />
-              DELETE
-            </Button>
-          )}
+          <div className="flex items-center gap-3">
+            {seriesId && seriesId !== "__ungrouped" && (
+              <div className="flex items-center gap-2">
+                <Switch
+                  checked={isVisible}
+                  onCheckedChange={handleToggleVisibility}
+                  aria-label={isVisible ? "Hide gallery" : "Show gallery"}
+                />
+                <span className="text-xs text-muted-foreground">{isVisible ? "Visible" : "Hidden"}</span>
+              </div>
+            )}
+            {onDeleteSeries && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-destructive hover:text-destructive"
+                onClick={onDeleteSeries}
+              >
+                <X className="h-4 w-4 mr-1" />
+                DELETE
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Upload area */}

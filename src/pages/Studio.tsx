@@ -30,7 +30,7 @@ const Studio = () => {
     }
 
     const seriesInOrder = (allSeries || [])
-      .filter((s) => bySeriesMap.has(s.id))
+      .filter((s) => bySeriesMap.has(s.id) && s.is_visible !== false)
       .sort((a, b) => a.display_order - b.display_order);
 
     const result: { id: string; label: string; images: StudioImageWithSeries[] }[] = [];

@@ -43,6 +43,7 @@ export interface SeriesData {
   name: string;
   description: string | null;
   display_order: number;
+  is_visible?: boolean;
 }
 
 /**
