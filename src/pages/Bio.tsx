@@ -152,14 +152,6 @@ const Bio = () => {
                     <span className="text-stone-600">, Duve, Berlin</span>
                   </div>
                   <div>
-                    <span className="font-medium text-stone-900">Art Berlin Contemporary, ABC</span>
-                    <span className="text-stone-600"> (with Steve Turner), Berlin</span>
-                  </div>
-                  <div>
-                    <span className="font-medium text-stone-900">Ivan Comas and Joaquín Boz, ArtBo</span>
-                    <span className="text-stone-600">, Bogotá (with Steve Turner)</span>
-                  </div>
-                  <div>
                     <a href="http://steveturner.la/exhibition/ivan-comas#1" target="_blank" rel="noopener noreferrer" className="font-medium text-stone-900 underline underline-offset-2 hover:text-stone-600 transition-colors">La Brea</a>
                     <span className="text-stone-600">, Steve Turner, Los Angeles</span>
                   </div>
