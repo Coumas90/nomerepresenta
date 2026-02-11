@@ -240,11 +240,21 @@ export const useAnalytics = () => {
     });
   }, []);
 
+  const trackStudioScroll = useCallback(async (seriesId: string) => {
+    if (!sessionIdRef.current) return;
+
+    await trackAnalytics('track_studio_scroll', {
+      sessionId: sessionIdRef.current,
+      seriesId,
+    });
+  }, []);
+
   return {
     sessionId: sessionIdRef.current,
     trackPageView,
     trackArtworkView,
     endArtworkView,
     trackSeriesInteraction,
+    trackStudioScroll,
   };
 };

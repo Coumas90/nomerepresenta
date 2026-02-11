@@ -459,6 +459,38 @@ export type Database = {
           },
         ]
       }
+      studio_scroll_tracking: {
+        Row: {
+          created_at: string
+          id: string
+          scrolled_at: string
+          series_id: string
+          session_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          scrolled_at?: string
+          series_id: string
+          session_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          scrolled_at?: string
+          series_id?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "studio_scroll_tracking_series_id_fkey"
+            columns: ["series_id"]
+            isOneToOne: false
+            referencedRelation: "studio_series"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       studio_series: {
         Row: {
           created_at: string

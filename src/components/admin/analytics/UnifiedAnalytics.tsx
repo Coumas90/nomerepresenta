@@ -6,7 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { CalendarIcon, Users, Clock, MousePointerClick, Globe, ExternalLink, Home } from "lucide-react";
+import { CalendarIcon, Users, Clock, MousePointerClick, Globe, ExternalLink, Home, Palette } from "lucide-react";
 import { format, subDays, startOfDay, endOfDay } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
@@ -14,6 +14,7 @@ import { useAnalyticsStats } from "@/hooks/useAnalyticsStats";
 import { useTopArtworks } from "@/hooks/useArtworkAnalytics";
 import { useTrafficSources } from "@/hooks/useAudienceAnalytics";
 import { useCountryDistribution } from "@/hooks/useGeographicAnalytics";
+import { useStudioAnalytics } from "@/hooks/useStudioAnalytics";
 import type { DailyVisitors } from "@/types";
 
 const UnifiedAnalytics = () => {
@@ -63,6 +64,9 @@ const UnifiedAnalytics = () => {
         <TrafficSourcesCard startDate={startDate} endDate={endDate} />
         <CountriesCard startDate={startDate} endDate={endDate} />
       </div>
+
+      {/* Studio Engagement */}
+      <StudioEngagementCard startDate={startDate} endDate={endDate} />
 
       {/* Most Clicked Artworks */}
       <TopArtworksCard startDate={startDate} endDate={endDate} />
@@ -390,6 +394,87 @@ const TopArtworksCard = ({ startDate, endDate }: { startDate: Date; endDate: Dat
               </TableBody>
             </Table>
           </>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
+// ─── Studio Engagement ─────────────────────────────────
+const StudioEngagementCard = ({ startDate, endDate }: { startDate: Date; endDate: Date }) => {
+  const { data, isLoading } = useStudioAnalytics(startDate, endDate);
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>Studio Engagement</CardTitle>
+            <p className="text-xs text-muted-foreground">Who visited Studio and how far they scrolled</p>
+          </div>
+          <Palette className="h-4 w-4 text-muted-foreground" />
+        </div>
+      </CardHeader>
+      <CardContent>
+        {isLoading ? (
+          <Skeleton className="h-48" />
+        ) : (
+          <div className="space-y-4">
+            <div className="flex items-center gap-6">
+              <div>
+                <div className="text-2xl font-bold">{data?.totalStudioVisits || 0}</div>
+                <p className="text-xs text-muted-foreground">Total Studio Visitors</p>
+              </div>
+              <div>
+                <div className="text-2xl font-bold">{data?.seriesScrolls?.length || 0}</div>
+                <p className="text-xs text-muted-foreground">Series Reached</p>
+              </div>
+            </div>
+
+            {data?.seriesScrolls && data.seriesScrolls.length > 0 ? (
+              <>
+                <ResponsiveContainer width="100%" height={200}>
+                  <BarChart data={data.seriesScrolls} layout="vertical" margin={{ left: 10 }}>
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                    <XAxis type="number" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} />
+                    <YAxis
+                      dataKey="series_name"
+                      type="category"
+                      width={140}
+                      tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "hsl(var(--background))",
+                        border: "1px solid hsl(var(--border))",
+                        borderRadius: "8px",
+                      }}
+                    />
+                    <Bar dataKey="unique_sessions" fill="hsl(var(--primary))" name="Visitors" radius={[0, 4, 4, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Series</TableHead>
+                      <TableHead className="text-right">Visitors Reached</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {data.seriesScrolls.map((s) => (
+                      <TableRow key={s.series_id}>
+                        <TableCell className="font-medium">{s.series_name}</TableCell>
+                        <TableCell className="text-right">{s.unique_sessions}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </>
+            ) : (
+              <p className="text-sm text-muted-foreground py-4">No studio scroll data yet.</p>
+            )}
+          </div>
         )}
       </CardContent>
     </Card>
