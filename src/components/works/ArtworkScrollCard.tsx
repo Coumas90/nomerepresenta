@@ -247,7 +247,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
                     key={index}
                     onClick={() => setCurrentImageIndex(index)}
                     className={cn(
-                      "w-1 h-1 md:w-1.5 md:h-1.5 rounded-full transition-all duration-300",
+                      "w-1.5 h-1.5 md:w-2 md:h-2 rounded-full transition-all duration-300",
                       index === currentImageIndex 
                         ? "bg-stone-900" 
                         : "bg-stone-400"
