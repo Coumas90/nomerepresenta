@@ -178,10 +178,6 @@ const Bio = () => {
                 <a href="https://dittrich-schlechtriem.com/monet-is-my-church/" target="_blank" rel="noopener noreferrer" className="font-medium text-stone-900 underline underline-offset-2 hover:text-stone-600 transition-colors">Monet is my church</a>
                 <span className="text-stone-600">, Dittrich & Schlectriem, Berlin</span>
               </CVEntry>
-              <CVEntry year="2015">
-                <span className="font-medium text-stone-900">UNTITLED</span>
-                <span className="text-stone-600"> (with Steve Turner), Miami Beach</span>
-              </CVEntry>
             </div>
           </section>
 
