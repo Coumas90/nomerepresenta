@@ -101,10 +101,10 @@ const Bio = () => {
             </p>
             <div className="space-y-4 text-stone-700 text-base md:text-lg leading-relaxed">
               <p>
-                Comas's practice develops through layered procedures that combine industrial materials, fragmented text, and the visual residue of dense urban environments. Through cycles of inscription, burial, and rupture, he builds stratified surfaces that translate prolonged exposure to cities into material structure.
+                Comas's practice develops through layered procedures combining industrial materials, fragmented text, and the visual residue of dense urban environments. Through cycles of inscription, burial, and rupture, he constructs stratified surfaces shaped by prolonged exposure to cities.
               </p>
               <p>
-                Educated at the École des Beaux-Arts de Paris, Comas works across painting, photography, and writing as a single investigative field focused on material systems, residual language, and stratified time. His work has been exhibited in Los Angeles, Berlin, Paris, and São Paulo, and is held in private collections in Latin America, Europe, and the United States, including the Colección Jumex and the Vergez &amp; Pearson collections.
+                Educated at the École des Beaux-Arts de Paris, Comas works across painting, photography, and writing as a single investigative field focused on material systems and residual language. His work has been exhibited in Los Angeles, Berlin, Paris, and São Paulo, and is held in private collections in Latin America, Europe, and the United States, including the Colección Jumex and the Vergez &amp; Pearson collections.
               </p>
             </div>
           </div>
