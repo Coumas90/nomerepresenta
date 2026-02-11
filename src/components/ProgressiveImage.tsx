@@ -146,9 +146,11 @@ export const ProgressiveImage = ({
     }
   };
 
-  const objectFitClass = objectFit === "contain" ? "object-contain" : objectFit === "fill" ? "object-fill" : objectFit === "none" ? "object-none" : objectFit === "scale-down" ? "object-scale-down" : "object-cover";
-  const heightClass = objectFit === "contain" ? "h-auto" : "h-full";
-  const imageClasses = `w-full ${heightClass} ${objectFitClass} transition-all duration-500 ease-out ${objectFit === "contain" ? "relative z-0" : "z-20 relative"} ${
+  const isContain = objectFit === "contain";
+  const objectFitClass = isContain ? "object-contain" : objectFit === "fill" ? "object-fill" : objectFit === "none" ? "object-none" : objectFit === "scale-down" ? "object-scale-down" : "object-cover";
+  // For contain mode: use w-auto max-w-full so the img element shrink-wraps to the actual image dimensions
+  const sizeClasses = isContain ? "w-auto h-auto max-w-full" : "w-full h-full";
+  const imageClasses = `${sizeClasses} ${objectFitClass} transition-all duration-500 ease-out ${isContain ? "relative z-0" : "z-20 relative"} ${
     skipInternalFade ? "opacity-100" : (isLoaded ? "opacity-100 blur-0" : "opacity-0")
   } ${onClick ? 'cursor-pointer' : ''}`;
 
@@ -157,7 +159,7 @@ export const ProgressiveImage = ({
   const showWebp = (webpSrcSet || webpSrc) && !webpFailed;
 
   return (
-    <div ref={imgRef} className={`relative ${objectFit === "contain" ? "" : "overflow-hidden"} ${className}`}>
+    <div ref={imgRef} className={`relative ${isContain ? "w-fit" : "overflow-hidden"} ${className}`}>
       {/* Skeleton loading state - shown until placeholder or main image loads */}
       {!isLoaded && !placeholderLoaded && !skipInternalFade && (
         <ImageSkeleton 
