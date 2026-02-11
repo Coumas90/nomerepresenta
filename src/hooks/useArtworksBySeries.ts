@@ -15,9 +15,10 @@ export const useArtworksBySeries = () => {
     if (!artworks || !series) return [];
 
     return series
+      .filter((s) => s.is_visible !== false)
       .map((s) => ({
         ...s,
-        artworks: artworks.filter((a) => a.series_id === s.id),
+        artworks: artworks.filter((a) => a.series_id === s.id && a.is_visible !== false),
       }))
       // Only include series that have artworks
       .filter((s) => s.artworks.length > 0);
