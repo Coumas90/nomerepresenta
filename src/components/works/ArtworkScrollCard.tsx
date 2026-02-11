@@ -186,8 +186,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
           >
             {/* Image wrapper — shadow and navigation scoped here */}
             <div className="relative">
-              {/* Gallery frame shadow effect */}
-              <div className="absolute inset-0 shadow-2xl shadow-stone-900/15 rounded-sm" />
+              {/* Gallery frame shadow effect — applied via img styles to avoid visible frame */}
               
               {/* Main image */}
               {currentImage && (
