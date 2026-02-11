@@ -21,7 +21,7 @@ const Contact = () => {
         <a
           href="mailto:contact@ivancomas.studio"
           className="font-helvetica font-bold tracking-tight text-foreground hover:opacity-60 transition-opacity duration-300 text-center break-all"
-          style={{ fontSize: 'clamp(1.5rem, 5vw, 4rem)' }}
+          style={{ fontSize: 'clamp(1.4rem, 4.65vw, 3.72rem)' }}
         >
           contact@ivancomas.studio
         </a>
