@@ -129,7 +129,7 @@ const Bio = () => {
           {/* Solo and Two Person Exhibitions */}
           <section className={`mb-12 md:mb-16 transition-all duration-700 delay-[400ms] ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             <h2 className="text-lg md:text-xl font-bold tracking-wide uppercase mb-6 text-stone-900">
-              Solo and Two Person Exhibitions
+              Solo Exhibitions
             </h2>
             <div className="space-y-3">
               <CVEntry year="2024">
