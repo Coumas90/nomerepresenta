@@ -9,19 +9,11 @@ import SeriesManager from "@/components/admin/SeriesManager";
 import StudioImagesManager from "@/components/admin/StudioImagesManager";
 import { AdminLayout } from "@/components/admin/layout/AdminLayout";
 import { DashboardHome } from "@/components/admin/DashboardHome";
-import AnalyticsOverview from "@/components/admin/analytics/AnalyticsOverview";
-import { DateRange } from "react-day-picker";
 import { LoadingSkeleton } from "@/components/admin/LoadingSkeleton";
 import { ImageCompressionSettings } from "@/components/admin/settings/ImageCompressionSettings";
 
 const BioManager = lazy(() => import("@/components/admin/BioManager"));
-
-// Lazy load heavy analytics components
-const RealtimeAnalytics = lazy(() => import("@/components/admin/analytics/RealtimeAnalytics"));
-const ArtworksAnalytics = lazy(() => import("@/components/admin/analytics/ArtworksAnalytics"));
-const SeriesAnalytics = lazy(() => import("@/components/admin/analytics/SeriesAnalytics"));
-const AudienceAnalytics = lazy(() => import("@/components/admin/analytics/AudienceAnalytics"));
-const SessionsAnalytics = lazy(() => import("@/components/admin/analytics/SessionsAnalytics"));
+const UnifiedAnalytics = lazy(() => import("@/components/admin/analytics/UnifiedAnalytics"));
 
 const Admin = () => {
   const location = useLocation();
@@ -31,25 +23,6 @@ const Admin = () => {
   const [editingArtwork, setEditingArtwork] = useState<ArtworkData | undefined>(undefined);
   const [showForm, setShowForm] = useState(false);
   const [preselectedSeriesId, setPreselectedSeriesId] = useState<string | undefined>(undefined);
-  const [presetDays, setPresetDays] = useState(30);
-  const [customDateRange, setCustomDateRange] = useState<DateRange | undefined>(undefined);
-
-  const getDateRange = (): { startDate: Date; endDate: Date } => {
-    if (customDateRange?.from && customDateRange?.to) {
-      return {
-        startDate: customDateRange.from,
-        endDate: customDateRange.to,
-      };
-    }
-    
-    const endDate = new Date();
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - presetDays);
-    
-    return { startDate, endDate };
-  };
-
-  const { startDate, endDate } = getDateRange();
 
   const handleEdit = (artwork: ArtworkData) => {
     setEditingArtwork(artwork);
@@ -101,41 +74,10 @@ const Admin = () => {
       case "dashboard":
         return <DashboardHome />;
       
-      case "analytics-live":
+      case "analytics":
         return (
           <Suspense fallback={<LoadingSkeleton type="analytics" />}>
-            <RealtimeAnalytics />
-          </Suspense>
-        );
-      
-      case "analytics-overview":
-        return <AnalyticsOverview startDate={startDate} endDate={endDate} />;
-      
-      case "analytics-artworks":
-        return (
-          <Suspense fallback={<LoadingSkeleton type="analytics" />}>
-            <ArtworksAnalytics startDate={startDate} endDate={endDate} />
-          </Suspense>
-        );
-      
-      case "analytics-series":
-        return (
-          <Suspense fallback={<LoadingSkeleton type="analytics" />}>
-            <SeriesAnalytics startDate={startDate} endDate={endDate} />
-          </Suspense>
-        );
-      
-      case "analytics-audience":
-        return (
-          <Suspense fallback={<LoadingSkeleton type="analytics" />}>
-            <AudienceAnalytics startDate={startDate} endDate={endDate} />
-          </Suspense>
-        );
-      
-      case "analytics-sessions":
-        return (
-          <Suspense fallback={<LoadingSkeleton type="analytics" />}>
-            <SessionsAnalytics startDate={startDate} endDate={endDate} />
+            <UnifiedAnalytics />
           </Suspense>
         );
       

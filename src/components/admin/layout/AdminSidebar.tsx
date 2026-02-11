@@ -1,12 +1,9 @@
 import { 
   LayoutDashboard, 
   BarChart3, 
-  Activity, 
   Image, 
-  Layers,
-  Users,
-  Clock,
   FolderOpen,
+  Users,
   Camera,
   Settings
 } from "lucide-react";
@@ -32,12 +29,7 @@ import { LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const analyticsItems = [
-  { title: "Live", url: "/admin?section=analytics-live", icon: Activity },
-  { title: "Overview", url: "/admin?section=analytics-overview", icon: BarChart3 },
-  { title: "Artworks", url: "/admin?section=analytics-artworks", icon: Image },
-  { title: "Series", url: "/admin?section=analytics-series", icon: Layers },
-  { title: "Audience", url: "/admin?section=analytics-audience", icon: Users },
-  { title: "Sessions", url: "/admin?section=analytics-sessions", icon: Clock },
+  { title: "Analytics", url: "/admin?section=analytics", icon: BarChart3 },
 ];
 
 const contentItems = [
@@ -114,12 +106,6 @@ export function AdminSidebar() {
                     >
                       <item.icon className="h-4 w-4" />
                       {!collapsed && <span>{item.title}</span>}
-                      {item.title === "Live" && !collapsed && (
-                        <span className="ml-auto flex h-2 w-2">
-                          <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-emerald-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 shadow-lg shadow-emerald-500/50"></span>
-                        </span>
-                      )}
                     </NavLink>
                   </SidebarMenuButton>
                 );
