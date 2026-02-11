@@ -25,26 +25,29 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
   // Use preloaded images (from batch query) instead of per-artwork query
   const artworkImages = preloadedImages;
 
-  // Build all images array: main image first, then detail, then additional images
+  // Build images array: prefer artwork_images table (has per-image metadata),
+  // fall back to legacy artwork fields only when no artwork_images exist
   const allImages = useMemo(() => {
-    const images = [
-      { url: artwork.image_url, isMain: true, caption: null as string | null, title: null as string | null, year: null as string | null, dimensions: null as string | null, materials: null as string | null, isDetail: false },
-      { url: artwork.image_detail_url, isMain: false, caption: null as string | null, title: null as string | null, year: null as string | null, dimensions: null as string | null, materials: null as string | null, isDetail: true },
-      ...(artworkImages?.map(img => ({ 
-        url: img.image_url, 
-        isMain: img.is_main, 
+    if (artworkImages && artworkImages.length > 0) {
+      return artworkImages.map(img => ({
+        url: img.image_url,
+        isMain: img.is_main,
         caption: img.caption ?? null,
         title: img.title ?? null,
         year: img.year ?? null,
         dimensions: img.dimensions ?? null,
         materials: img.materials ?? null,
         isDetail: img.is_detail ?? false,
-      })) || [])
-    ].filter((img, index, self) => 
-      // Remove duplicates and nulls
-      img.url && index === self.findIndex(i => i.url === img.url)
-    );
-    return images;
+      }));
+    }
+    // Legacy fallback: no artwork_images rows exist
+    const images = [
+      { url: artwork.image_url, isMain: true, caption: null as string | null, title: null as string | null, year: null as string | null, dimensions: null as string | null, materials: null as string | null, isDetail: false },
+    ];
+    if (artwork.image_detail_url) {
+      images.push({ url: artwork.image_detail_url, isMain: false, caption: null, title: null, year: null, dimensions: null, materials: null, isDetail: true });
+    }
+    return images.filter(img => img.url);
   }, [artwork.image_url, artwork.image_detail_url, artworkImages]);
 
   const currentImage = allImages[currentImageIndex]?.url || artwork.image_url;
