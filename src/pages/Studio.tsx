@@ -4,14 +4,17 @@ import { useStudioImages, type StudioImageWithSeries } from "@/hooks/useStudioIm
 import { useStudioSeries } from "@/hooks/useStudioSeries";
 import { ProgressiveImage } from "@/components/ProgressiveImage";
 import { StudioHeader } from "@/components/studio/StudioHeader";
+import { useAnalytics } from "@/hooks/useAnalytics";
 import type { SeriesData } from "@/types";
 
 const Studio = () => {
   const navigate = useNavigate();
   const { data: images, isLoading: imagesLoading } = useStudioImages();
   const { data: allSeries, isLoading: seriesLoading } = useStudioSeries();
+  const { trackPageView, trackStudioScroll } = useAnalytics();
   const [activeSeriesId, setActiveSeriesId] = useState<string | null>(null);
   const sectionRefs = useRef<Map<string, HTMLElement>>(new Map());
+  const trackedSeriesRef = useRef<Set<string>>(new Set());
 
   // Build ordered groups: series with images + ungrouped
   const { groups, seriesList } = useMemo(() => {
@@ -46,12 +49,13 @@ const Studio = () => {
     return { groups: result, seriesList: seriesInOrder };
   }, [images, allSeries]);
 
-  // Set initial active series
+  // Set initial active series + track page view
   useEffect(() => {
     if (groups.length && !activeSeriesId) {
       setActiveSeriesId(groups[0].id);
     }
-  }, [groups, activeSeriesId]);
+    trackPageView('/studio', 'Studio');
+  }, [groups, activeSeriesId, trackPageView]);
 
   // IntersectionObserver for active series detection
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -66,6 +70,12 @@ const Studio = () => {
             if (!topEntry || entry.boundingClientRect.top < topEntry.boundingClientRect.top) {
               topEntry = entry;
             }
+            // Track studio scroll for each series scrolled into view
+            const seriesId = entry.target.getAttribute("data-series-id");
+            if (seriesId && seriesId !== "__ungrouped" && !trackedSeriesRef.current.has(seriesId)) {
+              trackedSeriesRef.current.add(seriesId);
+              trackStudioScroll(seriesId);
+            }
           }
         }
         if (topEntry) {
@@ -78,7 +88,7 @@ const Studio = () => {
     observerRef.current = observer;
     sectionRefs.current.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, [groups]);
+  }, [groups, trackStudioScroll]);
 
   const handleSeriesClick = useCallback((seriesId: string) => {
     const section = document.getElementById(`series-${seriesId}`);

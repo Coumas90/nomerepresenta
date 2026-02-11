@@ -423,6 +423,51 @@ serve(async (req) => {
         );
       }
 
+      case 'track_studio_scroll': {
+        if (!validateUUID(data.seriesId)) {
+          return new Response(
+            JSON.stringify({ error: 'Invalid series ID' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        // Verify session exists
+        const { data: studioSession } = await supabase
+          .from('analytics_sessions')
+          .select('id')
+          .eq('session_id', data.sessionId)
+          .single();
+
+        if (!studioSession) {
+          return new Response(
+            JSON.stringify({ error: 'Session not found' }),
+            { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        // Upsert: only insert if not already tracked for this session+series
+        const { error } = await supabase
+          .from('studio_scroll_tracking')
+          .upsert(
+            {
+              session_id: data.sessionId,
+              series_id: data.seriesId,
+              scrolled_at: new Date().toISOString(),
+            },
+            { onConflict: 'session_id,series_id', ignoreDuplicates: true }
+          );
+
+        if (error) {
+          console.error('[Analytics] Error tracking studio scroll:', error);
+          throw error;
+        }
+
+        return new Response(
+          JSON.stringify({ success: true }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
       case 'track_cursor': {
         if (!validateUUID(data.artworkId)) {
           return new Response(
