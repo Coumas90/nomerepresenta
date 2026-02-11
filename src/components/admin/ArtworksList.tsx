@@ -4,10 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Edit, Trash2, GripVertical, Plus } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { useArtworks } from "@/hooks/useArtworks";
 import type { ArtworkData } from "@/types";
 import { useSeries } from "@/hooks/useSeries";
-import { useDeleteArtwork, useUpdateArtworksOrder } from "@/hooks/useArtworkMutations";
+import { useDeleteArtwork, useUpdateArtworksOrder, useUpdateArtwork } from "@/hooks/useArtworkMutations";
 import ArtworkPreviewDialog from "./ArtworkPreviewDialog";
 import {
   DndContext,
@@ -32,9 +33,10 @@ interface SortableArtworkItemProps {
   onEdit: (artwork: ArtworkData) => void;
   onDelete: (id: string) => void;
   onPreview: (artwork: ArtworkData) => void;
+  onToggleVisibility: (artwork: ArtworkData) => void;
 }
 
-const SortableArtworkItem = ({ artwork, onEdit, onDelete, onPreview }: SortableArtworkItemProps) => {
+const SortableArtworkItem = ({ artwork, onEdit, onDelete, onPreview, onToggleVisibility }: SortableArtworkItemProps) => {
   const {
     attributes,
     listeners,
@@ -50,8 +52,10 @@ const SortableArtworkItem = ({ artwork, onEdit, onDelete, onPreview }: SortableA
     opacity: isDragging ? 0.5 : 1,
   };
 
+  const isVisible = artwork.is_visible !== false;
+
   return (
-    <div ref={setNodeRef} style={style} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg mb-2">
+    <div ref={setNodeRef} style={style} className={`flex items-center gap-3 p-3 bg-muted/50 rounded-lg mb-2 ${!isVisible ? "opacity-60" : ""}`}>
       <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
         <GripVertical className="h-5 w-5 text-muted-foreground" />
       </div>
@@ -74,7 +78,12 @@ const SortableArtworkItem = ({ artwork, onEdit, onDelete, onPreview }: SortableA
         <p className="font-medium text-sm truncate">{artwork.title}</p>
         <p className="text-xs text-muted-foreground">{artwork.year} • {artwork.dimensions}</p>
       </div>
-      <div className="flex gap-2">
+      <div className="flex items-center gap-2">
+        <Switch
+          checked={isVisible}
+          onCheckedChange={() => onToggleVisibility(artwork)}
+          aria-label={isVisible ? "Hide artwork" : "Show artwork"}
+        />
         <Button
           variant="outline"
           size="icon"
@@ -104,6 +113,7 @@ const ArtworksList = ({ onEdit, onCreateInSeries }: ArtworksListProps) => {
   const { data: series = [], isLoading: seriesLoading } = useSeries();
   const deleteMutation = useDeleteArtwork();
   const updateOrderMutation = useUpdateArtworksOrder();
+  const updateArtworkMutation = useUpdateArtwork();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [artworkToDelete, setArtworkToDelete] = useState<string | null>(null);
   const [activeSeries, setActiveSeries] = useState<string | null>(null);
@@ -224,6 +234,7 @@ const ArtworksList = ({ onEdit, onCreateInSeries }: ArtworksListProps) => {
                                   onEdit={onEdit}
                                   onDelete={handleDeleteClick}
                                   onPreview={handlePreview}
+                                  onToggleVisibility={(a) => updateArtworkMutation.mutate({ id: a.id, is_visible: a.is_visible === false })}
                                 />
                               ))}
                             </div>

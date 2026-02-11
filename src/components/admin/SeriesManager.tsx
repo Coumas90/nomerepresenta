@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Edit, Trash2, GripVertical, Plus, X } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { useSeries } from "@/hooks/useSeries";
 import { useCreateSeries, useUpdateSeries, useDeleteSeries, useUpdateSeriesOrder } from "@/hooks/useSeriesMutations";
 import { useArtworks } from "@/hooks/useArtworks";
@@ -31,12 +32,14 @@ interface SortableSeriesItemProps {
   id: string;
   name: string;
   description: string | null;
+  isVisible: boolean;
   artworkCount: number;
   onEdit: () => void;
   onDelete: () => void;
+  onToggleVisibility: () => void;
 }
 
-const SortableSeriesItem = ({ id, name, description, artworkCount, onEdit, onDelete }: SortableSeriesItemProps) => {
+const SortableSeriesItem = ({ id, name, description, isVisible, artworkCount, onEdit, onDelete, onToggleVisibility }: SortableSeriesItemProps) => {
   const {
     attributes,
     listeners,
@@ -54,7 +57,7 @@ const SortableSeriesItem = ({ id, name, description, artworkCount, onEdit, onDel
 
   return (
     <div ref={setNodeRef} style={style} className="mb-3">
-      <Card>
+      <Card className={!isVisible ? "opacity-60" : ""}>
         <CardContent className="p-4">
           <div className="flex items-center gap-3">
             <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
@@ -67,7 +70,15 @@ const SortableSeriesItem = ({ id, name, description, artworkCount, onEdit, onDel
               )}
               <p className="text-xs text-muted-foreground mt-1">{artworkCount} artworks</p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <Switch
+                  checked={isVisible}
+                  onCheckedChange={onToggleVisibility}
+                  aria-label={isVisible ? "Hide series" : "Show series"}
+                />
+                <span className="text-xs text-muted-foreground">{isVisible ? "Visible" : "Hidden"}</span>
+              </div>
               <Button variant="outline" size="icon" onClick={onEdit}>
                 <Edit className="h-4 w-4" />
               </Button>
@@ -239,9 +250,11 @@ const SeriesManager = () => {
                       id={s.id}
                       name={s.name}
                       description={s.description}
+                      isVisible={s.is_visible !== false}
                       artworkCount={getArtworkCount(s.id)}
                       onEdit={() => handleEdit(s.id, s.name, s.description)}
                       onDelete={() => handleDeleteClick(s.id)}
+                      onToggleVisibility={() => updateMutation.mutate({ id: s.id, is_visible: s.is_visible === false })}
                     />
                   ))}
                 </SortableContext>

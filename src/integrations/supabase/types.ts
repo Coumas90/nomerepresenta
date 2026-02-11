@@ -228,6 +228,7 @@ export type Database = {
           id: string
           image_detail_url: string | null
           image_url: string
+          is_visible: boolean
           materials: string | null
           series_id: string
           title: string
@@ -242,6 +243,7 @@ export type Database = {
           id?: string
           image_detail_url?: string | null
           image_url: string
+          is_visible?: boolean
           materials?: string | null
           series_id: string
           title: string
@@ -256,6 +258,7 @@ export type Database = {
           id?: string
           image_detail_url?: string | null
           image_url?: string
+          is_visible?: boolean
           materials?: string | null
           series_id?: string
           title?: string
@@ -353,6 +356,7 @@ export type Database = {
           description: string | null
           display_order: number
           id: string
+          is_visible: boolean
           name: string
           updated_at: string
         }
@@ -361,6 +365,7 @@ export type Database = {
           description?: string | null
           display_order?: number
           id?: string
+          is_visible?: boolean
           name: string
           updated_at?: string
         }
@@ -369,6 +374,7 @@ export type Database = {
           description?: string | null
           display_order?: number
           id?: string
+          is_visible?: boolean
           name?: string
           updated_at?: string
         }

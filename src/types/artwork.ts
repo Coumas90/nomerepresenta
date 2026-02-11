@@ -33,6 +33,7 @@ export interface ArtworkData {
   image_detail_url: string;
   series_id: string;
   display_order: number;
+  is_visible?: boolean;
 }
 
 /**
