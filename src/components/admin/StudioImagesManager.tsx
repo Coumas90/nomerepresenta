@@ -60,6 +60,7 @@ const SortableSeriesItem = ({
       <SeriesStudioSection
         seriesId={series.id}
         seriesName={series.name}
+        isVisible={series.is_visible !== false}
         images={images}
         onPreviewImage={onPreviewImage}
         onDeleteImage={onDeleteImage}

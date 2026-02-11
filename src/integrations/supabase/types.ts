@@ -459,6 +459,7 @@ export type Database = {
           description: string | null
           display_order: number
           id: string
+          is_visible: boolean
           name: string
           updated_at: string
         }
@@ -467,6 +468,7 @@ export type Database = {
           description?: string | null
           display_order?: number
           id?: string
+          is_visible?: boolean
           name: string
           updated_at?: string
         }
@@ -475,6 +477,7 @@ export type Database = {
           description?: string | null
           display_order?: number
           id?: string
+          is_visible?: boolean
           name?: string
           updated_at?: string
         }
