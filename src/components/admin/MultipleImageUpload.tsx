@@ -67,19 +67,7 @@ const SortableImage = ({ image, index, artworkData, onDelete, onSetMain, onCapti
   };
 
   const handleDetailToggle = (checked: boolean) => {
-    onToggleDetail(image.id, checked);
-    if (checked && artworkData) {
-      // Auto-fill metadata from artwork
-      onMetadataChange(image.id, {
-        title: artworkData.title,
-        year: artworkData.year,
-        dimensions: artworkData.dimensions,
-        materials: artworkData.materials,
-        is_detail: true,
-      });
-    } else {
-      onMetadataChange(image.id, { is_detail: false });
-    }
+    onMetadataChange(image.id, { is_detail: checked });
   };
 
   return (
