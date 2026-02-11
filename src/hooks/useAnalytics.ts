@@ -100,6 +100,12 @@ export const useAnalytics = () => {
           }
         }
         
+        // Capture UTM parameters from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const utmSource = urlParams.get('utm_source');
+        const utmMedium = urlParams.get('utm_medium');
+        const utmCampaign = urlParams.get('utm_campaign');
+
         // Create new session via Edge Function (server-side validated)
         await trackAnalytics('create_session', {
           sessionId,
@@ -110,6 +116,9 @@ export const useAnalytics = () => {
           country: geoData.country,
           countryName: geoData.countryName,
           city: geoData.city,
+          utmSource: utmSource || null,
+          utmMedium: utmMedium || null,
+          utmCampaign: utmCampaign || null,
         });
       }
       

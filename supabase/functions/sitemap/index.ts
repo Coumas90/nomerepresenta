@@ -32,7 +32,7 @@ Deno.serve(async (req) => {
 
     console.log(`Found ${artworks?.length || 0} artworks`);
 
-    const baseUrl = 'https://ivancomas.lovable.app';
+    const baseUrl = 'https://ivancomas.studio';
     const currentDate = new Date().toISOString();
 
     // Static pages

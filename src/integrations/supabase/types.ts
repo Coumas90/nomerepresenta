@@ -28,6 +28,9 @@ export type Database = {
           started_at: string
           total_duration_seconds: number | null
           user_agent: string | null
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
           visitor_fingerprint: string | null
         }
         Insert: {
@@ -43,6 +46,9 @@ export type Database = {
           started_at?: string
           total_duration_seconds?: number | null
           user_agent?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
           visitor_fingerprint?: string | null
         }
         Update: {
@@ -58,6 +64,9 @@ export type Database = {
           started_at?: string
           total_duration_seconds?: number | null
           user_agent?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
           visitor_fingerprint?: string | null
         }
         Relationships: []

@@ -88,7 +88,7 @@ const ArtworkDetail = () => {
       </main>;
   }
   return <main className="min-h-screen bg-background">
-      <ArtworkStructuredData name={artwork.title} description={artwork.description} image={artwork.image_url} creator="Ivan Comas" dateCreated={artwork.year} artMedium={artwork.materials} artform={artwork.materials} width={artwork.dimensions?.split('x')[0]?.trim()} height={artwork.dimensions?.split('x')[1]?.trim()} url={`https://ivancomas.lovable.app/artwork/${artwork.id}`} />
+      <ArtworkStructuredData name={artwork.title} description={artwork.description} image={artwork.image_url} creator="Ivan Comas" dateCreated={artwork.year} artMedium={artwork.materials} artform={artwork.materials} width={artwork.dimensions?.split('x')[0]?.trim()} height={artwork.dimensions?.split('x')[1]?.trim()} url={`https://ivancomas.studio/artwork/${artwork.id}`} />
       <div className="fixed top-6 right-6 z-50 animate-fade-in">
         <Button onClick={() => navigate("/")} variant="ghost" className="uppercase tracking-wider text-sm cursor-pointer hover:scale-105 transition-transform duration-200">
           <ArrowLeft className="mr-2 h-4 w-4" />
