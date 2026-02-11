@@ -167,6 +167,7 @@ export const useUpdateImageMetadata = () => {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["artwork-images", data.artworkId] });
+      queryClient.invalidateQueries({ queryKey: ["all-artwork-images"] });
     },
     onError: (error: Error) => {
       toast.error(`Error al actualizar metadata: ${error.message}`);
