@@ -90,7 +90,7 @@ const Bio = () => {
         <div className="container mx-auto px-6 md:px-8 max-w-4xl">
           {/* Artist Name & Info */}
           <div className={`mb-12 md:mb-16 transition-all duration-700 delay-200 ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-1 md:mb-2">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-1 md:mb-3">
               Ivan Comas
             </h1>
             <p className="text-stone-500 text-sm md:text-base mb-1">
