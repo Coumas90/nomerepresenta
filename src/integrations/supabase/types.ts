@@ -275,6 +275,42 @@ export type Database = {
           },
         ]
       }
+      bio_cv_entries: {
+        Row: {
+          created_at: string
+          display_order: number
+          id: string
+          link: string | null
+          section: string
+          title: string
+          updated_at: string
+          venue: string | null
+          year: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          link?: string | null
+          section: string
+          title: string
+          updated_at?: string
+          venue?: string | null
+          year: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          link?: string | null
+          section?: string
+          title?: string
+          updated_at?: string
+          venue?: string | null
+          year?: string
+        }
+        Relationships: []
+      }
       bio_settings: {
         Row: {
           created_at: string
