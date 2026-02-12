@@ -249,6 +249,19 @@ export const useAnalytics = () => {
     });
   }, []);
 
+  const trackUserEvent = useCallback(async (
+    eventType: string,
+    eventData?: Record<string, unknown>
+  ) => {
+    if (!sessionIdRef.current) return;
+
+    await trackAnalytics('track_user_event', {
+      sessionId: sessionIdRef.current,
+      eventType,
+      eventData: eventData || null,
+    });
+  }, []);
+
   return {
     sessionId: sessionIdRef.current,
     trackPageView,
@@ -256,5 +269,6 @@ export const useAnalytics = () => {
     endArtworkView,
     trackSeriesInteraction,
     trackStudioScroll,
+    trackUserEvent,
   };
 };

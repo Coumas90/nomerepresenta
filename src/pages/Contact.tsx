@@ -1,8 +1,19 @@
 import { useNavigate } from "react-router-dom";
+import { useRef, useCallback } from "react";
 import { Undo2 } from "lucide-react";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 const Contact = () => {
   const navigate = useNavigate();
+  const hasTracked = useRef(false);
+  const { trackUserEvent } = useAnalytics();
+
+  const handleContactClick = useCallback(() => {
+    if (!hasTracked.current) {
+      hasTracked.current = true;
+      trackUserEvent('contact_click', { source: 'contact_page' });
+    }
+  }, [trackUserEvent]);
 
   return (
     <div className="min-h-dvh bg-stone-100 flex flex-col">
@@ -20,6 +31,7 @@ const Contact = () => {
       <div className="flex-1 flex items-center justify-center px-6">
         <a
           href="mailto:contact@ivancomas.studio"
+          onClick={handleContactClick}
           className="font-helvetica font-bold tracking-tight text-foreground hover:opacity-60 transition-opacity duration-300 text-center break-all"
           style={{ fontSize: 'clamp(1.4rem, 4.65vw, 3.72rem)' }}
         >

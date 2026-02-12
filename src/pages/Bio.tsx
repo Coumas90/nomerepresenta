@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Undo2 } from "lucide-react";
+import { useAnalytics } from "@/hooks/useAnalytics";
 import { ProgressiveImage } from "@/components/ProgressiveImage";
 import { SwipeGestureContainer } from "@/components/SwipeGestureContainer";
 import { useBioSettings } from "@/hooks/useBioSettings";
@@ -99,8 +100,12 @@ const Bio = () => {
   const navigate = useNavigate();
   const [isPageLoaded, setIsPageLoaded] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const bottomSentinelRef = useRef<HTMLDivElement>(null);
+  const hasTrackedScrollComplete = useRef(false);
+  const hasTrackedContactClick = useRef(false);
   const { data: settings } = useBioSettings();
   const { data: cvEntries } = useBioCvEntries();
+  const { trackUserEvent } = useAnalytics();
 
   const bioText = settings?.bio_text || "";
 
@@ -112,6 +117,31 @@ const Bio = () => {
     const timer = setTimeout(() => setIsPageLoaded(true), 50);
     return () => clearTimeout(timer);
   }, []);
+
+  // Track scroll completion (user read the whole bio)
+  useEffect(() => {
+    const sentinel = bottomSentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !hasTrackedScrollComplete.current) {
+          hasTrackedScrollComplete.current = true;
+          trackUserEvent('bio_scroll_complete');
+        }
+      },
+      { threshold: 0.5 }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [trackUserEvent]);
+
+  const handleContactClick = useCallback(() => {
+    if (!hasTrackedContactClick.current) {
+      hasTrackedContactClick.current = true;
+      trackUserEvent('contact_click', { source: 'bio' });
+    }
+  }, [trackUserEvent]);
 
   const handleClose = useCallback(() => {
     navigate("/");
@@ -193,11 +223,15 @@ const Bio = () => {
           <section className={`pt-8 border-t border-stone-200 transition-all duration-700 delay-[600ms] ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             <a 
               href="mailto:contact@ivancomas.studio"
+              onClick={handleContactClick}
               className="text-stone-900 hover:text-stone-600 transition-colors text-sm tracking-widest uppercase"
             >
               contact@ivancomas.studio
             </a>
           </section>
+
+          {/* Scroll completion sentinel */}
+          <div ref={bottomSentinelRef} className="h-1" />
         </div>
       </main>
       </div>

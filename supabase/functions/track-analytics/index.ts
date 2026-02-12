@@ -468,6 +468,52 @@ serve(async (req) => {
         );
       }
 
+      case 'track_user_event': {
+        const validEventTypes = [
+          'bio_scroll_complete',
+          'contact_click',
+          'works_scroll_complete',
+          'gallery_navigate',
+        ];
+
+        if (!data.eventType || !validEventTypes.includes(data.eventType)) {
+          return new Response(
+            JSON.stringify({ error: 'Invalid event type' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        // Verify session exists
+        const { data: eventSession } = await supabase
+          .from('analytics_sessions')
+          .select('id')
+          .eq('session_id', data.sessionId)
+          .single();
+
+        if (!eventSession) {
+          return new Response(
+            JSON.stringify({ error: 'Session not found' }),
+            { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        const { error } = await supabase.from('user_events').insert({
+          session_id: data.sessionId,
+          event_type: data.eventType,
+          event_data: data.eventData || null,
+        });
+
+        if (error) {
+          console.error('[Analytics] Error tracking user event:', error);
+          throw error;
+        }
+
+        return new Response(
+          JSON.stringify({ success: true }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
       case 'track_cursor': {
         if (!validateUUID(data.artworkId)) {
           return new Response(

@@ -6,7 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { CalendarIcon, Users, Clock, MousePointerClick, Globe, ExternalLink, Home, Palette } from "lucide-react";
+import { CalendarIcon, Users, Clock, MousePointerClick, Globe, ExternalLink, Home, Palette, BookOpen, Mail, ArrowDown, Images } from "lucide-react";
 import { format, subDays, startOfDay, endOfDay } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
@@ -15,6 +15,7 @@ import { useTopArtworks } from "@/hooks/useArtworkAnalytics";
 import { useTrafficSources } from "@/hooks/useAudienceAnalytics";
 import { useCountryDistribution } from "@/hooks/useGeographicAnalytics";
 import { useStudioAnalytics } from "@/hooks/useStudioAnalytics";
+import { useUserEventsAnalytics } from "@/hooks/useUserEventsAnalytics";
 import type { DailyVisitors } from "@/types";
 
 const UnifiedAnalytics = () => {
@@ -64,6 +65,9 @@ const UnifiedAnalytics = () => {
         <TrafficSourcesCard startDate={startDate} endDate={endDate} />
         <CountriesCard startDate={startDate} endDate={endDate} />
       </div>
+
+      {/* Page Engagement: Bio + Works + Contact */}
+      <PageEngagementCard startDate={startDate} endDate={endDate} />
 
       {/* Studio Engagement */}
       <StudioEngagementCard startDate={startDate} endDate={endDate} />
@@ -394,6 +398,100 @@ const TopArtworksCard = ({ startDate, endDate }: { startDate: Date; endDate: Dat
               </TableBody>
             </Table>
           </>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
+// ─── Page Engagement (Bio, Works, Contact) ─────────────
+const PageEngagementCard = ({ startDate, endDate }: { startDate: Date; endDate: Date }) => {
+  const { data, isLoading } = useUserEventsAnalytics(startDate, endDate);
+
+  const formatDuration = (seconds: number) => {
+    if (seconds < 60) return `${seconds}s`;
+    return `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Page Engagement</CardTitle>
+        <p className="text-xs text-muted-foreground">Bio readership, contact interest & gallery interactions</p>
+      </CardHeader>
+      <CardContent>
+        {isLoading ? (
+          <Skeleton className="h-48" />
+        ) : (
+          <div className="grid gap-6 md:grid-cols-3">
+            {/* Bio */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <BookOpen className="h-4 w-4 text-blue-500" />
+                <span className="font-medium text-sm">Bio</span>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Visitors</span>
+                  <span className="font-medium">{data?.bioVisits || 0}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Avg. Time</span>
+                  <span className="font-medium">{formatDuration(data?.bioAvgDuration || 0)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Read Complete</span>
+                  <span className="font-medium">{data?.bioScrollComplete || 0} ({data?.bioScrollRate || 0}%)</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Contact */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Mail className="h-4 w-4 text-green-500" />
+                <span className="font-medium text-sm">Contact</span>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Total Clicks</span>
+                  <span className="font-medium">{data?.contactClicks || 0}</span>
+                </div>
+                {data?.contactClickSources?.map((s) => (
+                  <div key={s.source} className="flex justify-between text-sm">
+                    <span className="text-muted-foreground capitalize">{s.source.replace('_', ' ')}</span>
+                    <span className="font-medium">{s.count}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Works */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <ArrowDown className="h-4 w-4 text-purple-500" />
+                <span className="font-medium text-sm">Works Scroll</span>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Visitors</span>
+                  <span className="font-medium">{data?.worksVisits || 0}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Scrolled to End</span>
+                  <span className="font-medium">{data?.worksScrollComplete || 0} ({data?.worksScrollRate || 0}%)</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Gallery Clicks</span>
+                  <span className="font-medium">{data?.galleryNavigations || 0}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Artworks Explored</span>
+                  <span className="font-medium">{data?.galleryUniqueArtworks || 0}</span>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
       </CardContent>
     </Card>
