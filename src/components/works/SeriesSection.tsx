@@ -10,10 +10,11 @@ interface SeriesSectionProps {
   onIntersect?: (seriesId: string, isIntersecting: boolean) => void;
   className?: string;
   allArtworkImages?: Record<string, ArtworkImage[]>;
+  onGalleryNavigate?: (artworkId: string) => void;
 }
 
 export const SeriesSection = forwardRef<HTMLElement, SeriesSectionProps>(
-  ({ series, artworks, isFirst = false, onIntersect, className, allArtworkImages }, ref) => {
+  ({ series, artworks, isFirst = false, onIntersect, className, allArtworkImages, onGalleryNavigate }, ref) => {
     const sectionRef = useRef<HTMLElement>(null);
     const [isNearViewport, setIsNearViewport] = useState(false);
 
@@ -73,6 +74,7 @@ export const SeriesSection = forwardRef<HTMLElement, SeriesSectionProps>(
               isVisible={isNearViewport}
               preloadedImages={allArtworkImages?.[artwork.id]}
               eager={isFirst && artIndex === 0}
+              onGalleryNavigate={onGalleryNavigate}
             />
           ))}
         </div>

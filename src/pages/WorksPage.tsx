@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useArtworksBySeries } from "@/hooks/useArtworksBySeries";
 import { useAllArtworkImages } from "@/hooks/useAllArtworkImages";
 import { useScrollRestoration } from "@/hooks/useScrollRestoration";
+import { useAnalytics } from "@/hooks/useAnalytics";
 import { SeriesHeader, SeriesSection } from "@/components/works";
 
 
@@ -11,9 +12,12 @@ const WorksPage = () => {
   const location = useLocation();
   const { data: seriesWithArtworks, isLoading } = useArtworksBySeries();
   const { data: allArtworkImages } = useAllArtworkImages();
+  const { trackUserEvent } = useAnalytics();
 
   // State para serie activa (detectada por scroll)
   const [activeSeriesId, setActiveSeriesId] = useState<string | null>(null);
+  const bottomSentinelRef = useRef<HTMLDivElement>(null);
+  const hasTrackedScrollComplete = useRef(false);
 
 
   // Track if initial scroll handling has been performed
@@ -109,6 +113,24 @@ const WorksPage = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [navigate]);
 
+  // Track works scroll completion
+  useEffect(() => {
+    const sentinel = bottomSentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !hasTrackedScrollComplete.current) {
+          hasTrackedScrollComplete.current = true;
+          trackUserEvent('works_scroll_complete');
+        }
+      },
+      { threshold: 0.5 }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [trackUserEvent]);
+
   // Loading state - render page shell immediately, no blocking spinner
   if (isLoading) {
     return (
@@ -145,8 +167,13 @@ const WorksPage = () => {
             isFirst={index === 0}
             onIntersect={handleSeriesIntersect}
             allArtworkImages={allArtworkImages}
+            onGalleryNavigate={(artworkId) => {
+              trackUserEvent('gallery_navigate', { artworkId });
+            }}
           />
         ))}
+        {/* Scroll completion sentinel */}
+        <div ref={bottomSentinelRef} className="h-1" />
       </main>
 
     </div>
