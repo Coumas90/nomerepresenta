@@ -4,6 +4,7 @@ import { Undo2 } from "lucide-react";
 import { ProgressiveImage } from "@/components/ProgressiveImage";
 import { SwipeGestureContainer } from "@/components/SwipeGestureContainer";
 import { useBioSettings } from "@/hooks/useBioSettings";
+import { useBioCvEntries, type BioCvEntry } from "@/hooks/useBioCvEntries";
 
 const BioHeroImage = () => {
   const { data: settings } = useBioSettings();
@@ -27,10 +28,85 @@ const CVEntry = ({ year, children }: { year: string; children: React.ReactNode }
   </div>
 );
 
+const CVEntryFromData = ({ entry }: { entry: BioCvEntry }) => (
+  <CVEntry year={entry.year}>
+    {entry.link ? (
+      <a href={entry.link} target="_blank" rel="noopener noreferrer" className="font-medium text-stone-900 underline underline-offset-2 hover:text-stone-600 transition-colors">
+        {entry.title}
+      </a>
+    ) : (
+      <span className="font-medium text-stone-900">{entry.title}</span>
+    )}
+    {entry.venue && <span className="text-stone-600">{entry.venue}</span>}
+  </CVEntry>
+);
+
+const CVSection = ({ title, entries, delay }: { title: string; entries: BioCvEntry[]; delay: string }) => {
+  const [isPageLoaded, setIsPageLoaded] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => setIsPageLoaded(true), 50);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!entries.length) return null;
+
+  // Group entries by year for multi-entry years
+  const grouped: { year: string; items: BioCvEntry[] }[] = [];
+  entries.forEach((entry) => {
+    const last = grouped[grouped.length - 1];
+    if (last && last.year === entry.year) {
+      last.items.push(entry);
+    } else {
+      grouped.push({ year: entry.year, items: [entry] });
+    }
+  });
+
+  return (
+    <section className={`mb-12 md:mb-16 transition-all duration-700 ${delay} ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+      <h2 className="text-lg md:text-xl font-bold tracking-wide uppercase mb-6 text-stone-900">
+        {title}
+      </h2>
+      <div className="space-y-3">
+        {grouped.map((group) =>
+          group.items.length === 1 ? (
+            <CVEntryFromData key={group.items[0].id} entry={group.items[0]} />
+          ) : (
+            <div key={group.year + group.items[0].id} className="grid grid-cols-[80px_1fr] md:grid-cols-[100px_1fr] gap-x-3 items-baseline">
+              <span className="text-stone-500 text-sm">{group.year}</span>
+              <div className="space-y-2 text-sm md:text-base">
+                {group.items.map((entry) => (
+                  <div key={entry.id}>
+                    {entry.link ? (
+                      <a href={entry.link} target="_blank" rel="noopener noreferrer" className="font-medium text-stone-900 underline underline-offset-2 hover:text-stone-600 transition-colors">
+                        {entry.title}
+                      </a>
+                    ) : (
+                      <span className="font-medium text-stone-900">{entry.title}</span>
+                    )}
+                    {entry.venue && <span className="text-stone-600">{entry.venue}</span>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )
+        )}
+      </div>
+    </section>
+  );
+};
+
 const Bio = () => {
   const navigate = useNavigate();
   const [isPageLoaded, setIsPageLoaded] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const { data: settings } = useBioSettings();
+  const { data: cvEntries } = useBioCvEntries();
+
+  const bioText = settings?.bio_text || "";
+
+  const educationEntries = (cvEntries || []).filter((e) => e.section === "education");
+  const soloEntries = (cvEntries || []).filter((e) => e.section === "solo_exhibitions");
+  const groupEntries = (cvEntries || []).filter((e) => e.section === "group_exhibitions");
 
   useEffect(() => {
     const timer = setTimeout(() => setIsPageLoaded(true), 50);
@@ -65,7 +141,7 @@ const Bio = () => {
         ref={scrollContainerRef}
         className={`min-h-screen bg-stone-50 transition-opacity duration-500 ${isPageLoaded ? 'opacity-100' : 'opacity-0'}`}
       >
-      {/* Header — matches Works & Studio */}
+      {/* Header */}
       <header className="sticky top-0 z-50 bg-stone-100/95 backdrop-blur-sm border-b border-stone-200">
         <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4">
           <span className="text-stone-700 font-bold text-sm md:text-base uppercase tracking-widest flex-shrink-0">
@@ -99,87 +175,19 @@ const Bio = () => {
             <p className="text-stone-500 text-sm md:text-base mb-8">
               São Paulo / Paris
             </p>
-            <div className="space-y-4 text-stone-700 text-base md:text-lg leading-relaxed">
-              <p>
-                Comas's practice develops through layered procedures combining industrial materials, fragmented text and the visual residue of dense urban environments. Through cycles of inscription, burial and rupture, he constructs stratified surfaces shaped by prolonged exposure to cities.
-              </p>
-              <p>
-                Educated at the École des Beaux-Arts de Paris, he works across painting, photography and writing as a single investigative field focused on material systems and residual language. His work has been exhibited in Los Angeles, Berlin, Paris and São Paulo and is held in private collections in Latin America, Europe and the United States, including the Colección Jumex and the Vergez &amp; Pearson collections.
-              </p>
-            </div>
+            {bioText && (
+              <div className="space-y-4 text-stone-700 text-base md:text-lg leading-relaxed">
+                {bioText.split("\n\n").map((paragraph, i) => (
+                  <p key={i}>{paragraph}</p>
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* Education */}
-          <section className={`mb-12 md:mb-16 transition-all duration-700 delay-300 ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <h2 className="text-lg md:text-xl font-bold tracking-wide uppercase mb-6 text-stone-900">
-              Education
-            </h2>
-            <div className="space-y-3">
-              <CVEntry year="2007-2012">
-                <span className="font-medium text-stone-900">MFA</span>
-                <span className="text-stone-600">, École Nationale Supérieure des Beaux Arts de Paris</span>
-              </CVEntry>
-              <CVEntry year="2011">
-                <span className="font-medium text-stone-900">Exchange program</span>
-                <span className="text-stone-600">, Cooper Union, New York</span>
-              </CVEntry>
-            </div>
-          </section>
-
-          {/* Solo and Two Person Exhibitions */}
-          <section className={`mb-12 md:mb-16 transition-all duration-700 delay-[400ms] ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <h2 className="text-lg md:text-xl font-bold tracking-wide uppercase mb-6 text-stone-900">
-              Solo Exhibitions
-            </h2>
-            <div className="space-y-3">
-              <CVEntry year="2024">
-                <span className="font-medium text-stone-900">Metronomo</span>
-                <span className="text-stone-600">, Instituto Alto, São Paulo</span>
-              </CVEntry>
-              <CVEntry year="2019">
-                <span className="font-medium text-stone-900">A hole in the wall</span>
-                <span className="text-stone-600">, Espacio Abierto, CDMX</span>
-              </CVEntry>
-              <CVEntry year="2016">
-                <a href="http://steveturner.la/exhibition/ivan-comas-3#1" target="_blank" rel="noopener noreferrer" className="font-medium text-stone-900 underline underline-offset-2 hover:text-stone-600 transition-colors">After Sonora</a>
-                <span className="text-stone-600">, Steve Turner, Los Angeles</span>
-              </CVEntry>
-              <div className="grid grid-cols-[80px_1fr] md:grid-cols-[100px_1fr] gap-x-3 items-baseline">
-                <span className="text-stone-500 text-sm">2015</span>
-                <div className="space-y-2 text-sm md:text-base">
-                  <div>
-                    <a href="https://www.duveberlin.com/exhibition/days-go-by" target="_blank" rel="noopener noreferrer" className="font-medium text-stone-900 underline underline-offset-2 hover:text-stone-600 transition-colors">Days go by</a>
-                    <span className="text-stone-600">, Duve, Berlin</span>
-                  </div>
-                  <div>
-                    <a href="http://steveturner.la/exhibition/ivan-comas#1" target="_blank" rel="noopener noreferrer" className="font-medium text-stone-900 underline underline-offset-2 hover:text-stone-600 transition-colors">La Brea</a>
-                    <span className="text-stone-600">, Steve Turner, Los Angeles</span>
-                  </div>
-                </div>
-              </div>
-              <CVEntry year="2014">
-                <span className="font-medium text-stone-900">Recent Works</span>
-                <span className="text-stone-600">, Vergez Collection, Buenos Aires</span>
-              </CVEntry>
-            </div>
-          </section>
-
-          {/* Selected Group Exhibitions */}
-          <section className={`mb-12 md:mb-16 transition-all duration-700 delay-500 ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <h2 className="text-lg md:text-xl font-bold tracking-wide uppercase mb-6 text-stone-900">
-              Selected Group Exhibitions
-            </h2>
-            <div className="space-y-3">
-              <CVEntry year="2018">
-                <span className="font-medium text-stone-900">Sun Kiss Choked</span>
-                <span className="text-stone-600">, Y53, Los Angeles</span>
-              </CVEntry>
-              <CVEntry year="2017">
-                <a href="https://dittrich-schlechtriem.com/monet-is-my-church/" target="_blank" rel="noopener noreferrer" className="font-medium text-stone-900 underline underline-offset-2 hover:text-stone-600 transition-colors">Monet is my church</a>
-                <span className="text-stone-600">, Dittrich & Schlectriem, Berlin</span>
-              </CVEntry>
-            </div>
-          </section>
+          {/* CV Sections */}
+          <CVSection title="Education" entries={educationEntries} delay="delay-300" />
+          <CVSection title="Solo Exhibitions" entries={soloEntries} delay="delay-[400ms]" />
+          <CVSection title="Group Exhibitions" entries={groupEntries} delay="delay-500" />
 
           {/* Contact */}
           <section className={`pt-8 border-t border-stone-200 transition-all duration-700 delay-[600ms] ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
@@ -189,7 +197,7 @@ const Bio = () => {
             >
               contact@ivancomas.studio
             </a>
-        </section>
+          </section>
         </div>
       </main>
       </div>
