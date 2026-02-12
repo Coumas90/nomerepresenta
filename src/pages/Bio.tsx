@@ -163,7 +163,7 @@ const Bio = () => {
           <BioHeroImage />
         </div>
 
-        <div className="container mx-auto px-6 md:px-8 max-w-4xl">
+        <div className="container mx-auto px-6 md:px-8 max-w-3xl">
           {/* Artist Name & Info */}
           <div className={`mb-12 md:mb-16 transition-all duration-700 delay-200 ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-1 md:mb-3">
@@ -176,7 +176,7 @@ const Bio = () => {
               São Paulo / Paris
             </p>
             {bioText && (
-              <div className="space-y-4 text-stone-700 text-base md:text-lg leading-relaxed">
+              <div className="space-y-4 text-stone-700 text-base md:text-lg leading-relaxed md:text-justify">
                 {bioText.split("\n\n").map((paragraph, i) => (
                   <p key={i}>{paragraph}</p>
                 ))}
