@@ -159,7 +159,7 @@ const Bio = () => {
 
       <main className="pb-16">
         {/* Artist Photo */}
-        <div className={`w-full mb-1 md:mb-16 overflow-hidden transition-all duration-700 delay-100 ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+        <div className={`w-full mb-3.5 md:mb-16 overflow-hidden transition-all duration-700 delay-100 ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <BioHeroImage />
         </div>
 
