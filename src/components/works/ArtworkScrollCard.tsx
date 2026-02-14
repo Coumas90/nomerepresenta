@@ -261,7 +261,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
             )}
 
             {/* Caption — aligned with image */}
-            <figcaption className="mt-3 md:mt-4 space-y-0 text-left leading-snug">
+            <figcaption className="mt-3 md:mt-4 text-left leading-snug">
               {allImages[currentImageIndex]?.caption ? (
                 <p className="text-stone-600 text-xs md:text-sm font-bold">
                   {allImages[currentImageIndex].caption}
@@ -274,12 +274,12 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
                     {isViewingDetail && <span className="font-normal text-stone-500"> (DETAIL)</span>}
                   </p>
                   {(allImages[currentImageIndex]?.materials || artwork.materials) && (
-                    <p className="text-stone-500 text-xs md:text-sm">
+                    <p className="text-stone-500 text-xs md:text-sm mt-[1px]">
                       {allImages[currentImageIndex]?.materials || artwork.materials}
                     </p>
                   )}
                   {(allImages[currentImageIndex]?.dimensions || artwork.dimensions) && (
-                    <p className="text-stone-500 text-xs md:text-sm">
+                    <p className="text-stone-500 text-xs md:text-sm mt-[1px]">
                       {allImages[currentImageIndex]?.dimensions || artwork.dimensions}
                     </p>
                   )}
