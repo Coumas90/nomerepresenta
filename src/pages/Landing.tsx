@@ -184,7 +184,7 @@ const Landing = () => {
   const activeIndex = hoveredIndex ?? selectedIndex;
 
   return (
-    <div className={`relative min-h-dvh bg-black overflow-hidden transition-opacity duration-200 ${isPageLoaded ? 'opacity-100' : 'opacity-0'}`}>
+    <div className={`relative min-h-dvh overflow-hidden transition-opacity duration-200 ${isPageLoaded ? 'opacity-100' : 'opacity-0'}`} style={{ backgroundColor: '#0B0B0B' }}>
       {/* Menu container - left aligned */}
       <nav className="relative z-10 min-h-dvh flex items-center">
         <ul className="flex flex-col items-start gap-0 pl-px sm:pl-12 md:pl-16 lg:pl-24">
@@ -230,7 +230,7 @@ const Landing = () => {
                   `}
                   style={{
                     fontSize: isMobile ? 'clamp(4.5rem, 20vw, 12rem)' : 'clamp(3.5rem, 12vw, 9rem)',
-                    color: 'white',
+                    color: '#F2F2F2',
                   }}
                 >
                   {item.text}
@@ -239,8 +239,8 @@ const Landing = () => {
                     <span 
                       className="block text-xs font-sans font-normal tracking-wide mt-2 animate-fade-in"
                       style={{ 
-                        color: 'white', 
-                        WebkitTextFillColor: 'white',
+                        color: '#F2F2F2', 
+                        WebkitTextFillColor: '#F2F2F2',
                         opacity: 0.6 
                       }}
                     >
