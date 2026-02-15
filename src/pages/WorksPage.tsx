@@ -158,7 +158,7 @@ const WorksPage = () => {
       />
 
       {/* Contenido scrolleable */}
-      <main className="pt-20 pb-16 md:pb-24">
+      <main className="pt-10 pb-16 md:pb-24">
         {seriesWithArtworks.map((series, index) => (
           <SeriesSection
             key={series.id}
