@@ -105,7 +105,7 @@ const ArtworkDetail = () => {
                   {images.map((image, index) => {
                 const shouldLoad = Math.abs(index - current) <= 1;
                 return <CarouselItem key={image.id}>
-                        {shouldLoad ? <img src={image.image_url} alt={artwork.title} loading={index === 0 ? "eager" : "lazy"} decoding="async" ref={index === current ? registerImageElement : undefined} className="w-full h-auto object-contain transition-opacity duration-300" /> : <div className="w-full aspect-square bg-muted animate-pulse" />}
+                        {shouldLoad ? <img src={image.image_url} alt={image.alt_text || artwork.title} loading={index === 0 ? "eager" : "lazy"} decoding="async" ref={index === current ? registerImageElement : undefined} className="w-full h-auto object-contain transition-opacity duration-300" /> : <div className="w-full aspect-square bg-muted animate-pulse" />}
                       </CarouselItem>;
               })}
                 </CarouselContent>

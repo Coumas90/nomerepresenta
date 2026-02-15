@@ -215,6 +215,17 @@ const SortableImage = ({ image, index, artworkData, onDelete, onSetMain, onCapti
               }}
               className="text-xs h-7"
             />
+            <Input
+              placeholder="Alt text (for accessibility)"
+              defaultValue={image.alt_text || ""}
+              onBlur={(e) => {
+                const val = e.target.value.trim();
+                if (val !== (image.alt_text || "")) {
+                  onMetadataChange(image.id, { alt_text: val || null });
+                }
+              }}
+              className="text-xs h-7"
+            />
           </div>
         )}
       </div>

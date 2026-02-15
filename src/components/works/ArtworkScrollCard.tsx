@@ -39,14 +39,15 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
         dimensions: img.dimensions ?? null,
         materials: img.materials ?? null,
         isDetail: img.is_detail ?? false,
+        altText: img.alt_text ?? null,
       }));
     }
     // Legacy fallback: no artwork_images rows exist
     const images = [
-      { url: artwork.image_url, isMain: true, caption: null as string | null, title: null as string | null, year: null as string | null, dimensions: null as string | null, materials: null as string | null, isDetail: false },
+      { url: artwork.image_url, isMain: true, caption: null as string | null, title: null as string | null, year: null as string | null, dimensions: null as string | null, materials: null as string | null, isDetail: false, altText: null as string | null },
     ];
     if (artwork.image_detail_url) {
-      images.push({ url: artwork.image_detail_url, isMain: false, caption: null, title: null, year: null, dimensions: null, materials: null, isDetail: true });
+      images.push({ url: artwork.image_detail_url, isMain: false, caption: null, title: null, year: null, dimensions: null, materials: null, isDetail: true, altText: null });
     }
     return images.filter(img => img.url);
   }, [artwork.image_url, artwork.image_detail_url, artworkImages]);
@@ -195,7 +196,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
               {currentImage && (
               <ProgressiveImage
                   src={currentImage}
-                  alt={artwork.title || "Artwork"}
+                  alt={allImages[currentImageIndex]?.altText || artwork.title || "Artwork"}
                   className="relative z-10 [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh]"
                   objectFit="contain"
                   eager={eager}

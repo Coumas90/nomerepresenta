@@ -63,6 +63,7 @@ export interface ArtworkImage {
   dimensions: string | null;
   materials: string | null;
   is_detail: boolean;
+  alt_text: string | null;
 }
 
 /**
