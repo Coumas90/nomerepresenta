@@ -114,6 +114,7 @@ export type Database = {
       }
       artwork_images: {
         Row: {
+          alt_text: string | null
           artwork_id: string
           caption: string | null
           created_at: string | null
@@ -128,6 +129,7 @@ export type Database = {
           year: string | null
         }
         Insert: {
+          alt_text?: string | null
           artwork_id: string
           caption?: string | null
           created_at?: string | null
@@ -142,6 +144,7 @@ export type Database = {
           year?: string | null
         }
         Update: {
+          alt_text?: string | null
           artwork_id?: string
           caption?: string | null
           created_at?: string | null

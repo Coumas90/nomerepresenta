@@ -1,0 +1,1 @@
+ALTER TABLE public.artwork_images ADD COLUMN alt_text text DEFAULT NULL;

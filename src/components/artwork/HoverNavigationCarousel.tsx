@@ -1,7 +1,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface HoverNavigationCarouselProps {
-  images: Array<{ id: string; image_url: string }>;
+  images: Array<{ id: string; image_url: string; alt_text?: string | null }>;
   artwork: {
     title: string;
   };
@@ -38,7 +38,7 @@ export const HoverNavigationCarousel = ({
         <img
           key={currentImage.id}
           src={currentImage.image_url}
-          alt={artwork.title}
+          alt={currentImage.alt_text || artwork.title}
           loading="eager"
           decoding="async"
           ref={registerImageRef}

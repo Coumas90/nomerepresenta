@@ -155,7 +155,7 @@ export const useUpdateImageMetadata = () => {
     mutationFn: async ({ imageId, artworkId, updates }: { 
       imageId: string; 
       artworkId: string; 
-      updates: { title?: string | null; year?: string | null; dimensions?: string | null; materials?: string | null; is_detail?: boolean };
+      updates: { title?: string | null; year?: string | null; dimensions?: string | null; materials?: string | null; is_detail?: boolean; alt_text?: string | null };
     }) => {
       const { error } = await supabase
         .from("artwork_images")
