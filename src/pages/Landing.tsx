@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { ArtistStructuredData } from "@/components/seo/ArtistStructuredData";
 
 // Menu items with their associated artwork images
 const menuItems = [
@@ -185,6 +186,14 @@ const Landing = () => {
 
   return (
     <div className={`relative min-h-dvh overflow-hidden transition-opacity duration-200 ${isPageLoaded ? 'opacity-100' : 'opacity-0'}`} style={{ backgroundColor: '#0B0B0B' }}>
+      <ArtistStructuredData
+        name="Ivan Comas"
+        description="Ivan Comas — Visual Artist and Painter"
+        url="https://ivancomas.studio/"
+        jobTitle="Visual Artist, Painter"
+        image="https://ivancomas.studio/images/bio-hero.jpeg"
+        sameAs={["https://instagram.com/manyvices"]}
+      />
       {/* Menu container - left aligned */}
       <nav className="relative z-10 min-h-dvh flex items-center">
         <ul className="flex flex-col items-start gap-0 pl-px sm:pl-12 md:pl-16 lg:pl-24">
