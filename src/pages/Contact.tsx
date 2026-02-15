@@ -33,7 +33,7 @@ const Contact = () => {
           href="mailto:contact@ivancomas.studio"
           onClick={handleContactClick}
           className="font-helvetica font-semibold tracking-tight text-foreground hover:opacity-60 transition-opacity duration-300 text-center break-all"
-          style={{ fontSize: 'clamp(1.05rem, 3.49vw, 2.79rem)' }}
+          style={{ fontSize: 'clamp(1.175rem, 3.49vw, 2.79rem)' }}
         >
           contact@ivancomas.studio
         </a>
