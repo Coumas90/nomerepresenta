@@ -32,7 +32,7 @@ export const StudioHeader = ({
       <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4">
         <div
           ref={scrollContainerRef}
-          className="flex items-center gap-4 md:gap-5 overflow-x-auto scrollbar-hide"
+          className="flex items-center gap-4 md:gap-6 overflow-x-auto scrollbar-hide"
           style={{ touchAction: "pan-x" }}
         >
           <span className="text-stone-700 font-bold text-sm md:text-base uppercase tracking-widest flex-shrink-0">
