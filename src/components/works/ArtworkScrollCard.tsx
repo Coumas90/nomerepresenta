@@ -275,7 +275,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
                     {isViewingDetail && <span className="font-normal text-stone-500"> (DETAIL)</span>}
                   </p>
                   {(allImages[currentImageIndex]?.materials || artwork.materials) && (
-                    <p className="text-stone-500 text-xs md:text-sm mt-[1px]">
+                    <p className="text-stone-500 text-xs md:text-sm mt-[2px]">
                       {allImages[currentImageIndex]?.materials || artwork.materials}
                     </p>
                   )}
