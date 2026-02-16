@@ -1,23 +1,12 @@
 import { useState, useCallback, useRef } from "react";
-import {
-  DndContext,
-  closestCenter,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-} from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  rectSortingStrategy,
-} from "@dnd-kit/sortable";
+import { useDroppable } from "@dnd-kit/core";
+import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Upload, Trash2, X, Pencil, Check, GripVertical } from "lucide-react";
 import { SortableThumb } from "./SortableThumb";
-import { useUploadStudioImage, useCreateStudioImage, useDeleteStudioImage, useUpdateStudioImagesOrder, useUpdateStudioImage } from "@/hooks/useStudioImageMutations";
+import { useUploadStudioImage, useCreateStudioImage, useUpdateStudioImage } from "@/hooks/useStudioImageMutations";
 import { useUpdateStudioSeries } from "@/hooks/useStudioSeriesMutations";
 import { useStudioSeries } from "@/hooks/useStudioSeries";
 import { toast } from "@/hooks/use-toast";
@@ -47,7 +36,6 @@ export const SeriesStudioSection = ({
 }: SeriesStudioSectionProps) => {
   const uploadMutation = useUploadStudioImage();
   const createMutation = useCreateStudioImage();
-  const updateOrderMutation = useUpdateStudioImagesOrder();
   const updateSeriesMutation = useUpdateStudioSeries();
   const updateImageMutation = useUpdateStudioImage();
   const { data: allStudioSeries = [] } = useStudioSeries();
@@ -57,9 +45,11 @@ export const SeriesStudioSection = ({
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(seriesName);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
-  );
+  // Droppable zone for cross-series image drag
+  const { setNodeRef: setDropRef, isOver } = useDroppable({
+    id: `series-drop-${seriesId}`,
+    data: { type: "series-drop", seriesId },
+  });
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -101,20 +91,6 @@ export const SeriesStudioSection = ({
     }
   }, [selectedFiles, images.length, seriesId, seriesName, uploadMutation, createMutation]);
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (over && active.id !== over.id) {
-      const oldIndex = images.findIndex((img) => img.id === active.id);
-      const newIndex = images.findIndex((img) => img.id === over.id);
-      const newOrder = arrayMove(images, oldIndex, newIndex);
-      const updates = newOrder.map((img, index) => ({
-        id: img.id,
-        display_order: index,
-      }));
-      updateOrderMutation.mutate(updates);
-    }
-  };
-
   const handleSaveName = () => {
     if (editName.trim() && editName !== seriesName && seriesId) {
       updateSeriesMutation.mutate({ id: seriesId, name: editName.trim() });
@@ -135,7 +111,10 @@ export const SeriesStudioSection = ({
   const seriesOptions = allStudioSeries.map(s => ({ id: s.id, name: s.name }));
 
   return (
-    <Card className={`border border-border ${!isVisible ? "opacity-60" : ""}`}>
+    <Card
+      ref={setDropRef}
+      className={`border border-border ${!isVisible ? "opacity-60" : ""} ${isOver ? "ring-2 ring-primary bg-primary/5" : ""}`}
+    >
       <CardContent className="p-5 space-y-4">
         {/* Series header */}
         <div className="flex items-center justify-between">
@@ -224,37 +203,38 @@ export const SeriesStudioSection = ({
           </div>
         </div>
 
-        {/* Sortable image grid */}
+        {/* Sortable image grid — DndContext is in parent StudioImagesManager */}
         {images.length > 0 && (
           <div className="space-y-2">
             <p className="text-xs text-muted-foreground">
-              Current images (drag to reorder): {images.length}
+              Drag to reorder or move between series: {images.length}
             </p>
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}
+            <SortableContext
+              items={images.map((img) => img.id)}
+              strategy={rectSortingStrategy}
             >
-              <SortableContext
-                items={images.map((img) => img.id)}
-                strategy={rectSortingStrategy}
-              >
-                <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
-                  {images.map((img, idx) => (
-                    <SortableThumb
-                      key={img.id}
-                      image={img}
-                      index={idx + 1}
-                      onPreview={() => onPreviewImage(img)}
-                      onDelete={() => onDeleteImage(img.id)}
-                      seriesOptions={seriesOptions}
-                      currentSeriesId={seriesId}
-                      onMoveTo={handleMoveImage}
-                    />
-                  ))}
-                </div>
-              </SortableContext>
-            </DndContext>
+              <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
+                {images.map((img, idx) => (
+                  <SortableThumb
+                    key={img.id}
+                    image={img}
+                    index={idx + 1}
+                    onPreview={() => onPreviewImage(img)}
+                    onDelete={() => onDeleteImage(img.id)}
+                    seriesOptions={seriesOptions}
+                    currentSeriesId={seriesId}
+                    onMoveTo={handleMoveImage}
+                  />
+                ))}
+              </div>
+            </SortableContext>
+          </div>
+        )}
+
+        {/* Drop indicator for empty series */}
+        {images.length === 0 && isOver && (
+          <div className="border-2 border-dashed border-primary rounded-lg p-8 text-center text-sm text-primary font-medium">
+            Drop image here
           </div>
         )}
       </CardContent>
