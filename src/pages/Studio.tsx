@@ -59,7 +59,6 @@ const Studio = () => {
 
   // IntersectionObserver for active series detection
   const observerRef = useRef<IntersectionObserver | null>(null);
-  const lastObserverRef = useRef<IntersectionObserver | null>(null);
   useEffect(() => {
     const handleIntersection = (entries: IntersectionObserverEntry[]) => {
       let topEntry: IntersectionObserverEntry | null = null;
@@ -81,36 +80,15 @@ const Studio = () => {
       }
     };
 
-    // Main observer for most sections
     const observer = new IntersectionObserver(handleIntersection, {
-      rootMargin: "-56px 0px -70% 0px",
-      threshold: 0,
-    });
-
-    // A second observer with a generous bottom margin for the last section,
-    // so it activates as soon as its first image enters the viewport
-    const lastObserver = new IntersectionObserver(handleIntersection, {
       rootMargin: "-56px 0px 0px 0px",
       threshold: 0,
     });
 
     observerRef.current = observer;
-    lastObserverRef.current = lastObserver;
+    sectionRefs.current.forEach((el) => observer.observe(el));
 
-    const lastGroupId = groups.length ? groups[groups.length - 1].id : null;
-
-    sectionRefs.current.forEach((el, id) => {
-      if (id === lastGroupId) {
-        lastObserver.observe(el);
-      } else {
-        observer.observe(el);
-      }
-    });
-
-    return () => {
-      observer.disconnect();
-      lastObserver.disconnect();
-    };
+    return () => observer.disconnect();
   }, [groups, trackStudioScroll]);
 
   const handleSeriesClick = useCallback((seriesId: string) => {
@@ -122,19 +100,16 @@ const Studio = () => {
 
   const handleClose = useCallback(() => navigate("/"), [navigate]);
 
-  const lastGroupId = groups.length ? groups[groups.length - 1].id : null;
-
   const setRef = useCallback((id: string, el: HTMLElement | null) => {
-    const obs = id === lastGroupId ? lastObserverRef.current : observerRef.current;
     if (el) {
       sectionRefs.current.set(id, el);
-      obs?.observe(el);
+      observerRef.current?.observe(el);
     } else {
       const prev = sectionRefs.current.get(id);
-      if (prev) obs?.unobserve(prev);
+      if (prev) observerRef.current?.unobserve(prev);
       sectionRefs.current.delete(id);
     }
-  }, [lastGroupId]);
+  }, []);
 
   const isLoading = imagesLoading || seriesLoading;
 
