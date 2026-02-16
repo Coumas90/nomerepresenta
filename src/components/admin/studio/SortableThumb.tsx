@@ -32,7 +32,7 @@ export const SortableThumb = ({ image, index, onPreview, onDelete, seriesOptions
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: image.id });
+  } = useSortable({ id: image.id, data: { type: "image", seriesId: currentSeriesId } });
 
   const style = {
     transform: CSS.Transform.toString(transform),

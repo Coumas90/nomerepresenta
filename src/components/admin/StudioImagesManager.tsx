@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Layers, Plus, Check, X } from "lucide-react";
 import {
   DndContext,
@@ -7,6 +7,7 @@ import {
   useSensor,
   useSensors,
   DragEndEvent,
+  type CollisionDetection,
 } from "@dnd-kit/core";
 import {
   arrayMove,
@@ -17,7 +18,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useStudioImages } from "@/hooks/useStudioImages";
 import { useStudioSeries } from "@/hooks/useStudioSeries";
-import { useDeleteStudioImage } from "@/hooks/useStudioImageMutations";
+import { useDeleteStudioImage, useUpdateStudioImage, useUpdateStudioImagesOrder } from "@/hooks/useStudioImageMutations";
 import { useUpdateStudioSeriesOrder, useCreateStudioSeries, useDeleteStudioSeries } from "@/hooks/useStudioSeriesMutations";
 import type { StudioImage, SeriesData } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -26,7 +27,18 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { SeriesStudioSection } from "./studio/SeriesStudioSection";
 import { ImagePreviewDialog, DeleteImageDialog } from "./studio";
 
-// Wrapper to make each series section sortable
+// Custom collision: series drags → series targets, image drags → image + drop-zone targets
+const studioCollision: CollisionDetection = (args) => {
+  const activeType = args.active.data.current?.type;
+  if (!activeType) return closestCenter(args);
+  const filtered = args.droppableContainers.filter((c) => {
+    const t = c.data.current?.type;
+    return activeType === "series" ? t === "series" : t === "image" || t === "series-drop";
+  });
+  return closestCenter({ ...args, droppableContainers: filtered });
+};
+
+// Wrapper to make each series section sortable (for series reorder)
 const SortableSeriesItem = ({
   series,
   images,
@@ -47,7 +59,7 @@ const SortableSeriesItem = ({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: series.id });
+  } = useSortable({ id: series.id, data: { type: "series" } });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -78,6 +90,8 @@ const StudioImagesManager = () => {
   const updateSeriesOrderMutation = useUpdateStudioSeriesOrder();
   const createSeriesMutation = useCreateStudioSeries();
   const deleteSeriesMutation = useDeleteStudioSeries();
+  const updateImageMutation = useUpdateStudioImage();
+  const updateImagesOrderMutation = useUpdateStudioImagesOrder();
 
   const [showNewSeries, setShowNewSeries] = useState(false);
   const [newSeriesName, setNewSeriesName] = useState("");
@@ -88,7 +102,7 @@ const StudioImagesManager = () => {
   const [seriesDeleteDialogOpen, setSeriesDeleteDialogOpen] = useState(false);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
   );
 
   const handleDeleteClick = (id: string) => {
@@ -119,17 +133,60 @@ const StudioImagesManager = () => {
   // All series in display order
   const sortedSeries = [...allSeries].sort((a, b) => a.display_order - b.display_order);
 
+  // Map image IDs to their series for cross-series detection
+  const imageToSeriesMap = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const img of images) map.set(img.id, img.series_id || "__ungrouped");
+    return map;
+  }, [images]);
+
   const isLoading = imagesLoading || seriesLoading;
 
-  const handleSeriesDragEnd = (event: DragEndEvent) => {
+  // Unified drag handler for both series reorder and image operations
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
-    const oldIndex = sortedSeries.findIndex((s) => s.id === active.id);
-    const newIndex = sortedSeries.findIndex((s) => s.id === over.id);
-    const reordered = arrayMove(sortedSeries, oldIndex, newIndex);
-    const updates = reordered.map((s, i) => ({ id: s.id, display_order: i }));
-    updateSeriesOrderMutation.mutate(updates);
+    const activeType = active.data.current?.type;
+
+    if (activeType === "series") {
+      // Series reorder
+      const oldIndex = sortedSeries.findIndex((s) => s.id === active.id);
+      const newIndex = sortedSeries.findIndex((s) => s.id === over.id);
+      if (oldIndex === -1 || newIndex === -1) return;
+      const reordered = arrayMove(sortedSeries, oldIndex, newIndex);
+      updateSeriesOrderMutation.mutate(reordered.map((s, i) => ({ id: s.id, display_order: i })));
+    } else if (activeType === "image") {
+      const activeId = String(active.id);
+      const overId = String(over.id);
+      const activeSeriesId = imageToSeriesMap.get(activeId);
+
+      const overType = over.data.current?.type;
+      const targetSeriesId = overType === "series-drop"
+        ? over.data.current?.seriesId
+        : imageToSeriesMap.get(overId);
+
+      if (!activeSeriesId || !targetSeriesId) return;
+
+      if (activeSeriesId === targetSeriesId) {
+        // Reorder within same series
+        const seriesImages = imagesBySeries.get(activeSeriesId) || [];
+        const oldIndex = seriesImages.findIndex((img) => img.id === activeId);
+        const newIndex = seriesImages.findIndex((img) => img.id === overId);
+        if (oldIndex !== -1 && newIndex !== -1) {
+          const reordered = arrayMove(seriesImages, oldIndex, newIndex);
+          updateImagesOrderMutation.mutate(reordered.map((img, i) => ({ id: img.id, display_order: i })));
+        }
+      } else {
+        // Move to different series
+        const targetImages = imagesBySeries.get(targetSeriesId) || [];
+        updateImageMutation.mutate({
+          id: activeId,
+          series_id: targetSeriesId === "__ungrouped" ? null : targetSeriesId,
+          display_order: targetImages.length,
+        });
+      }
+    }
   };
 
   if (isLoading) {
@@ -147,7 +204,7 @@ const StudioImagesManager = () => {
               Manage Studio
             </h2>
             <p className="text-sm text-muted-foreground mt-1">
-              {allSeries.length} Series · {images.length} Images · Drag to reorder
+              {allSeries.length} Series · {images.length} Images · Drag to reorder or move between series
             </p>
           </div>
           <Button variant="outline" size="sm" onClick={() => setShowNewSeries(true)} disabled={showNewSeries}>
@@ -178,11 +235,11 @@ const StudioImagesManager = () => {
           </form>
         )}
 
-        {/* Sortable series */}
+        {/* Single DndContext for both series reorder and cross-series image drag */}
         <DndContext
           sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleSeriesDragEnd}
+          collisionDetection={studioCollision}
+          onDragEnd={handleDragEnd}
         >
           <SortableContext
             items={sortedSeries.map((s) => s.id)}
@@ -199,19 +256,20 @@ const StudioImagesManager = () => {
               />
             ))}
           </SortableContext>
-        </DndContext>
 
-        {/* Ungrouped images — need to be assigned to a series */}
-        {ungroupedImages.length > 0 && (
-          <SeriesStudioSection
-            seriesId="__ungrouped"
-            seriesName="Unassigned"
-            images={ungroupedImages}
-            onPreviewImage={setPreviewImage}
-            onDeleteImage={handleDeleteClick}
-          />
-        )}
+          {/* Ungrouped images */}
+          {ungroupedImages.length > 0 && (
+            <SeriesStudioSection
+              seriesId="__ungrouped"
+              seriesName="Unassigned"
+              images={ungroupedImages}
+              onPreviewImage={setPreviewImage}
+              onDeleteImage={handleDeleteClick}
+            />
+          )}
+        </DndContext>
       </div>
+
       <ImagePreviewDialog
         image={previewImage}
         open={!!previewImage}
