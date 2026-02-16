@@ -62,6 +62,12 @@ const Studio = () => {
     const HEADER_HEIGHT = 56;
 
     const updateActiveSeries = () => {
+      // If page is at the very top, keep the first series active
+      if (window.scrollY < 10 && groups.length) {
+        setActiveSeriesId(groups[0].id);
+        return;
+      }
+
       let bestId: string | null = null;
 
       sectionRefs.current.forEach((el, id) => {
