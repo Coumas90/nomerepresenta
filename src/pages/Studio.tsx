@@ -59,35 +59,58 @@ const Studio = () => {
 
   // IntersectionObserver for active series detection
   const observerRef = useRef<IntersectionObserver | null>(null);
-
+  const lastObserverRef = useRef<IntersectionObserver | null>(null);
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        // Find the topmost intersecting entry
-        let topEntry: IntersectionObserverEntry | null = null;
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            if (!topEntry || entry.boundingClientRect.top < topEntry.boundingClientRect.top) {
-              topEntry = entry;
-            }
-            // Track studio scroll for each series scrolled into view
-            const seriesId = entry.target.getAttribute("data-series-id");
-            if (seriesId && seriesId !== "__ungrouped" && !trackedSeriesRef.current.has(seriesId)) {
-              trackedSeriesRef.current.add(seriesId);
-              trackStudioScroll(seriesId);
-            }
+    const handleIntersection = (entries: IntersectionObserverEntry[]) => {
+      let topEntry: IntersectionObserverEntry | null = null;
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          if (!topEntry || entry.boundingClientRect.top < topEntry.boundingClientRect.top) {
+            topEntry = entry;
+          }
+          const seriesId = entry.target.getAttribute("data-series-id");
+          if (seriesId && seriesId !== "__ungrouped" && !trackedSeriesRef.current.has(seriesId)) {
+            trackedSeriesRef.current.add(seriesId);
+            trackStudioScroll(seriesId);
           }
         }
-        if (topEntry) {
-          const id = topEntry.target.getAttribute("data-series-id");
-          if (id) setActiveSeriesId(id);
-        }
-      },
-      { rootMargin: "-56px 0px -70% 0px", threshold: 0 }
-    );
+      }
+      if (topEntry) {
+        const id = topEntry.target.getAttribute("data-series-id");
+        if (id) setActiveSeriesId(id);
+      }
+    };
+
+    // Main observer for most sections
+    const observer = new IntersectionObserver(handleIntersection, {
+      rootMargin: "-56px 0px -70% 0px",
+      threshold: 0,
+    });
+
+    // A second observer with a generous bottom margin for the last section,
+    // so it activates as soon as its first image enters the viewport
+    const lastObserver = new IntersectionObserver(handleIntersection, {
+      rootMargin: "-56px 0px 0px 0px",
+      threshold: 0,
+    });
+
     observerRef.current = observer;
-    sectionRefs.current.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
+    lastObserverRef.current = lastObserver;
+
+    const lastGroupId = groups.length ? groups[groups.length - 1].id : null;
+
+    sectionRefs.current.forEach((el, id) => {
+      if (id === lastGroupId) {
+        lastObserver.observe(el);
+      } else {
+        observer.observe(el);
+      }
+    });
+
+    return () => {
+      observer.disconnect();
+      lastObserver.disconnect();
+    };
   }, [groups, trackStudioScroll]);
 
   const handleSeriesClick = useCallback((seriesId: string) => {
@@ -99,16 +122,19 @@ const Studio = () => {
 
   const handleClose = useCallback(() => navigate("/"), [navigate]);
 
+  const lastGroupId = groups.length ? groups[groups.length - 1].id : null;
+
   const setRef = useCallback((id: string, el: HTMLElement | null) => {
+    const obs = id === lastGroupId ? lastObserverRef.current : observerRef.current;
     if (el) {
       sectionRefs.current.set(id, el);
-      observerRef.current?.observe(el);
+      obs?.observe(el);
     } else {
       const prev = sectionRefs.current.get(id);
-      if (prev) observerRef.current?.unobserve(prev);
+      if (prev) obs?.unobserve(prev);
       sectionRefs.current.delete(id);
     }
-  }, []);
+  }, [lastGroupId]);
 
   const isLoading = imagesLoading || seriesLoading;
 
