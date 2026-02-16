@@ -57,38 +57,37 @@ const Studio = () => {
     trackPageView('/studio', 'Studio');
   }, [groups, activeSeriesId, trackPageView]);
 
-  // IntersectionObserver for active series detection
-  const observerRef = useRef<IntersectionObserver | null>(null);
+  // Scroll-based active series detection
   useEffect(() => {
-    const handleIntersection = (entries: IntersectionObserverEntry[]) => {
-      let topEntry: IntersectionObserverEntry | null = null;
-      for (const entry of entries) {
-        if (entry.isIntersecting) {
-          if (!topEntry || entry.boundingClientRect.top < topEntry.boundingClientRect.top) {
-            topEntry = entry;
-          }
-          const seriesId = entry.target.getAttribute("data-series-id");
-          if (seriesId && seriesId !== "__ungrouped" && !trackedSeriesRef.current.has(seriesId)) {
-            trackedSeriesRef.current.add(seriesId);
-            trackStudioScroll(seriesId);
-          }
+    const HEADER_HEIGHT = 56;
+
+    const updateActiveSeries = () => {
+      let bestId: string | null = null;
+
+      sectionRefs.current.forEach((el, id) => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top <= HEADER_HEIGHT + 20) {
+          bestId = id;
         }
-      }
-      if (topEntry) {
-        const id = topEntry.target.getAttribute("data-series-id");
-        if (id) setActiveSeriesId(id);
+      });
+
+      if (bestId) {
+        setActiveSeriesId(bestId);
+        if (bestId !== "__ungrouped" && !trackedSeriesRef.current.has(bestId)) {
+          trackedSeriesRef.current.add(bestId);
+          trackStudioScroll(bestId);
+        }
       }
     };
 
-    const observer = new IntersectionObserver(handleIntersection, {
-      rootMargin: "-56px 0px 0px 0px",
-      threshold: 0,
-    });
+    const handleScroll = () => {
+      requestAnimationFrame(updateActiveSeries);
+    };
 
-    observerRef.current = observer;
-    sectionRefs.current.forEach((el) => observer.observe(el));
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    updateActiveSeries();
 
-    return () => observer.disconnect();
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [groups, trackStudioScroll]);
 
   const handleSeriesClick = useCallback((seriesId: string) => {
@@ -103,10 +102,7 @@ const Studio = () => {
   const setRef = useCallback((id: string, el: HTMLElement | null) => {
     if (el) {
       sectionRefs.current.set(id, el);
-      observerRef.current?.observe(el);
     } else {
-      const prev = sectionRefs.current.get(id);
-      if (prev) observerRef.current?.unobserve(prev);
       sectionRefs.current.delete(id);
     }
   }, []);
