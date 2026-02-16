@@ -146,7 +146,7 @@ const ArtworkDetail = () => {
               <p className="text-xs uppercase tracking-wider font-normal">
                 {artwork.year}
               </p>
-              <div className="text-xs uppercase tracking-wider space-y-0.5 font-medium mt-[calc(0.25rem+1px)]">
+              <div className="text-xs uppercase tracking-wider space-y-0.5 font-medium mt-[calc(0.25rem+2px)]">
                 <p className="text-xs font-normal">{artwork.materials}</p>
                 <p className="text-xs font-normal font-sans">{artwork.dimensions}</p>
               </div>
