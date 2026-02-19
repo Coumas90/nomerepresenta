@@ -76,18 +76,16 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
 
   // Navigation handlers
   const goToPrevImage = useCallback(() => {
-    if (hasPrevImage) {
-      setCurrentImageIndex(prev => prev - 1);
-      onGalleryNavigate?.(artwork.id);
-    }
-  }, [hasPrevImage, onGalleryNavigate, artwork.id]);
+    if (allImages.length <= 1) return;
+    setCurrentImageIndex(prev => prev === 0 ? allImages.length - 1 : prev - 1);
+    onGalleryNavigate?.(artwork.id);
+  }, [allImages.length, onGalleryNavigate, artwork.id]);
 
   const goToNextImage = useCallback(() => {
-    if (hasNextImage) {
-      setCurrentImageIndex(prev => prev + 1);
-      onGalleryNavigate?.(artwork.id);
-    }
-  }, [hasNextImage, onGalleryNavigate, artwork.id]);
+    if (allImages.length <= 1) return;
+    setCurrentImageIndex(prev => prev === allImages.length - 1 ? 0 : prev + 1);
+    onGalleryNavigate?.(artwork.id);
+  }, [allImages.length, onGalleryNavigate, artwork.id]);
 
   // Mobile swipe handling for horizontal image navigation
   const swipeStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
@@ -209,37 +207,37 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
               )}
 
               {/* Mobile tap zones (invisible, no arrows) */}
-              {isMobile && hasPrevImage && allImages.length > 1 && (
-                <button
-                  onClick={goToPrevImage}
-                  className="absolute left-0 top-0 bottom-0 w-[30%] z-20 focus:outline-none"
-                  aria-label="Previous image"
-                />
-              )}
-              {isMobile && hasNextImage && allImages.length > 1 && (
-                <button
-                  onClick={goToNextImage}
-                  className="absolute right-0 top-0 bottom-0 w-[30%] z-20 focus:outline-none"
-                  aria-label="Next image"
-                />
+              {isMobile && allImages.length > 1 && (
+                <>
+                  <button
+                    onClick={goToPrevImage}
+                    className="absolute left-0 top-0 bottom-0 w-[30%] z-20 focus:outline-none"
+                    aria-label="Previous image"
+                  />
+                  <button
+                    onClick={goToNextImage}
+                    className="absolute right-0 top-0 bottom-0 w-[30%] z-20 focus:outline-none"
+                    aria-label="Next image"
+                  />
+                </>
               )}
 
               {/* Desktop clickable zones with custom cursors */}
-              {!isMobile && hasPrevImage && allImages.length > 1 && (
-                <button
-                  onClick={goToPrevImage}
-                  className="absolute top-0 bottom-0 z-20 focus:outline-none -left-[50vw] w-[calc(50%+50vw)]"
-                  style={{ cursor: cursorLeftSvg }}
-                  aria-label="Previous image"
-                />
-              )}
-              {!isMobile && hasNextImage && allImages.length > 1 && (
-                <button
-                  onClick={goToNextImage}
-                  className="absolute top-0 bottom-0 z-20 focus:outline-none -right-[50vw] w-[calc(50%+50vw)]"
-                  style={{ cursor: cursorRightSvg }}
-                  aria-label="Next image"
-                />
+              {!isMobile && allImages.length > 1 && (
+                <>
+                  <button
+                    onClick={goToPrevImage}
+                    className="absolute top-0 bottom-0 z-20 focus:outline-none -left-[50vw] w-[calc(50%+50vw)]"
+                    style={{ cursor: cursorLeftSvg }}
+                    aria-label="Previous image"
+                  />
+                  <button
+                    onClick={goToNextImage}
+                    className="absolute top-0 bottom-0 z-20 focus:outline-none -right-[50vw] w-[calc(50%+50vw)]"
+                    style={{ cursor: cursorRightSvg }}
+                    aria-label="Next image"
+                  />
+                </>
               )}
             </div>
             {/* Image indicator dots — aligned with image */}
