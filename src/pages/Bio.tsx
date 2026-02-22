@@ -215,7 +215,7 @@ const Bio = () => {
           </div>
 
           {/* CV Sections */}
-          <div className="mt-16 md:mt-24">
+          <div className="mt-20 md:mt-24">
             <CVSection title="Education" entries={educationEntries} delay="delay-300" />
             <CVSection title="Solo Exhibitions" entries={soloEntries} delay="delay-[400ms]" />
             <CVSection title="Group Exhibitions" entries={groupEntries} delay="delay-500" />
