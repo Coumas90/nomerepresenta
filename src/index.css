@@ -234,4 +234,5 @@ img {
   -webkit-user-drag: none;
   -webkit-touch-callout: none;
   -moz-user-select: none;
+  touch-action: manipulation;
 }
