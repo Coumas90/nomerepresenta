@@ -39,7 +39,7 @@ export const StudioHeader = ({
             STUDIO
           </span>
 
-          {series.map((s) => (
+          {series.filter((s) => s.name.trim() !== "").map((s) => (
             <button
               key={s.id}
               data-series-id={s.id}

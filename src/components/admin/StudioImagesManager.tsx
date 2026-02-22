@@ -219,14 +219,13 @@ const StudioImagesManager = () => {
             onSubmit={async (e) => {
               e.preventDefault();
               const name = newSeriesName.trim();
-              if (!name) return;
-              await createSeriesMutation.mutateAsync({ name, description: null, display_order: allSeries.length });
+              await createSeriesMutation.mutateAsync({ name: name || "", description: null, display_order: allSeries.length });
               setNewSeriesName("");
               setShowNewSeries(false);
             }}
           >
-            <Input autoFocus placeholder="Series name…" value={newSeriesName} onChange={(e) => setNewSeriesName(e.target.value)} className="max-w-xs" />
-            <Button type="submit" size="icon" variant="ghost" disabled={!newSeriesName.trim() || createSeriesMutation.isPending}>
+            <Input autoFocus placeholder="Series name (optional)…" value={newSeriesName} onChange={(e) => setNewSeriesName(e.target.value)} className="max-w-xs" />
+            <Button type="submit" size="icon" variant="ghost" disabled={createSeriesMutation.isPending}>
               <Check className="h-4 w-4" />
             </Button>
             <Button type="button" size="icon" variant="ghost" onClick={() => { setShowNewSeries(false); setNewSeriesName(""); }}>
