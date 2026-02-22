@@ -215,9 +215,11 @@ const Bio = () => {
           </div>
 
           {/* CV Sections */}
-          <CVSection title="Education" entries={educationEntries} delay="delay-300" />
-          <CVSection title="Solo Exhibitions" entries={soloEntries} delay="delay-[400ms]" />
-          <CVSection title="Group Exhibitions" entries={groupEntries} delay="delay-500" />
+          <div className="mt-16 md:mt-24">
+            <CVSection title="Education" entries={educationEntries} delay="delay-300" />
+            <CVSection title="Solo Exhibitions" entries={soloEntries} delay="delay-[400ms]" />
+            <CVSection title="Group Exhibitions" entries={groupEntries} delay="delay-500" />
+          </div>
 
           {/* Contact */}
           <section className={`pt-8 border-t border-stone-200 transition-all duration-700 delay-[600ms] ${isPageLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
