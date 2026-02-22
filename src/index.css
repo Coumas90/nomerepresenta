@@ -226,3 +226,12 @@ All colors MUST be HSL.
     writing-mode: vertical-lr;
   }
 }
+
+/* Prevent image saving via right-click and drag */
+img {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+  -moz-user-select: none;
+}
