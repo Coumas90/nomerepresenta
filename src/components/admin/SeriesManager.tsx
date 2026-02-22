@@ -203,8 +203,7 @@ const SeriesManager = () => {
                     id="name"
                     value={formData.name}
                     onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="e.g., TRI-PEEL"
-                    required
+                    placeholder="e.g., TRI-PEEL (optional)"
                   />
                 </div>
                 <div>
