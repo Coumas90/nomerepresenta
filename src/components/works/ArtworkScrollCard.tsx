@@ -240,11 +240,23 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
                 </>
               )}
             </div>
-            {/* Image counter — aligned with image */}
+            {/* Image indicator dots — aligned with image */}
             {allImages.length > 1 && (
-              <p className="mt-3 text-stone-500 text-xs md:text-sm">
-                {currentImageIndex + 1} / {allImages.length}
-              </p>
+              <div className="mt-3 flex gap-1.5">
+                {allImages.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentImageIndex(index)}
+                    className={cn(
+                      "w-1.5 h-1.5 rounded-full transition-all duration-300",
+                      index === currentImageIndex 
+                        ? "bg-stone-900" 
+                        : "bg-stone-400"
+                    )}
+                    aria-label={`Go to image ${index + 1}`}
+                  />
+                ))}
+              </div>
             )}
 
             {/* Caption — aligned with image */}

@@ -123,11 +123,6 @@ const ArtworkDetail = () => {
             <p className="text-xs sm:text-sm uppercase tracking-wider font-medium">
               {artwork.year}
             </p>
-            {images && images.length > 1 && (
-              <p className="text-stone-500 text-xs mt-1">
-                {current + 1} / {images.length}
-              </p>
-            )}
             <div className="text-xs uppercase tracking-wider space-y-0.5 mt-[calc(0.5rem+1px)]">
               <p>{artwork.materials}</p>
               <p>{artwork.dimensions}</p>
@@ -151,11 +146,6 @@ const ArtworkDetail = () => {
               <p className="text-xs uppercase tracking-wider font-normal">
                 {artwork.year}
               </p>
-              {images && images.length > 1 && (
-                <p className="text-stone-500 text-xs font-normal mt-1">
-                  {current + 1} / {images.length}
-                </p>
-              )}
               <div className="text-xs uppercase tracking-wider space-y-0.5 font-medium mt-[calc(0.25rem+2px)]">
                 <p className="text-xs font-normal">{artwork.materials}</p>
                 <p className="text-xs font-normal font-sans">{artwork.dimensions}</p>
