@@ -53,42 +53,50 @@ export const PricelistImageViewer = ({
       </button>
 
       {current ? (
-        <>
+        <div className="relative">
           <img
             src={current.image_url}
             alt={current.alt_text || artworkTitle}
-            className="max-w-[90vw] max-h-[90vh] object-contain"
+            className="max-w-[90vw] max-h-[90vh] object-contain select-none"
           />
 
-          {/* Left arrow */}
+          {/* Left clickable zone — large area like works page */}
           {hasMultiple && currentIndex > 0 && (
             <button
               onClick={() => setCurrentIndex((i) => i - 1)}
-              className="absolute left-4 top-1/2 -translate-y-1/2 p-2 text-stone-400 hover:text-stone-800 transition-colors"
+              className="absolute -left-[15vw] top-0 bottom-0 w-[calc(50%+15vw)] z-10 cursor-pointer focus:outline-none group"
               aria-label="Previous image"
             >
-              <ChevronLeft size={28} strokeWidth={1.5} />
+              <ChevronLeft
+                size={20}
+                className="absolute left-[15vw] top-1/2 -translate-y-1/2 text-stone-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                strokeWidth={1.5}
+              />
             </button>
           )}
 
-          {/* Right arrow */}
+          {/* Right clickable zone — large area like works page */}
           {hasMultiple && currentIndex < images.length - 1 && (
             <button
               onClick={() => setCurrentIndex((i) => i + 1)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-stone-400 hover:text-stone-800 transition-colors"
+              className="absolute -right-[15vw] top-0 bottom-0 w-[calc(50%+15vw)] z-10 cursor-pointer focus:outline-none group"
               aria-label="Next image"
             >
-              <ChevronRight size={28} strokeWidth={1.5} />
+              <ChevronRight
+                size={20}
+                className="absolute right-[15vw] top-1/2 -translate-y-1/2 text-stone-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                strokeWidth={1.5}
+              />
             </button>
           )}
 
           {/* Counter */}
           {hasMultiple && (
-            <span className="absolute bottom-5 left-5 text-xs text-stone-500">
+            <span className="absolute bottom-5 left-0 text-xs text-stone-500">
               {currentIndex + 1} / {images.length}
             </span>
           )}
-        </>
+        </div>
       ) : (
         <p className="text-stone-400 text-sm">No images available</p>
       )}
