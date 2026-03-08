@@ -93,6 +93,9 @@ export const initFormatSupport = async (): Promise<{
 export const getWebPUrl = (src: string): string | null => {
   if (!src) return null;
 
+  // Already a WebP file — no transform needed
+  if (/\.webp(\?|$)/i.test(src)) return null;
+
   // Supabase Storage URLs - add format transform
   if (src.includes("supabase") && src.includes("/storage/")) {
     try {
