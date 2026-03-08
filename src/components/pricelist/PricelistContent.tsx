@@ -21,6 +21,7 @@ export const PricelistContent = ({
   isLoading,
   pricelistName,
   seriesName,
+  activeCurrency = "USD",
 }: PricelistContentProps) => {
   const [viewingArtworkId, setViewingArtworkId] = useState<string | null>(null);
 
