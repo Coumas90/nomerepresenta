@@ -60,10 +60,10 @@ export const PricelistImageViewer = ({
             className="max-w-[90vw] max-h-[90vh] object-contain select-none"
           />
 
-          {/* Left clickable zone — large area like works page */}
-          {hasMultiple && currentIndex > 0 && (
+          {/* Left clickable zone */}
+          {hasMultiple && (
             <button
-              onClick={() => setCurrentIndex((i) => i - 1)}
+              onClick={() => setCurrentIndex((i) => (i - 1 + images.length) % images.length)}
               className="absolute -left-[15vw] top-0 bottom-0 w-[calc(50%+15vw)] z-10 cursor-pointer focus:outline-none group"
               aria-label="Previous image"
             >
@@ -75,10 +75,10 @@ export const PricelistImageViewer = ({
             </button>
           )}
 
-          {/* Right clickable zone — large area like works page */}
-          {hasMultiple && currentIndex < images.length - 1 && (
+          {/* Right clickable zone */}
+          {hasMultiple && (
             <button
-              onClick={() => setCurrentIndex((i) => i + 1)}
+              onClick={() => setCurrentIndex((i) => (i + 1) % images.length)}
               className="absolute -right-[15vw] top-0 bottom-0 w-[calc(50%+15vw)] z-10 cursor-pointer focus:outline-none group"
               aria-label="Next image"
             >
