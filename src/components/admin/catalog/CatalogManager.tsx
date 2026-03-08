@@ -107,7 +107,9 @@ const CatalogManager = () => {
     updateField.mutate({ id, field, value });
   };
 
-  const renderTable = (items: typeof filtered, showEdition = false) => (
+  const renderTable = (items: typeof filtered, showEdition = false) => {
+    const sorted = sortItems(items);
+    return (
     <Card className="mt-2">
       <CardContent className="p-0">
         <div className="overflow-x-auto">
@@ -115,10 +117,25 @@ const CatalogManager = () => {
             <thead>
               <tr className="border-b border-border bg-muted/40">
                 <th className="py-2 px-3 text-xs font-medium text-muted-foreground" />
-                <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Title</th>
+                <th
+                  className="py-2 px-3 text-xs font-medium text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors"
+                  onClick={() => toggleSort("title")}
+                >
+                  <span className="inline-flex items-center">Title <SortIcon field="title" /></span>
+                </th>
                 <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Series</th>
-                <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Year</th>
-                <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Size</th>
+                <th
+                  className="py-2 px-3 text-xs font-medium text-muted-foreground text-center cursor-pointer select-none hover:text-foreground transition-colors"
+                  onClick={() => toggleSort("year")}
+                >
+                  <span className="inline-flex items-center justify-center">Year <SortIcon field="year" /></span>
+                </th>
+                <th
+                  className="py-2 px-3 text-xs font-medium text-muted-foreground text-center cursor-pointer select-none hover:text-foreground transition-colors"
+                  onClick={() => toggleSort("size_category")}
+                >
+                  <span className="inline-flex items-center justify-center">Size <SortIcon field="size_category" /></span>
+                </th>
                 <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Medium</th>
                 <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Status</th>
                 {showEdition && (
@@ -129,7 +146,7 @@ const CatalogManager = () => {
               </tr>
             </thead>
             <tbody>
-              {items.map((artwork) => (
+              {sorted.map((artwork) => (
                   <CatalogRow
                     key={artwork.id}
                     artwork={artwork}
