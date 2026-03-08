@@ -52,7 +52,7 @@ export const PricelistContent = ({
           className="flex items-center gap-2 text-stone-700 hover:text-stone-900 transition-colors"
         >
           <Undo2 className="w-5 md:w-6 h-5 md:h-6" />
-          <span className="text-[10px] md:text-xs tracking-wide uppercase opacity-50">Back to home</span>
+          <span className="text-[8px] md:text-[10px] tracking-wide uppercase opacity-50">Back to home</span>
         </button>
       </div>
 
