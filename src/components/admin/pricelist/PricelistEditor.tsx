@@ -16,6 +16,7 @@ import {
 } from "@dnd-kit/sortable";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus } from "lucide-react";
 import { useArtworks } from "@/hooks/useArtworks";
 import { useSeries } from "@/hooks/useSeries";
@@ -25,7 +26,9 @@ import {
   useDeletePricelistItem,
   useUpdatePricelistItem,
   useReorderPricelist,
+  useUpdatePricelist,
   type Pricelist,
+  type PricelistCurrency,
 } from "@/hooks/usePricelist";
 import { PricelistSortableItem } from "./PricelistSortableItem";
 import { PricelistAddDialog } from "./PricelistAddDialog";
