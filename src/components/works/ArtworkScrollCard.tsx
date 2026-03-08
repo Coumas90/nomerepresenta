@@ -174,8 +174,8 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
 
   return (
     <article className="relative w-full flex flex-col items-center">
-      {/* Figure: image + caption */}
-      <figure className="inline-flex flex-col items-start max-w-[95vw] md:max-w-[60vw] lg:max-w-[50vw] mx-auto overflow-visible relative">
+      {/* Figure: image + caption stacked vertically, normal flow */}
+      <figure className="inline-flex flex-col items-start max-w-[95vw] md:max-w-[60vw] lg:max-w-[50vw] mx-auto overflow-visible">
         {/* Image container with navigation */}
         <div className="relative w-full flex items-center">
 
@@ -188,6 +188,8 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
           >
             {/* Image wrapper — shadow and navigation scoped here */}
             <div className="relative">
+              {/* Shadow applied directly to image via CSS to avoid Safari frame artifact */}
+              
               {/* Main image */}
               {currentImage && (
               <ProgressiveImage
@@ -257,14 +259,8 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
               </div>
             )}
 
-            {/* Caption — mobile: below image, desktop: positioned left of image at bottom */}
-            <figcaption className={cn(
-              "text-left leading-snug",
-              // Mobile: normal flow below image
-              "mt-3 md:mt-0",
-              // Desktop: absolute position to the left of the figure, bottom-aligned
-              "md:absolute md:bottom-0 md:right-[calc(100%+2rem)] md:w-[280px] lg:w-[320px]"
-            )}>
+            {/* Caption — aligned with image */}
+            <figcaption className="mt-3 md:mt-4 text-left leading-snug">
               {allImages[currentImageIndex]?.caption ? (
                 <p className="text-stone-600 text-xs md:text-sm font-bold">
                   {allImages[currentImageIndex].caption}
