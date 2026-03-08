@@ -129,6 +129,22 @@ const PricelistManager = () => {
                           }}
                         />
                       </span>
+                       <span className="flex items-center gap-1">
+                        Currency:{" "}
+                        <Select
+                          defaultValue={pl.active_currency || "USD"}
+                          onValueChange={(val) => updatePricelist.mutate({ id: pl.id, updates: { active_currency: val as any } })}
+                        >
+                          <SelectTrigger className="h-6 w-20 text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="USD">USD</SelectItem>
+                            <SelectItem value="EUR">EUR</SelectItem>
+                            <SelectItem value="BRL">R$</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </span>
                       <span className="flex items-center gap-1">
                         Password:{" "}
                         <button
