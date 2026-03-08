@@ -7,6 +7,7 @@ export interface Pricelist {
   name: string;
   slug: string;
   password: string;
+  series_name: string;
   created_at: string;
   updated_at: string;
 }
