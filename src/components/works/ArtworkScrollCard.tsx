@@ -30,7 +30,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
   // fall back to legacy artwork fields only when no artwork_images exist
   const allImages = useMemo(() => {
     if (artworkImages && artworkImages.length > 0) {
-      return artworkImages.map(img => ({
+      const mapped = artworkImages.map(img => ({
         url: img.image_url,
         isMain: img.is_main,
         caption: img.caption ?? null,
@@ -41,6 +41,12 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
         isDetail: img.is_detail ?? false,
         altText: img.alt_text ?? null,
       }));
+      // Ensure non-detail (full painting) images come before detail images
+      mapped.sort((a, b) => {
+        if (a.isDetail !== b.isDetail) return a.isDetail ? 1 : -1;
+        return 0; // preserve display_order within each group
+      });
+      return mapped;
     }
     // Legacy fallback: no artwork_images rows exist
     const images = [
