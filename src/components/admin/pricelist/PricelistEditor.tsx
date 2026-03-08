@@ -54,12 +54,14 @@ export const PricelistEditor = ({ pricelist }: PricelistEditorProps) => {
   const existingArtworkIds = new Set(items.map((i) => i.artwork_id));
   const availableArtworks = artworks.filter((a) => !existingArtworkIds.has(a.id));
 
-  const handleAdd = (artworkId: string, price: string) => {
-    addItem.mutate({
-      pricelist_id: pricelist.id,
-      artwork_id: artworkId,
-      price,
-      display_order: items.length,
+  const handleAdd = (artworkIds: string[]) => {
+    artworkIds.forEach((artworkId, idx) => {
+      addItem.mutate({
+        pricelist_id: pricelist.id,
+        artwork_id: artworkId,
+        price: "",
+        display_order: items.length + idx,
+      });
     });
     setShowAddDialog(false);
   };
