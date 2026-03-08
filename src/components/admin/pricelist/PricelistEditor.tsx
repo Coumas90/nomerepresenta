@@ -96,9 +96,24 @@ export const PricelistEditor = ({ pricelist }: PricelistEditorProps) => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          Add existing artworks to this pricelist and set their prices.
-        </p>
+        <div className="flex items-center gap-4">
+          <p className="text-sm text-muted-foreground">
+            Add existing artworks to this pricelist and set their prices.
+          </p>
+          <Select
+            value={activeCurrency}
+            onValueChange={(val) => updatePricelist.mutate({ id: pricelist.id, updates: { active_currency: val as PricelistCurrency } })}
+          >
+            <SelectTrigger className="h-8 w-24 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="USD">USD</SelectItem>
+              <SelectItem value="EUR">EUR</SelectItem>
+              <SelectItem value="BRL">R$</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
         <Button onClick={() => setShowAddDialog(true)} disabled={availableArtworks.length === 0}>
           <Plus className="mr-2 h-4 w-4" />
           Add Artwork
