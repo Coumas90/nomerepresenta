@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { GripVertical, Trash2, Check, ChevronDown, ChevronUp } from "lucide-react";
+import { GripVertical, Trash2, Check, ChevronDown, ChevronUp, Eye, EyeOff } from "lucide-react";
 import { useArtworkImages } from "@/hooks/useArtworkImages";
+import { useToggleCatalogVisibility } from "@/hooks/useToggleCatalogVisibility";
 import type { PricelistItemWithArtwork, PricelistCurrency } from "@/hooks/usePricelist";
 
 const CURRENCY_LABELS: Record<PricelistCurrency, string> = {
