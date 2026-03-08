@@ -376,6 +376,9 @@ export type Database = {
           id: string
           is_visible: boolean
           price: string
+          price_brl: string | null
+          price_eur: string | null
+          price_usd: string | null
           pricelist_id: string
           updated_at: string
         }
@@ -386,6 +389,9 @@ export type Database = {
           id?: string
           is_visible?: boolean
           price?: string
+          price_brl?: string | null
+          price_eur?: string | null
+          price_usd?: string | null
           pricelist_id?: string
           updated_at?: string
         }
@@ -396,6 +402,9 @@ export type Database = {
           id?: string
           is_visible?: boolean
           price?: string
+          price_brl?: string | null
+          price_eur?: string | null
+          price_usd?: string | null
           pricelist_id?: string
           updated_at?: string
         }
@@ -418,6 +427,7 @@ export type Database = {
       }
       pricelists: {
         Row: {
+          active_currency: string | null
           created_at: string
           id: string
           name: string
@@ -427,6 +437,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          active_currency?: string | null
           created_at?: string
           id?: string
           name: string
@@ -436,6 +447,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          active_currency?: string | null
           created_at?: string
           id?: string
           name?: string
