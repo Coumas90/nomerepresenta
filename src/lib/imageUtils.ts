@@ -123,6 +123,9 @@ export const getWebPUrl = (src: string): string | null => {
 export const getAVIFUrl = (src: string): string | null => {
   if (!src) return null;
 
+  // Already an AVIF file — no transform needed
+  if (/\.avif(\?|$)/i.test(src)) return null;
+
   // Supabase Storage URLs - add format transform
   if (src.includes("supabase") && src.includes("/storage/")) {
     try {
