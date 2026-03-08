@@ -43,7 +43,7 @@ export const PricelistContent = ({
           const seriesInfo = seriesMap.get(seriesId);
           return (
             <div key={seriesId} className="mb-16">
-              <div className="flex justify-between items-baseline border-b border-stone-300 pb-3 mb-0">
+              <div className="flex justify-between items-baseline border-b border-stone-300 pb-5 mb-0">
                 <h1 className="text-sm md:text-base font-medium tracking-[0.15em] uppercase text-stone-800">
                   IVAN COMAS_ {pricelistName ? pricelistName.toUpperCase() : "PRICELIST"}
                 </h1>
