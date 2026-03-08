@@ -100,7 +100,7 @@ export const PricelistImageViewer = ({
             >
               <ChevronLeft
                 size={20}
-                className="absolute left-[50vw] top-1/2 -translate-y-1/2 text-stone-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 opacity-0 group-hover:opacity-100 transition-opacity"
                 strokeWidth={1.5}
               />
             </button>
