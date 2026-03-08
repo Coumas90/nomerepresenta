@@ -31,7 +31,7 @@ import {
   type Pricelist,
   type PricelistCurrency,
 } from "@/hooks/usePricelist";
-import { PricelistSortableItem } from "./PricelistSortableItem";
+import { PricelistSortableItem, type ThumbSize } from "./PricelistSortableItem";
 import { PricelistAddDialog } from "./PricelistAddDialog";
 
 interface PricelistEditorProps {
