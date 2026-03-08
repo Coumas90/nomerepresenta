@@ -95,6 +95,13 @@ const Admin = () => {
           </Suspense>
         );
       
+      case "content-pricelist":
+        return (
+          <Suspense fallback={<LoadingSkeleton type="analytics" />}>
+            <PricelistManager />
+          </Suspense>
+        );
+      
       case "content-artworks":
         return (
           <div className="space-y-6">
