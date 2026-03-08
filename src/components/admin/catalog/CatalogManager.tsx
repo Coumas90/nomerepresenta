@@ -8,10 +8,11 @@ import { CatalogRow, type ThumbSize } from "./CatalogRow";
 import { CategoryFolder } from "./CategoryFolder";
 import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 
-type SortField = "title" | "year" | "size_category" | null;
+type SortField = "title" | "year" | "size_category" | "status" | null;
 type SortDir = "asc" | "desc";
 
 const SIZE_ORDER: Record<string, number> = { S: 1, M: 2, L: 3 };
+const STATUS_ORDER: Record<string, number> = { available: 1, reserved: 2, sold: 3 };
 
 const CATEGORIES: MediumType[] = ["PAINTING", "POW", "PHOTO"];
 
