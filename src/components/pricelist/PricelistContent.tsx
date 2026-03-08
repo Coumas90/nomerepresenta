@@ -49,9 +49,10 @@ export const PricelistContent = ({
       <div className="sticky top-0 bg-stone-100/95 backdrop-blur border-b border-stone-200 z-10 px-6 md:px-12 py-3 md:py-4">
         <button
           onClick={() => navigate("/")}
-          className="text-stone-700 hover:text-stone-900 transition-colors"
+          className="flex items-center gap-2 text-stone-700 hover:text-stone-900 transition-colors"
         >
           <Undo2 className="w-5 md:w-6 h-5 md:h-6" />
+          <span className="text-xs md:text-sm tracking-wide uppercase">Back to main site</span>
         </button>
       </div>
 
