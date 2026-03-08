@@ -11,6 +11,7 @@ const CATEGORIES: MediumType[] = ["PAINTING", "POW", "PHOTO"];
 
 const CatalogManager = () => {
   const { data: artworks = [], isLoading } = useCatalogArtworks();
+  const { data: series = [] } = useSeries();
   const updateField = useUpdateCatalogField();
 
   const [search, setSearch] = useState("");
