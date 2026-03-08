@@ -25,6 +25,7 @@ export const PricelistContent = ({
   seriesName,
   activeCurrency = "USD",
 }: PricelistContentProps) => {
+  const navigate = useNavigate();
   const [viewingArtworkId, setViewingArtworkId] = useState<string | null>(null);
 
   if (isLoading) {
