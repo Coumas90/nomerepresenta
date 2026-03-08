@@ -204,17 +204,28 @@ const ArtworksList = ({ onEdit, onCreateInSeries }: ArtworksListProps) => {
                     <AccordionTrigger className="text-base font-semibold">
                       {s.name} ({seriesArtworks.length})
                     </AccordionTrigger>
-                    <AccordionContent>
-                      <div className="mb-3">
+                     <AccordionContent>
+                      <div className="mb-3 flex gap-2">
                         <Button
                           onClick={() => onCreateInSeries(s.id)}
                           variant="outline"
-                          className="w-full"
+                          className="flex-1"
                           size="sm"
                         >
                           <Plus className="mr-2 h-4 w-4" />
                           New Artwork in {s.name}
                         </Button>
+                        {seriesArtworks.length > 1 && (
+                          <Button
+                            onClick={() => handleSortByYear(s.id, seriesArtworks)}
+                            variant="outline"
+                            size="sm"
+                            title="Sort artworks by year"
+                          >
+                            <ArrowDownNarrowWide className="mr-2 h-4 w-4" />
+                            Sort by Year
+                          </Button>
+                        )}
                       </div>
                       {seriesArtworks.length > 0 ? (
                         <DndContext
