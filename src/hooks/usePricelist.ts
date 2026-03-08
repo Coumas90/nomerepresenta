@@ -208,7 +208,7 @@ export const useAddPricelistItem = () => {
 export const useUpdatePricelistItem = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, pricelistId, updates }: { id: string; pricelistId: string; updates: { price?: string; is_visible?: boolean } }) => {
+    mutationFn: async ({ id, pricelistId, updates }: { id: string; pricelistId: string; updates: { price?: string; price_usd?: string; price_eur?: string; price_brl?: string; is_visible?: boolean } }) => {
       const { error } = await supabase
         .from("pricelist_items" as any)
         .update(updates as any)
