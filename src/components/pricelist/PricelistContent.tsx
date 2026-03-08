@@ -37,7 +37,7 @@ export const PricelistContent = ({
 
   return (
     <div className="min-h-screen bg-stone-100">
-      <div className="max-w-6xl mx-auto px-6 md:px-12 py-12 md:py-20">
+      <div className="max-w-5xl mx-auto px-6 md:px-12 py-12 md:py-20">
         {entries.map(([seriesId, items]) => {
           const seriesInfo = seriesMap.get(seriesId);
           return (
