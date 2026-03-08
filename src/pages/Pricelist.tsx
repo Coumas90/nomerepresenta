@@ -69,6 +69,7 @@ const Pricelist = () => {
       isLoading={itemsLoading || imagesLoading}
       pricelistName={pricelist.name}
       seriesName={pricelist.series_name}
+      activeCurrency={pricelist.active_currency || "USD"}
     />
   );
 };
