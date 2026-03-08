@@ -113,6 +113,22 @@ const PricelistManager = () => {
                         /pricelist/{pl.slug}
                       </span>
                       <span className="flex items-center gap-1">
+                        Series:{" "}
+                        <Input
+                          defaultValue={pl.series_name || ""}
+                          placeholder="e.g. TRI-PEEL"
+                          className="h-6 w-32 text-xs inline-flex"
+                          onBlur={(e) => {
+                            if (e.target.value !== (pl.series_name || "")) {
+                              updatePricelist.mutate({ id: pl.id, updates: { series_name: e.target.value } });
+                            }
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+                          }}
+                        />
+                      </span>
+                      <span className="flex items-center gap-1">
                         Password:{" "}
                         <button
                           onClick={() => togglePasswordVisibility(pl.id)}
