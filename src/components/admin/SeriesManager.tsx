@@ -70,7 +70,10 @@ const SortableSeriesItem = ({ id, name, description, isVisible, showNameInMenu, 
               {description && (
                 <p className="text-sm text-muted-foreground truncate">{description}</p>
               )}
-              <p className="text-xs text-muted-foreground mt-1">{artworkCount} artworks</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {artworkCount} artworks
+                {!showNameInMenu && " · name hidden in menu"}
+              </p>
             </div>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
