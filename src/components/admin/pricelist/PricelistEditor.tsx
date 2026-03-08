@@ -132,6 +132,7 @@ export const PricelistEditor = ({ pricelist }: PricelistEditorProps) => {
                   <PricelistSortableItem
                     key={item.id}
                     item={item}
+                    activeCurrency={activeCurrency}
                     seriesName={seriesMap.get(item.artwork?.series_id || "") || ""}
                     onDelete={() => deleteItem.mutate({ id: item.id, pricelistId: pricelist.id })}
                     onPriceChange={(price) => handlePriceChange(item.id, price)}
