@@ -4,7 +4,9 @@ import { CSS } from "@dnd-kit/utilities";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { GripVertical, Trash2, Check } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { GripVertical, Trash2, Check, ChevronDown, ChevronUp } from "lucide-react";
+import { useArtworkImages } from "@/hooks/useArtworkImages";
 import type { PricelistItemWithArtwork, PricelistCurrency } from "@/hooks/usePricelist";
 
 const CURRENCY_LABELS: Record<PricelistCurrency, string> = {
@@ -41,9 +43,13 @@ export const PricelistSortableItem = ({
   onToggleVisibility,
 }: PricelistSortableItemProps) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const currencyKey = activeCurrency.toLowerCase() as "usd" | "eur" | "brl";
   const currentValue = item[`price_${currencyKey}`] || "";
   const [priceValue, setPriceValue] = useState(currentValue);
+
+  // Fetch all images for this artwork (only when expanded)
+  const { data: artworkImages } = useArtworkImages(expanded ? item.artwork_id : undefined);
 
   const {
     attributes,
@@ -74,6 +80,9 @@ export const PricelistSortableItem = ({
     ? `${CURRENCY_LABELS[activeCurrency]} ${currentValue}`
     : "—";
 
+  const imageCount = artworkImages?.length || 0;
+  const detailCount = artworkImages?.filter(img => img.is_detail).length || 0;
+
   return (
     <div ref={setNodeRef} style={style} className="mb-2 border rounded-lg p-3">
       <div className="flex items-center gap-3">
@@ -90,6 +99,13 @@ export const PricelistSortableItem = ({
         <div className="flex-1 min-w-0">
           <p className="font-medium text-sm truncate">{item.artwork?.title}</p>
           <p className="text-xs text-muted-foreground">{seriesName}</p>
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground mt-0.5 transition-colors"
+          >
+            {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+            {expanded ? "Hide images" : "Show images"}
+          </button>
         </div>
 
         <div className="flex items-center gap-3">
@@ -130,6 +146,39 @@ export const PricelistSortableItem = ({
           </Button>
         </div>
       </div>
+
+      {/* Expanded images gallery */}
+      {expanded && artworkImages && (
+        <div className="mt-3 pt-3 border-t border-border">
+          <p className="text-xs text-muted-foreground mb-2">
+            {imageCount} image{imageCount !== 1 ? "s" : ""}{detailCount > 0 ? ` (${detailCount} detail${detailCount !== 1 ? "s" : ""})` : ""}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {artworkImages.map((img, idx) => (
+              <div key={img.id} className="relative group">
+                <img
+                  src={img.image_url}
+                  alt={img.title || `Image ${idx + 1}`}
+                  className="w-20 h-20 object-cover rounded border border-border"
+                  loading="lazy"
+                />
+                <div className="absolute bottom-0 left-0 right-0 flex gap-0.5 p-0.5">
+                  {img.is_main && (
+                    <Badge variant="secondary" className="text-[8px] px-1 py-0 h-4 bg-background/80">
+                      Main
+                    </Badge>
+                  )}
+                  {img.is_detail && (
+                    <Badge variant="default" className="text-[8px] px-1 py-0 h-4">
+                      Detail
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
