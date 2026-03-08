@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Edit, Trash2, GripVertical, Plus } from "lucide-react";
+import { Edit, Trash2, GripVertical, Plus, ArrowDownNarrowWide } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useArtworks } from "@/hooks/useArtworks";
 import type { ArtworkData } from "@/types";
@@ -164,6 +164,20 @@ const ArtworksList = ({ onEdit, onCreateInSeries }: ArtworksListProps) => {
     }
   };
 
+  const handleSortByYear = (seriesId: string, seriesArtworks: ArtworkData[]) => {
+    const sorted = [...seriesArtworks].sort((a, b) => {
+      const yearA = parseInt(a.year || "0", 10) || 0;
+      const yearB = parseInt(b.year || "0", 10) || 0;
+      return yearA - yearB;
+    });
+    const updates = sorted.map((artwork, index) => ({
+      id: artwork.id,
+      display_order: index,
+      series_id: seriesId,
+    }));
+    updateOrderMutation.mutate(updates);
+  };
+
   // Memoize artworks grouped by series to avoid recomputing on every render
   const artworksBySeries = useMemo(() => {
     const grouped: Record<string, ArtworkData[]> = {};
@@ -204,17 +218,28 @@ const ArtworksList = ({ onEdit, onCreateInSeries }: ArtworksListProps) => {
                     <AccordionTrigger className="text-base font-semibold">
                       {s.name} ({seriesArtworks.length})
                     </AccordionTrigger>
-                    <AccordionContent>
-                      <div className="mb-3">
+                     <AccordionContent>
+                      <div className="mb-3 flex gap-2">
                         <Button
                           onClick={() => onCreateInSeries(s.id)}
                           variant="outline"
-                          className="w-full"
+                          className="flex-1"
                           size="sm"
                         >
                           <Plus className="mr-2 h-4 w-4" />
                           New Artwork in {s.name}
                         </Button>
+                        {seriesArtworks.length > 1 && (
+                          <Button
+                            onClick={() => handleSortByYear(s.id, seriesArtworks)}
+                            variant="outline"
+                            size="sm"
+                            title="Sort artworks by year"
+                          >
+                            <ArrowDownNarrowWide className="mr-2 h-4 w-4" />
+                            Sort by Year
+                          </Button>
+                        )}
                       </div>
                       {seriesArtworks.length > 0 ? (
                         <DndContext
