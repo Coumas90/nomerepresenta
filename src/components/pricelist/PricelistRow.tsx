@@ -9,9 +9,6 @@ export const PricelistRow = ({ item, onClick }: PricelistRowProps) => {
   const { artwork, price } = item;
   if (!artwork) return null;
 
-  // Build materials string, wrapping at "and" like the reference
-  const materialsText = artwork.materials || "";
-
   return (
     <div
       role="button"
@@ -23,38 +20,38 @@ export const PricelistRow = ({ item, onClick }: PricelistRowProps) => {
           onClick();
         }
       }}
-      className="grid grid-cols-[100px_1fr_auto] md:grid-cols-[140px_1fr_auto] gap-4 md:gap-8 items-center py-6 md:py-8 border-b border-stone-300 cursor-pointer hover:bg-stone-200/40 transition-colors"
+      className="grid grid-cols-[120px_1fr_auto] md:grid-cols-[180px_1fr_auto] gap-6 md:gap-10 items-center py-8 md:py-10 border-b border-stone-300 cursor-pointer hover:bg-stone-200/30 transition-colors px-4 md:px-6"
     >
-      {/* Thumbnail */}
-      <div className="aspect-[3/4] overflow-hidden bg-stone-200">
+      {/* Thumbnail — object-contain to never crop */}
+      <div className="bg-stone-200/50">
         <img
           src={artwork.image_url}
           alt={artwork.title}
-          className="w-full h-full object-cover"
+          className="w-full h-auto object-contain"
           loading="lazy"
         />
       </div>
 
       {/* Info */}
       <div className="space-y-0.5">
-        <p className="text-sm md:text-base text-stone-800">
+        <p className="text-sm md:text-[15px] text-stone-800">
           {artwork.title}{artwork.year ? `, ${artwork.year}` : ""}
         </p>
-        {materialsText && (
-          <p className="text-xs md:text-sm text-stone-600 leading-relaxed">
-            {materialsText}
+        {artwork.materials && (
+          <p className="text-xs md:text-sm text-stone-500 leading-relaxed">
+            {artwork.materials}
           </p>
         )}
         {artwork.dimensions && (
-          <p className="text-xs md:text-sm text-stone-600">
+          <p className="text-xs md:text-sm text-stone-500">
             {artwork.dimensions}
           </p>
         )}
       </div>
 
       {/* Price */}
-      <div className="text-right">
-        <p className="text-sm md:text-base text-stone-800 whitespace-nowrap">
+      <div className="text-right self-center">
+        <p className="text-sm md:text-[15px] text-stone-800 whitespace-nowrap">
           {price}
         </p>
       </div>
