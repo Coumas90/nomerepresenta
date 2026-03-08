@@ -40,6 +40,7 @@ interface PricelistEditorProps {
 
 export const PricelistEditor = ({ pricelist }: PricelistEditorProps) => {
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [thumbSize, setThumbSize] = useState<ThumbSize>("sm");
   const activeCurrency = (pricelist.active_currency || "USD") as PricelistCurrency;
   const { data: items = [] } = usePricelistItems(pricelist.id);
   const { data: artworks = [] } = useArtworks();
