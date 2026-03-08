@@ -84,7 +84,7 @@ export const PricelistSortableItem = ({
         <img
           src={item.artwork?.image_url || ""}
           alt={item.artwork?.title || ""}
-          className="w-14 h-14 object-cover rounded"
+          className={`${THUMB_SIZES[thumbSize]} object-cover rounded`}
         />
 
         <div className="flex-1 min-w-0">
