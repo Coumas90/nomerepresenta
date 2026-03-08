@@ -100,11 +100,12 @@ const SortableImage = ({ image, index, artworkData, onDelete, onSetMain, onCapti
             variant={image.is_main ? "default" : "secondary"}
             size="icon"
             className="h-8 w-8 pointer-events-auto"
+            disabled={image.is_detail}
             onClick={(e) => {
               e.stopPropagation();
               onSetMain(image.id);
             }}
-            title="Set as main image"
+            title={image.is_detail ? "Detail images cannot be main" : "Set as main image"}
           >
             <Star className={`h-4 w-4 ${image.is_main ? 'fill-current' : ''}`} />
           </Button>
@@ -398,7 +399,10 @@ const MultipleImageUpload = ({ artworkId, artworkData, onImagesChange }: Multipl
   };
 
   const handleSetMain = async (imageId: string) => {
-    if (!artworkId) return;
+    if (!artworkId || !images) return;
+    // Prevent setting a detail image as main
+    const targetImage = images.find(img => img.id === imageId);
+    if (targetImage?.is_detail) return;
     await setMainImageMutation.mutateAsync({ imageId, artworkId });
     if (onImagesChange) onImagesChange();
   };
@@ -409,13 +413,25 @@ const MultipleImageUpload = ({ artworkId, artworkData, onImagesChange }: Multipl
   };
 
   const handleMetadataChange = async (imageId: string, updates: Record<string, any>) => {
-    if (!artworkId) return;
+    if (!artworkId || !images) return;
     await updateMetadataMutation.mutateAsync({ imageId, artworkId, updates });
+
+    // If toggling detail ON for the current main image, reassign main to first non-detail
+    if (updates.is_detail === true) {
+      const targetImage = images.find(img => img.id === imageId);
+      if (targetImage?.is_main) {
+        const firstNonDetail = images.find(img => img.id !== imageId && !img.is_detail);
+        if (firstNonDetail) {
+          await setMainImageMutation.mutateAsync({ imageId: firstNonDetail.id, artworkId });
+        }
+      }
+    }
+
     if (onImagesChange) onImagesChange();
   };
 
   const handleToggleDetail = async (imageId: string, isDetail: boolean) => {
-    // The actual update is handled by handleMetadataChange called from SortableImage
+    // Handled via handleMetadataChange
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
