@@ -11,6 +11,7 @@ interface PricelistContentProps {
   isLoading: boolean;
   pricelistName?: string;
   seriesName?: string;
+  activeCurrency?: PricelistCurrency;
 }
 
 export const PricelistContent = ({
