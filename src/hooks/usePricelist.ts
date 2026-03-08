@@ -98,7 +98,7 @@ export const useCreatePricelist = () => {
 export const useUpdatePricelist = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, updates }: { id: string; updates: Partial<Pick<Pricelist, "name" | "slug" | "password" | "series_name">> }) => {
+    mutationFn: async ({ id, updates }: { id: string; updates: Partial<Pick<Pricelist, "name" | "slug" | "password" | "series_name" | "active_currency">> }) => {
       const { error } = await supabase
         .from("pricelists" as any)
         .update(updates as any)
