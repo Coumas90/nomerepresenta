@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { X } from "lucide-react";
 import type { ArtworkImage } from "@/types";
 
 interface PricelistImageViewerProps {
@@ -16,25 +16,50 @@ export const PricelistImageViewer = ({
   artworkTitle,
 }: PricelistImageViewerProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const touchStartX = useRef(0);
+  const touchDeltaX = useRef(0);
 
-  // Reset index when opening
   useEffect(() => {
     if (open) setCurrentIndex(0);
   }, [open]);
 
   const close = useCallback(() => onOpenChange(false), [onOpenChange]);
 
+  const goNext = useCallback(() => {
+    if (images.length > 1) setCurrentIndex((i) => (i + 1) % images.length);
+  }, [images.length]);
+
+  const goPrev = useCallback(() => {
+    if (images.length > 1) setCurrentIndex((i) => (i - 1 + images.length) % images.length);
+  }, [images.length]);
+
   // Keyboard navigation
   useEffect(() => {
     if (!open) return;
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") close();
-      if (e.key === "ArrowRight") setCurrentIndex((i) => (i + 1) % images.length);
-      if (e.key === "ArrowLeft") setCurrentIndex((i) => (i - 1 + images.length) % images.length);
+      if (e.key === "ArrowRight") goNext();
+      if (e.key === "ArrowLeft") goPrev();
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [open, currentIndex, images.length, close]);
+  }, [open, close, goNext, goPrev]);
+
+  // Touch swipe handlers
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchDeltaX.current = 0;
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    touchDeltaX.current = e.touches[0].clientX - touchStartX.current;
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    const SWIPE_THRESHOLD = 50;
+    if (touchDeltaX.current < -SWIPE_THRESHOLD) goNext();
+    else if (touchDeltaX.current > SWIPE_THRESHOLD) goPrev();
+  }, [goNext, goPrev]);
 
   if (!open) return null;
 
@@ -42,52 +67,46 @@ export const PricelistImageViewer = ({
   const current = images[currentIndex];
 
   return (
-    <div className="fixed inset-0 z-50 bg-stone-100 flex items-center justify-center">
+    <div
+      className="fixed inset-0 z-50 bg-stone-100 flex items-center justify-center select-none"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
       {/* Close button */}
       <button
         onClick={close}
-        className="absolute top-5 right-5 z-10 p-2 text-stone-400 hover:text-stone-800 transition-colors"
+        className="absolute top-5 right-5 z-20 p-2 text-stone-400 hover:text-stone-800 transition-colors"
         aria-label="Close"
       >
         <X size={24} strokeWidth={1.5} />
       </button>
 
       {current ? (
-        <div className="relative">
+        <div className="relative overflow-visible">
           <img
             src={current.image_url}
             alt={current.alt_text || artworkTitle}
-            className="max-w-[90vw] max-h-[90vh] object-contain select-none"
+            className="max-w-[90vw] max-h-[90vh] object-contain select-none pointer-events-none"
+            draggable={false}
           />
 
-          {/* Left clickable zone */}
+          {/* Left invisible clickable zone — desktop only */}
           {hasMultiple && (
             <button
-              onClick={() => setCurrentIndex((i) => (i - 1 + images.length) % images.length)}
-              className="absolute -left-[15vw] top-0 bottom-0 w-[calc(50%+15vw)] z-10 cursor-pointer focus:outline-none group"
+              onClick={goPrev}
+              className="hidden md:block absolute -left-[15vw] top-0 bottom-0 w-[calc(50%+15vw)] z-10 cursor-pointer focus:outline-none"
               aria-label="Previous image"
-            >
-              <ChevronLeft
-                size={20}
-                className="absolute left-[15vw] top-1/2 -translate-y-1/2 text-stone-400 opacity-0 group-hover:opacity-100 transition-opacity"
-                strokeWidth={1.5}
-              />
-            </button>
+            />
           )}
 
-          {/* Right clickable zone */}
+          {/* Right invisible clickable zone — desktop only */}
           {hasMultiple && (
             <button
-              onClick={() => setCurrentIndex((i) => (i + 1) % images.length)}
-              className="absolute -right-[15vw] top-0 bottom-0 w-[calc(50%+15vw)] z-10 cursor-pointer focus:outline-none group"
+              onClick={goNext}
+              className="hidden md:block absolute -right-[15vw] top-0 bottom-0 w-[calc(50%+15vw)] z-10 cursor-pointer focus:outline-none"
               aria-label="Next image"
-            >
-              <ChevronRight
-                size={20}
-                className="absolute right-[15vw] top-1/2 -translate-y-1/2 text-stone-400 opacity-0 group-hover:opacity-100 transition-opacity"
-                strokeWidth={1.5}
-              />
-            </button>
+            />
           )}
 
           {/* Counter */}
