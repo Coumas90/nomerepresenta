@@ -1,9 +1,12 @@
 import { useState, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { useCatalogArtworks, useUpdateCatalogField } from "@/hooks/useCatalog";
+import { useCatalogArtworks, useUpdateCatalogField, type MediumType } from "@/hooks/useCatalog";
 import { CatalogFilters } from "./CatalogFilters";
 import { CatalogRow, type ThumbSize } from "./CatalogRow";
+import { CategoryFolder } from "./CategoryFolder";
+
+const CATEGORIES: MediumType[] = ["PAINTING", "POW", "PHOTO"];
 
 const CatalogManager = () => {
   const { data: artworks = [], isLoading } = useCatalogArtworks();
@@ -15,6 +18,7 @@ const CatalogManager = () => {
   const [mediumFilter, setMediumFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [thumbSize, setThumbSize] = useState<ThumbSize>("sm");
+  const [openCategories, setOpenCategories] = useState<Set<MediumType>>(new Set());
 
   const years = useMemo(() => {
     const set = new Set(artworks.map((a) => a.year).filter(Boolean) as string[]);
@@ -32,9 +36,69 @@ const CatalogManager = () => {
     });
   }, [artworks, search, yearFilter, sizeFilter, mediumFilter, statusFilter]);
 
+  const grouped = useMemo(() => {
+    const map: Record<string, typeof filtered> = {};
+    for (const cat of CATEGORIES) {
+      map[cat] = filtered.filter((a) => a.medium_type === cat);
+    }
+    map["UNCATEGORIZED"] = filtered.filter((a) => !a.medium_type || !CATEGORIES.includes(a.medium_type as MediumType));
+    return map;
+  }, [filtered]);
+
+  const toggleCategory = (cat: MediumType) => {
+    setOpenCategories((prev) => {
+      const next = new Set(prev);
+      if (next.has(cat)) next.delete(cat);
+      else next.add(cat);
+      return next;
+    });
+  };
+
   const handleFieldUpdate = (id: string, field: string, value: string | null) => {
     updateField.mutate({ id, field, value });
   };
+
+  const renderTable = (items: typeof filtered, showEdition = false) => (
+    <Card className="mt-2">
+      <CardContent className="p-0">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="border-b border-border bg-muted/40">
+                <th className="py-2 px-3 text-xs font-medium text-muted-foreground" />
+                <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Title</th>
+                <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Year</th>
+                <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Size</th>
+                <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Medium</th>
+                <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Status</th>
+                {showEdition && (
+                  <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Edition</th>
+                )}
+                <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Location</th>
+                <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((artwork) => (
+                <CatalogRow
+                  key={artwork.id}
+                  artwork={artwork}
+                  thumbSize={thumbSize}
+                  showEdition={showEdition}
+                  onFieldUpdate={handleFieldUpdate}
+                />
+              ))}
+            </tbody>
+          </table>
+          {items.length === 0 && (
+            <p className="text-center py-8 text-sm text-muted-foreground">
+              No artworks in this category.
+            </p>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
 
   if (isLoading) {
     return (
@@ -79,46 +143,30 @@ const CatalogManager = () => {
         years={years}
       />
 
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base">
-            {filtered.length} artwork{filtered.length !== 1 ? "s" : ""}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="border-b border-border bg-muted/40">
-                  <th className="py-2 px-3 text-xs font-medium text-muted-foreground" />
-                  <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Title</th>
-                  <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Year</th>
-                  <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Size</th>
-                  <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Medium</th>
-                  <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Status</th>
-                  <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Location</th>
-                  <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Notes</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((artwork) => (
-                  <CatalogRow
-                    key={artwork.id}
-                    artwork={artwork}
-                    thumbSize={thumbSize}
-                    onFieldUpdate={handleFieldUpdate}
-                  />
-                ))}
-              </tbody>
-            </table>
-            {filtered.length === 0 && (
-              <p className="text-center py-12 text-sm text-muted-foreground">
-                No artworks match the current filters.
-              </p>
-            )}
+      {/* Category folders */}
+      <div className="space-y-3">
+        {CATEGORIES.map((cat) => (
+          <CategoryFolder
+            key={cat}
+            category={cat}
+            count={grouped[cat].length}
+            isOpen={openCategories.has(cat)}
+            onToggle={() => toggleCategory(cat)}
+          >
+            {renderTable(grouped[cat], cat === "PHOTO")}
+          </CategoryFolder>
+        ))}
+
+        {/* Uncategorized artworks */}
+        {grouped["UNCATEGORIZED"].length > 0 && (
+          <div>
+            <p className="text-xs font-medium text-muted-foreground px-1 mb-2">
+              Uncategorized ({grouped["UNCATEGORIZED"].length})
+            </p>
+            {renderTable(grouped["UNCATEGORIZED"])}
           </div>
-        </CardContent>
-      </Card>
+        )}
+      </div>
     </div>
   );
 };

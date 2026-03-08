@@ -231,6 +231,7 @@ export type Database = {
           description: string | null
           dimensions: string | null
           display_order: number
+          edition: string | null
           id: string
           image_detail_url: string | null
           image_url: string
@@ -251,6 +252,7 @@ export type Database = {
           description?: string | null
           dimensions?: string | null
           display_order?: number
+          edition?: string | null
           id?: string
           image_detail_url?: string | null
           image_url: string
@@ -271,6 +273,7 @@ export type Database = {
           description?: string | null
           dimensions?: string | null
           display_order?: number
+          edition?: string | null
           id?: string
           image_detail_url?: string | null
           image_url?: string
