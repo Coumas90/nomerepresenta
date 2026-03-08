@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { SeriesData, ArtworkImage } from "@/types";
-import type { PricelistItemWithArtwork } from "@/hooks/usePricelist";
+import type { PricelistItemWithArtwork, PricelistCurrency } from "@/hooks/usePricelist";
 import { PricelistRow } from "./PricelistRow";
 import { PricelistImageViewer } from "./PricelistImageViewer";
 
