@@ -20,6 +20,9 @@ export interface PricelistItem {
   pricelist_id: string;
   artwork_id: string;
   price: string;
+  price_usd: string;
+  price_eur: string;
+  price_brl: string;
   display_order: number;
   is_visible: boolean;
   created_at: string;
