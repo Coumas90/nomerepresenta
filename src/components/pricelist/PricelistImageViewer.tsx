@@ -121,12 +121,6 @@ export const PricelistImageViewer = ({
             </button>
           )}
 
-          {/* Counter */}
-          {hasMultiple && (
-            <span className="absolute bottom-5 left-0 text-xs text-stone-500">
-              {currentIndex + 1} / {images.length}
-            </span>
-          )}
         </div>
       ) : (
         <p className="text-stone-400 text-sm">No images available</p>
