@@ -1,0 +1,1 @@
+ALTER TABLE public.pricelists ADD COLUMN series_name text DEFAULT '';
