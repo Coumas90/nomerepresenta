@@ -2,12 +2,15 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
+export type PricelistCurrency = "USD" | "EUR" | "BRL";
+
 export interface Pricelist {
   id: string;
   name: string;
   slug: string;
   password: string;
   series_name: string;
+  active_currency: PricelistCurrency;
   created_at: string;
   updated_at: string;
 }
