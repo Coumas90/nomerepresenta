@@ -412,13 +412,25 @@ const MultipleImageUpload = ({ artworkId, artworkData, onImagesChange }: Multipl
   };
 
   const handleMetadataChange = async (imageId: string, updates: Record<string, any>) => {
-    if (!artworkId) return;
+    if (!artworkId || !images) return;
     await updateMetadataMutation.mutateAsync({ imageId, artworkId, updates });
+
+    // If toggling detail ON for the current main image, reassign main to first non-detail
+    if (updates.is_detail === true) {
+      const targetImage = images.find(img => img.id === imageId);
+      if (targetImage?.is_main) {
+        const firstNonDetail = images.find(img => img.id !== imageId && !img.is_detail);
+        if (firstNonDetail) {
+          await setMainImageMutation.mutateAsync({ imageId: firstNonDetail.id, artworkId });
+        }
+      }
+    }
+
     if (onImagesChange) onImagesChange();
   };
 
   const handleToggleDetail = async (imageId: string, isDetail: boolean) => {
-    // The actual update is handled by handleMetadataChange called from SortableImage
+    // Handled via handleMetadataChange
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
