@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Edit, Trash2, GripVertical, Plus } from "lucide-react";
+import { Edit, Trash2, GripVertical, Plus, ArrowDownNarrowWide } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useArtworks } from "@/hooks/useArtworks";
 import type { ArtworkData } from "@/types";
