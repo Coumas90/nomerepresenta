@@ -5,7 +5,8 @@ import {
   FolderOpen,
   Users,
   Camera,
-  Settings
+  Settings,
+  DollarSign,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
@@ -37,6 +38,7 @@ const contentItems = [
   { title: "Series (Works)", url: "/admin?section=content-series", icon: FolderOpen },
   { title: "Studio", url: "/admin?section=content-studio", icon: Camera },
   { title: "Bio", url: "/admin?section=content-bio", icon: Users },
+  { title: "Pricelist", url: "/admin?section=content-pricelist", icon: DollarSign },
 ];
 
 const settingsItems = [

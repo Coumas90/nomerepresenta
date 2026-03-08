@@ -14,6 +14,7 @@ import { ImageCompressionSettings } from "@/components/admin/settings/ImageCompr
 
 const BioManager = lazy(() => import("@/components/admin/BioManager"));
 const UnifiedAnalytics = lazy(() => import("@/components/admin/analytics/UnifiedAnalytics"));
+const PricelistManager = lazy(() => import("@/components/admin/PricelistManager"));
 
 const Admin = () => {
   const location = useLocation();
@@ -91,6 +92,13 @@ const Admin = () => {
         return (
           <Suspense fallback={<LoadingSkeleton type="analytics" />}>
             <BioManager />
+          </Suspense>
+        );
+      
+      case "content-pricelist":
+        return (
+          <Suspense fallback={<LoadingSkeleton type="analytics" />}>
+            <PricelistManager />
           </Suspense>
         );
       

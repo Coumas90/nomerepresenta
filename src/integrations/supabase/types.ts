@@ -368,6 +368,44 @@ export type Database = {
         }
         Relationships: []
       }
+      pricelist_items: {
+        Row: {
+          artwork_id: string
+          created_at: string
+          display_order: number
+          id: string
+          is_visible: boolean
+          price: string
+          updated_at: string
+        }
+        Insert: {
+          artwork_id: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_visible?: boolean
+          price?: string
+          updated_at?: string
+        }
+        Update: {
+          artwork_id?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_visible?: boolean
+          price?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pricelist_items_artwork_id_fkey"
+            columns: ["artwork_id"]
+            isOneToOne: true
+            referencedRelation: "artworks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string

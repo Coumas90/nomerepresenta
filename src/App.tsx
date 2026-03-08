@@ -20,6 +20,7 @@ const Auth = lazy(() => import("./pages/Auth"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Install = lazy(() => import("./pages/Install"));
 const Contact = lazy(() => import("./pages/Contact"));
+const Pricelist = lazy(() => import("./pages/Pricelist"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -92,6 +93,7 @@ const App = () => (
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/install" element={<Install />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/pricelist" element={<Pricelist />} />
             <Route 
               path="/admin" 
               element={
