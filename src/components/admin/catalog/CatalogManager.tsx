@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useCatalogArtworks, useUpdateCatalogField, type MediumType } from "@/hooks/useCatalog";
+import { useSeries } from "@/hooks/useSeries";
 import { CatalogFilters } from "./CatalogFilters";
 import { CatalogRow, type ThumbSize } from "./CatalogRow";
 import { CategoryFolder } from "./CategoryFolder";
@@ -10,6 +11,7 @@ const CATEGORIES: MediumType[] = ["PAINTING", "POW", "PHOTO"];
 
 const CatalogManager = () => {
   const { data: artworks = [], isLoading } = useCatalogArtworks();
+  const { data: series = [] } = useSeries();
   const updateField = useUpdateCatalogField();
 
   const [search, setSearch] = useState("");
@@ -17,6 +19,7 @@ const CatalogManager = () => {
   const [sizeFilter, setSizeFilter] = useState("all");
   const [mediumFilter, setMediumFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [seriesFilter, setSeriesFilter] = useState("all");
   const [thumbSize, setThumbSize] = useState<ThumbSize>("sm");
   const [openCategories, setOpenCategories] = useState<Set<MediumType>>(new Set());
 
@@ -32,9 +35,10 @@ const CatalogManager = () => {
       if (sizeFilter !== "all" && a.size_category !== sizeFilter) return false;
       if (mediumFilter !== "all" && a.medium_type !== mediumFilter) return false;
       if (statusFilter !== "all" && (a.status || "available") !== statusFilter) return false;
+      if (seriesFilter !== "all" && a.series_id !== seriesFilter) return false;
       return true;
     });
-  }, [artworks, search, yearFilter, sizeFilter, mediumFilter, statusFilter]);
+  }, [artworks, search, yearFilter, sizeFilter, mediumFilter, statusFilter, seriesFilter]);
 
   const grouped = useMemo(() => {
     const map: Record<string, typeof filtered> = {};
@@ -140,7 +144,10 @@ const CatalogManager = () => {
         onMediumFilterChange={setMediumFilter}
         statusFilter={statusFilter}
         onStatusFilterChange={setStatusFilter}
+        seriesFilter={seriesFilter}
+        onSeriesFilterChange={setSeriesFilter}
         years={years}
+        seriesList={series.map((s) => ({ id: s.id, name: s.name }))}
       />
 
       {/* Category folders */}

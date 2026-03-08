@@ -13,7 +13,10 @@ interface CatalogFiltersProps {
   onMediumFilterChange: (value: string) => void;
   statusFilter: string;
   onStatusFilterChange: (value: string) => void;
+  seriesFilter: string;
+  onSeriesFilterChange: (value: string) => void;
   years: string[];
+  seriesList: { id: string; name: string }[];
 }
 
 export const CatalogFilters = ({
@@ -27,7 +30,10 @@ export const CatalogFilters = ({
   onMediumFilterChange,
   statusFilter,
   onStatusFilterChange,
+  seriesFilter,
+  onSeriesFilterChange,
   years,
+  seriesList,
 }: CatalogFiltersProps) => {
   return (
     <div className="flex flex-wrap items-center gap-3">
@@ -86,6 +92,18 @@ export const CatalogFilters = ({
           <SelectItem value="available">Available</SelectItem>
           <SelectItem value="sold">Sold</SelectItem>
           <SelectItem value="reserved">Reserved</SelectItem>
+        </SelectContent>
+      </Select>
+
+      <Select value={seriesFilter} onValueChange={onSeriesFilterChange}>
+        <SelectTrigger className="w-[130px] h-9 text-xs">
+          <SelectValue placeholder="Series" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Series</SelectItem>
+          {seriesList.map((s) => (
+            <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+          ))}
         </SelectContent>
       </Select>
     </div>
