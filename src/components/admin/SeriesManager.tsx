@@ -41,7 +41,7 @@ interface SortableSeriesItemProps {
   onToggleNameInMenu: () => void;
 }
 
-const SortableSeriesItem = ({ id, name, description, isVisible, artworkCount, onEdit, onDelete, onToggleVisibility }: SortableSeriesItemProps) => {
+const SortableSeriesItem = ({ id, name, description, isVisible, showNameInMenu, artworkCount, onEdit, onDelete, onToggleVisibility, onToggleNameInMenu }: SortableSeriesItemProps) => {
   const {
     attributes,
     listeners,
