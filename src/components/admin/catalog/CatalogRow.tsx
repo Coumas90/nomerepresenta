@@ -28,7 +28,6 @@ interface CatalogRowProps {
   thumbSize: ThumbSize;
   showEdition?: boolean;
   onFieldUpdate: (id: string, field: string, value: string | null) => void;
-  onToggleSeriesVisibility: (seriesId: string, currentlyVisible: boolean) => void;
 }
 
 export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpdate, onToggleSeriesVisibility }: CatalogRowProps) => {
