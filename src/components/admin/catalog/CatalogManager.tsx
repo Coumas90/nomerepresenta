@@ -52,6 +52,8 @@ const CatalogManager = () => {
         cmp = (a.year || "").localeCompare(b.year || "");
       } else if (sortField === "size_category") {
         cmp = (SIZE_ORDER[a.size_category || ""] || 0) - (SIZE_ORDER[b.size_category || ""] || 0);
+      } else if (sortField === "status") {
+        cmp = (STATUS_ORDER[a.status || "available"] || 0) - (STATUS_ORDER[b.status || "available"] || 0);
       }
       return sortDir === "desc" ? -cmp : cmp;
     });
