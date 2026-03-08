@@ -59,21 +59,12 @@ export const PricelistContent = ({
             {headerTitle}
           </span>
         </div>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleDownloadPdf}
-            className="text-stone-500 hover:text-stone-800 transition-colors"
-            title="Download as PDF"
-          >
-            <Download className="w-4 md:w-5 h-4 md:h-5" />
-          </button>
-          <button
-            onClick={() => navigate("/")}
-            className="text-stone-700 hover:text-stone-900 transition-colors"
-          >
-            <Undo2 className="w-5 md:w-6 h-5 md:h-6" />
-          </button>
-        </div>
+        <button
+          onClick={() => navigate("/")}
+          className="text-stone-700 hover:text-stone-900 transition-colors"
+        >
+          <Undo2 className="w-5 md:w-6 h-5 md:h-6" />
+        </button>
       </div>
 
       {/* Print-only header title */}
@@ -102,6 +93,17 @@ export const PricelistContent = ({
             No items in the pricelist yet.
           </p>
         )}
+      </div>
+
+      {/* Download PDF button at bottom */}
+      <div className="max-w-5xl mx-auto px-6 md:px-12 pb-12 print:hidden">
+        <button
+          onClick={handleDownloadPdf}
+          className="flex items-center gap-2 text-stone-500 hover:text-stone-800 transition-colors text-xs tracking-wide uppercase"
+        >
+          <span>Download to PDF</span>
+          <Download className="w-4 h-4" />
+        </button>
       </div>
 
       <PricelistImageViewer
