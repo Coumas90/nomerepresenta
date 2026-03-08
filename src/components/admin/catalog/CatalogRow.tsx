@@ -79,7 +79,24 @@ export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpd
         {/* Title */}
         <td className="py-2 px-3">
           <p className="text-sm font-medium truncate max-w-[200px]">{artwork.title}</p>
-          <p className="text-xs text-muted-foreground">{artwork.series_name}</p>
+        </td>
+
+        {/* Series */}
+        <td className="py-2 px-3">
+          <div className="flex items-center gap-1.5">
+            <p className="text-xs truncate max-w-[120px]">{artwork.series_name}</p>
+            <button
+              onClick={() => onToggleSeriesVisibility(artwork.series_id, artwork.series_visible ?? true)}
+              className="shrink-0 p-0.5 rounded hover:bg-muted transition-colors"
+              title={artwork.series_visible !== false ? "Visible in Works" : "Hidden from Works"}
+            >
+              {artwork.series_visible !== false ? (
+                <Eye className="h-3 w-3 text-emerald-600" />
+              ) : (
+                <EyeOff className="h-3 w-3 text-muted-foreground" />
+              )}
+            </button>
+          </div>
         </td>
 
         {/* Year */}
