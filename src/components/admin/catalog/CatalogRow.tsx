@@ -215,7 +215,15 @@ export const CatalogRow = ({ artwork, thumbSize, onFieldUpdate }: CatalogRowProp
         </td>
       </tr>
 
-      {/* Fullscreen image dialog */}
+      {/* Expanded images gallery row */}
+      {imagesExpanded && (
+        <tr className="border-b border-border bg-muted/20">
+          <td colSpan={8} className="py-3 px-4">
+            <CatalogImageGallery artworkId={artwork.id} />
+          </td>
+        </tr>
+      )}
+
       <Dialog open={imageOpen} onOpenChange={setImageOpen}>
         <DialogContent className="max-w-3xl p-2 bg-background">
           <div className="flex flex-col items-center gap-3">
