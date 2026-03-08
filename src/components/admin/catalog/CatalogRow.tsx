@@ -4,6 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import type { CatalogArtwork, SizeCategory, MediumType, ArtworkStatus } from "@/hooks/useCatalog";
 
 const STATUS_COLORS: Record<ArtworkStatus, string> = {
@@ -12,14 +13,24 @@ const STATUS_COLORS: Record<ArtworkStatus, string> = {
   reserved: "bg-amber-100 text-amber-800 border-amber-200",
 };
 
+const THUMB_SIZES = {
+  sm: "w-10 h-10",
+  md: "w-20 h-20",
+  lg: "w-32 h-32",
+} as const;
+
+export type ThumbSize = keyof typeof THUMB_SIZES;
+
 interface CatalogRowProps {
   artwork: CatalogArtwork;
+  thumbSize: ThumbSize;
   onFieldUpdate: (id: string, field: string, value: string | null) => void;
 }
 
-export const CatalogRow = ({ artwork, onFieldUpdate }: CatalogRowProps) => {
+export const CatalogRow = ({ artwork, thumbSize, onFieldUpdate }: CatalogRowProps) => {
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
+  const [imageOpen, setImageOpen] = useState(false);
 
   const startEditing = (field: string, currentValue: string) => {
     setEditingField(field);
@@ -36,130 +47,151 @@ export const CatalogRow = ({ artwork, onFieldUpdate }: CatalogRowProps) => {
   const status = (artwork.status || "available") as ArtworkStatus;
 
   return (
-    <tr className="border-b border-border hover:bg-muted/30 transition-colors">
-      {/* Thumbnail */}
-      <td className="py-2 px-3 w-14">
-        <img
-          src={artwork.image_url}
-          alt={artwork.title}
-          className="w-10 h-10 object-cover rounded"
-          loading="lazy"
-        />
-      </td>
-
-      {/* Title */}
-      <td className="py-2 px-3">
-        <p className="text-sm font-medium truncate max-w-[200px]">{artwork.title}</p>
-        <p className="text-xs text-muted-foreground">{artwork.series_name}</p>
-      </td>
-
-      {/* Year */}
-      <td className="py-2 px-3 text-sm text-center">{artwork.year || "—"}</td>
-
-      {/* Size */}
-      <td className="py-2 px-3 text-center">
-        <Select
-          value={artwork.size_category || "none"}
-          onValueChange={(v) => onFieldUpdate(artwork.id, "size_category", v === "none" ? null : v)}
-        >
-          <SelectTrigger className="h-7 w-16 text-xs mx-auto">
-            <SelectValue placeholder="—" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="none">—</SelectItem>
-            <SelectItem value="S">S</SelectItem>
-            <SelectItem value="M">M</SelectItem>
-            <SelectItem value="L">L</SelectItem>
-          </SelectContent>
-        </Select>
-      </td>
-
-      {/* Medium */}
-      <td className="py-2 px-3 text-center">
-        <Select
-          value={artwork.medium_type || "none"}
-          onValueChange={(v) => onFieldUpdate(artwork.id, "medium_type", v === "none" ? null : v)}
-        >
-          <SelectTrigger className="h-7 w-[100px] text-xs mx-auto">
-            <SelectValue placeholder="—" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="none">—</SelectItem>
-            <SelectItem value="PHOTO">Photo</SelectItem>
-            <SelectItem value="POW">POW</SelectItem>
-            <SelectItem value="PAINTING">Painting</SelectItem>
-          </SelectContent>
-        </Select>
-      </td>
-
-      {/* Status */}
-      <td className="py-2 px-3 text-center">
-        <Select
-          value={status}
-          onValueChange={(v) => onFieldUpdate(artwork.id, "status", v)}
-        >
-          <SelectTrigger className="h-7 w-[100px] text-xs mx-auto border-0 p-0">
-            <Badge variant="outline" className={`${STATUS_COLORS[status]} text-[10px] px-2`}>
-              {status}
-            </Badge>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="available">Available</SelectItem>
-            <SelectItem value="sold">Sold</SelectItem>
-            <SelectItem value="reserved">Reserved</SelectItem>
-          </SelectContent>
-        </Select>
-      </td>
-
-      {/* Location */}
-      <td className="py-2 px-3">
-        {editingField === "location" ? (
-          <div className="flex items-center gap-1">
-            <Input
-              value={editValue}
-              onChange={(e) => setEditValue(e.target.value)}
-              className="h-7 w-32 text-xs"
-              onKeyDown={(e) => e.key === "Enter" && saveField()}
-              autoFocus
+    <>
+      <tr className="border-b border-border hover:bg-muted/30 transition-colors">
+        {/* Thumbnail */}
+        <td className="py-2 px-3">
+          <button onClick={() => setImageOpen(true)} className="block rounded overflow-hidden hover:ring-2 hover:ring-primary/50 transition-all">
+            <img
+              src={artwork.image_url}
+              alt={artwork.title}
+              className={`${THUMB_SIZES[thumbSize]} object-cover rounded`}
+              loading="lazy"
             />
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={saveField}>
-              <Check className="h-3 w-3" />
-            </Button>
-          </div>
-        ) : (
-          <button
-            onClick={() => startEditing("location", artwork.location || "")}
-            className="text-xs px-1.5 py-0.5 rounded hover:bg-muted transition-colors min-w-[48px] text-left"
-          >
-            {artwork.location || "—"}
           </button>
-        )}
-      </td>
+        </td>
 
-      {/* Notes */}
-      <td className="py-2 px-3">
-        {editingField === "notes" ? (
-          <div className="flex items-center gap-1">
-            <Input
-              value={editValue}
-              onChange={(e) => setEditValue(e.target.value)}
-              className="h-7 w-40 text-xs"
-              onKeyDown={(e) => e.key === "Enter" && saveField()}
-              autoFocus
-            />
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={saveField}>
-              <Check className="h-3 w-3" />
-            </Button>
-          </div>
-        ) : (
-          <button
-            onClick={() => startEditing("notes", artwork.notes || "")}
-            className="text-xs px-1.5 py-0.5 rounded hover:bg-muted transition-colors min-w-[48px] text-left truncate max-w-[160px] block"
+        {/* Title */}
+        <td className="py-2 px-3">
+          <p className="text-sm font-medium truncate max-w-[200px]">{artwork.title}</p>
+          <p className="text-xs text-muted-foreground">{artwork.series_name}</p>
+        </td>
+
+        {/* Year */}
+        <td className="py-2 px-3 text-sm text-center">{artwork.year || "—"}</td>
+
+        {/* Size */}
+        <td className="py-2 px-3 text-center">
+          <Select
+            value={artwork.size_category || "none"}
+            onValueChange={(v) => onFieldUpdate(artwork.id, "size_category", v === "none" ? null : v)}
           >
-            {artwork.notes || "—"}
-          </button>
-        )}
-      </td>
-    </tr>
+            <SelectTrigger className="h-7 w-16 text-xs mx-auto">
+              <SelectValue placeholder="—" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">—</SelectItem>
+              <SelectItem value="S">S</SelectItem>
+              <SelectItem value="M">M</SelectItem>
+              <SelectItem value="L">L</SelectItem>
+            </SelectContent>
+          </Select>
+        </td>
+
+        {/* Medium */}
+        <td className="py-2 px-3 text-center">
+          <Select
+            value={artwork.medium_type || "none"}
+            onValueChange={(v) => onFieldUpdate(artwork.id, "medium_type", v === "none" ? null : v)}
+          >
+            <SelectTrigger className="h-7 w-[100px] text-xs mx-auto">
+              <SelectValue placeholder="—" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">—</SelectItem>
+              <SelectItem value="PHOTO">Photo</SelectItem>
+              <SelectItem value="POW">POW</SelectItem>
+              <SelectItem value="PAINTING">Painting</SelectItem>
+            </SelectContent>
+          </Select>
+        </td>
+
+        {/* Status */}
+        <td className="py-2 px-3 text-center">
+          <Select
+            value={status}
+            onValueChange={(v) => onFieldUpdate(artwork.id, "status", v)}
+          >
+            <SelectTrigger className="h-7 w-[100px] text-xs mx-auto border-0 p-0">
+              <Badge variant="outline" className={`${STATUS_COLORS[status]} text-[10px] px-2`}>
+                {status}
+              </Badge>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="available">Available</SelectItem>
+              <SelectItem value="sold">Sold</SelectItem>
+              <SelectItem value="reserved">Reserved</SelectItem>
+            </SelectContent>
+          </Select>
+        </td>
+
+        {/* Location */}
+        <td className="py-2 px-3">
+          {editingField === "location" ? (
+            <div className="flex items-center gap-1">
+              <Input
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                className="h-7 w-32 text-xs"
+                onKeyDown={(e) => e.key === "Enter" && saveField()}
+                autoFocus
+              />
+              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={saveField}>
+                <Check className="h-3 w-3" />
+              </Button>
+            </div>
+          ) : (
+            <button
+              onClick={() => startEditing("location", artwork.location || "")}
+              className="text-xs px-1.5 py-0.5 rounded hover:bg-muted transition-colors min-w-[48px] text-left"
+            >
+              {artwork.location || "—"}
+            </button>
+          )}
+        </td>
+
+        {/* Notes */}
+        <td className="py-2 px-3">
+          {editingField === "notes" ? (
+            <div className="flex items-center gap-1">
+              <Input
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                className="h-7 w-40 text-xs"
+                onKeyDown={(e) => e.key === "Enter" && saveField()}
+                autoFocus
+              />
+              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={saveField}>
+                <Check className="h-3 w-3" />
+              </Button>
+            </div>
+          ) : (
+            <button
+              onClick={() => startEditing("notes", artwork.notes || "")}
+              className="text-xs px-1.5 py-0.5 rounded hover:bg-muted transition-colors min-w-[48px] text-left truncate max-w-[160px] block"
+            >
+              {artwork.notes || "—"}
+            </button>
+          )}
+        </td>
+      </tr>
+
+      {/* Fullscreen image dialog */}
+      <Dialog open={imageOpen} onOpenChange={setImageOpen}>
+        <DialogContent className="max-w-3xl p-2 bg-background">
+          <div className="flex flex-col items-center gap-3">
+            <img
+              src={artwork.image_url}
+              alt={artwork.title}
+              className="max-h-[80vh] w-auto object-contain rounded"
+            />
+            <div className="text-center">
+              <p className="text-sm font-medium">{artwork.title}</p>
+              {artwork.year && <p className="text-xs text-muted-foreground">{artwork.year}</p>}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
