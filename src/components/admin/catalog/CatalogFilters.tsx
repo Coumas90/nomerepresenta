@@ -94,6 +94,18 @@ export const CatalogFilters = ({
           <SelectItem value="reserved">Reserved</SelectItem>
         </SelectContent>
       </Select>
+
+      <Select value={seriesFilter} onValueChange={onSeriesFilterChange}>
+        <SelectTrigger className="w-[130px] h-9 text-xs">
+          <SelectValue placeholder="Series" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Series</SelectItem>
+          {seriesList.map((s) => (
+            <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   );
 };
