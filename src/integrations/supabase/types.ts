@@ -508,6 +508,7 @@ export type Database = {
           id: string
           is_visible: boolean
           name: string
+          show_name_in_menu: boolean
           updated_at: string
         }
         Insert: {
@@ -517,6 +518,7 @@ export type Database = {
           id?: string
           is_visible?: boolean
           name: string
+          show_name_in_menu?: boolean
           updated_at?: string
         }
         Update: {
@@ -526,6 +528,7 @@ export type Database = {
           id?: string
           is_visible?: boolean
           name?: string
+          show_name_in_menu?: boolean
           updated_at?: string
         }
         Relationships: []

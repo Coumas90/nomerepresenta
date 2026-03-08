@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Edit, Trash2, GripVertical, Plus, X } from "lucide-react";
+import { Edit, Trash2, GripVertical, Plus, X, Eye, EyeOff } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useSeries } from "@/hooks/useSeries";
 import { useCreateSeries, useUpdateSeries, useDeleteSeries, useUpdateSeriesOrder } from "@/hooks/useSeriesMutations";
@@ -33,13 +33,15 @@ interface SortableSeriesItemProps {
   name: string;
   description: string | null;
   isVisible: boolean;
+  showNameInMenu: boolean;
   artworkCount: number;
   onEdit: () => void;
   onDelete: () => void;
   onToggleVisibility: () => void;
+  onToggleNameInMenu: () => void;
 }
 
-const SortableSeriesItem = ({ id, name, description, isVisible, artworkCount, onEdit, onDelete, onToggleVisibility }: SortableSeriesItemProps) => {
+const SortableSeriesItem = ({ id, name, description, isVisible, showNameInMenu, artworkCount, onEdit, onDelete, onToggleVisibility, onToggleNameInMenu }: SortableSeriesItemProps) => {
   const {
     attributes,
     listeners,
@@ -68,7 +70,10 @@ const SortableSeriesItem = ({ id, name, description, isVisible, artworkCount, on
               {description && (
                 <p className="text-sm text-muted-foreground truncate">{description}</p>
               )}
-              <p className="text-xs text-muted-foreground mt-1">{artworkCount} artworks</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {artworkCount} artworks
+                {!showNameInMenu && " · name hidden in menu"}
+              </p>
             </div>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
@@ -79,6 +84,14 @@ const SortableSeriesItem = ({ id, name, description, isVisible, artworkCount, on
                 />
                 <span className="text-xs text-muted-foreground">{isVisible ? "Visible" : "Hidden"}</span>
               </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onToggleNameInMenu}
+                title={showNameInMenu ? "Hide name in Works menu" : "Show name in Works menu"}
+              >
+                {showNameInMenu ? <Eye className="h-4 w-4 text-emerald-600" /> : <EyeOff className="h-4 w-4 text-muted-foreground" />}
+              </Button>
               <Button variant="outline" size="icon" onClick={onEdit}>
                 <Edit className="h-4 w-4" />
               </Button>
@@ -250,10 +263,12 @@ const SeriesManager = () => {
                       name={s.name}
                       description={s.description}
                       isVisible={s.is_visible !== false}
+                      showNameInMenu={s.show_name_in_menu !== false}
                       artworkCount={getArtworkCount(s.id)}
                       onEdit={() => handleEdit(s.id, s.name, s.description)}
                       onDelete={() => handleDeleteClick(s.id)}
                       onToggleVisibility={() => updateMutation.mutate({ id: s.id, is_visible: s.is_visible === false })}
+                      onToggleNameInMenu={() => updateMutation.mutate({ id: s.id, show_name_in_menu: s.show_name_in_menu === false })}
                     />
                   ))}
                 </SortableContext>
