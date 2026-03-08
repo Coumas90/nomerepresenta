@@ -28,6 +28,40 @@ const CatalogManager = () => {
   const [seriesFilter, setSeriesFilter] = useState("all");
   const [thumbSize, setThumbSize] = useState<ThumbSize>("sm");
   const [openCategories, setOpenCategories] = useState<Set<MediumType>>(new Set());
+  const [sortField, setSortField] = useState<SortField>(null);
+  const [sortDir, setSortDir] = useState<SortDir>("asc");
+
+  const toggleSort = useCallback((field: SortField) => {
+    if (sortField === field) {
+      if (sortDir === "asc") setSortDir("desc");
+      else { setSortField(null); setSortDir("asc"); }
+    } else {
+      setSortField(field);
+      setSortDir("asc");
+    }
+  }, [sortField, sortDir]);
+
+  const sortItems = useCallback((items: CatalogArtwork[]) => {
+    if (!sortField) return items;
+    return [...items].sort((a, b) => {
+      let cmp = 0;
+      if (sortField === "title") {
+        cmp = (a.title || "").localeCompare(b.title || "");
+      } else if (sortField === "year") {
+        cmp = (a.year || "").localeCompare(b.year || "");
+      } else if (sortField === "size_category") {
+        cmp = (SIZE_ORDER[a.size_category || ""] || 0) - (SIZE_ORDER[b.size_category || ""] || 0);
+      }
+      return sortDir === "desc" ? -cmp : cmp;
+    });
+  }, [sortField, sortDir]);
+
+  const SortIcon = ({ field }: { field: SortField }) => {
+    if (sortField !== field) return <ArrowUpDown className="h-3 w-3 ml-1 opacity-40" />;
+    return sortDir === "asc"
+      ? <ArrowUp className="h-3 w-3 ml-1" />
+      : <ArrowDown className="h-3 w-3 ml-1" />;
+  };
 
   const years = useMemo(() => {
     const set = new Set(artworks.map((a) => a.year).filter(Boolean) as string[]);
