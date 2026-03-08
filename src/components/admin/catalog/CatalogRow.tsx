@@ -153,26 +153,52 @@ export const CatalogRow = ({ artwork, thumbSize, onFieldUpdate }: CatalogRowProp
         </td>
 
         {/* Notes */}
-        <td className="py-2 px-3">
+        <td className="py-2 px-3 min-w-[180px] max-w-[260px]">
           {editingField === "notes" ? (
-            <div className="flex items-center gap-1">
-              <Input
+            <div className="flex flex-col gap-1">
+              <Textarea
                 value={editValue}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="h-7 w-40 text-xs"
-                onKeyDown={(e) => e.key === "Enter" && saveField()}
+                className="text-xs min-h-[60px] resize-y"
                 autoFocus
               />
-              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={saveField}>
-                <Check className="h-3 w-3" />
-              </Button>
+              <div className="flex justify-end gap-1">
+                <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={() => setEditingField(null)}>
+                  Cancel
+                </Button>
+                <Button variant="default" size="sm" className="h-6 text-xs" onClick={saveField}>
+                  <Check className="h-3 w-3 mr-1" /> Save
+                </Button>
+              </div>
+            </div>
+          ) : artwork.notes ? (
+            <div>
+              <p className={`text-xs whitespace-pre-wrap ${!notesExpanded ? "line-clamp-2" : ""}`}>
+                {artwork.notes}
+              </p>
+              <div className="flex items-center gap-2 mt-0.5">
+                {artwork.notes.length > 60 && (
+                  <button
+                    onClick={() => setNotesExpanded(!notesExpanded)}
+                    className="text-[10px] text-muted-foreground hover:text-foreground flex items-center gap-0.5"
+                  >
+                    {notesExpanded ? <><ChevronUp className="h-3 w-3" /> Less</> : <><ChevronDown className="h-3 w-3" /> More</>}
+                  </button>
+                )}
+                <button
+                  onClick={() => startEditing("notes", artwork.notes || "")}
+                  className="text-[10px] text-muted-foreground hover:text-foreground"
+                >
+                  Edit
+                </button>
+              </div>
             </div>
           ) : (
             <button
-              onClick={() => startEditing("notes", artwork.notes || "")}
-              className="text-xs px-1.5 py-0.5 rounded hover:bg-muted transition-colors min-w-[48px] text-left truncate max-w-[160px] block"
+              onClick={() => startEditing("notes", "")}
+              className="text-xs px-1.5 py-0.5 rounded hover:bg-muted transition-colors text-muted-foreground"
             >
-              {artwork.notes || "—"}
+              Add note...
             </button>
           )}
         </td>
