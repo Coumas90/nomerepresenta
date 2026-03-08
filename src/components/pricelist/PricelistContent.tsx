@@ -61,6 +61,7 @@ export const PricelistContent = ({
               <PricelistRow
                 key={item.id}
                 item={item}
+                activeCurrency={activeCurrency}
                 onClick={() => setViewingArtworkId(item.artwork_id)}
               />
             ))}
