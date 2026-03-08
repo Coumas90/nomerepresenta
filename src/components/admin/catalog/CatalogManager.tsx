@@ -140,7 +140,12 @@ const CatalogManager = () => {
                   <span className="inline-flex items-center justify-center">Size <SortIcon field="size_category" /></span>
                 </th>
                 <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Medium</th>
-                <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Status</th>
+                <th
+                  className="py-2 px-3 text-xs font-medium text-muted-foreground text-center cursor-pointer select-none hover:text-foreground transition-colors"
+                  onClick={() => toggleSort("status")}
+                >
+                  <span className="inline-flex items-center justify-center">Status <SortIcon field="status" /></span>
+                </th>
                 {showEdition && (
                   <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Edition</th>
                 )}
