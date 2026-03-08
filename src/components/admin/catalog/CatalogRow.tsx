@@ -139,6 +139,34 @@ export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpd
           </Select>
         </td>
 
+        {/* Edition (only for photographs) */}
+        {showEdition && (
+          <td className="py-2 px-3 text-center">
+            {editingField === "edition" ? (
+              <div className="flex items-center gap-1 justify-center">
+                <Input
+                  value={editValue}
+                  onChange={(e) => setEditValue(e.target.value)}
+                  className="h-7 w-20 text-xs text-center"
+                  placeholder="1/5"
+                  onKeyDown={(e) => e.key === "Enter" && saveField()}
+                  autoFocus
+                />
+                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={saveField}>
+                  <Check className="h-3 w-3" />
+                </Button>
+              </div>
+            ) : (
+              <button
+                onClick={() => startEditing("edition", artwork.edition || "")}
+                className="text-xs px-1.5 py-0.5 rounded hover:bg-muted transition-colors min-w-[48px]"
+              >
+                {artwork.edition || "—"}
+              </button>
+            )}
+          </td>
+        )}
+
         {/* Location */}
         <td className="py-2 px-3">
           {editingField === "location" ? (
