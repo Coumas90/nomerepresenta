@@ -376,6 +376,7 @@ export type Database = {
           id: string
           is_visible: boolean
           price: string
+          pricelist_id: string
           updated_at: string
         }
         Insert: {
@@ -385,6 +386,7 @@ export type Database = {
           id?: string
           is_visible?: boolean
           price?: string
+          pricelist_id?: string
           updated_at?: string
         }
         Update: {
@@ -394,6 +396,7 @@ export type Database = {
           id?: string
           is_visible?: boolean
           price?: string
+          pricelist_id?: string
           updated_at?: string
         }
         Relationships: [
@@ -404,7 +407,41 @@ export type Database = {
             referencedRelation: "artworks"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "pricelist_items_pricelist_id_fkey"
+            columns: ["pricelist_id"]
+            isOneToOne: false
+            referencedRelation: "pricelists"
+            referencedColumns: ["id"]
+          },
         ]
+      }
+      pricelists: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          password: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          password?: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          password?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
