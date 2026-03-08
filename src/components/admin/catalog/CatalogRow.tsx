@@ -28,9 +28,10 @@ interface CatalogRowProps {
   thumbSize: ThumbSize;
   showEdition?: boolean;
   onFieldUpdate: (id: string, field: string, value: string | null) => void;
+  catalogSeriesSuggestions?: string[];
 }
 
-export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpdate }: CatalogRowProps) => {
+export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpdate, catalogSeriesSuggestions = [] }: CatalogRowProps) => {
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const [imageOpen, setImageOpen] = useState(false);
@@ -83,17 +84,25 @@ export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpd
         {/* Series */}
         <td className="py-2 px-3">
           {editingField === "catalog_series" ? (
-            <div className="flex items-center gap-1">
-              <Input
-                value={editValue}
-                onChange={(e) => setEditValue(e.target.value)}
-                className="h-7 w-28 text-xs"
-                onKeyDown={(e) => e.key === "Enter" && saveField()}
-                autoFocus
-              />
-              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={saveField}>
-                <Check className="h-3 w-3" />
-              </Button>
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-1">
+                <Input
+                  value={editValue}
+                  onChange={(e) => setEditValue(e.target.value)}
+                  className="h-7 w-28 text-xs"
+                  onKeyDown={(e) => e.key === "Enter" && saveField()}
+                  autoFocus
+                  list={`series-suggestions-${artwork.id}`}
+                />
+                <datalist id={`series-suggestions-${artwork.id}`}>
+                  {catalogSeriesSuggestions.map((s) => (
+                    <option key={s} value={s} />
+                  ))}
+                </datalist>
+                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={saveField}>
+                  <Check className="h-3 w-3" />
+                </Button>
+              </div>
             </div>
           ) : (
             <button

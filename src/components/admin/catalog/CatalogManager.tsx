@@ -40,6 +40,11 @@ const CatalogManager = () => {
     });
   }, [artworks, search, yearFilter, sizeFilter, mediumFilter, statusFilter, seriesFilter]);
 
+  const catalogSeriesNames = useMemo(() => {
+    const set = new Set(artworks.map((a) => a.catalog_series).filter(Boolean) as string[]);
+    return Array.from(set).sort();
+  }, [artworks]);
+
   const grouped = useMemo(() => {
     const map: Record<string, typeof filtered> = {};
     for (const cat of CATEGORIES) {
@@ -91,6 +96,7 @@ const CatalogManager = () => {
                     thumbSize={thumbSize}
                     showEdition={showEdition}
                     onFieldUpdate={handleFieldUpdate}
+                    catalogSeriesSuggestions={catalogSeriesNames}
                   />
               ))}
             </tbody>
