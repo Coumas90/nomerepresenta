@@ -93,6 +93,9 @@ export const initFormatSupport = async (): Promise<{
 export const getWebPUrl = (src: string): string | null => {
   if (!src) return null;
 
+  // Already a WebP file — no transform needed
+  if (/\.webp(\?|$)/i.test(src)) return null;
+
   // Supabase Storage URLs - add format transform
   if (src.includes("supabase") && src.includes("/storage/")) {
     try {
@@ -119,6 +122,9 @@ export const getWebPUrl = (src: string): string | null => {
  */
 export const getAVIFUrl = (src: string): string | null => {
   if (!src) return null;
+
+  // Already an AVIF file — no transform needed
+  if (/\.avif(\?|$)/i.test(src)) return null;
 
   // Supabase Storage URLs - add format transform
   if (src.includes("supabase") && src.includes("/storage/")) {
@@ -221,9 +227,13 @@ export const getResponsiveSrcSet = (
   
   if (!supportsTransforms) return "";
 
+  // Skip format transform if the source is already in the target format
+  const skipFormat = (format === "webp" && /\.webp(\?|$)/i.test(src)) ||
+                     (format === "avif" && /\.avif(\?|$)/i.test(src));
+
   return widths
     .map((width) => {
-      const url = getOptimizedImageUrl(src, { width, format });
+      const url = getOptimizedImageUrl(src, { width, format: skipFormat ? undefined : format });
       return `${url} ${width}w`;
     })
     .join(", ");
