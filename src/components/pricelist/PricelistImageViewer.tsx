@@ -91,22 +91,34 @@ export const PricelistImageViewer = ({
             draggable={false}
           />
 
-          {/* Left invisible clickable zone */}
+          {/* Left clickable zone */}
           {hasMultiple && (
             <button
               onClick={goPrev}
-              className="hidden md:block absolute -left-[50vw] top-0 bottom-0 w-[calc(50%+50vw)] z-10 cursor-pointer focus:outline-none"
+              className="hidden md:block absolute -left-[50vw] top-0 bottom-0 w-[calc(50%+50vw)] z-10 cursor-pointer focus:outline-none group"
               aria-label="Previous image"
-            />
+            >
+              <ChevronLeft
+                size={20}
+                className="absolute left-[50vw] top-1/2 -translate-y-1/2 text-stone-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                strokeWidth={1.5}
+              />
+            </button>
           )}
 
-          {/* Right invisible clickable zone */}
+          {/* Right clickable zone */}
           {hasMultiple && (
             <button
               onClick={goNext}
-              className="hidden md:block absolute -right-[50vw] top-0 bottom-0 w-[calc(50%+50vw)] z-10 cursor-pointer focus:outline-none"
+              className="hidden md:block absolute -right-[50vw] top-0 bottom-0 w-[calc(50%+50vw)] z-10 cursor-pointer focus:outline-none group"
               aria-label="Next image"
-            />
+            >
+              <ChevronRight
+                size={20}
+                className="absolute right-[50vw] top-1/2 -translate-y-1/2 text-stone-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                strokeWidth={1.5}
+              />
+            </button>
           )}
 
           {/* Counter */}
