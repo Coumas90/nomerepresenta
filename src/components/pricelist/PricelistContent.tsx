@@ -64,7 +64,7 @@ export const PricelistContent = ({
             ))}
           </div>
         ))}
-        })}
+        
 
         {entries.length === 0 && (
           <p className="text-center text-stone-400 text-sm mt-20">
