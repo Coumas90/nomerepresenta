@@ -13,7 +13,6 @@ const CatalogManager = () => {
   const { data: artworks = [], isLoading } = useCatalogArtworks();
   const { data: series = [] } = useSeries();
   const updateField = useUpdateCatalogField();
-  const updateSeries = useUpdateSeries();
 
   const [search, setSearch] = useState("");
   const [yearFilter, setYearFilter] = useState("all");
