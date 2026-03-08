@@ -3,7 +3,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useCatalogArtworks, useUpdateCatalogField, type MediumType } from "@/hooks/useCatalog";
 import { useSeries } from "@/hooks/useSeries";
-import { useUpdateSeries } from "@/hooks/useSeriesMutations";
 import { CatalogFilters } from "./CatalogFilters";
 import { CatalogRow, type ThumbSize } from "./CatalogRow";
 import { CategoryFolder } from "./CategoryFolder";
