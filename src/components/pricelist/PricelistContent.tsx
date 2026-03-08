@@ -45,6 +45,16 @@ export const PricelistContent = ({
 
   return (
     <div className="min-h-screen bg-stone-100">
+      {/* Back header */}
+      <div className="sticky top-0 bg-stone-100/95 backdrop-blur border-b border-stone-200 z-10 px-6 md:px-12 py-3 md:py-4">
+        <button
+          onClick={() => navigate("/")}
+          className="text-stone-700 hover:text-stone-900 transition-colors"
+        >
+          <Undo2 className="w-5 md:w-6 h-5 md:h-6" />
+        </button>
+      </div>
+
       <div className="max-w-5xl mx-auto px-6 md:px-12 py-12 md:py-20">
         {/* Single header for the entire pricelist */}
         <div className="flex justify-between items-baseline border-b border-stone-300 pb-8 mb-0 px-4 md:px-6">
