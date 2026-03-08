@@ -78,7 +78,6 @@ export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpd
         {/* Title */}
         <td className="py-2 px-3">
           <p className="text-sm font-medium truncate max-w-[200px]">{artwork.title}</p>
-          <p className="text-xs text-muted-foreground">{artwork.series_name}</p>
         </td>
 
         {/* Year */}
