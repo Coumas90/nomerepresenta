@@ -26,10 +26,11 @@ export type ThumbSize = keyof typeof THUMB_SIZES;
 interface CatalogRowProps {
   artwork: CatalogArtwork;
   thumbSize: ThumbSize;
+  showEdition?: boolean;
   onFieldUpdate: (id: string, field: string, value: string | null) => void;
 }
 
-export const CatalogRow = ({ artwork, thumbSize, onFieldUpdate }: CatalogRowProps) => {
+export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpdate }: CatalogRowProps) => {
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const [imageOpen, setImageOpen] = useState(false);
