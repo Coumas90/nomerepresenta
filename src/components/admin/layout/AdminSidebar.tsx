@@ -8,6 +8,7 @@ import {
   Settings,
   DollarSign,
   ExternalLink,
+  BookOpen,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
