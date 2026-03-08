@@ -13,10 +13,19 @@ const CURRENCY_LABELS: Record<PricelistCurrency, string> = {
   BRL: "R$",
 };
 
+export type ThumbSize = "sm" | "md" | "lg";
+
+const THUMB_SIZES: Record<ThumbSize, string> = {
+  sm: "w-14 h-14",
+  md: "w-24 h-24",
+  lg: "w-36 h-36",
+};
+
 interface PricelistSortableItemProps {
   item: PricelistItemWithArtwork;
   seriesName: string;
   activeCurrency: PricelistCurrency;
+  thumbSize: ThumbSize;
   onDelete: () => void;
   onPriceChange: (prices: { price_usd?: string; price_eur?: string; price_brl?: string }) => void;
   onToggleVisibility: (visible: boolean) => void;
