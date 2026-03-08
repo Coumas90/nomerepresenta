@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Check, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { CatalogImageGallery } from "./CatalogImageGallery";
 import type { CatalogArtwork, SizeCategory, MediumType, ArtworkStatus } from "@/hooks/useCatalog";
 
 const STATUS_COLORS: Record<ArtworkStatus, string> = {
