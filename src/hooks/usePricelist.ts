@@ -60,7 +60,7 @@ export const usePricelistBySlug = (slug: string) => {
         .eq("slug", slug)
         .single();
       if (error) throw error;
-      return data as Pricelist;
+      return data as unknown as Pricelist;
     },
     enabled: !!slug,
   });
