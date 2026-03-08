@@ -76,7 +76,7 @@ export const useCreatePricelist = () => {
         .select()
         .single();
       if (error) throw error;
-      return result as Pricelist;
+      return result as unknown as Pricelist;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pricelists"] });
