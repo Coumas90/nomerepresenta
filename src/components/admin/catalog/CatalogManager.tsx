@@ -144,7 +144,10 @@ const CatalogManager = () => {
         onMediumFilterChange={setMediumFilter}
         statusFilter={statusFilter}
         onStatusFilterChange={setStatusFilter}
+        seriesFilter={seriesFilter}
+        onSeriesFilterChange={setSeriesFilter}
         years={years}
+        seriesList={series.map((s) => ({ id: s.id, name: s.name }))}
       />
 
       {/* Category folders */}
