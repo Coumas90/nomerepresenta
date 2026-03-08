@@ -91,7 +91,6 @@ const CatalogManager = () => {
                     thumbSize={thumbSize}
                     showEdition={showEdition}
                     onFieldUpdate={handleFieldUpdate}
-                    onToggleSeriesVisibility={handleToggleSeriesVisibility}
                   />
               ))}
             </tbody>
