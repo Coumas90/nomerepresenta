@@ -10,6 +10,7 @@ interface PricelistContentProps {
   allImages?: Record<string, ArtworkImage[]>;
   isLoading: boolean;
   pricelistName?: string;
+  seriesName?: string;
 }
 
 export const PricelistContent = ({
