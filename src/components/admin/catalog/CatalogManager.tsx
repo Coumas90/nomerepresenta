@@ -19,6 +19,7 @@ const CatalogManager = () => {
   const [sizeFilter, setSizeFilter] = useState("all");
   const [mediumFilter, setMediumFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [seriesFilter, setSeriesFilter] = useState("all");
   const [thumbSize, setThumbSize] = useState<ThumbSize>("sm");
   const [openCategories, setOpenCategories] = useState<Set<MediumType>>(new Set());
 
