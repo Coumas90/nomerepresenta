@@ -30,7 +30,7 @@ interface CatalogRowProps {
   onFieldUpdate: (id: string, field: string, value: string | null) => void;
 }
 
-export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpdate, onToggleSeriesVisibility }: CatalogRowProps) => {
+export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpdate }: CatalogRowProps) => {
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const [imageOpen, setImageOpen] = useState(false);
