@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useCatalogArtworks, useUpdateCatalogField, type MediumType } from "@/hooks/useCatalog";
 import { useSeries } from "@/hooks/useSeries";
+import { useUpdateSeries } from "@/hooks/useSeriesMutations";
 import { CatalogFilters } from "./CatalogFilters";
 import { CatalogRow, type ThumbSize } from "./CatalogRow";
 import { CategoryFolder } from "./CategoryFolder";
@@ -13,6 +14,7 @@ const CatalogManager = () => {
   const { data: artworks = [], isLoading } = useCatalogArtworks();
   const { data: series = [] } = useSeries();
   const updateField = useUpdateCatalogField();
+  const updateSeries = useUpdateSeries();
 
   const [search, setSearch] = useState("");
   const [yearFilter, setYearFilter] = useState("all");
@@ -62,6 +64,10 @@ const CatalogManager = () => {
     updateField.mutate({ id, field, value });
   };
 
+  const handleToggleSeriesVisibility = (seriesId: string, currentlyVisible: boolean) => {
+    updateSeries.mutate({ id: seriesId, is_visible: !currentlyVisible });
+  };
+
   const renderTable = (items: typeof filtered, showEdition = false) => (
     <Card className="mt-2">
       <CardContent className="p-0">
@@ -71,6 +77,7 @@ const CatalogManager = () => {
               <tr className="border-b border-border bg-muted/40">
                 <th className="py-2 px-3 text-xs font-medium text-muted-foreground" />
                 <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Title</th>
+                <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Series</th>
                 <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Year</th>
                 <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Size</th>
                 <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Medium</th>
@@ -84,13 +91,14 @@ const CatalogManager = () => {
             </thead>
             <tbody>
               {items.map((artwork) => (
-                <CatalogRow
-                  key={artwork.id}
-                  artwork={artwork}
-                  thumbSize={thumbSize}
-                  showEdition={showEdition}
-                  onFieldUpdate={handleFieldUpdate}
-                />
+                  <CatalogRow
+                    key={artwork.id}
+                    artwork={artwork}
+                    thumbSize={thumbSize}
+                    showEdition={showEdition}
+                    onFieldUpdate={handleFieldUpdate}
+                    onToggleSeriesVisibility={handleToggleSeriesVisibility}
+                  />
               ))}
             </tbody>
           </table>

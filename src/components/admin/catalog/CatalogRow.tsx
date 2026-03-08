@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Check, ChevronDown, ChevronUp } from "lucide-react";
+import { Check, ChevronDown, ChevronUp, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { CatalogImageGallery } from "./CatalogImageGallery";
@@ -28,9 +28,10 @@ interface CatalogRowProps {
   thumbSize: ThumbSize;
   showEdition?: boolean;
   onFieldUpdate: (id: string, field: string, value: string | null) => void;
+  onToggleSeriesVisibility: (seriesId: string, currentlyVisible: boolean) => void;
 }
 
-export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpdate }: CatalogRowProps) => {
+export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpdate, onToggleSeriesVisibility }: CatalogRowProps) => {
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const [imageOpen, setImageOpen] = useState(false);
@@ -78,7 +79,24 @@ export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpd
         {/* Title */}
         <td className="py-2 px-3">
           <p className="text-sm font-medium truncate max-w-[200px]">{artwork.title}</p>
-          <p className="text-xs text-muted-foreground">{artwork.series_name}</p>
+        </td>
+
+        {/* Series */}
+        <td className="py-2 px-3">
+          <div className="flex items-center gap-1.5">
+            <p className="text-xs truncate max-w-[120px]">{artwork.series_name}</p>
+            <button
+              onClick={() => onToggleSeriesVisibility(artwork.series_id, artwork.series_visible ?? true)}
+              className="shrink-0 p-0.5 rounded hover:bg-muted transition-colors"
+              title={artwork.series_visible !== false ? "Visible in Works" : "Hidden from Works"}
+            >
+              {artwork.series_visible !== false ? (
+                <Eye className="h-3 w-3 text-emerald-600" />
+              ) : (
+                <EyeOff className="h-3 w-3 text-muted-foreground" />
+              )}
+            </button>
+          </div>
         </td>
 
         {/* Year */}

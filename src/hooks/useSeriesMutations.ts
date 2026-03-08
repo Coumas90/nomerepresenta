@@ -53,6 +53,7 @@ export const useUpdateSeries = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["series"] });
+      queryClient.invalidateQueries({ queryKey: ["catalog-artworks"] });
       toast({
         title: "Series Updated",
         description: "The series has been updated successfully.",
