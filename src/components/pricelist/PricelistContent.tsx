@@ -47,13 +47,6 @@ export const PricelistContent = ({
     <div className="min-h-screen bg-stone-100">
       {/* Back header */}
       <div className="sticky top-0 bg-stone-100/95 backdrop-blur border-b border-stone-200 z-10 px-6 md:px-12 py-3 md:py-4 flex items-center justify-between">
-        <button
-          onClick={() => navigate("/")}
-          className="flex items-center gap-2 text-stone-700 hover:text-stone-900 transition-colors"
-        >
-          <Undo2 className="w-5 md:w-6 h-5 md:h-6" />
-          <span className="text-[8px] md:text-[10px] tracking-wide uppercase opacity-50">Back to home</span>
-        </button>
         <div className="flex items-baseline gap-4">
           <span className="text-[10px] md:text-xs font-medium tracking-[0.15em] uppercase text-stone-800">
             IVAN COMAS_ {pricelistName ? pricelistName.toUpperCase() : "PRICELIST"}
@@ -64,6 +57,13 @@ export const PricelistContent = ({
             </span>
           )}
         </div>
+        <button
+          onClick={() => navigate("/")}
+          className="flex items-center gap-2 text-stone-700 hover:text-stone-900 transition-colors"
+        >
+          <span className="text-[8px] md:text-[10px] tracking-wide uppercase opacity-50">Back to home</span>
+          <Undo2 className="w-5 md:w-6 h-5 md:h-6" />
+        </button>
       </div>
 
       <div className="max-w-5xl mx-auto px-6 md:px-12 py-12 md:py-20">
