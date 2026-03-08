@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Check, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { CatalogImageGallery } from "./CatalogImageGallery";
 import type { CatalogArtwork, SizeCategory, MediumType, ArtworkStatus } from "@/hooks/useCatalog";
 
 const STATUS_COLORS: Record<ArtworkStatus, string> = {
@@ -33,6 +34,7 @@ export const CatalogRow = ({ artwork, thumbSize, onFieldUpdate }: CatalogRowProp
   const [editValue, setEditValue] = useState("");
   const [imageOpen, setImageOpen] = useState(false);
   const [notesExpanded, setNotesExpanded] = useState(false);
+  const [imagesExpanded, setImagesExpanded] = useState(false);
 
   const startEditing = (field: string, currentValue: string) => {
     setEditingField(field);
@@ -53,14 +55,23 @@ export const CatalogRow = ({ artwork, thumbSize, onFieldUpdate }: CatalogRowProp
       <tr className="border-b border-border hover:bg-muted/30 transition-colors">
         {/* Thumbnail */}
         <td className="py-2 px-3">
-          <button onClick={() => setImageOpen(true)} className="block rounded overflow-hidden hover:ring-2 hover:ring-primary/50 transition-all">
-            <img
-              src={artwork.image_url}
-              alt={artwork.title}
-              className={`${THUMB_SIZES[thumbSize]} object-cover rounded`}
-              loading="lazy"
-            />
-          </button>
+          <div className="flex flex-col items-center gap-1">
+            <button onClick={() => setImageOpen(true)} className="block rounded overflow-hidden hover:ring-2 hover:ring-primary/50 transition-all">
+              <img
+                src={artwork.image_url}
+                alt={artwork.title}
+                className={`${THUMB_SIZES[thumbSize]} object-cover rounded`}
+                loading="lazy"
+              />
+            </button>
+            <button
+              onClick={() => setImagesExpanded(!imagesExpanded)}
+              className="flex items-center gap-0.5 text-[10px] text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {imagesExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+              {imagesExpanded ? "Hide" : "Images"}
+            </button>
+          </div>
         </td>
 
         {/* Title */}
@@ -204,7 +215,15 @@ export const CatalogRow = ({ artwork, thumbSize, onFieldUpdate }: CatalogRowProp
         </td>
       </tr>
 
-      {/* Fullscreen image dialog */}
+      {/* Expanded images gallery row */}
+      {imagesExpanded && (
+        <tr className="border-b border-border bg-muted/20">
+          <td colSpan={8} className="py-3 px-4">
+            <CatalogImageGallery artworkId={artwork.id} />
+          </td>
+        </tr>
+      )}
+
       <Dialog open={imageOpen} onOpenChange={setImageOpen}>
         <DialogContent className="max-w-3xl p-2 bg-background">
           <div className="flex flex-col items-center gap-3">

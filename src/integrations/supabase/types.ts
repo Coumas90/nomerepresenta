@@ -122,6 +122,7 @@ export type Database = {
           display_order: number
           id: string
           image_url: string
+          is_catalog_visible: boolean
           is_detail: boolean
           is_main: boolean | null
           materials: string | null
@@ -137,6 +138,7 @@ export type Database = {
           display_order?: number
           id?: string
           image_url: string
+          is_catalog_visible?: boolean
           is_detail?: boolean
           is_main?: boolean | null
           materials?: string | null
@@ -152,6 +154,7 @@ export type Database = {
           display_order?: number
           id?: string
           image_url?: string
+          is_catalog_visible?: boolean
           is_detail?: boolean
           is_main?: boolean | null
           materials?: string | null
