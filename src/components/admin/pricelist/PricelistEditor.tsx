@@ -122,6 +122,19 @@ export const PricelistEditor = ({ pricelist }: PricelistEditorProps) => {
         </Button>
       </div>
 
+      <div className="flex items-center justify-between">
+        <ToggleGroup
+          type="single"
+          value={thumbSize}
+          onValueChange={(v) => v && setThumbSize(v as ThumbSize)}
+          className="border rounded-md"
+        >
+          <ToggleGroupItem value="sm" className="text-xs px-2.5 h-7">S</ToggleGroupItem>
+          <ToggleGroupItem value="md" className="text-xs px-2.5 h-7">M</ToggleGroupItem>
+          <ToggleGroupItem value="lg" className="text-xs px-2.5 h-7">L</ToggleGroupItem>
+        </ToggleGroup>
+      </div>
+
       <Card>
         <CardHeader>
           <CardTitle>Items ({items.length})</CardTitle>
