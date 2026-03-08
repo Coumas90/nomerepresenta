@@ -35,6 +35,7 @@ export const PricelistSortableItem = ({
   item,
   seriesName,
   activeCurrency,
+  thumbSize,
   onDelete,
   onPriceChange,
   onToggleVisibility,
