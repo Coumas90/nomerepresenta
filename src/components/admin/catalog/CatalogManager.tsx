@@ -96,6 +96,7 @@ const CatalogManager = () => {
                     thumbSize={thumbSize}
                     showEdition={showEdition}
                     onFieldUpdate={handleFieldUpdate}
+                    catalogSeriesSuggestions={catalogSeriesNames}
                   />
               ))}
             </tbody>
