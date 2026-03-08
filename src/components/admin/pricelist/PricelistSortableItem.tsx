@@ -11,7 +11,7 @@ interface PricelistSortableItemProps {
   item: PricelistItemWithArtwork;
   seriesName: string;
   onDelete: () => void;
-  onPriceChange: (price: string) => void;
+  onPriceChange: (prices: { price_usd?: string; price_eur?: string; price_brl?: string }) => void;
   onToggleVisibility: (visible: boolean) => void;
 }
 
@@ -22,8 +22,8 @@ export const PricelistSortableItem = ({
   onPriceChange,
   onToggleVisibility,
 }: PricelistSortableItemProps) => {
-  const [editingPrice, setEditingPrice] = useState(false);
-  const [priceValue, setPriceValue] = useState(item.price);
+  const [editingCurrency, setEditingCurrency] = useState<string | null>(null);
+  const [priceValue, setPriceValue] = useState("");
 
   const {
     attributes,
@@ -40,10 +40,23 @@ export const PricelistSortableItem = ({
     opacity: isDragging ? 0.5 : item.is_visible ? 1 : 0.5,
   };
 
-  const handleSavePrice = () => {
-    onPriceChange(priceValue);
-    setEditingPrice(false);
+  const startEditing = (currency: string, currentValue: string) => {
+    setEditingCurrency(currency);
+    setPriceValue(currentValue);
   };
+
+  const handleSavePrice = () => {
+    if (editingCurrency) {
+      onPriceChange({ [`price_${editingCurrency}`]: priceValue });
+      setEditingCurrency(null);
+    }
+  };
+
+  const currencies = [
+    { key: "usd", label: "USD", value: item.price_usd },
+    { key: "eur", label: "EUR", value: item.price_eur },
+    { key: "brl", label: "R$", value: item.price_brl },
+  ];
 
   return (
     <div ref={setNodeRef} style={style} className="mb-2 border rounded-lg p-3">
@@ -63,28 +76,36 @@ export const PricelistSortableItem = ({
           <p className="text-xs text-muted-foreground">{seriesName}</p>
         </div>
 
-        <div className="flex items-center gap-2">
-          {editingPrice ? (
-            <div className="flex items-center gap-1">
-              <Input
-                value={priceValue}
-                onChange={(e) => setPriceValue(e.target.value)}
-                className="w-32 h-8 text-sm"
-                onKeyDown={(e) => e.key === "Enter" && handleSavePrice()}
-                autoFocus
-              />
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleSavePrice}>
-                <Check className="h-4 w-4" />
-              </Button>
-            </div>
-          ) : (
-            <button
-              onClick={() => setEditingPrice(true)}
-              className="text-sm font-medium px-2 py-1 rounded hover:bg-muted transition-colors"
-            >
-              {item.price || "Set price"}
-            </button>
-          )}
+        <div className="flex items-center gap-3">
+          {/* Currency prices */}
+          <div className="flex items-center gap-2">
+            {currencies.map((c) => (
+              <div key={c.key} className="text-center">
+                <span className="text-[10px] text-muted-foreground block">{c.label}</span>
+                {editingCurrency === c.key ? (
+                  <div className="flex items-center gap-0.5">
+                    <Input
+                      value={priceValue}
+                      onChange={(e) => setPriceValue(e.target.value)}
+                      className="w-20 h-6 text-xs"
+                      onKeyDown={(e) => e.key === "Enter" && handleSavePrice()}
+                      autoFocus
+                    />
+                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleSavePrice}>
+                      <Check className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => startEditing(c.key, c.value || "")}
+                    className="text-xs font-medium px-1.5 py-0.5 rounded hover:bg-muted transition-colors min-w-[48px]"
+                  >
+                    {c.value || "—"}
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
 
           <Switch
             checked={item.is_visible}

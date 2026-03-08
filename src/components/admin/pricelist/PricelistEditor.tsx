@@ -78,8 +78,8 @@ export const PricelistEditor = ({ pricelist }: PricelistEditorProps) => {
     });
   };
 
-  const handlePriceChange = (id: string, price: string) => {
-    updateItem.mutate({ id, pricelistId: pricelist.id, updates: { price } });
+  const handlePriceChange = (id: string, prices: { price_usd?: string; price_eur?: string; price_brl?: string }) => {
+    updateItem.mutate({ id, pricelistId: pricelist.id, updates: prices });
   };
 
   const handleToggleVisibility = (id: string, isVisible: boolean) => {

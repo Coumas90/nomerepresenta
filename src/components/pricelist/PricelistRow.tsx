@@ -1,13 +1,31 @@
-import type { PricelistItemWithArtwork } from "@/hooks/usePricelist";
+import type { PricelistItemWithArtwork, PricelistCurrency } from "@/hooks/usePricelist";
+
+const CURRENCY_SYMBOLS: Record<PricelistCurrency, string> = {
+  USD: "$",
+  EUR: "€",
+  BRL: "R$",
+};
 
 interface PricelistRowProps {
   item: PricelistItemWithArtwork;
+  activeCurrency: PricelistCurrency;
   onClick: () => void;
 }
 
-export const PricelistRow = ({ item, onClick }: PricelistRowProps) => {
-  const { artwork, price } = item;
+export const PricelistRow = ({ item, activeCurrency, onClick }: PricelistRowProps) => {
+  const { artwork } = item;
   if (!artwork) return null;
+
+  const priceMap: Record<PricelistCurrency, string> = {
+    USD: item.price_usd,
+    EUR: item.price_eur,
+    BRL: item.price_brl,
+  };
+
+  const rawPrice = priceMap[activeCurrency] || item.price;
+  const displayPrice = rawPrice
+    ? `${CURRENCY_SYMBOLS[activeCurrency]} ${rawPrice}`
+    : item.price || "";
 
   return (
     <div
@@ -22,7 +40,7 @@ export const PricelistRow = ({ item, onClick }: PricelistRowProps) => {
       }}
       className="grid grid-cols-[150px_1fr_auto] md:grid-cols-[220px_1fr_auto] gap-10 md:gap-20 items-center py-8 md:py-10 border-b border-stone-300 cursor-pointer hover:bg-stone-200/30 transition-colors px-4 md:px-6"
     >
-      {/* Thumbnail — object-contain to never crop */}
+      {/* Thumbnail */}
       <div className="bg-stone-200/50">
         <img
           src={artwork.image_url}
@@ -52,7 +70,7 @@ export const PricelistRow = ({ item, onClick }: PricelistRowProps) => {
       {/* Price */}
       <div className="text-right self-center">
         <p className="text-sm md:text-[15px] text-stone-800 whitespace-nowrap">
-          {price}
+          {displayPrice}
         </p>
       </div>
     </div>

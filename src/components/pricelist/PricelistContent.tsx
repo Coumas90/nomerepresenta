@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { SeriesData, ArtworkImage } from "@/types";
-import type { PricelistItemWithArtwork } from "@/hooks/usePricelist";
+import type { PricelistItemWithArtwork, PricelistCurrency } from "@/hooks/usePricelist";
 import { PricelistRow } from "./PricelistRow";
 import { PricelistImageViewer } from "./PricelistImageViewer";
 
@@ -11,6 +11,7 @@ interface PricelistContentProps {
   isLoading: boolean;
   pricelistName?: string;
   seriesName?: string;
+  activeCurrency?: PricelistCurrency;
 }
 
 export const PricelistContent = ({
@@ -20,6 +21,7 @@ export const PricelistContent = ({
   isLoading,
   pricelistName,
   seriesName,
+  activeCurrency = "USD",
 }: PricelistContentProps) => {
   const [viewingArtworkId, setViewingArtworkId] = useState<string | null>(null);
 
@@ -59,6 +61,7 @@ export const PricelistContent = ({
               <PricelistRow
                 key={item.id}
                 item={item}
+                activeCurrency={activeCurrency}
                 onClick={() => setViewingArtworkId(item.artwork_id)}
               />
             ))}

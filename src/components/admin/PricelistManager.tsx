@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, ExternalLink, Trash2, Copy, Eye, EyeOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -127,6 +128,22 @@ const PricelistManager = () => {
                             if (e.key === "Enter") (e.target as HTMLInputElement).blur();
                           }}
                         />
+                      </span>
+                       <span className="flex items-center gap-1">
+                        Currency:{" "}
+                        <Select
+                          defaultValue={pl.active_currency || "USD"}
+                          onValueChange={(val) => updatePricelist.mutate({ id: pl.id, updates: { active_currency: val as any } })}
+                        >
+                          <SelectTrigger className="h-6 w-20 text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="USD">USD</SelectItem>
+                            <SelectItem value="EUR">EUR</SelectItem>
+                            <SelectItem value="BRL">R$</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </span>
                       <span className="flex items-center gap-1">
                         Password:{" "}
