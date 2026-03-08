@@ -13,7 +13,10 @@ interface CatalogFiltersProps {
   onMediumFilterChange: (value: string) => void;
   statusFilter: string;
   onStatusFilterChange: (value: string) => void;
+  seriesFilter: string;
+  onSeriesFilterChange: (value: string) => void;
   years: string[];
+  seriesList: { id: string; name: string }[];
 }
 
 export const CatalogFilters = ({
