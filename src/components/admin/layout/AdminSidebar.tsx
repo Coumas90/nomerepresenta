@@ -7,6 +7,7 @@ import {
   Camera,
   Settings,
   DollarSign,
+  ExternalLink,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
@@ -211,6 +212,39 @@ export function AdminSidebar() {
                   </SidebarMenuItem>
                 );
               })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel className={collapsed ? "opacity-0" : ""}>
+            Quick Links
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                {collapsed ? (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <SidebarMenuButton asChild>
+                        <a href="/pricelist" target="_blank" rel="noopener noreferrer" className="hover:bg-muted/50 transition-colors">
+                          <ExternalLink className="h-4 w-4" />
+                        </a>
+                      </SidebarMenuButton>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                      <p>View Pricelist</p>
+                    </TooltipContent>
+                  </Tooltip>
+                ) : (
+                  <SidebarMenuButton asChild>
+                    <a href="/pricelist" target="_blank" rel="noopener noreferrer" className="hover:bg-muted/50 transition-colors">
+                      <ExternalLink className="h-4 w-4" />
+                      <span>View Pricelist</span>
+                    </a>
+                  </SidebarMenuButton>
+                )}
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
