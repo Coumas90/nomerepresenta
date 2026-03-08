@@ -164,6 +164,20 @@ const ArtworksList = ({ onEdit, onCreateInSeries }: ArtworksListProps) => {
     }
   };
 
+  const handleSortByYear = (seriesId: string, seriesArtworks: ArtworkData[]) => {
+    const sorted = [...seriesArtworks].sort((a, b) => {
+      const yearA = parseInt(a.year || "0", 10) || 0;
+      const yearB = parseInt(b.year || "0", 10) || 0;
+      return yearA - yearB;
+    });
+    const updates = sorted.map((artwork, index) => ({
+      id: artwork.id,
+      display_order: index,
+      series_id: seriesId,
+    }));
+    updateOrderMutation.mutate(updates);
+  };
+
   // Memoize artworks grouped by series to avoid recomputing on every render
   const artworksBySeries = useMemo(() => {
     const grouped: Record<string, ArtworkData[]> = {};
