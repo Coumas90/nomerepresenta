@@ -84,6 +84,14 @@ const SortableSeriesItem = ({ id, name, description, isVisible, showNameInMenu, 
                 />
                 <span className="text-xs text-muted-foreground">{isVisible ? "Visible" : "Hidden"}</span>
               </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onToggleNameInMenu}
+                title={showNameInMenu ? "Hide name in Works menu" : "Show name in Works menu"}
+              >
+                {showNameInMenu ? <Eye className="h-4 w-4 text-emerald-600" /> : <EyeOff className="h-4 w-4 text-muted-foreground" />}
+              </Button>
               <Button variant="outline" size="icon" onClick={onEdit}>
                 <Edit className="h-4 w-4" />
               </Button>
