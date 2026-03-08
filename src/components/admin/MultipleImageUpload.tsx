@@ -398,7 +398,10 @@ const MultipleImageUpload = ({ artworkId, artworkData, onImagesChange }: Multipl
   };
 
   const handleSetMain = async (imageId: string) => {
-    if (!artworkId) return;
+    if (!artworkId || !images) return;
+    // Prevent setting a detail image as main
+    const targetImage = images.find(img => img.id === imageId);
+    if (targetImage?.is_detail) return;
     await setMainImageMutation.mutateAsync({ imageId, artworkId });
     if (onImagesChange) onImagesChange();
   };
