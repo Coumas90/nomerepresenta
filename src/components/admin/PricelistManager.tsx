@@ -1,135 +1,227 @@
 import { useState } from "react";
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-} from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus } from "lucide-react";
-import { useArtworks } from "@/hooks/useArtworks";
-import { useSeries } from "@/hooks/useSeries";
+import { Plus, ExternalLink, Trash2, Copy, Eye, EyeOff } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
-  usePricelist,
-  useAddPricelistItem,
-  useDeletePricelistItem,
-  useUpdatePricelistItem,
-  useReorderPricelist,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  usePricelists,
+  useCreatePricelist,
+  useDeletePricelist,
+  useUpdatePricelist,
 } from "@/hooks/usePricelist";
-import { PricelistSortableItem } from "./pricelist/PricelistSortableItem";
-import { PricelistAddDialog } from "./pricelist/PricelistAddDialog";
+import { toast } from "sonner";
+import { PricelistEditor } from "./pricelist/PricelistEditor";
 
 const PricelistManager = () => {
-  const [showAddDialog, setShowAddDialog] = useState(false);
-  const { data: items = [] } = usePricelist();
-  const { data: artworks = [] } = useArtworks();
-  const { data: series = [] } = useSeries();
-  const addItem = useAddPricelistItem();
-  const deleteItem = useDeletePricelistItem();
-  const updateItem = useUpdatePricelistItem();
-  const reorder = useReorderPricelist();
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [editingPricelistId, setEditingPricelistId] = useState<string | null>(null);
+  const [showPasswords, setShowPasswords] = useState<Set<string>>(new Set());
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
-  );
+  const { data: pricelists = [] } = usePricelists();
+  const createPricelist = useCreatePricelist();
+  const deletePricelist = useDeletePricelist();
+  const updatePricelist = useUpdatePricelist();
 
-  const seriesMap = new Map(series.map((s) => [s.id, s.name]));
+  const [newName, setNewName] = useState("");
+  const [newSlug, setNewSlug] = useState("");
+  const [newPassword, setNewPassword] = useState("");
 
-  // Artworks not yet in pricelist
-  const existingArtworkIds = new Set(items.map((i) => i.artwork_id));
-  const availableArtworks = artworks.filter((a) => !existingArtworkIds.has(a.id));
-
-  const handleAdd = (artworkId: string, price: string) => {
-    addItem.mutate({
-      artwork_id: artworkId,
-      price,
-      display_order: items.length,
-    });
-    setShowAddDialog(false);
-  };
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-
-    const oldIndex = items.findIndex((i) => i.id === active.id);
-    const newIndex = items.findIndex((i) => i.id === over.id);
-    const newOrder = arrayMove(items, oldIndex, newIndex);
-
-    reorder.mutate(
-      newOrder.map((item, idx) => ({ id: item.id, display_order: idx }))
+  const handleCreate = () => {
+    if (!newName || !newSlug || !newPassword) return;
+    createPricelist.mutate(
+      { name: newName, slug: newSlug.toLowerCase().replace(/[^a-z0-9-]/g, "-"), password: newPassword },
+      {
+        onSuccess: () => {
+          setShowCreateDialog(false);
+          setNewName("");
+          setNewSlug("");
+          setNewPassword("");
+        },
+      }
     );
   };
 
-  const handlePriceChange = (id: string, price: string) => {
-    updateItem.mutate({ id, updates: { price } });
+  const handleCopyLink = (slug: string) => {
+    const url = `${window.location.origin}/pricelist/${slug}`;
+    navigator.clipboard.writeText(url);
+    toast.success("Link copied to clipboard");
   };
 
-  const handleToggleVisibility = (id: string, isVisible: boolean) => {
-    updateItem.mutate({ id, updates: { is_visible: isVisible } });
+  const togglePasswordVisibility = (id: string) => {
+    setShowPasswords((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   };
+
+  if (editingPricelistId) {
+    const pricelist = pricelists.find((p) => p.id === editingPricelistId);
+    if (!pricelist) return null;
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" onClick={() => setEditingPricelistId(null)}>
+            ← Back
+          </Button>
+          <h2 className="text-xl font-semibold">{pricelist.name}</h2>
+        </div>
+        <PricelistEditor pricelist={pricelist} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold">Pricelist</h2>
+          <h2 className="text-xl font-semibold">Pricelists</h2>
           <p className="text-sm text-muted-foreground">
-            Manage which artworks appear in the pricelist and their prices.
+            Create multiple pricelists with different passwords and share them.
           </p>
         </div>
-        <Button onClick={() => setShowAddDialog(true)} disabled={availableArtworks.length === 0}>
+        <Button onClick={() => setShowCreateDialog(true)}>
           <Plus className="mr-2 h-4 w-4" />
-          Add Artwork
+          New Pricelist
         </Button>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Items ({items.length})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {items.length > 0 ? (
-            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-              <SortableContext items={items.map((i) => i.id)} strategy={verticalListSortingStrategy}>
-                {items.map((item) => (
-                  <PricelistSortableItem
-                    key={item.id}
-                    item={item}
-                    seriesName={seriesMap.get(item.artwork?.series_id || "") || ""}
-                    onDelete={() => deleteItem.mutate(item.id)}
-                    onPriceChange={(price) => handlePriceChange(item.id, price)}
-                    onToggleVisibility={(visible) => handleToggleVisibility(item.id, visible)}
-                  />
-                ))}
-              </SortableContext>
-            </DndContext>
-          ) : (
-            <p className="text-center py-8 text-muted-foreground">
-              No items yet. Add artworks to the pricelist.
-            </p>
-          )}
-        </CardContent>
-      </Card>
+      {pricelists.length === 0 ? (
+        <Card>
+          <CardContent className="py-12 text-center text-muted-foreground">
+            No pricelists yet. Create one to get started.
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid gap-4">
+          {pricelists.map((pl) => (
+            <Card key={pl.id} className="hover:shadow-md transition-shadow">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1 flex-1">
+                    <h3 className="font-semibold text-base">{pl.name}</h3>
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <span className="font-mono bg-muted px-2 py-0.5 rounded text-xs">
+                        /pricelist/{pl.slug}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        Password:{" "}
+                        <button
+                          onClick={() => togglePasswordVisibility(pl.id)}
+                          className="inline-flex items-center gap-1 hover:text-foreground transition-colors"
+                        >
+                          {showPasswords.has(pl.id) ? (
+                            <>
+                              <span className="font-mono">{pl.password}</span>
+                              <EyeOff className="h-3 w-3" />
+                            </>
+                          ) : (
+                            <>
+                              <span>••••••</span>
+                              <Eye className="h-3 w-3" />
+                            </>
+                          )}
+                        </button>
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleCopyLink(pl.slug)}
+                    >
+                      <Copy className="h-3 w-3 mr-1" />
+                      Copy Link
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      asChild
+                    >
+                      <a href={`/pricelist/${pl.slug}`} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="h-3 w-3 mr-1" />
+                        View
+                      </a>
+                    </Button>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={() => setEditingPricelistId(pl.id)}
+                    >
+                      Edit Items
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => deletePricelist.mutate(pl.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
 
-      <PricelistAddDialog
-        open={showAddDialog}
-        onOpenChange={setShowAddDialog}
-        artworks={availableArtworks}
-        seriesMap={seriesMap}
-        onAdd={handleAdd}
-      />
+      {/* Create Dialog */}
+      <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Create New Pricelist</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Name</Label>
+              <Input
+                value={newName}
+                onChange={(e) => {
+                  setNewName(e.target.value);
+                  if (!newSlug || newSlug === newName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/-+$/,"")) {
+                    setNewSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/-+$/,""));
+                  }
+                }}
+                placeholder="e.g. Gallery XYZ"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label>Slug (URL)</Label>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-sm text-muted-foreground">/pricelist/</span>
+                <Input
+                  value={newSlug}
+                  onChange={(e) => setNewSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
+                  placeholder="gallery-xyz"
+                />
+              </div>
+            </div>
+            <div>
+              <Label>Password</Label>
+              <Input
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Enter password for this pricelist"
+                className="mt-1"
+              />
+            </div>
+            <Button onClick={handleCreate} disabled={!newName || !newSlug || !newPassword} className="w-full">
+              Create Pricelist
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
