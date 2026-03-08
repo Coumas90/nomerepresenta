@@ -30,7 +30,10 @@ export const CatalogFilters = ({
   onMediumFilterChange,
   statusFilter,
   onStatusFilterChange,
+  seriesFilter,
+  onSeriesFilterChange,
   years,
+  seriesList,
 }: CatalogFiltersProps) => {
   return (
     <div className="flex flex-wrap items-center gap-3">
