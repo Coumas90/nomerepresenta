@@ -9,6 +9,7 @@ interface PricelistContentProps {
   seriesMap: Map<string, SeriesData>;
   allImages?: Record<string, ArtworkImage[]>;
   isLoading: boolean;
+  pricelistName?: string;
 }
 
 export const PricelistContent = ({
@@ -16,6 +17,7 @@ export const PricelistContent = ({
   seriesMap,
   allImages,
   isLoading,
+  pricelistName,
 }: PricelistContentProps) => {
   const [viewingArtworkId, setViewingArtworkId] = useState<string | null>(null);
 
@@ -29,7 +31,6 @@ export const PricelistContent = ({
 
   const entries = Array.from(grouped.entries());
 
-  // Find the images for the currently viewed artwork
   const viewerImages = viewingArtworkId ? allImages?.[viewingArtworkId] || [] : [];
   const viewingItem = entries
     .flatMap(([, items]) => items)
@@ -42,17 +43,15 @@ export const PricelistContent = ({
           const seriesInfo = seriesMap.get(seriesId);
           return (
             <div key={seriesId} className="mb-16">
-              {/* Header row */}
               <div className="flex justify-between items-baseline border-b border-stone-300 pb-3 mb-0">
                 <h1 className="text-sm md:text-base font-medium tracking-[0.15em] uppercase text-stone-800">
-                  IVAN COMAS_ PRICELIST
+                  IVAN COMAS_ {pricelistName ? pricelistName.toUpperCase() : "PRICELIST"}
                 </h1>
                 <h2 className="text-sm md:text-base font-medium tracking-[0.15em] uppercase text-stone-800">
                   {seriesInfo?.name || ""}
                 </h2>
               </div>
 
-              {/* Items */}
               {items.map((item) => (
                 <PricelistRow
                   key={item.id}
@@ -71,7 +70,6 @@ export const PricelistContent = ({
         )}
       </div>
 
-      {/* Image viewer dialog */}
       <PricelistImageViewer
         open={!!viewingArtworkId}
         onOpenChange={(open) => !open && setViewingArtworkId(null)}
