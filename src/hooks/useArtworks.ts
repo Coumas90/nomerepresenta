@@ -17,6 +17,7 @@ export const useArtworks = () => {
 
       return data as ArtworkData[];
     },
+    staleTime: 5 * 60 * 1000,
   });
 };
 

@@ -17,5 +17,6 @@ export const useSeries = () => {
 
       return data as SeriesData[];
     },
+    staleTime: 5 * 60 * 1000,
   });
 };
