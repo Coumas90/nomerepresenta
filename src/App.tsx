@@ -73,11 +73,7 @@ const App = () => (
         }>
           <Routes>
             <Route path="/" element={<Landing />} />
-            <Route path="/works" element={
-              <Suspense fallback={<div className="min-h-screen bg-stone-100" />}>
-                <WorksPage />
-              </Suspense>
-            } />
+            <Route path="/works" element={<WorksPage />} />
             <Route path="/artwork/:id" element={<ArtworkDetail />} />
             <Route path="/studio" element={
               <Suspense fallback={<div className="min-h-screen bg-stone-100" />}>

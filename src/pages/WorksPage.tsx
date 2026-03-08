@@ -131,8 +131,9 @@ const WorksPage = () => {
     return () => observer.disconnect();
   }, [trackUserEvent]);
 
-  // Loading state - render page shell immediately, no blocking spinner
-  if (isLoading) {
+  // Loading state - only show on true first load (no cached data at all)
+  // React Query's isLoading is false when cache has data, so this only fires on cold start
+  if (isLoading && !seriesWithArtworks?.length) {
     return (
       <div className="min-h-screen bg-stone-100" />
     );
