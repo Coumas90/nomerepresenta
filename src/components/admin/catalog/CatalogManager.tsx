@@ -1,11 +1,17 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { useCatalogArtworks, useUpdateCatalogField, type MediumType } from "@/hooks/useCatalog";
+import { useCatalogArtworks, useUpdateCatalogField, type MediumType, type CatalogArtwork } from "@/hooks/useCatalog";
 import { useSeries } from "@/hooks/useSeries";
 import { CatalogFilters } from "./CatalogFilters";
 import { CatalogRow, type ThumbSize } from "./CatalogRow";
 import { CategoryFolder } from "./CategoryFolder";
+import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
+
+type SortField = "title" | "year" | "size_category" | null;
+type SortDir = "asc" | "desc";
+
+const SIZE_ORDER: Record<string, number> = { S: 1, M: 2, L: 3 };
 
 const CATEGORIES: MediumType[] = ["PAINTING", "POW", "PHOTO"];
 
@@ -22,6 +28,40 @@ const CatalogManager = () => {
   const [seriesFilter, setSeriesFilter] = useState("all");
   const [thumbSize, setThumbSize] = useState<ThumbSize>("sm");
   const [openCategories, setOpenCategories] = useState<Set<MediumType>>(new Set());
+  const [sortField, setSortField] = useState<SortField>(null);
+  const [sortDir, setSortDir] = useState<SortDir>("asc");
+
+  const toggleSort = useCallback((field: SortField) => {
+    if (sortField === field) {
+      if (sortDir === "asc") setSortDir("desc");
+      else { setSortField(null); setSortDir("asc"); }
+    } else {
+      setSortField(field);
+      setSortDir("asc");
+    }
+  }, [sortField, sortDir]);
+
+  const sortItems = useCallback((items: CatalogArtwork[]) => {
+    if (!sortField) return items;
+    return [...items].sort((a, b) => {
+      let cmp = 0;
+      if (sortField === "title") {
+        cmp = (a.title || "").localeCompare(b.title || "");
+      } else if (sortField === "year") {
+        cmp = (a.year || "").localeCompare(b.year || "");
+      } else if (sortField === "size_category") {
+        cmp = (SIZE_ORDER[a.size_category || ""] || 0) - (SIZE_ORDER[b.size_category || ""] || 0);
+      }
+      return sortDir === "desc" ? -cmp : cmp;
+    });
+  }, [sortField, sortDir]);
+
+  const SortIcon = ({ field }: { field: SortField }) => {
+    if (sortField !== field) return <ArrowUpDown className="h-3 w-3 ml-1 opacity-40" />;
+    return sortDir === "asc"
+      ? <ArrowUp className="h-3 w-3 ml-1" />
+      : <ArrowDown className="h-3 w-3 ml-1" />;
+  };
 
   const years = useMemo(() => {
     const set = new Set(artworks.map((a) => a.year).filter(Boolean) as string[]);
@@ -67,7 +107,9 @@ const CatalogManager = () => {
     updateField.mutate({ id, field, value });
   };
 
-  const renderTable = (items: typeof filtered, showEdition = false) => (
+  const renderTable = (items: typeof filtered, showEdition = false) => {
+    const sorted = sortItems(items);
+    return (
     <Card className="mt-2">
       <CardContent className="p-0">
         <div className="overflow-x-auto">
@@ -75,10 +117,25 @@ const CatalogManager = () => {
             <thead>
               <tr className="border-b border-border bg-muted/40">
                 <th className="py-2 px-3 text-xs font-medium text-muted-foreground" />
-                <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Title</th>
+                <th
+                  className="py-2 px-3 text-xs font-medium text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors"
+                  onClick={() => toggleSort("title")}
+                >
+                  <span className="inline-flex items-center">Title <SortIcon field="title" /></span>
+                </th>
                 <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Series</th>
-                <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Year</th>
-                <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Size</th>
+                <th
+                  className="py-2 px-3 text-xs font-medium text-muted-foreground text-center cursor-pointer select-none hover:text-foreground transition-colors"
+                  onClick={() => toggleSort("year")}
+                >
+                  <span className="inline-flex items-center justify-center">Year <SortIcon field="year" /></span>
+                </th>
+                <th
+                  className="py-2 px-3 text-xs font-medium text-muted-foreground text-center cursor-pointer select-none hover:text-foreground transition-colors"
+                  onClick={() => toggleSort("size_category")}
+                >
+                  <span className="inline-flex items-center justify-center">Size <SortIcon field="size_category" /></span>
+                </th>
                 <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Medium</th>
                 <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Status</th>
                 {showEdition && (
@@ -89,7 +146,7 @@ const CatalogManager = () => {
               </tr>
             </thead>
             <tbody>
-              {items.map((artwork) => (
+              {sorted.map((artwork) => (
                   <CatalogRow
                     key={artwork.id}
                     artwork={artwork}
@@ -109,7 +166,8 @@ const CatalogManager = () => {
         </div>
       </CardContent>
     </Card>
-  );
+    );
+  };
 
   if (isLoading) {
     return (
