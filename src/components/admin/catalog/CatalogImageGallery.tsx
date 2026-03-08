@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Eye, EyeOff } from "lucide-react";
 import { useArtworkImages } from "@/hooks/useArtworkImages";
@@ -10,24 +11,38 @@ interface CatalogImageGalleryProps {
 export const CatalogImageGallery = ({ artworkId }: CatalogImageGalleryProps) => {
   const { data: images } = useArtworkImages(artworkId);
   const toggleVisibility = useToggleCatalogVisibility();
+  const [showHidden, setShowHidden] = useState(false);
 
   if (!images || images.length === 0) {
     return <p className="text-xs text-muted-foreground">No images</p>;
   }
 
-  const detailCount = images.filter((img) => img.is_detail).length;
+  const visibleImages = images.filter((img) => (img as any).is_catalog_visible !== false);
+  const hiddenImages = images.filter((img) => (img as any).is_catalog_visible === false);
+  const displayImages = showHidden ? images : visibleImages;
 
   return (
     <div>
-      <p className="text-xs text-muted-foreground mb-2">
-        {images.length} image{images.length !== 1 ? "s" : ""}
-        {detailCount > 0 ? ` (${detailCount} detail${detailCount !== 1 ? "s" : ""})` : ""}
-      </p>
+      <div className="flex items-center gap-3 mb-2">
+        <p className="text-xs text-muted-foreground">
+          {visibleImages.length} image{visibleImages.length !== 1 ? "s" : ""}
+          {hiddenImages.length > 0 && ` · ${hiddenImages.length} hidden`}
+        </p>
+        {hiddenImages.length > 0 && (
+          <button
+            onClick={() => setShowHidden(!showHidden)}
+            className="text-[10px] text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
+          >
+            {showHidden ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+            {showHidden ? "Hide hidden" : "Show hidden"}
+          </button>
+        )}
+      </div>
       <div className="flex flex-wrap gap-2">
-        {images.map((img, idx) => {
+        {displayImages.map((img, idx) => {
           const isVisible = (img as any).is_catalog_visible !== false;
           return (
-            <div key={img.id} className={`relative group ${!isVisible ? "opacity-40" : ""}`}>
+            <div key={img.id} className={`relative group ${!isVisible ? "opacity-40 ring-1 ring-dashed ring-muted-foreground/30 rounded" : ""}`}>
               <img
                 src={img.image_url}
                 alt={img.title || `Image ${idx + 1}`}
