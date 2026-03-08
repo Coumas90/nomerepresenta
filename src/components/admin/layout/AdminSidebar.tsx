@@ -5,7 +5,8 @@ import {
   FolderOpen,
   Users,
   Camera,
-  Settings
+  Settings,
+  DollarSign,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
