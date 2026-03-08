@@ -82,7 +82,27 @@ export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpd
 
         {/* Series */}
         <td className="py-2 px-3">
-          <p className="text-xs text-muted-foreground truncate max-w-[120px]">{artwork.series_name}</p>
+          {editingField === "catalog_series" ? (
+            <div className="flex items-center gap-1">
+              <Input
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                className="h-7 w-28 text-xs"
+                onKeyDown={(e) => e.key === "Enter" && saveField()}
+                autoFocus
+              />
+              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={saveField}>
+                <Check className="h-3 w-3" />
+              </Button>
+            </div>
+          ) : (
+            <button
+              onClick={() => startEditing("catalog_series", artwork.catalog_series || "")}
+              className="text-xs px-1.5 py-0.5 rounded hover:bg-muted transition-colors min-w-[48px] text-left truncate max-w-[120px]"
+            >
+              {artwork.catalog_series || "—"}
+            </button>
+          )}
         </td>
 
         {/* Year */}

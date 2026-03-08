@@ -227,6 +227,7 @@ export type Database = {
       }
       artworks: {
         Row: {
+          catalog_series: string | null
           created_at: string
           description: string | null
           dimensions: string | null
@@ -248,6 +249,7 @@ export type Database = {
           year: string | null
         }
         Insert: {
+          catalog_series?: string | null
           created_at?: string
           description?: string | null
           dimensions?: string | null
@@ -269,6 +271,7 @@ export type Database = {
           year?: string | null
         }
         Update: {
+          catalog_series?: string | null
           created_at?: string
           description?: string | null
           dimensions?: string | null
