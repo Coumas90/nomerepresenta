@@ -35,9 +35,10 @@ const CatalogManager = () => {
       if (sizeFilter !== "all" && a.size_category !== sizeFilter) return false;
       if (mediumFilter !== "all" && a.medium_type !== mediumFilter) return false;
       if (statusFilter !== "all" && (a.status || "available") !== statusFilter) return false;
+      if (seriesFilter !== "all" && a.series_id !== seriesFilter) return false;
       return true;
     });
-  }, [artworks, search, yearFilter, sizeFilter, mediumFilter, statusFilter]);
+  }, [artworks, search, yearFilter, sizeFilter, mediumFilter, statusFilter, seriesFilter]);
 
   const grouped = useMemo(() => {
     const map: Record<string, typeof filtered> = {};
