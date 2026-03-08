@@ -68,7 +68,7 @@ export const PricelistContent = ({
       </div>
 
       {/* Print-only header title */}
-      <div className="hidden print:block px-6 pt-8 pb-4 border-b border-stone-300">
+      <div className="hidden print:block px-10 pt-12 pb-4 border-b border-stone-300">
         <h1 className="text-sm font-medium tracking-[0.15em] uppercase text-stone-800">
           {headerTitle}
         </h1>
