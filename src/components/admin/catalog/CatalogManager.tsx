@@ -64,6 +64,10 @@ const CatalogManager = () => {
     updateField.mutate({ id, field, value });
   };
 
+  const handleToggleSeriesVisibility = (seriesId: string, currentlyVisible: boolean) => {
+    updateSeries.mutate({ id: seriesId, is_visible: !currentlyVisible });
+  };
+
   const renderTable = (items: typeof filtered, showEdition = false) => (
     <Card className="mt-2">
       <CardContent className="p-0">
