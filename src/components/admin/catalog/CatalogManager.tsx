@@ -166,7 +166,8 @@ const CatalogManager = () => {
         </div>
       </CardContent>
     </Card>
-  );
+    );
+  };
 
   if (isLoading) {
     return (
