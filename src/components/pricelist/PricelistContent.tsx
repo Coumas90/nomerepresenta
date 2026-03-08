@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Undo2 } from "lucide-react";
 import type { SeriesData, ArtworkImage } from "@/types";
 import type { PricelistItemWithArtwork, PricelistCurrency } from "@/hooks/usePricelist";
 import { PricelistRow } from "./PricelistRow";
