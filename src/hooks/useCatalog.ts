@@ -22,6 +22,7 @@ export interface CatalogArtwork {
   notes: string | null;
   edition: string | null;
   series_name?: string;
+  series_visible?: boolean;
 }
 
 export const useCatalogArtworks = () => {
