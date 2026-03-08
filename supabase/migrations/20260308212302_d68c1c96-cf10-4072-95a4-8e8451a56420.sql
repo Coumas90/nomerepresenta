@@ -1,0 +1,1 @@
+ALTER TABLE public.artwork_images ADD COLUMN is_catalog_visible boolean NOT NULL DEFAULT true;
