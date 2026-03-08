@@ -71,7 +71,7 @@ const CatalogManager = () => {
               <tr className="border-b border-border bg-muted/40">
                 <th className="py-2 px-3 text-xs font-medium text-muted-foreground" />
                 <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Title</th>
-                <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Series</th>
+                <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Year</th>
                 <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Year</th>
                 <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Size</th>
                 <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Medium</th>
