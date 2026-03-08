@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Undo2 } from "lucide-react";
+import { Undo2, Download } from "lucide-react";
 import type { SeriesData, ArtworkImage } from "@/types";
 import type { PricelistItemWithArtwork, PricelistCurrency } from "@/hooks/usePricelist";
 import { PricelistRow } from "./PricelistRow";
@@ -28,6 +28,13 @@ export const PricelistContent = ({
   const navigate = useNavigate();
   const [viewingArtworkId, setViewingArtworkId] = useState<string | null>(null);
 
+  const headerTitle = `IVAN COMAS_ ${pricelistName ? pricelistName.toUpperCase() : "PRICELIST"}${seriesName ? ` / ${seriesName.toUpperCase()}` : ""}`;
+
+  const handleDownloadPdf = useCallback(() => {
+    document.title = headerTitle;
+    window.print();
+  }, [headerTitle]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-stone-100 flex items-center justify-center">
@@ -45,27 +52,38 @@ export const PricelistContent = ({
 
   return (
     <div className="min-h-screen bg-stone-100">
-      {/* Back header */}
-      <div className="sticky top-0 bg-stone-100/95 backdrop-blur border-b border-stone-200 z-10 px-6 md:px-12 py-3 md:py-4 flex items-center justify-between">
+      {/* Sticky header — hidden when printing */}
+      <div className="sticky top-0 bg-stone-100/95 backdrop-blur border-b border-stone-200 z-10 px-6 md:px-12 py-3 md:py-4 flex items-center justify-between print:hidden">
         <div className="flex items-baseline gap-4">
           <span className="text-xs md:text-sm font-medium tracking-[0.15em] uppercase text-stone-800">
-            IVAN COMAS_ {pricelistName ? pricelistName.toUpperCase() : "PRICELIST"}
+            {headerTitle}
           </span>
-          {seriesName && (
-            <span className="text-xs md:text-sm font-medium tracking-[0.15em] uppercase text-stone-800">
-              /{seriesName.toUpperCase()}
-            </span>
-          )}
         </div>
-        <button
-          onClick={() => navigate("/")}
-          className="text-stone-700 hover:text-stone-900 transition-colors"
-        >
-          <Undo2 className="w-5 md:w-6 h-5 md:h-6" />
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleDownloadPdf}
+            className="text-stone-500 hover:text-stone-800 transition-colors"
+            title="Download as PDF"
+          >
+            <Download className="w-4 md:w-5 h-4 md:h-5" />
+          </button>
+          <button
+            onClick={() => navigate("/")}
+            className="text-stone-700 hover:text-stone-900 transition-colors"
+          >
+            <Undo2 className="w-5 md:w-6 h-5 md:h-6" />
+          </button>
+        </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 md:px-12 py-6 md:py-10">
+      {/* Print-only header title */}
+      <div className="hidden print:block px-6 pt-8 pb-4 border-b border-stone-300">
+        <h1 className="text-sm font-medium tracking-[0.15em] uppercase text-stone-800">
+          {headerTitle}
+        </h1>
+      </div>
+
+      <div className="max-w-5xl mx-auto px-6 md:px-12 py-6 md:py-10 print:px-0 print:py-2 print:max-w-none">
         {entries.map(([seriesId, items]) => (
           <div key={seriesId}>
             {items.map((item) => (
