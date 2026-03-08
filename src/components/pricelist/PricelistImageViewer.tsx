@@ -91,20 +91,20 @@ export const PricelistImageViewer = ({
             draggable={false}
           />
 
-          {/* Left invisible clickable zone — desktop only */}
+          {/* Left invisible clickable zone */}
           {hasMultiple && (
             <button
               onClick={goPrev}
-              className="hidden md:block absolute -left-[15vw] top-0 bottom-0 w-[calc(50%+15vw)] z-10 cursor-pointer focus:outline-none"
+              className="hidden md:block absolute -left-[50vw] top-0 bottom-0 w-[calc(50%+50vw)] z-10 cursor-pointer focus:outline-none"
               aria-label="Previous image"
             />
           )}
 
-          {/* Right invisible clickable zone — desktop only */}
+          {/* Right invisible clickable zone */}
           {hasMultiple && (
             <button
               onClick={goNext}
-              className="hidden md:block absolute -right-[15vw] top-0 bottom-0 w-[calc(50%+15vw)] z-10 cursor-pointer focus:outline-none"
+              className="hidden md:block absolute -right-[50vw] top-0 bottom-0 w-[calc(50%+50vw)] z-10 cursor-pointer focus:outline-none"
               aria-label="Next image"
             />
           )}
