@@ -68,6 +68,7 @@ const Pricelist = () => {
       allImages={allImages}
       isLoading={itemsLoading || imagesLoading}
       pricelistName={pricelist.name}
+      seriesName={pricelist.series_name}
     />
   );
 };
