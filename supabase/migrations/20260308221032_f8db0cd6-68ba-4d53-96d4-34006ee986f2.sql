@@ -1,0 +1,1 @@
+ALTER TABLE public.artworks ADD COLUMN catalog_series text DEFAULT NULL;
