@@ -1,0 +1,1 @@
+ALTER TABLE public.series ADD COLUMN show_name_in_menu boolean NOT NULL DEFAULT true;
