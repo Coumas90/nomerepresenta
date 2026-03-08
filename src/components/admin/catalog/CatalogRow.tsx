@@ -31,7 +31,7 @@ interface CatalogRowProps {
   onToggleSeriesVisibility: (seriesId: string, currentlyVisible: boolean) => void;
 }
 
-export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpdate }: CatalogRowProps) => {
+export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpdate, onToggleSeriesVisibility }: CatalogRowProps) => {
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const [imageOpen, setImageOpen] = useState(false);
