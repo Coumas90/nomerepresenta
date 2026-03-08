@@ -34,6 +34,7 @@ export const CatalogRow = ({ artwork, thumbSize, onFieldUpdate }: CatalogRowProp
   const [editValue, setEditValue] = useState("");
   const [imageOpen, setImageOpen] = useState(false);
   const [notesExpanded, setNotesExpanded] = useState(false);
+  const [imagesExpanded, setImagesExpanded] = useState(false);
 
   const startEditing = (field: string, currentValue: string) => {
     setEditingField(field);
