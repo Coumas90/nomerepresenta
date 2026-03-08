@@ -20,6 +20,7 @@ export interface CatalogArtwork {
   status: ArtworkStatus | null;
   location: string | null;
   notes: string | null;
+  edition: string | null;
   series_name?: string;
 }
 
