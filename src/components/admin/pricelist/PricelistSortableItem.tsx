@@ -5,11 +5,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { GripVertical, Trash2, Check } from "lucide-react";
-import type { PricelistItemWithArtwork } from "@/hooks/usePricelist";
+import type { PricelistItemWithArtwork, PricelistCurrency } from "@/hooks/usePricelist";
+
+const CURRENCY_LABELS: Record<PricelistCurrency, string> = {
+  USD: "$",
+  EUR: "€",
+  BRL: "R$",
+};
 
 interface PricelistSortableItemProps {
   item: PricelistItemWithArtwork;
   seriesName: string;
+  activeCurrency: PricelistCurrency;
   onDelete: () => void;
   onPriceChange: (prices: { price_usd?: string; price_eur?: string; price_brl?: string }) => void;
   onToggleVisibility: (visible: boolean) => void;
@@ -18,12 +25,15 @@ interface PricelistSortableItemProps {
 export const PricelistSortableItem = ({
   item,
   seriesName,
+  activeCurrency,
   onDelete,
   onPriceChange,
   onToggleVisibility,
 }: PricelistSortableItemProps) => {
-  const [editingCurrency, setEditingCurrency] = useState<string | null>(null);
-  const [priceValue, setPriceValue] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const currencyKey = activeCurrency.toLowerCase() as "usd" | "eur" | "brl";
+  const currentValue = item[`price_${currencyKey}`] || "";
+  const [priceValue, setPriceValue] = useState(currentValue);
 
   const {
     attributes,
@@ -40,23 +50,19 @@ export const PricelistSortableItem = ({
     opacity: isDragging ? 0.5 : item.is_visible ? 1 : 0.5,
   };
 
-  const startEditing = (currency: string, currentValue: string) => {
-    setEditingCurrency(currency);
+  const startEditing = () => {
     setPriceValue(currentValue);
+    setIsEditing(true);
   };
 
   const handleSavePrice = () => {
-    if (editingCurrency) {
-      onPriceChange({ [`price_${editingCurrency}`]: priceValue });
-      setEditingCurrency(null);
-    }
+    onPriceChange({ [`price_${currencyKey}`]: priceValue });
+    setIsEditing(false);
   };
 
-  const currencies = [
-    { key: "usd", label: "USD", value: item.price_usd },
-    { key: "eur", label: "EUR", value: item.price_eur },
-    { key: "brl", label: "R$", value: item.price_brl },
-  ];
+  const displayPrice = currentValue
+    ? `${CURRENCY_LABELS[activeCurrency]} ${currentValue}`
+    : "—";
 
   return (
     <div ref={setNodeRef} style={style} className="mb-2 border rounded-lg p-3">
@@ -77,34 +83,30 @@ export const PricelistSortableItem = ({
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Currency prices */}
-          <div className="flex items-center gap-2">
-            {currencies.map((c) => (
-              <div key={c.key} className="text-center">
-                <span className="text-[10px] text-muted-foreground block">{c.label}</span>
-                {editingCurrency === c.key ? (
-                  <div className="flex items-center gap-0.5">
-                    <Input
-                      value={priceValue}
-                      onChange={(e) => setPriceValue(e.target.value)}
-                      className="w-20 h-6 text-xs"
-                      onKeyDown={(e) => e.key === "Enter" && handleSavePrice()}
-                      autoFocus
-                    />
-                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleSavePrice}>
-                      <Check className="h-3 w-3" />
-                    </Button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => startEditing(c.key, c.value || "")}
-                    className="text-xs font-medium px-1.5 py-0.5 rounded hover:bg-muted transition-colors min-w-[48px]"
-                  >
-                    {c.value || "—"}
-                  </button>
-                )}
+          {/* Price in active currency */}
+          <div className="text-center min-w-[80px]">
+            {isEditing ? (
+              <div className="flex items-center gap-0.5">
+                <span className="text-xs text-muted-foreground">{CURRENCY_LABELS[activeCurrency]}</span>
+                <Input
+                  value={priceValue}
+                  onChange={(e) => setPriceValue(e.target.value)}
+                  className="w-24 h-7 text-xs"
+                  onKeyDown={(e) => e.key === "Enter" && handleSavePrice()}
+                  autoFocus
+                />
+                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleSavePrice}>
+                  <Check className="h-3 w-3" />
+                </Button>
               </div>
-            ))}
+            ) : (
+              <button
+                onClick={startEditing}
+                className="text-sm font-medium px-2 py-1 rounded hover:bg-muted transition-colors"
+              >
+                {displayPrice}
+              </button>
+            )}
           </div>
 
           <Switch

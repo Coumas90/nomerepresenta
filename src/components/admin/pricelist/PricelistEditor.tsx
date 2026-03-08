@@ -16,6 +16,7 @@ import {
 } from "@dnd-kit/sortable";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus } from "lucide-react";
 import { useArtworks } from "@/hooks/useArtworks";
 import { useSeries } from "@/hooks/useSeries";
@@ -25,7 +26,9 @@ import {
   useDeletePricelistItem,
   useUpdatePricelistItem,
   useReorderPricelist,
+  useUpdatePricelist,
   type Pricelist,
+  type PricelistCurrency,
 } from "@/hooks/usePricelist";
 import { PricelistSortableItem } from "./PricelistSortableItem";
 import { PricelistAddDialog } from "./PricelistAddDialog";
@@ -36,6 +39,7 @@ interface PricelistEditorProps {
 
 export const PricelistEditor = ({ pricelist }: PricelistEditorProps) => {
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const activeCurrency = (pricelist.active_currency || "USD") as PricelistCurrency;
   const { data: items = [] } = usePricelistItems(pricelist.id);
   const { data: artworks = [] } = useArtworks();
   const { data: series = [] } = useSeries();
@@ -43,6 +47,7 @@ export const PricelistEditor = ({ pricelist }: PricelistEditorProps) => {
   const deleteItem = useDeletePricelistItem();
   const updateItem = useUpdatePricelistItem();
   const reorder = useReorderPricelist();
+  const updatePricelist = useUpdatePricelist();
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -91,9 +96,24 @@ export const PricelistEditor = ({ pricelist }: PricelistEditorProps) => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          Add existing artworks to this pricelist and set their prices.
-        </p>
+        <div className="flex items-center gap-4">
+          <p className="text-sm text-muted-foreground">
+            Add existing artworks to this pricelist and set their prices.
+          </p>
+          <Select
+            value={activeCurrency}
+            onValueChange={(val) => updatePricelist.mutate({ id: pricelist.id, updates: { active_currency: val as PricelistCurrency } })}
+          >
+            <SelectTrigger className="h-8 w-24 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="USD">USD</SelectItem>
+              <SelectItem value="EUR">EUR</SelectItem>
+              <SelectItem value="BRL">R$</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
         <Button onClick={() => setShowAddDialog(true)} disabled={availableArtworks.length === 0}>
           <Plus className="mr-2 h-4 w-4" />
           Add Artwork
@@ -112,6 +132,7 @@ export const PricelistEditor = ({ pricelist }: PricelistEditorProps) => {
                   <PricelistSortableItem
                     key={item.id}
                     item={item}
+                    activeCurrency={activeCurrency}
                     seriesName={seriesMap.get(item.artwork?.series_id || "") || ""}
                     onDelete={() => deleteItem.mutate({ id: item.id, pricelistId: pricelist.id })}
                     onPriceChange={(price) => handlePriceChange(item.id, price)}
