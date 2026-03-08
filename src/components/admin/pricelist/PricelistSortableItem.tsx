@@ -13,10 +13,19 @@ const CURRENCY_LABELS: Record<PricelistCurrency, string> = {
   BRL: "R$",
 };
 
+export type ThumbSize = "sm" | "md" | "lg";
+
+const THUMB_SIZES: Record<ThumbSize, string> = {
+  sm: "w-14 h-14",
+  md: "w-24 h-24",
+  lg: "w-36 h-36",
+};
+
 interface PricelistSortableItemProps {
   item: PricelistItemWithArtwork;
   seriesName: string;
   activeCurrency: PricelistCurrency;
+  thumbSize: ThumbSize;
   onDelete: () => void;
   onPriceChange: (prices: { price_usd?: string; price_eur?: string; price_brl?: string }) => void;
   onToggleVisibility: (visible: boolean) => void;
@@ -26,6 +35,7 @@ export const PricelistSortableItem = ({
   item,
   seriesName,
   activeCurrency,
+  thumbSize,
   onDelete,
   onPriceChange,
   onToggleVisibility,
@@ -74,7 +84,7 @@ export const PricelistSortableItem = ({
         <img
           src={item.artwork?.image_url || ""}
           alt={item.artwork?.title || ""}
-          className="w-14 h-14 object-cover rounded"
+          className={`${THUMB_SIZES[thumbSize]} object-cover rounded`}
         />
 
         <div className="flex-1 min-w-0">

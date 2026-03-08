@@ -17,6 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Plus } from "lucide-react";
 import { useArtworks } from "@/hooks/useArtworks";
 import { useSeries } from "@/hooks/useSeries";
@@ -30,7 +31,7 @@ import {
   type Pricelist,
   type PricelistCurrency,
 } from "@/hooks/usePricelist";
-import { PricelistSortableItem } from "./PricelistSortableItem";
+import { PricelistSortableItem, type ThumbSize } from "./PricelistSortableItem";
 import { PricelistAddDialog } from "./PricelistAddDialog";
 
 interface PricelistEditorProps {
@@ -39,6 +40,7 @@ interface PricelistEditorProps {
 
 export const PricelistEditor = ({ pricelist }: PricelistEditorProps) => {
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [thumbSize, setThumbSize] = useState<ThumbSize>("sm");
   const activeCurrency = (pricelist.active_currency || "USD") as PricelistCurrency;
   const { data: items = [] } = usePricelistItems(pricelist.id);
   const { data: artworks = [] } = useArtworks();
@@ -120,6 +122,19 @@ export const PricelistEditor = ({ pricelist }: PricelistEditorProps) => {
         </Button>
       </div>
 
+      <div className="flex items-center justify-between">
+        <ToggleGroup
+          type="single"
+          value={thumbSize}
+          onValueChange={(v) => v && setThumbSize(v as ThumbSize)}
+          className="border rounded-md"
+        >
+          <ToggleGroupItem value="sm" className="text-xs px-2.5 h-7">S</ToggleGroupItem>
+          <ToggleGroupItem value="md" className="text-xs px-2.5 h-7">M</ToggleGroupItem>
+          <ToggleGroupItem value="lg" className="text-xs px-2.5 h-7">L</ToggleGroupItem>
+        </ToggleGroup>
+      </div>
+
       <Card>
         <CardHeader>
           <CardTitle>Items ({items.length})</CardTitle>
@@ -133,6 +148,7 @@ export const PricelistEditor = ({ pricelist }: PricelistEditorProps) => {
                     key={item.id}
                     item={item}
                     activeCurrency={activeCurrency}
+                    thumbSize={thumbSize}
                     seriesName={seriesMap.get(item.artwork?.series_id || "") || ""}
                     onDelete={() => deleteItem.mutate({ id: item.id, pricelistId: pricelist.id })}
                     onPriceChange={(price) => handlePriceChange(item.id, price)}
