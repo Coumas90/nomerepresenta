@@ -38,6 +38,7 @@ const analyticsItems = [
 const contentItems = [
   { title: "Artworks", url: "/admin?section=content-artworks", icon: Image },
   { title: "Series (Works)", url: "/admin?section=content-series", icon: FolderOpen },
+  { title: "Catalog", url: "/admin?section=content-catalog", icon: BookOpen },
   { title: "Studio", url: "/admin?section=content-studio", icon: Camera },
   { title: "Bio", url: "/admin?section=content-bio", icon: Users },
   { title: "Pricelist", url: "/admin?section=content-pricelist", icon: DollarSign },

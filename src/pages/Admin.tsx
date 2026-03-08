@@ -103,6 +103,13 @@ const Admin = () => {
           </Suspense>
         );
       
+      case "content-catalog":
+        return (
+          <Suspense fallback={<LoadingSkeleton type="analytics" />}>
+            <CatalogManager />
+          </Suspense>
+        );
+      
       case "content-artworks":
         return (
           <div className="space-y-6">
