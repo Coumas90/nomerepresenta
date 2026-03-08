@@ -236,3 +236,27 @@ img {
   -moz-user-select: none;
   touch-action: manipulation;
 }
+
+/* Print styles for pricelist PDF */
+@media print {
+  body {
+    background: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Hide non-essential elements */
+  .print\\:hidden {
+    display: none !important;
+  }
+
+  /* Show print-only elements */
+  .print\\:block {
+    display: block !important;
+  }
+
+  /* Prevent page breaks inside rows */
+  .grid {
+    break-inside: avoid;
+  }
+}
