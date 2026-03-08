@@ -29,8 +29,8 @@ export const PricelistImageViewer = ({
     if (!open) return;
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") close();
-      if (e.key === "ArrowRight" && currentIndex < images.length - 1) setCurrentIndex((i) => i + 1);
-      if (e.key === "ArrowLeft" && currentIndex > 0) setCurrentIndex((i) => i - 1);
+      if (e.key === "ArrowRight") setCurrentIndex((i) => (i + 1) % images.length);
+      if (e.key === "ArrowLeft") setCurrentIndex((i) => (i - 1 + images.length) % images.length);
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
