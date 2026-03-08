@@ -39,6 +39,7 @@ interface PricelistEditorProps {
 
 export const PricelistEditor = ({ pricelist }: PricelistEditorProps) => {
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const activeCurrency = (pricelist.active_currency || "USD") as PricelistCurrency;
   const { data: items = [] } = usePricelistItems(pricelist.id);
   const { data: artworks = [] } = useArtworks();
   const { data: series = [] } = useSeries();
@@ -46,6 +47,7 @@ export const PricelistEditor = ({ pricelist }: PricelistEditorProps) => {
   const deleteItem = useDeletePricelistItem();
   const updateItem = useUpdatePricelistItem();
   const reorder = useReorderPricelist();
+  const updatePricelist = useUpdatePricelist();
 
   const sensors = useSensors(
     useSensor(PointerSensor),
