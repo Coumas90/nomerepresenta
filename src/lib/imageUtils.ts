@@ -227,9 +227,13 @@ export const getResponsiveSrcSet = (
   
   if (!supportsTransforms) return "";
 
+  // Skip format transform if the source is already in the target format
+  const skipFormat = (format === "webp" && /\.webp(\?|$)/i.test(src)) ||
+                     (format === "avif" && /\.avif(\?|$)/i.test(src));
+
   return widths
     .map((width) => {
-      const url = getOptimizedImageUrl(src, { width, format });
+      const url = getOptimizedImageUrl(src, { width, format: skipFormat ? undefined : format });
       return `${url} ${width}w`;
     })
     .join(", ");
