@@ -142,8 +142,7 @@ export default defineConfig(({ mode }) => ({
         ],
       },
       devOptions: {
-        enabled: mode === "development",
-        type: "module",
+        enabled: false,
       },
     }),
   ].filter(Boolean),
