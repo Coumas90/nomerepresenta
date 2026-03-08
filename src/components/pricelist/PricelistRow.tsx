@@ -20,7 +20,7 @@ export const PricelistRow = ({ item, onClick }: PricelistRowProps) => {
           onClick();
         }
       }}
-      className="grid grid-cols-[150px_1fr_auto] md:grid-cols-[220px_1fr_auto] gap-6 md:gap-10 items-center py-8 md:py-10 border-b border-stone-300 cursor-pointer hover:bg-stone-200/30 transition-colors px-4 md:px-6"
+      className="grid grid-cols-[150px_1fr_auto] md:grid-cols-[220px_1fr_auto] gap-8 md:gap-14 items-center py-8 md:py-10 border-b border-stone-300 cursor-pointer hover:bg-stone-200/30 transition-colors px-4 md:px-6"
     >
       {/* Thumbnail — object-contain to never crop */}
       <div className="bg-stone-200/50">
