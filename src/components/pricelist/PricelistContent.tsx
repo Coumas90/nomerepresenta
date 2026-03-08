@@ -42,7 +42,7 @@ export const PricelistContent = ({
     <div className="min-h-screen bg-stone-100">
       <div className="max-w-5xl mx-auto px-6 md:px-12 py-12 md:py-20">
         {/* Single header for the entire pricelist */}
-        <div className="flex justify-between items-baseline border-b border-stone-300 pb-8 mb-0">
+        <div className="flex justify-between items-baseline border-b border-stone-300 pb-8 mb-0 px-4 md:px-6">
           <span className="text-sm md:text-base font-medium tracking-[0.15em] uppercase text-stone-800">
             IVAN COMAS_ {pricelistName ? pricelistName.toUpperCase() : "PRICELIST"}
           </span>
