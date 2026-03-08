@@ -91,13 +91,14 @@ const CatalogManager = () => {
             </thead>
             <tbody>
               {items.map((artwork) => (
-                <CatalogRow
-                  key={artwork.id}
-                  artwork={artwork}
-                  thumbSize={thumbSize}
-                  showEdition={showEdition}
-                  onFieldUpdate={handleFieldUpdate}
-                />
+                  <CatalogRow
+                    key={artwork.id}
+                    artwork={artwork}
+                    thumbSize={thumbSize}
+                    showEdition={showEdition}
+                    onFieldUpdate={handleFieldUpdate}
+                    onToggleSeriesVisibility={handleToggleSeriesVisibility}
+                  />
               ))}
             </tbody>
           </table>
