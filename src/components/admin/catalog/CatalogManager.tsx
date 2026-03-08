@@ -8,10 +8,11 @@ import { CatalogRow, type ThumbSize } from "./CatalogRow";
 import { CategoryFolder } from "./CategoryFolder";
 import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 
-type SortField = "title" | "year" | "size_category" | null;
+type SortField = "title" | "year" | "size_category" | "status" | null;
 type SortDir = "asc" | "desc";
 
 const SIZE_ORDER: Record<string, number> = { S: 1, M: 2, L: 3 };
+const STATUS_ORDER: Record<string, number> = { available: 1, reserved: 2, sold: 3 };
 
 const CATEGORIES: MediumType[] = ["PAINTING", "POW", "PHOTO"];
 
@@ -51,6 +52,8 @@ const CatalogManager = () => {
         cmp = (a.year || "").localeCompare(b.year || "");
       } else if (sortField === "size_category") {
         cmp = (SIZE_ORDER[a.size_category || ""] || 0) - (SIZE_ORDER[b.size_category || ""] || 0);
+      } else if (sortField === "status") {
+        cmp = (STATUS_ORDER[a.status || "available"] || 0) - (STATUS_ORDER[b.status || "available"] || 0);
       }
       return sortDir === "desc" ? -cmp : cmp;
     });
@@ -137,7 +140,12 @@ const CatalogManager = () => {
                   <span className="inline-flex items-center justify-center">Size <SortIcon field="size_category" /></span>
                 </th>
                 <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Medium</th>
-                <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Status</th>
+                <th
+                  className="py-2 px-3 text-xs font-medium text-muted-foreground text-center cursor-pointer select-none hover:text-foreground transition-colors"
+                  onClick={() => toggleSort("status")}
+                >
+                  <span className="inline-flex items-center justify-center">Status <SortIcon field="status" /></span>
+                </th>
                 {showEdition && (
                   <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Edition</th>
                 )}
