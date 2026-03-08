@@ -66,6 +66,7 @@ export const PricelistContent = ({
         </div>
       </div>
 
+      <div className="max-w-5xl mx-auto px-6 md:px-12 py-12 md:py-20">
         {entries.map(([seriesId, items]) => (
           <div key={seriesId}>
             {items.map((item) => (
@@ -78,7 +79,6 @@ export const PricelistContent = ({
             ))}
           </div>
         ))}
-        
 
         {entries.length === 0 && (
           <p className="text-center text-stone-400 text-sm mt-20">
