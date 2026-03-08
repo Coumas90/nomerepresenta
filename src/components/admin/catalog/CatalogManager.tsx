@@ -1,11 +1,17 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { useCatalogArtworks, useUpdateCatalogField, type MediumType } from "@/hooks/useCatalog";
+import { useCatalogArtworks, useUpdateCatalogField, type MediumType, type CatalogArtwork } from "@/hooks/useCatalog";
 import { useSeries } from "@/hooks/useSeries";
 import { CatalogFilters } from "./CatalogFilters";
 import { CatalogRow, type ThumbSize } from "./CatalogRow";
 import { CategoryFolder } from "./CategoryFolder";
+import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
+
+type SortField = "title" | "year" | "size_category" | null;
+type SortDir = "asc" | "desc";
+
+const SIZE_ORDER: Record<string, number> = { S: 1, M: 2, L: 3 };
 
 const CATEGORIES: MediumType[] = ["PAINTING", "POW", "PHOTO"];
 
