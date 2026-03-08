@@ -239,24 +239,36 @@ img {
 
 /* Print styles for pricelist PDF */
 @media print {
-  body {
+  /* Full white background, no margins from browser */
+  html, body {
     background: white !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
+  /* Remove browser default headers/footers (URL, date, page number) */
+  @page {
+    margin: 10mm 15mm;
+  }
+
   /* Hide non-essential elements */
-  .print\\:hidden {
+  .print\:hidden {
     display: none !important;
   }
 
   /* Show print-only elements */
-  .print\\:block {
+  .print\:block {
     display: block !important;
   }
 
   /* Prevent page breaks inside rows */
   .grid {
     break-inside: avoid;
+  }
+
+  /* Ensure all content flows naturally across pages */
+  .min-h-screen {
+    min-height: auto !important;
+    background: white !important;
   }
 }
