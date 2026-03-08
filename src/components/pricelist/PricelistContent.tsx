@@ -65,7 +65,7 @@ export const PricelistContent = ({
         </button>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 md:px-12 py-12 md:py-20">
+      <div className="max-w-5xl mx-auto px-6 md:px-12 py-6 md:py-10">
         {entries.map(([seriesId, items]) => (
           <div key={seriesId}>
             {items.map((item) => (
