@@ -25,7 +25,7 @@ export const useArtworksBySeries = () => {
   }, [artworks, series]);
 
   return {
-    data: seriesWithArtworks,
+    data: seriesWithArtworks.length > 0 ? seriesWithArtworks : undefined,
     isLoading: artworksLoading || seriesLoading,
     error: artworksError || seriesError,
     // Expose individual data for flexibility
