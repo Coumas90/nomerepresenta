@@ -68,13 +68,13 @@ export const PricelistContent = ({
       </div>
 
       {/* Print-only header title */}
-      <div className="hidden print:block px-6 pt-8 pb-4 border-b border-stone-300">
+      <div className="hidden print:block px-10 pt-12 pb-4 border-b border-stone-300">
         <h1 className="text-sm font-medium tracking-[0.15em] uppercase text-stone-800">
           {headerTitle}
         </h1>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 md:px-12 py-6 md:py-10 print:px-0 print:py-2 print:max-w-none">
+      <div className="max-w-5xl mx-auto px-6 md:px-12 py-6 md:py-10 print:px-10 print:py-4 print:max-w-none">
         {entries.map(([seriesId, items]) => (
           <div key={seriesId}>
             {items.map((item) => (
