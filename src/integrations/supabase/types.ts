@@ -574,6 +574,110 @@ export type Database = {
           },
         ]
       }
+      show_images: {
+        Row: {
+          alt_text: string | null
+          caption: string | null
+          created_at: string | null
+          display_order: number
+          id: string
+          image_url: string
+          show_id: string
+        }
+        Insert: {
+          alt_text?: string | null
+          caption?: string | null
+          created_at?: string | null
+          display_order?: number
+          id?: string
+          image_url: string
+          show_id: string
+        }
+        Update: {
+          alt_text?: string | null
+          caption?: string | null
+          created_at?: string | null
+          display_order?: number
+          id?: string
+          image_url?: string
+          show_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "show_images_show_id_fkey"
+            columns: ["show_id"]
+            isOneToOne: false
+            referencedRelation: "shows"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shows: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number
+          id: string
+          is_published: boolean
+          show_in_menu: boolean
+          slug: string
+          subtitle: string | null
+          title: string
+          updated_at: string
+          year: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_published?: boolean
+          show_in_menu?: boolean
+          slug: string
+          subtitle?: string | null
+          title: string
+          updated_at?: string
+          year?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_published?: boolean
+          show_in_menu?: boolean
+          slug?: string
+          subtitle?: string | null
+          title?: string
+          updated_at?: string
+          year?: string
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          created_at: string
+          id: string
+          key: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key: string
+          updated_at?: string
+          value?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
       studio_images: {
         Row: {
           created_at: string
