@@ -1,8 +1,9 @@
 import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useCatalogArtworks, useUpdateCatalogField } from "@/hooks/useCatalog";
 import { CatalogFilters } from "./CatalogFilters";
-import { CatalogRow } from "./CatalogRow";
+import { CatalogRow, type ThumbSize } from "./CatalogRow";
 
 const CatalogManager = () => {
   const { data: artworks = [], isLoading } = useCatalogArtworks();
@@ -13,6 +14,7 @@ const CatalogManager = () => {
   const [sizeFilter, setSizeFilter] = useState("all");
   const [mediumFilter, setMediumFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [thumbSize, setThumbSize] = useState<ThumbSize>("sm");
 
   const years = useMemo(() => {
     const set = new Set(artworks.map((a) => a.year).filter(Boolean) as string[]);
@@ -44,11 +46,23 @@ const CatalogManager = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-semibold">Catalog</h2>
-        <p className="text-sm text-muted-foreground">
-          Full inventory of all paintings with size, medium, status and location.
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-semibold">Catalog</h2>
+          <p className="text-sm text-muted-foreground">
+            Full inventory of all paintings. Click any thumbnail to expand.
+          </p>
+        </div>
+        <ToggleGroup
+          type="single"
+          value={thumbSize}
+          onValueChange={(v) => v && setThumbSize(v as ThumbSize)}
+          className="border rounded-md"
+        >
+          <ToggleGroupItem value="sm" className="text-xs px-2.5 h-8">S</ToggleGroupItem>
+          <ToggleGroupItem value="md" className="text-xs px-2.5 h-8">M</ToggleGroupItem>
+          <ToggleGroupItem value="lg" className="text-xs px-2.5 h-8">L</ToggleGroupItem>
+        </ToggleGroup>
       </div>
 
       <CatalogFilters
@@ -76,7 +90,7 @@ const CatalogManager = () => {
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-border bg-muted/40">
-                  <th className="py-2 px-3 text-xs font-medium text-muted-foreground w-14" />
+                  <th className="py-2 px-3 text-xs font-medium text-muted-foreground" />
                   <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Title</th>
                   <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Year</th>
                   <th className="py-2 px-3 text-xs font-medium text-muted-foreground text-center">Size</th>
@@ -91,6 +105,7 @@ const CatalogManager = () => {
                   <CatalogRow
                     key={artwork.id}
                     artwork={artwork}
+                    thumbSize={thumbSize}
                     onFieldUpdate={handleFieldUpdate}
                   />
                 ))}
