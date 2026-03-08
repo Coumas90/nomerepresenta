@@ -7,6 +7,7 @@ import {
   Camera,
   Settings,
   DollarSign,
+  ExternalLink,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
