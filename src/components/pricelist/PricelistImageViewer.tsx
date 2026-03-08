@@ -125,6 +125,13 @@ export const PricelistImageViewer = ({
       ) : (
         <p className="text-stone-400 text-sm">No images available</p>
       )}
+
+      {/* Counter — fixed to bottom-left of screen */}
+      {hasMultiple && current && (
+        <span className="absolute bottom-5 left-5 text-xs text-stone-500 z-20">
+          {currentIndex + 1} / {images.length}
+        </span>
+      )}
     </div>
   );
 };
