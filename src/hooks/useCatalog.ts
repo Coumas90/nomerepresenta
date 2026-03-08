@@ -21,6 +21,7 @@ export interface CatalogArtwork {
   location: string | null;
   notes: string | null;
   edition: string | null;
+  catalog_series: string | null;
   series_name?: string;
   series_visible?: boolean;
 }
