@@ -140,7 +140,37 @@ export const usePricelistItems = (pricelistId: string) => {
         .eq("pricelist_id", pricelistId)
         .order("display_order", { ascending: true });
       if (error) throw error;
-      return (data as any[]) as PricelistItemWithArtwork[];
+
+      const items = (data as any[]) as PricelistItemWithArtwork[];
+
+      // For each item, fetch the main (non-detail) image from artwork_images
+      const artworkIds = items.map((i) => i.artwork?.id).filter(Boolean);
+      if (artworkIds.length > 0) {
+        const { data: images } = await supabase
+          .from("artwork_images")
+          .select("artwork_id, image_url, is_main, is_detail, display_order")
+          .in("artwork_id", artworkIds)
+          .eq("is_detail", false)
+          .order("display_order", { ascending: true });
+
+        if (images && images.length > 0) {
+          // Build map: artwork_id -> first non-detail image url
+          const mainImageMap = new Map<string, string>();
+          for (const img of images) {
+            if (!mainImageMap.has(img.artwork_id)) {
+              mainImageMap.set(img.artwork_id, img.image_url);
+            }
+          }
+          // Override artwork.image_url with the main image
+          for (const item of items) {
+            if (item.artwork && mainImageMap.has(item.artwork.id)) {
+              item.artwork.image_url = mainImageMap.get(item.artwork.id)!;
+            }
+          }
+        }
+      }
+
+      return items;
     },
     enabled: !!pricelistId,
   });
