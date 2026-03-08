@@ -45,6 +45,7 @@ export interface SeriesData {
   description: string | null;
   display_order: number;
   is_visible?: boolean;
+  show_name_in_menu?: boolean;
 }
 
 /**

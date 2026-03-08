@@ -45,7 +45,9 @@ export const SeriesHeader = ({
             WORKS
           </span>
 
-          {series.map((s) => (
+          {series
+            .filter((s) => s.show_name_in_menu !== false)
+            .map((s) => (
             <button
               key={s.id}
               data-series-id={s.id}
