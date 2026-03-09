@@ -147,21 +147,25 @@ const PricelistManager = () => {
                       </span>
                       <span className="flex items-center gap-1">
                         Password:{" "}
+                        <Input
+                          type={showPasswords.has(pl.id) ? "text" : "password"}
+                          defaultValue={pl.password}
+                          className="h-6 w-28 text-xs inline-flex font-mono"
+                          onBlur={(e) => {
+                            if (e.target.value && e.target.value !== pl.password) {
+                              updatePricelist.mutate({ id: pl.id, updates: { password: e.target.value } });
+                              toast.success("Password updated");
+                            }
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+                          }}
+                        />
                         <button
                           onClick={() => togglePasswordVisibility(pl.id)}
-                          className="inline-flex items-center gap-1 hover:text-foreground transition-colors"
+                          className="hover:text-foreground transition-colors"
                         >
-                          {showPasswords.has(pl.id) ? (
-                            <>
-                              <span className="font-mono">{pl.password}</span>
-                              <EyeOff className="h-3 w-3" />
-                            </>
-                          ) : (
-                            <>
-                              <span>••••••</span>
-                              <Eye className="h-3 w-3" />
-                            </>
-                          )}
+                          {showPasswords.has(pl.id) ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
                         </button>
                       </span>
                     </div>
