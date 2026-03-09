@@ -110,9 +110,22 @@ const PricelistManager = () => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 mb-2">
                       <h3 className="font-semibold text-base">{pl.name}</h3>
-                      <span className="font-mono bg-muted px-2 py-0.5 rounded text-xs text-muted-foreground">
-                        /available/{pl.slug}
-                      </span>
+                      <label className="flex items-center gap-1 font-mono bg-muted px-2 py-0.5 rounded text-xs text-muted-foreground">
+                        <span>/available/</span>
+                        <Input
+                          defaultValue={pl.slug}
+                          className="h-5 w-24 text-xs font-mono bg-transparent border-none shadow-none px-0 py-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                          onBlur={(e) => {
+                            const cleaned = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "");
+                            e.target.value = cleaned;
+                            if (cleaned && cleaned !== pl.slug) {
+                              updatePricelist.mutate({ id: pl.id, updates: { slug: cleaned } });
+                              toast.success("Slug updated");
+                            }
+                          }}
+                          onKeyDown={(e) => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }}
+                        />
+                      </label>
                     </div>
                     <div className="flex items-center gap-5 text-xs text-muted-foreground">
                       <label className="flex items-center gap-1.5">
