@@ -50,7 +50,7 @@ const PricelistManager = () => {
   };
 
   const handleCopyLink = (slug: string) => {
-    const url = `${window.location.origin}/pricelist/${slug}`;
+    const url = `${window.location.origin}/available/${slug}`;
     navigator.clipboard.writeText(url);
     toast.success("Link copied to clipboard");
   };
@@ -111,7 +111,7 @@ const PricelistManager = () => {
                     <h3 className="font-semibold text-base">{pl.name}</h3>
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <span className="font-mono bg-muted px-2 py-0.5 rounded text-xs">
-                        /pricelist/{pl.slug}
+                        /available/{pl.slug}
                       </span>
                       <span className="flex items-center gap-1">
                         Series:{" "}
@@ -180,7 +180,7 @@ const PricelistManager = () => {
                       size="sm"
                       asChild
                     >
-                      <a href={`/pricelist/${pl.slug}`} target="_blank" rel="noopener noreferrer">
+                      <a href={`/available/${pl.slug}`} target="_blank" rel="noopener noreferrer">
                         <ExternalLink className="h-3 w-3 mr-1" />
                         View
                       </a>
@@ -232,7 +232,7 @@ const PricelistManager = () => {
             <div>
               <Label>Slug (URL)</Label>
               <div className="flex items-center gap-2 mt-1">
-                <span className="text-sm text-muted-foreground">/pricelist/</span>
+                <span className="text-sm text-muted-foreground">/available/</span>
                 <Input
                   value={newSlug}
                   onChange={(e) => setNewSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
