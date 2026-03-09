@@ -1,3 +1,4 @@
+import { Check } from "lucide-react";
 import type { PricelistItemWithArtwork, PricelistCurrency } from "@/hooks/usePricelist";
 
 const CURRENCY_SYMBOLS: Record<PricelistCurrency, string> = {
@@ -9,10 +10,12 @@ const CURRENCY_SYMBOLS: Record<PricelistCurrency, string> = {
 interface PricelistRowProps {
   item: PricelistItemWithArtwork;
   activeCurrency: PricelistCurrency;
-  onClick: () => void;
+  selected?: boolean;
+  onSelect?: (id: string) => void;
+  onViewImages: () => void;
 }
 
-export const PricelistRow = ({ item, activeCurrency, onClick }: PricelistRowProps) => {
+export const PricelistRow = ({ item, activeCurrency, selected, onSelect, onViewImages }: PricelistRowProps) => {
   const { artwork } = item;
   if (!artwork) return null;
 
@@ -27,21 +30,35 @@ export const PricelistRow = ({ item, activeCurrency, onClick }: PricelistRowProp
     ? `${CURRENCY_SYMBOLS[activeCurrency]} ${rawPrice}`
     : item.price || "";
 
+  const handleClick = (e: React.MouseEvent) => {
+    // If clicking the thumbnail area, open viewer instead
+    const target = e.target as HTMLElement;
+    if (target.closest('[data-thumbnail]')) {
+      onViewImages();
+      return;
+    }
+    onSelect?.(item.artwork_id);
+  };
+
   return (
     <div
       role="button"
       tabIndex={0}
-      onClick={onClick}
+      onClick={handleClick}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          onClick();
+          onSelect?.(item.artwork_id);
         }
       }}
-      className="grid grid-cols-[150px_1fr_auto] md:grid-cols-[220px_1fr_auto] gap-10 md:gap-20 items-center py-8 md:py-10 border-b border-stone-300 cursor-pointer hover:bg-stone-200/10 transition-colors px-4 md:px-6"
+      className={`
+        grid grid-cols-[150px_1fr_auto] md:grid-cols-[220px_1fr_auto] gap-10 md:gap-20 items-center 
+        py-8 md:py-10 border-b border-stone-300 cursor-pointer transition-all duration-300 px-4 md:px-6
+        ${selected ? "bg-stone-200/40" : "hover:bg-stone-200/10"}
+      `}
     >
       {/* Thumbnail */}
-      <div className="bg-stone-200/50">
+      <div className="bg-stone-200/50 relative" data-thumbnail>
         <img
           src={artwork.image_url}
           alt={artwork.title}
@@ -52,9 +69,15 @@ export const PricelistRow = ({ item, activeCurrency, onClick }: PricelistRowProp
 
       {/* Info */}
       <div className="space-y-0.5">
-        <p className="text-sm md:text-[15px] text-stone-800">
-          {artwork.title}{artwork.year ? `, ${artwork.year}` : ""}
-        </p>
+        <div className="flex items-center gap-2">
+          <p className="text-sm md:text-[15px] text-stone-800">
+            {artwork.title}{artwork.year ? `, ${artwork.year}` : ""}
+          </p>
+          {/* Subtle check mark when selected */}
+          <div className={`transition-all duration-300 ${selected ? "opacity-100 scale-100" : "opacity-0 scale-75"}`}>
+            <Check className="w-3.5 h-3.5 text-stone-500" strokeWidth={2.5} />
+          </div>
+        </div>
         {artwork.materials && (
           <p className="text-xs md:text-sm text-stone-500 leading-relaxed">
             {artwork.materials}
