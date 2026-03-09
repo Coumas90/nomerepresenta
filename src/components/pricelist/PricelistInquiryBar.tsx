@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 interface PricelistInquiryBarProps {
   selectedCount: number;
   selectedTitles: string[];
+  selectedArtworks?: { label: string; imageUrl: string }[];
   pricelistName?: string;
   onClearSelection?: () => void;
 }
