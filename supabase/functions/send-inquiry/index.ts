@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -12,10 +13,12 @@ serve(async (req) => {
   }
 
   try {
-    const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-    if (!RESEND_API_KEY) {
-      throw new Error("RESEND_API_KEY is not configured");
+    const ZOHO_APP_PASSWORD = Deno.env.get("ZOHO_APP_PASSWORD");
+    if (!ZOHO_APP_PASSWORD) {
+      throw new Error("ZOHO_APP_PASSWORD is not configured");
     }
+
+    const ZOHO_USER = "contact@ivancomas.studio";
 
     const { name, email, message, artworks, pricelistName } = await req.json();
 
@@ -65,27 +68,28 @@ serve(async (req) => {
       </div>
     `;
 
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${RESEND_API_KEY}`,
-        "Content-Type": "application/json",
+    const client = new SMTPClient({
+      connection: {
+        hostname: "smtp.zoho.com",
+        port: 465,
+        tls: true,
+        auth: {
+          username: ZOHO_USER,
+          password: ZOHO_APP_PASSWORD,
+        },
       },
-      body: JSON.stringify({
-        from: "Ivan Comas <onboarding@resend.dev>",
-        to: ["contact@ivancomas.studio"],
-        reply_to: email.trim(),
-        subject: `Inquiry — ${pricelistName || "Pricelist"} — ${name.trim()}`,
-        html,
-      }),
     });
 
-    const resData = await res.json();
+    await client.send({
+      from: ZOHO_USER,
+      to: ZOHO_USER,
+      replyTo: email.trim(),
+      subject: `Inquiry — ${pricelistName || "Pricelist"} — ${name.trim()}`,
+      content: "auto",
+      html,
+    });
 
-    if (!res.ok) {
-      console.error("Resend API error:", resData);
-      throw new Error(`Email send failed [${res.status}]: ${JSON.stringify(resData)}`);
-    }
+    await client.close();
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
