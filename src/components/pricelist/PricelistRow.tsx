@@ -96,6 +96,8 @@ export const PricelistRow = ({ item, activeCurrency, selected, onSelect, onViewI
     swipeLocked.current = null;
   }, [goNext, goPrev]);
 
+  if (!artwork) return null;
+
   const handleClick = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
     // On desktop, clicking thumbnail opens fullscreen viewer
