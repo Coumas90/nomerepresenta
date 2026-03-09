@@ -122,7 +122,7 @@ export const PricelistRow = ({ item, activeCurrency, selected, onSelect, onViewI
         }
       }}
       className={`
-        py-5 md:py-10 border-b border-stone-300/60 cursor-pointer transition-all duration-300 px-4 md:px-6
+        py-4 md:py-10 border-b border-stone-300/60 cursor-pointer transition-all duration-300 px-4 md:px-6
         ${selected ? "bg-stone-200/40" : "hover:bg-stone-200/10"}
       `}
     >
@@ -130,7 +130,7 @@ export const PricelistRow = ({ item, activeCurrency, selected, onSelect, onViewI
       <div className="md:hidden print:hidden">
         <div
           ref={containerRef}
-          className="relative select-none"
+          className="relative select-none max-w-[75vw] mx-auto"
           data-thumbnail
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
@@ -178,9 +178,9 @@ export const PricelistRow = ({ item, activeCurrency, selected, onSelect, onViewI
         )}
 
         {/* Info below image */}
-        <div className="mt-3 space-y-0.5">
+        <div className="mt-2.5 space-y-0.5">
           <div className="flex items-center gap-2">
-            <p className="text-[13px] text-stone-800">
+            <p className="text-[11px] text-stone-700 tracking-wide">
               {artwork.title}{artwork.year ? `, ${artwork.year}` : ""}
             </p>
             <div className={`transition-all duration-300 shrink-0 ${selected ? "opacity-100 scale-100" : "opacity-0 scale-75"}`}>
@@ -188,16 +188,16 @@ export const PricelistRow = ({ item, activeCurrency, selected, onSelect, onViewI
             </div>
           </div>
           {artwork.materials && (
-            <p className="text-xs text-stone-500 leading-relaxed">
+            <p className="text-[10px] text-stone-400 leading-relaxed">
               {artwork.materials}
             </p>
           )}
           {artwork.dimensions && (
-            <p className="text-xs text-stone-500">
+            <p className="text-[10px] text-stone-400">
               {artwork.dimensions}
             </p>
           )}
-          <p className="text-[13px] text-stone-800 pt-1">
+          <p className="text-[11px] text-stone-700 pt-0.5">
             {displayPrice}
           </p>
         </div>
