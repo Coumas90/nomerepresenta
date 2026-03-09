@@ -103,6 +103,17 @@ export const useDeleteShowImage = () => {
   });
 };
 
+export const useUpdateShowOrder = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (shows: { id: string; display_order: number }[]) => {
+      const updates = shows.map((s) => supabase.from("shows").update({ display_order: s.display_order }).eq("id", s.id));
+      await Promise.all(updates);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["shows"] }),
+  });
+};
+
 export const useUpdateShowImageOrder = () => {
   const qc = useQueryClient();
   return useMutation({
