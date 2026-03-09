@@ -11,7 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff, ShieldAlert, ShieldCheck } from "lucide-react";
 import { z } from "zod";
-import { P5Background } from "@/components/P5Background";
+
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { subDays } from "date-fns";
