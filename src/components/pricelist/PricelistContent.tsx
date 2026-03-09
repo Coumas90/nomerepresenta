@@ -28,7 +28,7 @@ export const PricelistContent = ({
   const navigate = useNavigate();
   const [viewingArtworkId, setViewingArtworkId] = useState<string | null>(null);
 
-  const headerTitle = `IVAN COMAS_ ${pricelistName ? pricelistName.toUpperCase() : "PRICELIST"}${seriesName ? ` / ${seriesName.toUpperCase()}` : ""}`;
+  const headerTitle = `IVAN COMAS / ${pricelistName ? pricelistName.toUpperCase() : "PRICELIST"}${seriesName ? ` / ${seriesName.toUpperCase()}` : ""}`;
 
   const handleDownloadPdf = useCallback(() => {
     document.title = headerTitle;
