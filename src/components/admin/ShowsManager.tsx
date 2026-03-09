@@ -163,13 +163,22 @@ function ShowForm({ show, onBack }: { show: ShowData | null; onBack: () => void 
     }
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!show || !e.target.files?.length) return;
-    const file = e.target.files[0];
-    const fileName = `${show.id}-${Date.now()}-${file.name}`;
-    const url = await uploadImage.mutateAsync({ file, fileName });
-    const order = (images?.length || 0);
-    await addImage.mutateAsync({ show_id: show.id, image_url: url, display_order: order });
+  const [uploading, setUploading] = useState(false);
+
+  const handleMultipleUpload = async (files: File[]) => {
+    if (!show || files.length === 0) return;
+    setUploading(true);
+    try {
+      let order = images?.length || 0;
+      for (const file of files) {
+        const fileName = `${show.id}-${Date.now()}-${file.name}`;
+        const url = await uploadImage.mutateAsync({ file, fileName });
+        await addImage.mutateAsync({ show_id: show.id, image_url: url, display_order: order });
+        order++;
+      }
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -230,10 +239,15 @@ function ShowForm({ show, onBack }: { show: ShowData | null; onBack: () => void 
             <h3 className="text-lg font-medium mb-3">Gallery Images</h3>
             <label className="flex items-center justify-center gap-2 border-2 border-dashed rounded-lg p-6 cursor-pointer hover:bg-muted/50 transition-colors">
               <Upload className="h-5 w-5 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Click to upload image</span>
-              <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+              <span className="text-sm text-muted-foreground">Click to upload images (multiple supported)</span>
+              <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => {
+                if (e.target.files?.length) {
+                  handleMultipleUpload(Array.from(e.target.files));
+                  e.target.value = "";
+                }
+              }} />
             </label>
-            {uploadImage.isPending && <p className="text-xs text-muted-foreground mt-2">Uploading...</p>}
+            {(uploading || uploadImage.isPending) && <p className="text-xs text-muted-foreground mt-2">Uploading...</p>}
 
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4">
               {(images || []).map((img) => (
