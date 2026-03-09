@@ -122,7 +122,7 @@ export const PricelistRow = ({ item, activeCurrency, selected, onSelect, onViewI
         }
       }}
       className={`
-        py-5 md:py-10 border-b border-stone-300/60 cursor-pointer transition-all duration-300 px-4 md:px-6
+        py-4 md:py-10 border-b border-stone-300/60 cursor-pointer transition-all duration-300 px-4 md:px-6
         ${selected ? "bg-stone-200/40" : "hover:bg-stone-200/10"}
       `}
     >
