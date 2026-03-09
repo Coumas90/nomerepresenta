@@ -1,8 +1,9 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { usePricelistBySlug, usePricelistItems } from "@/hooks/usePricelist";
 import { useAllArtworkImages } from "@/hooks/useAllArtworkImages";
 import { useSeries } from "@/hooks/useSeries";
+import { useAnalytics } from "@/hooks/useAnalytics";
 import { PricelistPasswordGate } from "@/components/pricelist/PricelistPasswordGate";
 import { PricelistContent } from "@/components/pricelist/PricelistContent";
 
