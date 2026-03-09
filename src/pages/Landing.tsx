@@ -23,6 +23,21 @@ const Landing = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
+  const { data: siteSettings } = useSiteSettings();
+
+  // Build menu items dynamically based on visibility settings
+  const menuItems = useMemo(() => {
+    const items: MenuItem[] = [...baseMenuItems];
+    if (siteSettings?.shows_visible_in_menu === "true") {
+      // Insert SHOWS after STUDIO (index 3)
+      const studioIdx = items.findIndex((i) => i.text === "STUDIO");
+      if (studioIdx >= 0) {
+        items.splice(studioIdx + 1, 0, { text: "SHOWS", type: "link", path: "/shows" });
+      }
+    }
+    return items;
+  }, [siteSettings]);
+
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
