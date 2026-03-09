@@ -10,7 +10,7 @@ interface PricelistInquiryBarProps {
   onClearSelection?: () => void;
 }
 
-export const PricelistInquiryBar = ({ selectedCount, selectedTitles, pricelistName, onClearSelection }: PricelistInquiryBarProps) => {
+export const PricelistInquiryBar = ({ selectedCount, selectedTitles, selectedArtworks, pricelistName, onClearSelection }: PricelistInquiryBarProps) => {
   const [showForm, setShowForm] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
