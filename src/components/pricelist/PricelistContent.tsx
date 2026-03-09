@@ -131,6 +131,7 @@ export const PricelistContent = ({
         selectedCount={selectedIds.size}
         selectedTitles={selectedTitles}
         pricelistName={pricelistName}
+        onClearSelection={() => setSelectedIds(new Set())}
       />
 
       <PricelistImageViewer
