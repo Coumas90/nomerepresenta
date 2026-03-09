@@ -178,9 +178,9 @@ export const PricelistRow = ({ item, activeCurrency, selected, onSelect, onViewI
         )}
 
         {/* Info below image */}
-        <div className="mt-3 space-y-0.5">
+        <div className="mt-2.5 space-y-0.5">
           <div className="flex items-center gap-2">
-            <p className="text-[13px] text-stone-800">
+            <p className="text-[11px] text-stone-700 tracking-wide">
               {artwork.title}{artwork.year ? `, ${artwork.year}` : ""}
             </p>
             <div className={`transition-all duration-300 shrink-0 ${selected ? "opacity-100 scale-100" : "opacity-0 scale-75"}`}>
