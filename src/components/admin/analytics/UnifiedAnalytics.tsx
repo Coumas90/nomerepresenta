@@ -6,7 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { CalendarIcon, Users, Clock, MousePointerClick, Globe, ExternalLink, Home, Palette, BookOpen, Mail, ArrowDown, Images } from "lucide-react";
+import { CalendarIcon, Users, Clock, MousePointerClick, Globe, ExternalLink, Home, Palette, BookOpen, Mail, ArrowDown, Images, ShoppingBag, Monitor, Smartphone, Tablet } from "lucide-react";
 import { format, subDays, startOfDay, endOfDay } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
