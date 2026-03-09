@@ -59,7 +59,7 @@ export const PricelistRow = ({ item, activeCurrency, selected, onSelect, onViewI
       }}
       className={cn(
         "border-b border-stone-300/60 cursor-pointer transition-all duration-300",
-        "py-6 px-4 md:py-10 md:px-6",
+        "py-10 px-4 md:py-10 md:px-6",
         selected ? "bg-stone-200/40" : "hover:bg-stone-200/10"
       )}
     >
