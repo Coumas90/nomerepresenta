@@ -36,8 +36,7 @@ export const PricelistRow = ({ item, activeCurrency, selected, onSelect, onViewI
     : artwork ? [artwork.image_url].filter(Boolean) : [];
 
   const hasMultiple = allImages.length > 1;
-  const currentSrc = allImages[currentIndex] || artwork.image_url;
-
+  const currentSrc = allImages[currentIndex] || artwork?.image_url || "";
   const priceMap: Record<PricelistCurrency, string> = {
     USD: item.price_usd,
     EUR: item.price_eur,
