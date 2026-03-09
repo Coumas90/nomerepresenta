@@ -31,7 +31,6 @@ export const PricelistRow = ({ item, activeCurrency, selected, onSelect, onViewI
     : item.price || "";
 
   const handleClick = (e: React.MouseEvent) => {
-    // If clicking the thumbnail area, open viewer instead
     const target = e.target as HTMLElement;
     if (target.closest('[data-thumbnail]')) {
       onViewImages();
@@ -52,13 +51,13 @@ export const PricelistRow = ({ item, activeCurrency, selected, onSelect, onViewI
         }
       }}
       className={`
-        py-6 md:py-10 border-b border-stone-300 cursor-pointer transition-all duration-300 px-4 md:px-6
+        py-5 md:py-10 border-b border-stone-300/60 cursor-pointer transition-all duration-300 px-4 md:px-6
         ${selected ? "bg-stone-200/40" : "hover:bg-stone-200/10"}
       `}
     >
-      {/* Mobile: stacked layout */}
-      <div className="md:hidden space-y-3">
-        <div className="bg-stone-200/50 relative" data-thumbnail>
+      {/* Mobile: fully stacked layout (hidden in print — desktop grid used instead) */}
+      <div className="md:hidden print:hidden">
+        <div className="relative" data-thumbnail>
           <img
             src={artwork.image_url}
             alt={artwork.title}
@@ -66,35 +65,33 @@ export const PricelistRow = ({ item, activeCurrency, selected, onSelect, onViewI
             loading="lazy"
           />
         </div>
-        <div className="flex items-start justify-between gap-4">
-          <div className="space-y-0.5 min-w-0">
-            <div className="flex items-center gap-2">
-              <p className="text-sm text-stone-800">
-                {artwork.title}{artwork.year ? `, ${artwork.year}` : ""}
-              </p>
-              <div className={`transition-all duration-300 shrink-0 ${selected ? "opacity-100 scale-100" : "opacity-0 scale-75"}`}>
-                <Check className="w-3.5 h-3.5 text-stone-500" strokeWidth={2.5} />
-              </div>
+        <div className="mt-3 space-y-0.5">
+          <div className="flex items-center gap-2">
+            <p className="text-[13px] text-stone-800">
+              {artwork.title}{artwork.year ? `, ${artwork.year}` : ""}
+            </p>
+            <div className={`transition-all duration-300 shrink-0 ${selected ? "opacity-100 scale-100" : "opacity-0 scale-75"}`}>
+              <Check className="w-3 h-3 text-stone-500" strokeWidth={2.5} />
             </div>
-            {artwork.materials && (
-              <p className="text-xs text-stone-500 leading-relaxed">
-                {artwork.materials}
-              </p>
-            )}
-            {artwork.dimensions && (
-              <p className="text-xs text-stone-500">
-                {artwork.dimensions}
-              </p>
-            )}
           </div>
-          <p className="text-sm text-stone-800 whitespace-nowrap shrink-0 pt-0.5">
+          {artwork.materials && (
+            <p className="text-xs text-stone-500 leading-relaxed">
+              {artwork.materials}
+            </p>
+          )}
+          {artwork.dimensions && (
+            <p className="text-xs text-stone-500">
+              {artwork.dimensions}
+            </p>
+          )}
+          <p className="text-[13px] text-stone-800 pt-1">
             {displayPrice}
           </p>
         </div>
       </div>
 
-      {/* Desktop: grid layout */}
-      <div className="hidden md:grid grid-cols-[220px_1fr_auto] gap-20 items-center">
+      {/* Desktop grid layout (also used for print) */}
+      <div className="hidden md:grid print:!grid grid-cols-[220px_1fr_auto] gap-20 items-center">
         <div className="bg-stone-200/50 relative" data-thumbnail>
           <img
             src={artwork.image_url}

@@ -92,44 +92,28 @@ export const PricelistImageViewer = ({
             draggable={false}
           />
 
-          {/* Mobile: invisible tap zones (left/right halves of screen) */}
+          {/* Tap zones — left/right halves, both mobile and desktop */}
           {hasMultiple && (
             <>
               <button
                 onClick={goPrev}
-                className="md:hidden absolute left-0 top-0 bottom-0 w-1/3 z-10 focus:outline-none"
-                aria-label="Previous image"
-              />
-              <button
-                onClick={goNext}
-                className="md:hidden absolute right-0 top-0 bottom-0 w-1/3 z-10 focus:outline-none"
-                aria-label="Next image"
-              />
-            </>
-          )}
-
-          {/* Desktop: expanded hitboxes with hover chevrons */}
-          {hasMultiple && (
-            <>
-              <button
-                onClick={goPrev}
-                className="hidden md:block absolute left-0 top-0 bottom-0 w-1/2 z-10 cursor-pointer focus:outline-none group"
+                className="absolute left-0 top-0 bottom-0 w-1/2 z-10 cursor-pointer focus:outline-none group"
                 aria-label="Previous image"
               >
                 <ChevronLeft
                   size={20}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 opacity-0 md:group-hover:opacity-100 transition-opacity"
                   strokeWidth={1.5}
                 />
               </button>
               <button
                 onClick={goNext}
-                className="hidden md:block absolute right-0 top-0 bottom-0 w-1/2 z-10 cursor-pointer focus:outline-none group"
+                className="absolute right-0 top-0 bottom-0 w-1/2 z-10 cursor-pointer focus:outline-none group"
                 aria-label="Next image"
               >
                 <ChevronRight
                   size={20}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 opacity-0 md:group-hover:opacity-100 transition-opacity"
                   strokeWidth={1.5}
                 />
               </button>
@@ -141,7 +125,7 @@ export const PricelistImageViewer = ({
       )}
 
       {/* Counter */}
-      {current && (
+      {current && hasMultiple && (
         <span className="absolute bottom-5 left-5 text-xs text-stone-500 z-20">
           {currentIndex + 1} / {images.length}
         </span>
