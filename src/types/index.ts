@@ -95,3 +95,11 @@ export type {
   SwipeProgress,
   SwipeNavigationConfig,
 } from "./navigation";
+
+// Show types
+export type {
+  ShowData,
+  ShowImage,
+  CreateShowInput,
+  UpdateShowInput,
+} from "./show";

@@ -10,7 +10,7 @@ export const useCreateShow = () => {
   const { toast } = useToast();
   return useMutation({
     mutationFn: async (input: Partial<ShowData>) => {
-      const { data, error } = await supabase.from("shows").insert(input).select().single();
+      const { data, error } = await supabase.from("shows").insert([input as any]).select().single();
       if (error) throw error;
       return data as ShowData;
     },
