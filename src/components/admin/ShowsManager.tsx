@@ -140,7 +140,7 @@ function ShowForm({ show, onBack }: { show: ShowData | null; onBack: () => void 
   const [year, setYear] = useState(show?.year || "");
   const [subtitle, setSubtitle] = useState(show?.subtitle || "");
   const [description, setDescription] = useState(show?.description || "");
-  const [isPublished, setIsPublished] = useState(show?.is_published ?? false);
+  const [isPublished, setIsPublished] = useState(show?.is_published ?? true);
   const [showInMenu, setShowInMenu] = useState(show?.show_in_menu ?? false);
   const [saving, setSaving] = useState(false);
 
