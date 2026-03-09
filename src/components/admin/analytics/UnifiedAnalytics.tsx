@@ -73,6 +73,9 @@ const UnifiedAnalytics = () => {
       {/* Studio Engagement */}
       <StudioEngagementCard startDate={startDate} endDate={endDate} />
 
+      {/* Pricelist / Available Analytics */}
+      <PricelistAnalyticsCard startDate={startDate} endDate={endDate} />
+
       {/* Most Clicked Artworks */}
       <TopArtworksCard startDate={startDate} endDate={endDate} />
     </div>
