@@ -261,6 +261,11 @@ img {
     display: block !important;
   }
 
+  /* Force desktop grid layout for print */
+  .print\:\!grid {
+    display: grid !important;
+  }
+
   /* Prevent page breaks inside rows */
   .grid {
     break-inside: avoid;
