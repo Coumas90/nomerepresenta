@@ -127,15 +127,3 @@ export const useUpdateShowImageOrder = () => {
     },
   });
 };
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: async (images: { id: string; display_order: number }[]) => {
-      const updates = images.map((img) => supabase.from("show_images").update({ display_order: img.display_order }).eq("id", img.id));
-      await Promise.all(updates);
-    },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["show-images"] });
-      qc.invalidateQueries({ queryKey: ["all-show-images"] });
-    },
-  });
-};
