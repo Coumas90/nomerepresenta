@@ -16,6 +16,7 @@ import { useTrafficSources } from "@/hooks/useAudienceAnalytics";
 import { useCountryDistribution } from "@/hooks/useGeographicAnalytics";
 import { useStudioAnalytics } from "@/hooks/useStudioAnalytics";
 import { useUserEventsAnalytics } from "@/hooks/useUserEventsAnalytics";
+import { usePricelistAnalytics } from "@/hooks/usePricelistAnalytics";
 import type { DailyVisitors } from "@/types";
 
 const UnifiedAnalytics = () => {
