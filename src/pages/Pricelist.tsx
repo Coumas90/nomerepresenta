@@ -10,6 +10,7 @@ import { PricelistContent } from "@/components/pricelist/PricelistContent";
 const Pricelist = () => {
   const { slug = "main" } = useParams<{ slug: string }>();
   const { data: pricelist, isLoading: plLoading, error: plError } = usePricelistBySlug(slug);
+  const { trackPageView } = useAnalytics();
 
   const [authenticated, setAuthenticated] = useState(() => {
     return sessionStorage.getItem(`pricelist-auth-${slug}`) === "true";
@@ -30,6 +31,13 @@ const Pricelist = () => {
   const { data: items, isLoading: itemsLoading } = usePricelistItems(pricelist?.id || "");
   const { data: allImages, isLoading: imagesLoading } = useAllArtworkImages();
   const { data: series } = useSeries();
+
+  // Track page view once authenticated
+  useEffect(() => {
+    if (authenticated && pricelist) {
+      trackPageView(`/available/${slug}`, `Pricelist - ${pricelist.name}`);
+    }
+  }, [authenticated, pricelist, slug, trackPageView]);
 
   if (plLoading) {
     return (
