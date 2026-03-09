@@ -121,7 +121,7 @@ export const PricelistContent = ({
       </div>
 
       {/* Download PDF button at bottom */}
-      <div className="max-w-5xl mx-auto px-6 md:px-12 pb-12 print:hidden">
+      <div className="max-w-5xl mx-auto px-6 md:px-12 pb-24 print:hidden">
         <button
           onClick={handleDownloadPdf}
           className="flex items-center gap-2 text-stone-500 hover:text-stone-800 transition-colors text-xs tracking-wide uppercase"
