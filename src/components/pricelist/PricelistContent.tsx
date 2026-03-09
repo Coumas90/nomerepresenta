@@ -107,6 +107,7 @@ export const PricelistContent = ({
                 selected={selectedIds.has(item.artwork_id)}
                 onSelect={toggleSelect}
                 onViewImages={() => setViewingArtworkId(item.artwork_id)}
+                images={allImages?.[item.artwork_id] || []}
               />
             ))}
           </div>
