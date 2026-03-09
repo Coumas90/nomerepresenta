@@ -115,7 +115,7 @@ export const ShowScrollCard = ({ show, images, onNavigate, isDetailPage = false 
 
   return (
     <article className="relative w-full flex flex-col items-center">
-      <figure className="inline-flex flex-col items-start max-w-[95vw] md:max-w-[60vw] lg:max-w-[50vw] mx-auto overflow-visible">
+      <figure className="inline-flex flex-col items-start max-w-[95vw] md:max-w-[75vw] lg:max-w-[65vw] mx-auto overflow-visible">
         {/* SHOW TITLE — above carousel */}
         <div className="mb-4 md:mb-6">
           {onNavigate ? (
