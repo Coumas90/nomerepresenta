@@ -9,6 +9,7 @@ import {
   DollarSign,
   ExternalLink,
   BookOpen,
+  Ticket,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
