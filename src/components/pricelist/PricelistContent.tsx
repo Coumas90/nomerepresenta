@@ -77,8 +77,8 @@ export const PricelistContent = ({
   return (
     <div className="min-h-screen bg-stone-100">
       {/* Sticky header — hidden when printing */}
-      <div className="sticky top-0 bg-stone-100/95 backdrop-blur border-b border-stone-200 z-10 px-4 md:px-12 py-3 md:py-4 flex items-center justify-between gap-3 print:hidden">
-        <span className="text-[10px] md:text-sm font-medium tracking-[0.15em] uppercase text-stone-800 truncate min-w-0">
+      <div className="sticky top-0 bg-stone-100/95 backdrop-blur-sm border-b border-stone-200 z-10 px-4 md:px-12 py-3 md:py-4 flex items-center justify-between gap-3 print:hidden">
+        <span className="text-[9px] md:text-sm font-medium tracking-[0.08em] md:tracking-[0.15em] uppercase text-stone-700 truncate min-w-0">
           {headerTitle}
         </span>
         <button

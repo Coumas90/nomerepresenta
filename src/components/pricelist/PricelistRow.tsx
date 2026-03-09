@@ -130,7 +130,7 @@ export const PricelistRow = ({ item, activeCurrency, selected, onSelect, onViewI
       <div className="md:hidden print:hidden">
         <div
           ref={containerRef}
-          className="relative select-none max-w-[75vw] mx-auto"
+          className="relative select-none max-w-[70vw] mx-auto"
           data-thumbnail
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
