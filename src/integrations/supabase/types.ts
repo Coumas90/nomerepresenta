@@ -241,6 +241,7 @@ export type Database = {
           materials: string | null
           medium_type: string | null
           notes: string | null
+          ref: string | null
           series_id: string
           size_category: string | null
           status: string | null
@@ -263,6 +264,7 @@ export type Database = {
           materials?: string | null
           medium_type?: string | null
           notes?: string | null
+          ref?: string | null
           series_id: string
           size_category?: string | null
           status?: string | null
@@ -285,6 +287,7 @@ export type Database = {
           materials?: string | null
           medium_type?: string | null
           notes?: string | null
+          ref?: string | null
           series_id?: string
           size_category?: string | null
           status?: string | null

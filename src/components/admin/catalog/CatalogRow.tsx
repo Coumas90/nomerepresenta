@@ -81,6 +81,31 @@ export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpd
           <p className="text-sm font-medium truncate max-w-[200px]">{artwork.title}</p>
         </td>
 
+        {/* Ref */}
+        <td className="py-2 px-3">
+          {editingField === "ref" ? (
+            <div className="flex items-center gap-1">
+              <Input
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                className="h-7 w-24 text-xs"
+                onKeyDown={(e) => e.key === "Enter" && saveField()}
+                autoFocus
+              />
+              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={saveField}>
+                <Check className="h-3 w-3" />
+              </Button>
+            </div>
+          ) : (
+            <button
+              onClick={() => startEditing("ref", artwork.ref || "")}
+              className="text-xs px-1.5 py-0.5 rounded hover:bg-muted transition-colors min-w-[48px] text-left"
+            >
+              {artwork.ref || "—"}
+            </button>
+          )}
+        </td>
+
         {/* Series */}
         <td className="py-2 px-3">
           {editingField === "catalog_series" ? (

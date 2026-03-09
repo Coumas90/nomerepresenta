@@ -22,6 +22,7 @@ export interface CatalogArtwork {
   notes: string | null;
   edition: string | null;
   catalog_series: string | null;
+  ref: string | null;
   series_name?: string;
   series_visible?: boolean;
 }
@@ -32,7 +33,7 @@ export const useCatalogArtworks = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("artworks")
-        .select("id, title, year, dimensions, materials, image_url, series_id, is_visible, size_category, medium_type, status, location, notes, edition, catalog_series, series:series(name, is_visible)")
+        .select("id, title, year, dimensions, materials, image_url, series_id, is_visible, size_category, medium_type, status, location, notes, edition, catalog_series, ref, series:series(name, is_visible)")
         .order("year", { ascending: false, nullsFirst: false });
       if (error) throw error;
 

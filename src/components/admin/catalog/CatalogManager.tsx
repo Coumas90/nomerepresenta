@@ -126,6 +126,7 @@ const CatalogManager = () => {
                 >
                   <span className="inline-flex items-center">Title <SortIcon field="title" /></span>
                 </th>
+                <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Ref</th>
                 <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Series</th>
                 <th
                   className="py-2 px-3 text-xs font-medium text-muted-foreground text-center cursor-pointer select-none hover:text-foreground transition-colors"
