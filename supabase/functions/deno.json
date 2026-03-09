@@ -1,4 +1,6 @@
 {
   "nodeModulesDir": "auto",
-  "imports": {}
+  "imports": {
+    "nodemailer": "npm:nodemailer@6.9.16"
+  }
 }
