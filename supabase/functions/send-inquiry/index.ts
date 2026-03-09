@@ -20,7 +20,7 @@ serve(async (req) => {
 
     const ZOHO_USER = "contact@ivancomas.studio";
 
-    const { name, email, message, artworks, pricelistName } = await req.json();
+    const { name, email, message, artworks, artworkImages, pricelistName } = await req.json();
 
     // Validate inputs
     if (!name || typeof name !== "string" || name.trim().length === 0 || name.length > 200) {
