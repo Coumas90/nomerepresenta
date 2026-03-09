@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { SmtpClient } from "https://deno.land/x/smtp@v0.7.0/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -13,9 +12,9 @@ serve(async (req) => {
   }
 
   try {
-    const ZOHO_APP_PASSWORD = Deno.env.get("ZOHO_APP_PASSWORD");
-    if (!ZOHO_APP_PASSWORD) {
-      throw new Error("ZOHO_APP_PASSWORD is not configured");
+    const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+    if (!RESEND_API_KEY) {
+      throw new Error("RESEND_API_KEY is not configured");
     }
 
     const { name, email, message, artworks, pricelistName } = await req.json();
@@ -46,40 +45,47 @@ serve(async (req) => {
       });
     }
 
-    const artworkList = artworks
-      .map((a: string) => `  • ${a}`)
-      .join("\n");
+    const artworkListHtml = artworks
+      .map((a: string) => `<li style="margin-bottom:4px;">${escapeHtml(a)}</li>`)
+      .join("");
 
-    const emailBody = `New inquiry from ${name.trim()} (${email.trim()})
+    const messageHtml = message?.trim()
+      ? `<p style="margin-top:16px;"><strong>Message:</strong></p><p>${escapeHtml(message.trim())}</p>`
+      : "";
 
-Pricelist: ${pricelistName || "—"}
+    const html = `
+      <div style="font-family:system-ui,-apple-system,sans-serif;max-width:520px;color:#1c1917;">
+        <p>New inquiry from <strong>${escapeHtml(name.trim())}</strong> (<a href="mailto:${escapeHtml(email.trim())}">${escapeHtml(email.trim())}</a>)</p>
+        <p style="color:#78716c;font-size:13px;">Pricelist: ${escapeHtml(pricelistName || "—")}</p>
+        <p><strong>Selected works:</strong></p>
+        <ul style="padding-left:20px;">${artworkListHtml}</ul>
+        ${messageHtml}
+        <hr style="border:none;border-top:1px solid #d6d3d1;margin:24px 0;" />
+        <p style="font-size:12px;color:#a8a29e;">Reply directly to this email to respond to ${escapeHtml(name.trim())}.</p>
+      </div>
+    `;
 
-Selected works:
-${artworkList}
-
-${message?.trim() ? `Message:\n${message.trim()}` : "No additional message."}
-
----
-Reply directly to this email to respond to ${name.trim()}.`;
-
-    const client = new SmtpClient();
-
-    await client.connectTLS({
-      hostname: "smtp.zoho.com",
-      port: 465,
-      username: "contact@ivancomas.studio",
-      password: ZOHO_APP_PASSWORD,
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${RESEND_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: "Ivan Comas <onboarding@resend.dev>",
+        to: ["contact@ivancomas.studio"],
+        reply_to: email.trim(),
+        subject: `Inquiry — ${pricelistName || "Pricelist"} — ${name.trim()}`,
+        html,
+      }),
     });
 
-    await client.send({
-      from: "contact@ivancomas.studio",
-      to: "contact@ivancomas.studio",
-      replyTo: email.trim(),
-      subject: `Inquiry — ${pricelistName || "Pricelist"} — ${name.trim()}`,
-      content: emailBody,
-    });
+    const resData = await res.json();
 
-    await client.close();
+    if (!res.ok) {
+      console.error("Resend API error:", resData);
+      throw new Error(`Email send failed [${res.status}]: ${JSON.stringify(resData)}`);
+    }
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
@@ -94,3 +100,11 @@ Reply directly to this email to respond to ${name.trim()}.`;
     });
   }
 });
+
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
