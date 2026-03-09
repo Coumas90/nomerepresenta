@@ -180,7 +180,7 @@ const PricelistManager = () => {
                       size="sm"
                       asChild
                     >
-                      <a href={`/pricelist/${pl.slug}`} target="_blank" rel="noopener noreferrer">
+                      <a href={`/available/${pl.slug}`} target="_blank" rel="noopener noreferrer">
                         <ExternalLink className="h-3 w-3 mr-1" />
                         View
                       </a>
