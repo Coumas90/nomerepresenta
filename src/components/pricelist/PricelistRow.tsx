@@ -205,7 +205,7 @@ export const PricelistRow = ({ item, activeCurrency, selected, onSelect, onViewI
 
       {/* Desktop grid layout (also used for print) */}
       <div className="hidden md:grid print:!grid grid-cols-[220px_1fr_auto] gap-20 items-center">
-        <div className="bg-stone-200/50 relative" data-thumbnail>
+        <div className="relative" data-thumbnail>
           <img
             src={artwork.image_url}
             alt={artwork.title}
