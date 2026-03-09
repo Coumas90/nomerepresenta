@@ -106,36 +106,36 @@ const PricelistManager = () => {
           {pricelists.map((pl) => (
             <Card key={pl.id} className="hover:shadow-md transition-shadow">
               <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-1 flex-1">
-                    <h3 className="font-semibold text-base">{pl.name}</h3>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <span className="font-mono bg-muted px-2 py-0.5 rounded text-xs">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h3 className="font-semibold text-base">{pl.name}</h3>
+                      <span className="font-mono bg-muted px-2 py-0.5 rounded text-xs text-muted-foreground">
                         /available/{pl.slug}
                       </span>
-                      <span className="flex items-center gap-1">
-                        Series:{" "}
+                    </div>
+                    <div className="flex items-center gap-5 text-xs text-muted-foreground">
+                      <label className="flex items-center gap-1.5">
+                        <span className="shrink-0">Series:</span>
                         <Input
                           defaultValue={pl.series_name || ""}
                           placeholder="e.g. TRI-PEEL"
-                          className="h-6 w-32 text-xs inline-flex"
+                          className="h-7 w-28 text-xs"
                           onBlur={(e) => {
                             if (e.target.value !== (pl.series_name || "")) {
                               updatePricelist.mutate({ id: pl.id, updates: { series_name: e.target.value } });
                             }
                           }}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") (e.target as HTMLInputElement).blur();
-                          }}
+                          onKeyDown={(e) => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }}
                         />
-                      </span>
-                       <span className="flex items-center gap-1">
-                        Currency:{" "}
+                      </label>
+                      <label className="flex items-center gap-1.5">
+                        <span className="shrink-0">Currency:</span>
                         <Select
                           defaultValue={pl.active_currency || "USD"}
                           onValueChange={(val) => updatePricelist.mutate({ id: pl.id, updates: { active_currency: val as any } })}
                         >
-                          <SelectTrigger className="h-6 w-20 text-xs">
+                          <SelectTrigger className="h-7 w-20 text-xs">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -144,22 +144,20 @@ const PricelistManager = () => {
                             <SelectItem value="BRL">R$</SelectItem>
                           </SelectContent>
                         </Select>
-                      </span>
-                      <span className="flex items-center gap-1">
-                        Password:{" "}
+                      </label>
+                      <label className="flex items-center gap-1.5">
+                        <span className="shrink-0">Password:</span>
                         <Input
                           type={showPasswords.has(pl.id) ? "text" : "password"}
                           defaultValue={pl.password}
-                          className="h-6 w-28 text-xs inline-flex font-mono"
+                          className="h-7 w-24 text-xs font-mono"
                           onBlur={(e) => {
                             if (e.target.value && e.target.value !== pl.password) {
                               updatePricelist.mutate({ id: pl.id, updates: { password: e.target.value } });
                               toast.success("Password updated");
                             }
                           }}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") (e.target as HTMLInputElement).blur();
-                          }}
+                          onKeyDown={(e) => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }}
                         />
                         <button
                           onClick={() => togglePasswordVisibility(pl.id)}
@@ -167,41 +165,24 @@ const PricelistManager = () => {
                         >
                           {showPasswords.has(pl.id) ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
                         </button>
-                      </span>
+                      </label>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleCopyLink(pl.slug)}
-                    >
+                  <div className="flex items-center gap-2 shrink-0">
+                    <Button variant="outline" size="sm" onClick={() => handleCopyLink(pl.slug)}>
                       <Copy className="h-3 w-3 mr-1" />
                       Copy Link
                     </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      asChild
-                    >
+                    <Button variant="outline" size="sm" asChild>
                       <a href={`/available/${pl.slug}`} target="_blank" rel="noopener noreferrer">
                         <ExternalLink className="h-3 w-3 mr-1" />
                         View
                       </a>
                     </Button>
-                    <Button
-                      variant="default"
-                      size="sm"
-                      onClick={() => setEditingPricelistId(pl.id)}
-                    >
+                    <Button variant="default" size="sm" onClick={() => setEditingPricelistId(pl.id)}>
                       Edit Items
                     </Button>
-                    <Button
-                      variant="destructive"
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={() => deletePricelist.mutate(pl.id)}
-                    >
+                    <Button variant="destructive" size="icon" className="h-8 w-8" onClick={() => deletePricelist.mutate(pl.id)}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
