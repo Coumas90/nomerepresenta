@@ -163,13 +163,22 @@ function ShowForm({ show, onBack }: { show: ShowData | null; onBack: () => void 
     }
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!show || !e.target.files?.length) return;
-    const file = e.target.files[0];
-    const fileName = `${show.id}-${Date.now()}-${file.name}`;
-    const url = await uploadImage.mutateAsync({ file, fileName });
-    const order = (images?.length || 0);
-    await addImage.mutateAsync({ show_id: show.id, image_url: url, display_order: order });
+  const [uploading, setUploading] = useState(false);
+
+  const handleMultipleUpload = async (files: File[]) => {
+    if (!show || files.length === 0) return;
+    setUploading(true);
+    try {
+      let order = images?.length || 0;
+      for (const file of files) {
+        const fileName = `${show.id}-${Date.now()}-${file.name}`;
+        const url = await uploadImage.mutateAsync({ file, fileName });
+        await addImage.mutateAsync({ show_id: show.id, image_url: url, display_order: order });
+        order++;
+      }
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
