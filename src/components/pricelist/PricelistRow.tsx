@@ -188,16 +188,16 @@ export const PricelistRow = ({ item, activeCurrency, selected, onSelect, onViewI
             </div>
           </div>
           {artwork.materials && (
-            <p className="text-xs text-stone-500 leading-relaxed">
+            <p className="text-[10px] text-stone-400 leading-relaxed">
               {artwork.materials}
             </p>
           )}
           {artwork.dimensions && (
-            <p className="text-xs text-stone-500">
+            <p className="text-[10px] text-stone-400">
               {artwork.dimensions}
             </p>
           )}
-          <p className="text-[13px] text-stone-800 pt-1">
+          <p className="text-[11px] text-stone-700 pt-0.5">
             {displayPrice}
           </p>
         </div>
