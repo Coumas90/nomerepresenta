@@ -57,13 +57,19 @@ export const PricelistContent = ({
   const entries = Array.from(grouped.entries());
   const allItems = entries.flatMap(([, items]) => items);
 
-  const selectedTitles = allItems
+  const selectedArtworks = allItems
     .filter((item) => selectedIds.has(item.artwork_id))
     .map((item) => {
       const a = item.artwork;
-      return a ? `${a.title}${a.year ? `, ${a.year}` : ""}${a.dimensions ? ` — ${a.dimensions}` : ""}` : "";
+      if (!a) return null;
+      return {
+        label: `${a.title}${a.year ? `, ${a.year}` : ""}${a.dimensions ? ` — ${a.dimensions}` : ""}`,
+        imageUrl: a.image_url || "",
+      };
     })
-    .filter(Boolean);
+    .filter(Boolean) as { label: string; imageUrl: string }[];
+
+  const selectedTitles = selectedArtworks.map((a) => a.label);
 
   const viewerImages = viewingArtworkId ? allImages?.[viewingArtworkId] || [] : [];
   const viewingItem = allItems.find((item) => item.artwork_id === viewingArtworkId);
@@ -130,6 +136,7 @@ export const PricelistContent = ({
       <PricelistInquiryBar
         selectedCount={selectedIds.size}
         selectedTitles={selectedTitles}
+        selectedArtworks={selectedArtworks}
         pricelistName={pricelistName}
         onClearSelection={() => setSelectedIds(new Set())}
       />

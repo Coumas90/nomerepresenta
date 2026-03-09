@@ -20,7 +20,7 @@ serve(async (req) => {
 
     const ZOHO_USER = "contact@ivancomas.studio";
 
-    const { name, email, message, artworks, pricelistName } = await req.json();
+    const { name, email, message, artworks, artworkImages, pricelistName } = await req.json();
 
     // Validate inputs
     if (!name || typeof name !== "string" || name.trim().length === 0 || name.length > 200) {
@@ -48,9 +48,22 @@ serve(async (req) => {
       });
     }
 
-    const artworkListHtml = artworks
-      .map((a: string) => `<li style="margin-bottom:4px;">${escapeHtml(a)}</li>`)
-      .join("");
+    // Build artwork list with optional thumbnails
+    let artworkListHtml: string;
+    if (artworkImages && Array.isArray(artworkImages) && artworkImages.length > 0) {
+      artworkListHtml = artworkImages
+        .map((a: { label: string; imageUrl: string }) => {
+          const imgTag = a.imageUrl
+            ? `<img src="${escapeHtml(a.imageUrl)}" alt="" width="48" height="48" style="width:48px;height:48px;object-fit:cover;border-radius:4px;margin-right:10px;vertical-align:middle;" />`
+            : "";
+          return `<li style="margin-bottom:8px;list-style:none;display:flex;align-items:center;">${imgTag}<span>${escapeHtml(a.label)}</span></li>`;
+        })
+        .join("");
+    } else {
+      artworkListHtml = artworks
+        .map((a: string) => `<li style="margin-bottom:4px;">${escapeHtml(a)}</li>`)
+        .join("");
+    }
 
     const messageHtml = message?.trim()
       ? `<p style="margin-top:16px;"><strong>Message:</strong></p><p>${escapeHtml(message.trim())}</p>`

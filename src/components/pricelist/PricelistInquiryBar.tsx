@@ -5,11 +5,12 @@ import { supabase } from "@/integrations/supabase/client";
 interface PricelistInquiryBarProps {
   selectedCount: number;
   selectedTitles: string[];
+  selectedArtworks?: { label: string; imageUrl: string }[];
   pricelistName?: string;
   onClearSelection?: () => void;
 }
 
-export const PricelistInquiryBar = ({ selectedCount, selectedTitles, pricelistName, onClearSelection }: PricelistInquiryBarProps) => {
+export const PricelistInquiryBar = ({ selectedCount, selectedTitles, selectedArtworks, pricelistName, onClearSelection }: PricelistInquiryBarProps) => {
   const [showForm, setShowForm] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -32,6 +33,7 @@ export const PricelistInquiryBar = ({ selectedCount, selectedTitles, pricelistNa
           email: email.trim(),
           message: message.trim(),
           artworks: selectedTitles,
+          artworkImages: selectedArtworks?.map((a) => ({ label: a.label, imageUrl: a.imageUrl })),
           pricelistName,
         },
       });
