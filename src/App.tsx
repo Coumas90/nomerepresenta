@@ -21,6 +21,8 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Install = lazy(() => import("./pages/Install"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Pricelist = lazy(() => import("./pages/Pricelist"));
+const Shows = lazy(() => import("./pages/Shows"));
+const ShowDetail = lazy(() => import("./pages/ShowDetail"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
