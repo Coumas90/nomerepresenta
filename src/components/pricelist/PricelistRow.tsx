@@ -59,7 +59,7 @@ export const PricelistRow = ({ item, activeCurrency, selected, onSelect, onViewI
       }}
       className={cn(
         "border-b border-stone-300/60 cursor-pointer transition-all duration-300",
-        "py-6 px-4 md:py-10 md:px-6",
+        "py-10 px-4 md:py-10 md:px-6",
         selected ? "bg-stone-200/40" : "hover:bg-stone-200/10"
       )}
     >
@@ -73,7 +73,7 @@ export const PricelistRow = ({ item, activeCurrency, selected, onSelect, onViewI
           <Check className="w-4 h-4 text-stone-600" strokeWidth={2.5} />
         </div>
 
-        <div className="max-w-[65vw] mx-auto">
+        <div className="max-w-[85vw] mx-auto">
           <img
             src={artwork.image_url}
             alt={artwork.title}
@@ -83,8 +83,8 @@ export const PricelistRow = ({ item, activeCurrency, selected, onSelect, onViewI
           />
         </div>
 
-        {/* Info below image */}
-        <div className="mt-3 space-y-0.5">
+        {/* Info below image — left-aligned with image */}
+        <div className="max-w-[85vw] mx-auto mt-3 space-y-0.5">
           <p className="text-[10px] text-stone-600 tracking-wide">
             {artwork.title}{artwork.year ? `, ${artwork.year}` : ""}
           </p>
