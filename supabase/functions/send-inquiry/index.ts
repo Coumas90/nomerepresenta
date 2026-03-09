@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
+import nodemailer from "nodemailer";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -68,28 +68,23 @@ serve(async (req) => {
       </div>
     `;
 
-    const client = new SMTPClient({
-      connection: {
-        hostname: "smtp.zoho.com",
-        port: 465,
-        tls: true,
-        auth: {
-          username: ZOHO_USER,
-          password: ZOHO_APP_PASSWORD,
-        },
+    const transporter = nodemailer.createTransport({
+      host: "smtp.zoho.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: ZOHO_USER,
+        pass: ZOHO_APP_PASSWORD,
       },
     });
 
-    await client.send({
+    await transporter.sendMail({
       from: ZOHO_USER,
       to: ZOHO_USER,
       replyTo: email.trim(),
       subject: `Inquiry — ${pricelistName || "Pricelist"} — ${name.trim()}`,
-      content: "auto",
       html,
     });
-
-    await client.close();
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
