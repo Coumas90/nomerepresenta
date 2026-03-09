@@ -1,18 +1,22 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ArtistStructuredData } from "@/components/seo/ArtistStructuredData";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
-// Menu items with their associated artwork images
-const menuItems = [
-  { text: "IVAN", type: "title" as const },
-  { text: "COMAS", type: "title" as const },
-  { text: "WORKS", type: "link" as const, path: "/works" },
-  { text: "STUDIO", type: "link" as const, path: "/studio" },
-  { text: "CONTACT", type: "link" as const, path: "/contact" },
-  { text: "BIO", type: "link" as const, path: "/bio" },
+type MenuItem = { text: string; type: "title" | "link"; path?: string };
+
+// Base menu items (always visible)
+const baseMenuItems: MenuItem[] = [
+  { text: "IVAN", type: "title" },
+  { text: "COMAS", type: "title" },
+  { text: "WORKS", type: "link", path: "/works" },
+  { text: "STUDIO", type: "link", path: "/studio" },
+  // Dynamic items inserted here based on site_settings
+  { text: "CONTACT", type: "link", path: "/contact" },
+  { text: "BIO", type: "link", path: "/bio" },
 ];
 
 const Landing = () => {
