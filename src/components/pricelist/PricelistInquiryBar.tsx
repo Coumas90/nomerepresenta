@@ -33,6 +33,7 @@ export const PricelistInquiryBar = ({ selectedCount, selectedTitles, selectedArt
           email: email.trim(),
           message: message.trim(),
           artworks: selectedTitles,
+          artworkImages: selectedArtworks?.map((a) => ({ label: a.label, imageUrl: a.imageUrl })),
           pricelistName,
         },
       });
