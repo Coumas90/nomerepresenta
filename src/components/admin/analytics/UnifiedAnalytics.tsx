@@ -583,4 +583,166 @@ const StudioEngagementCard = ({ startDate, endDate }: { startDate: Date; endDate
   );
 };
 
+// ─── Pricelist / Available Analytics ────────────────────
+const PricelistAnalyticsCard = ({ startDate, endDate }: { startDate: Date; endDate: Date }) => {
+  const { data, isLoading } = usePricelistAnalytics(startDate, endDate);
+
+  const formatDuration = (seconds: number) => {
+    if (seconds < 60) return `${seconds}s`;
+    return `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
+  };
+
+  const deviceIcon = (device: string) => {
+    if (device === "mobile") return <Smartphone className="h-3.5 w-3.5 text-muted-foreground" />;
+    if (device === "tablet") return <Tablet className="h-3.5 w-3.5 text-muted-foreground" />;
+    return <Monitor className="h-3.5 w-3.5 text-muted-foreground" />;
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>Pricelist (Available) Analytics</CardTitle>
+            <p className="text-xs text-muted-foreground">
+              Views, duration, device & country for shared pricelist links
+            </p>
+          </div>
+          <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+        </div>
+      </CardHeader>
+      <CardContent>
+        {isLoading ? (
+          <Skeleton className="h-48" />
+        ) : !data || data.totalViews === 0 ? (
+          <p className="text-sm text-muted-foreground py-4">
+            No pricelist views yet. Share an /available/ link to start tracking.
+          </p>
+        ) : (
+          <div className="space-y-6">
+            {/* Summary metrics */}
+            <div className="flex items-center gap-6">
+              <div>
+                <div className="text-2xl font-bold">{data.totalViews}</div>
+                <p className="text-xs text-muted-foreground">Total Views</p>
+              </div>
+              <div>
+                <div className="text-2xl font-bold">{data.uniqueSessions}</div>
+                <p className="text-xs text-muted-foreground">Unique Sessions</p>
+              </div>
+              <div>
+                <div className="text-2xl font-bold">{formatDuration(data.avgDuration)}</div>
+                <p className="text-xs text-muted-foreground">Avg. Duration</p>
+              </div>
+            </div>
+
+            {/* By pricelist slug */}
+            {data.bySlug.length > 0 && (
+              <div>
+                <h4 className="text-sm font-medium mb-2">By Pricelist</h4>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Link</TableHead>
+                      <TableHead className="text-right">Views</TableHead>
+                      <TableHead className="text-right">Sessions</TableHead>
+                      <TableHead className="text-right">Avg. Time</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {data.bySlug.map((s) => (
+                      <TableRow key={s.slug}>
+                        <TableCell className="font-medium">/available/{s.slug}</TableCell>
+                        <TableCell className="text-right">{s.views}</TableCell>
+                        <TableCell className="text-right">{s.uniqueSessions}</TableCell>
+                        <TableCell className="text-right">{formatDuration(s.avgDuration)}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+
+            {/* Device & Country side by side */}
+            <div className="grid gap-6 md:grid-cols-2">
+              {/* By device */}
+              {data.byDevice.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-medium mb-2">By Device</h4>
+                  <div className="space-y-2">
+                    {data.byDevice.map((d) => (
+                      <div key={d.device} className="flex items-center justify-between text-sm">
+                        <div className="flex items-center gap-2">
+                          {deviceIcon(d.device)}
+                          <span className="capitalize">{d.device}</span>
+                        </div>
+                        <span className="font-medium">{d.count}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* By country */}
+              {data.byCountry.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-medium mb-2">By Country</h4>
+                  <div className="space-y-2">
+                    {data.byCountry.slice(0, 8).map((c) => (
+                      <div key={c.country} className="flex items-center justify-between text-sm">
+                        <span>{c.country}</span>
+                        <span className="font-medium">{c.count}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Recent sessions table */}
+            {data.sessions.length > 0 && (
+              <div>
+                <h4 className="text-sm font-medium mb-2">Recent Sessions</h4>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Link</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Duration</TableHead>
+                      <TableHead>Device</TableHead>
+                      <TableHead>Location</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {data.sessions.slice(0, 15).map((s, i) => (
+                      <TableRow key={`${s.session_id}-${i}`}>
+                        <TableCell className="text-sm">{s.slug}</TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {format(new Date(s.viewed_at), "MMM dd, HH:mm")}
+                        </TableCell>
+                        <TableCell className="text-sm">
+                          {formatDuration(s.time_on_page_seconds || 0)}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1.5">
+                            {deviceIcon(s.device_type || "desktop")}
+                            <span className="text-sm capitalize">{s.device_type || "unknown"}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-sm">
+                          {[s.city, s.country_name].filter(Boolean).join(", ") || "—"}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
 export default UnifiedAnalytics;
