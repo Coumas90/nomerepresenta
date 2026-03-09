@@ -30,12 +30,10 @@ export const PricelistRow = ({ item, activeCurrency, selected, onSelect, onViewI
   const swipeLocked = useRef<"horizontal" | "vertical" | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  if (!artwork) return null;
-
-  // Build images list: use artwork_images if available, fallback to artwork.image_url
-  const allImages = images.length > 0
+  // Build images list
+  const allImages = artwork && images.length > 0
     ? images.map(img => img.image_url)
-    : [artwork.image_url].filter(Boolean);
+    : artwork ? [artwork.image_url].filter(Boolean) : [];
 
   const hasMultiple = allImages.length > 1;
   const currentSrc = allImages[currentIndex] || artwork.image_url;
