@@ -16,6 +16,7 @@ const BioManager = lazy(() => import("@/components/admin/BioManager"));
 const UnifiedAnalytics = lazy(() => import("@/components/admin/analytics/UnifiedAnalytics"));
 const PricelistManager = lazy(() => import("@/components/admin/PricelistManager"));
 const CatalogManager = lazy(() => import("@/components/admin/catalog/CatalogManager"));
+const ShowsManager = lazy(() => import("@/components/admin/ShowsManager"));
 
 const Admin = () => {
   const location = useLocation();
@@ -143,6 +144,13 @@ const Admin = () => {
             )}
             <ArtworksList onEdit={handleEdit} onCreateInSeries={handleCreateInSeries} />
           </div>
+        );
+      
+      case "content-shows":
+        return (
+          <Suspense fallback={<LoadingSkeleton type="analytics" />}>
+            <ShowsManager />
+          </Suspense>
         );
       
       case "settings-compression":
