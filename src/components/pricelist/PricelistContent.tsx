@@ -5,6 +5,7 @@ import type { SeriesData, ArtworkImage } from "@/types";
 import type { PricelistItemWithArtwork, PricelistCurrency } from "@/hooks/usePricelist";
 import { PricelistRow } from "./PricelistRow";
 import { PricelistImageViewer } from "./PricelistImageViewer";
+import { PricelistInquiryBar } from "./PricelistInquiryBar";
 
 interface PricelistContentProps {
   grouped: Map<string, PricelistItemWithArtwork[]>;
@@ -27,6 +28,7 @@ export const PricelistContent = ({
 }: PricelistContentProps) => {
   const navigate = useNavigate();
   const [viewingArtworkId, setViewingArtworkId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const headerTitle = `IVAN COMAS / ${pricelistName ? pricelistName.toUpperCase() : "PRICELIST"}${seriesName ? ` / ${seriesName.toUpperCase()}` : ""}`;
 
@@ -34,6 +36,15 @@ export const PricelistContent = ({
     document.title = headerTitle;
     window.print();
   }, [headerTitle]);
+
+  const toggleSelect = useCallback((artworkId: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(artworkId)) next.delete(artworkId);
+      else next.add(artworkId);
+      return next;
+    });
+  }, []);
 
   if (isLoading) {
     return (
@@ -44,11 +55,18 @@ export const PricelistContent = ({
   }
 
   const entries = Array.from(grouped.entries());
+  const allItems = entries.flatMap(([, items]) => items);
+
+  const selectedTitles = allItems
+    .filter((item) => selectedIds.has(item.artwork_id))
+    .map((item) => {
+      const a = item.artwork;
+      return a ? `${a.title}${a.year ? `, ${a.year}` : ""}${a.dimensions ? ` — ${a.dimensions}` : ""}` : "";
+    })
+    .filter(Boolean);
 
   const viewerImages = viewingArtworkId ? allImages?.[viewingArtworkId] || [] : [];
-  const viewingItem = entries
-    .flatMap(([, items]) => items)
-    .find((item) => item.artwork_id === viewingArtworkId);
+  const viewingItem = allItems.find((item) => item.artwork_id === viewingArtworkId);
 
   return (
     <div className="min-h-screen bg-stone-100">
@@ -82,7 +100,9 @@ export const PricelistContent = ({
                 key={item.id}
                 item={item}
                 activeCurrency={activeCurrency}
-                onClick={() => setViewingArtworkId(item.artwork_id)}
+                selected={selectedIds.has(item.artwork_id)}
+                onSelect={toggleSelect}
+                onViewImages={() => setViewingArtworkId(item.artwork_id)}
               />
             ))}
           </div>
@@ -105,6 +125,13 @@ export const PricelistContent = ({
           <Download className="w-4 h-4" />
         </button>
       </div>
+
+      {/* Inquiry bar */}
+      <PricelistInquiryBar
+        selectedCount={selectedIds.size}
+        selectedTitles={selectedTitles}
+        pricelistName={pricelistName}
+      />
 
       <PricelistImageViewer
         open={!!viewingArtworkId}
