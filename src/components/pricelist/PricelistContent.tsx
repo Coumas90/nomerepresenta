@@ -136,6 +136,7 @@ export const PricelistContent = ({
       <PricelistInquiryBar
         selectedCount={selectedIds.size}
         selectedTitles={selectedTitles}
+        selectedArtworks={selectedArtworks}
         pricelistName={pricelistName}
         onClearSelection={() => setSelectedIds(new Set())}
       />
