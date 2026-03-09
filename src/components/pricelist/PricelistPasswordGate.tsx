@@ -32,7 +32,7 @@ export const PricelistPasswordGate = ({ onSubmit }: PricelistPasswordGateProps) 
           }}
           placeholder="Enter password"
           autoFocus
-          className="w-full border-b border-stone-300 bg-transparent py-2 text-center text-sm tracking-wide text-stone-800 placeholder:text-stone-400 focus:border-stone-800 focus:outline-none transition-colors"
+          className="w-full border-b border-stone-300 bg-transparent py-2 text-center text-base tracking-wide text-stone-800 placeholder:text-stone-400 focus:border-stone-800 focus:outline-none transition-colors"
         />
         {error && (
           <p className="text-xs text-red-500">Incorrect password</p>
