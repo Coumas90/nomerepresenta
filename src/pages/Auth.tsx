@@ -11,7 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff, ShieldAlert, ShieldCheck } from "lucide-react";
 import { z } from "zod";
-import { P5Background } from "@/components/P5Background";
+
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { subDays } from "date-fns";
@@ -286,7 +286,7 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6 relative bg-black">
-      <P5Background />
+      
       <Card className="w-full max-w-md backdrop-blur-xl bg-background/80 border-border/50 shadow-2xl">
         <CardHeader>
           <CardTitle>{showForgotPassword ? "Reset Password" : "Admin Sign In"}</CardTitle>
