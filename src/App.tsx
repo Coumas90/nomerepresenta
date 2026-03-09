@@ -92,6 +92,8 @@ const App = () => (
             <Route path="/install" element={<Install />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/pricelist/:slug" element={<Pricelist />} />
+            <Route path="/shows" element={<Shows />} />
+            <Route path="/shows/:slug" element={<ShowDetail />} />
             <Route 
               path="/admin" 
               element={

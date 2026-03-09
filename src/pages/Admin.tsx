@@ -146,6 +146,13 @@ const Admin = () => {
           </div>
         );
       
+      case "content-shows":
+        return (
+          <Suspense fallback={<LoadingSkeleton type="analytics" />}>
+            <ShowsManager />
+          </Suspense>
+        );
+      
       case "settings-compression":
         return <ImageCompressionSettings />;
       
