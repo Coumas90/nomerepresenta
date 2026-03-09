@@ -83,51 +83,65 @@ export const PricelistImageViewer = ({
       </button>
 
       {current ? (
-        <div className="relative overflow-visible">
+        <>
+          {/* Image */}
           <img
             src={current.image_url}
             alt={current.alt_text || artworkTitle}
-            className="max-w-[90vw] max-h-[90vh] object-contain select-none pointer-events-none"
+            className="max-w-[90vw] max-h-[85vh] object-contain select-none pointer-events-none"
             draggable={false}
           />
 
-          {/* Left clickable zone */}
+          {/* Mobile: invisible tap zones (left/right halves of screen) */}
           {hasMultiple && (
-            <button
-              onClick={goPrev}
-              className="hidden md:block absolute -left-[50vw] top-0 bottom-0 w-[calc(50%+50vw)] z-10 cursor-pointer focus:outline-none group"
-              aria-label="Previous image"
-            >
-              <ChevronLeft
-                size={20}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 opacity-0 group-hover:opacity-100 transition-opacity"
-                strokeWidth={1.5}
+            <>
+              <button
+                onClick={goPrev}
+                className="md:hidden absolute left-0 top-0 bottom-0 w-1/3 z-10 focus:outline-none"
+                aria-label="Previous image"
               />
-            </button>
+              <button
+                onClick={goNext}
+                className="md:hidden absolute right-0 top-0 bottom-0 w-1/3 z-10 focus:outline-none"
+                aria-label="Next image"
+              />
+            </>
           )}
 
-          {/* Right clickable zone */}
+          {/* Desktop: expanded hitboxes with hover chevrons */}
           {hasMultiple && (
-            <button
-              onClick={goNext}
-              className="hidden md:block absolute -right-[50vw] top-0 bottom-0 w-[calc(50%+50vw)] z-10 cursor-pointer focus:outline-none group"
-              aria-label="Next image"
-            >
-              <ChevronRight
-                size={20}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 opacity-0 group-hover:opacity-100 transition-opacity"
-                strokeWidth={1.5}
-              />
-            </button>
+            <>
+              <button
+                onClick={goPrev}
+                className="hidden md:block absolute left-0 top-0 bottom-0 w-1/2 z-10 cursor-pointer focus:outline-none group"
+                aria-label="Previous image"
+              >
+                <ChevronLeft
+                  size={20}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                  strokeWidth={1.5}
+                />
+              </button>
+              <button
+                onClick={goNext}
+                className="hidden md:block absolute right-0 top-0 bottom-0 w-1/2 z-10 cursor-pointer focus:outline-none group"
+                aria-label="Next image"
+              >
+                <ChevronRight
+                  size={20}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                  strokeWidth={1.5}
+                />
+              </button>
+            </>
           )}
-
-        </div>
+        </>
       ) : (
         <p className="text-stone-400 text-sm">No images available</p>
       )}
 
-      {/* Counter — fixed to bottom-left of screen */}
-      {hasMultiple && current && (
+      {/* Counter */}
+      {current && (
         <span className="absolute bottom-5 left-5 text-xs text-stone-500 z-20">
           {currentIndex + 1} / {images.length}
         </span>
