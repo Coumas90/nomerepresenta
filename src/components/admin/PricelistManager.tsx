@@ -111,7 +111,7 @@ const PricelistManager = () => {
                     <h3 className="font-semibold text-base">{pl.name}</h3>
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <span className="font-mono bg-muted px-2 py-0.5 rounded text-xs">
-                        /pricelist/{pl.slug}
+                        /available/{pl.slug}
                       </span>
                       <span className="flex items-center gap-1">
                         Series:{" "}
