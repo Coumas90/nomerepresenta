@@ -103,7 +103,30 @@ export const useDeleteShowImage = () => {
   });
 };
 
+export const useUpdateShowOrder = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (shows: { id: string; display_order: number }[]) => {
+      const updates = shows.map((s) => supabase.from("shows").update({ display_order: s.display_order }).eq("id", s.id));
+      await Promise.all(updates);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["shows"] }),
+  });
+};
+
 export const useUpdateShowImageOrder = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (images: { id: string; display_order: number }[]) => {
+      const updates = images.map((img) => supabase.from("show_images").update({ display_order: img.display_order }).eq("id", img.id));
+      await Promise.all(updates);
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["show-images"] });
+      qc.invalidateQueries({ queryKey: ["all-show-images"] });
+    },
+  });
+};
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (images: { id: string; display_order: number }[]) => {
