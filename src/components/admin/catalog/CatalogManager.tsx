@@ -16,7 +16,11 @@ const STATUS_ORDER: Record<string, number> = { available: 1, reserved: 2, sold: 
 
 const CATEGORIES: MediumType[] = ["PAINTING", "POW", "PHOTO"];
 
-const CatalogManager = () => {
+interface CatalogManagerProps {
+  onEdit?: (artwork: any) => void;
+}
+
+const CatalogManager = ({ onEdit }: CatalogManagerProps = {}) => {
   const { data: artworks = [], isLoading } = useCatalogArtworks();
   const { data: series = [] } = useSeries();
   const updateField = useUpdateCatalogField();
@@ -162,6 +166,7 @@ const CatalogManager = () => {
                     thumbSize={thumbSize}
                     showEdition={showEdition}
                     onFieldUpdate={handleFieldUpdate}
+                    onEdit={onEdit ? (a) => onEdit(a as any) : undefined}
                     catalogSeriesSuggestions={catalogSeriesNames}
                   />
               ))}

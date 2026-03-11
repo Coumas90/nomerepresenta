@@ -829,6 +829,80 @@ export type Database = {
         }
         Relationships: []
       }
+      works_block_items: {
+        Row: {
+          artwork_id: string
+          block_id: string
+          created_at: string
+          display_order: number
+          id: string
+        }
+        Insert: {
+          artwork_id: string
+          block_id: string
+          created_at?: string
+          display_order?: number
+          id?: string
+        }
+        Update: {
+          artwork_id?: string
+          block_id?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "works_block_items_artwork_id_fkey"
+            columns: ["artwork_id"]
+            isOneToOne: false
+            referencedRelation: "artworks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "works_block_items_block_id_fkey"
+            columns: ["block_id"]
+            isOneToOne: false
+            referencedRelation: "works_blocks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      works_blocks: {
+        Row: {
+          block_type: string
+          created_at: string
+          display_order: number
+          id: string
+          series_id: string
+          updated_at: string
+        }
+        Insert: {
+          block_type?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          series_id: string
+          updated_at?: string
+        }
+        Update: {
+          block_type?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          series_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "works_blocks_series_id_fkey"
+            columns: ["series_id"]
+            isOneToOne: false
+            referencedRelation: "series"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Edit } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -28,10 +29,11 @@ interface CatalogRowProps {
   thumbSize: ThumbSize;
   showEdition?: boolean;
   onFieldUpdate: (id: string, field: string, value: string | null) => void;
+  onEdit?: (artwork: CatalogArtwork) => void;
   catalogSeriesSuggestions?: string[];
 }
 
-export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpdate, catalogSeriesSuggestions = [] }: CatalogRowProps) => {
+export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpdate, onEdit, catalogSeriesSuggestions = [] }: CatalogRowProps) => {
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const [imageOpen, setImageOpen] = useState(false);
@@ -66,13 +68,24 @@ export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpd
                 loading="lazy"
               />
             </button>
-            <button
-              onClick={() => setImagesExpanded(!imagesExpanded)}
-              className="flex items-center gap-0.5 text-[10px] text-muted-foreground hover:text-foreground transition-colors"
-            >
-              {imagesExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-              {imagesExpanded ? "Hide" : "Images"}
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setImagesExpanded(!imagesExpanded)}
+                className="flex items-center gap-0.5 text-[10px] text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {imagesExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                {imagesExpanded ? "Hide" : "Images"}
+              </button>
+              {onEdit && (
+                <button
+                  onClick={() => onEdit(artwork)}
+                  className="text-[10px] text-muted-foreground hover:text-foreground transition-colors ml-1"
+                  title="Edit artwork"
+                >
+                  <Edit className="h-3 w-3" />
+                </button>
+              )}
+            </div>
           </div>
         </td>
 

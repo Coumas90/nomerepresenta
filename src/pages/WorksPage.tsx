@@ -164,6 +164,7 @@ const WorksPage = () => {
           <SeriesSection
             key={series.id}
             series={series}
+            blocks={(series as any).blocks || []}
             artworks={series.artworks}
             isFirst={index === 0}
             onIntersect={handleSeriesIntersect}
