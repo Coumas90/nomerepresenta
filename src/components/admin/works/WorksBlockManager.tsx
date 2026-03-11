@@ -157,7 +157,14 @@ const SortableBlock = ({
         </Button>
       </div>
 
-      {block.items.length > 0 ? (
+      {isCarousel ? (
+        <CarouselPreview
+          items={block.items}
+          blockId={block.id}
+          onRemoveItem={onRemoveItem}
+          onReorderItems={onReorderItems}
+        />
+      ) : block.items.length > 0 ? (
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleItemDragEnd}>
           <SortableContext items={block.items.map((i) => i.id)} strategy={verticalListSortingStrategy}>
             {block.items.map((item) => (
