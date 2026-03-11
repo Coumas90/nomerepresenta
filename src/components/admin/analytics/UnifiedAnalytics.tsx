@@ -17,6 +17,8 @@ import { useCountryDistribution } from "@/hooks/useGeographicAnalytics";
 import { useStudioAnalytics } from "@/hooks/useStudioAnalytics";
 import { useUserEventsAnalytics } from "@/hooks/useUserEventsAnalytics";
 import { usePricelistAnalytics } from "@/hooks/usePricelistAnalytics";
+import SessionLogTable from "./SessionLogTable";
+import { TopLandingPagesCard, CommonPathsCard } from "./SessionInsightWidgets";
 import type { DailyVisitors } from "@/types";
 
 const UnifiedAnalytics = () => {
@@ -78,6 +80,15 @@ const UnifiedAnalytics = () => {
 
       {/* Most Clicked Artworks */}
       <TopArtworksCard startDate={startDate} endDate={endDate} />
+
+      {/* Session Insights */}
+      <div className="grid gap-6 md:grid-cols-2">
+        <TopLandingPagesCard startDate={startDate} endDate={endDate} />
+        <CommonPathsCard startDate={startDate} endDate={endDate} />
+      </div>
+
+      {/* Session Log */}
+      <SessionLogTable startDate={startDate} endDate={endDate} />
     </div>
   );
 };
