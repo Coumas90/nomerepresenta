@@ -1,5 +1,5 @@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronRight, Paintbrush, Camera, Pencil } from "lucide-react";
+import { ChevronRight, Paintbrush, Camera, Pencil, BookOpen } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { MediumType } from "@/hooks/useCatalog";
 
