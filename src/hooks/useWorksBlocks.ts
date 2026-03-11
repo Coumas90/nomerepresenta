@@ -195,3 +195,21 @@ export const useReorderBlockItems = () => {
     },
   });
 };
+
+// Update image overrides for a block item (Works-specific image order/visibility)
+export const useUpdateImageOverrides = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ blockItemId, overrides }: { blockItemId: string; overrides: { hidden_images?: string[]; image_order?: string[] } }) => {
+      const { error } = await supabase
+        .from("works_block_items" as any)
+        .update({ image_overrides: overrides } as any)
+        .eq("id", blockItemId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["works-blocks"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+};
