@@ -283,7 +283,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
             )}
 
             {/* Caption row — caption left, pagination right on desktop */}
-            <figcaption className="mt-3 md:mt-4 text-left leading-snug">
+            <figcaption className="mt-5 md:mt-7 text-left leading-snug">
               <div className="flex justify-between items-start gap-4">
                 <div>
                   {allImages[currentImageIndex]?.caption ? (
@@ -311,7 +311,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
                   )}
                 </div>
                 {!isMobile && allImages.length > 1 && (
-                  <p className="text-stone-500 text-sm whitespace-nowrap shrink-0">
+                  <p className="text-stone-500 text-xs md:text-sm whitespace-nowrap shrink-0">
                     {currentImageIndex + 1} / {allImages.length}
                   </p>
                 )}
