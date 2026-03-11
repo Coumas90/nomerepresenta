@@ -416,9 +416,9 @@ const MultipleImageUpload = ({ artworkId, artworkData, onImagesChange }: Multipl
 
   const handleSetMain = async (imageId: string) => {
     if (!artworkId || !images) return;
-    // Prevent setting a detail image as main
+    // Prevent setting a detail or install image as main
     const targetImage = images.find(img => img.id === imageId);
-    if (targetImage?.is_detail) return;
+    if (targetImage?.is_detail || (targetImage as any)?.is_install) return;
     await setMainImageMutation.mutateAsync({ imageId, artworkId });
     if (onImagesChange) onImagesChange();
   };
