@@ -249,6 +249,7 @@ img {
   /* Remove browser headers/footers by eliminating page margins */
   @page {
     margin: 0;
+    size: letter;
   }
 
   /* Hide non-essential elements */
@@ -269,11 +270,19 @@ img {
   /* Force white background on all pricelist rows (remove selection highlight) */
   [role="button"] {
     background: white !important;
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+    height: calc((100vh - 80px) / 3) !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    display: flex !important;
+    align-items: center !important;
   }
 
   /* Prevent page breaks inside rows */
-  .grid {
+  [role="button"] {
     break-inside: avoid;
+    page-break-inside: avoid;
   }
 
   /* Ensure all content flows naturally across pages */
