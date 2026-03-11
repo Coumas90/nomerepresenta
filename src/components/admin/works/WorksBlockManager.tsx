@@ -105,6 +105,7 @@ const SortableBlock = ({
   onRemoveItem: (itemId: string) => void;
   onReorderItems: (blockId: string, items: { id: string; display_order: number }[]) => void;
   onChangeType: (blockId: string, type: BlockType) => void;
+  onToggleHidden: (blockId: string, isHidden: boolean) => void;
 }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: block.id });
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 };
