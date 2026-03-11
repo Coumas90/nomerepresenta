@@ -83,7 +83,7 @@ export const SwipeHint = ({
   useEffect(() => {
     if (!isMobile || !show || inactivityDelay <= 0) return;
 
-    let inactivityTimer: NodeJS.Timeout;
+    let inactivityTimer: ReturnType<typeof setTimeout>;
     let lastActivityTime = Date.now();
 
     const resetInactivityTimer = () => {
