@@ -99,8 +99,8 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
         if (onSuccess) onSuccess();
       } else {
         // Create new artwork - need at least a title and series
-        if (!formData.title || !formData.series_id) {
-          toast.error("Title and Series are required");
+        if (!formData.title || !formData.series_id || !formData.medium_type) {
+          toast.error("Title, Series, and Category are required");
           return;
         }
         const newArtwork = await createMutation.mutateAsync({
