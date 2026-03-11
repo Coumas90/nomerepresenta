@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Edit } from "lucide-react";
+import { Edit, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Check, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { CatalogImageGallery } from "./CatalogImageGallery";
 import type { CatalogArtwork, SizeCategory, MediumType, ArtworkStatus } from "@/hooks/useCatalog";
 
@@ -30,10 +31,11 @@ interface CatalogRowProps {
   showEdition?: boolean;
   onFieldUpdate: (id: string, field: string, value: string | null) => void;
   onEdit?: (artwork: CatalogArtwork) => void;
+  onDelete?: (id: string) => void;
   catalogSeriesSuggestions?: string[];
 }
 
-export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpdate, onEdit, catalogSeriesSuggestions = [] }: CatalogRowProps) => {
+export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpdate, onEdit, onDelete, catalogSeriesSuggestions = [] }: CatalogRowProps) => {
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const [imageOpen, setImageOpen] = useState(false);
@@ -84,6 +86,32 @@ export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpd
                 >
                   <Edit className="h-3 w-3" />
                 </button>
+              )}
+              {onDelete && (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <button
+                      className="text-[10px] text-muted-foreground hover:text-destructive transition-colors ml-1"
+                      title="Delete artwork"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete "{artwork.title}"?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will permanently remove this artwork and all its images. This action cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => onDelete(artwork.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               )}
             </div>
           </div>

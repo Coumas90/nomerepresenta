@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export type SizeCategory = "S" | "M" | "L";
-export type MediumType = "PHOTO" | "POW" | "PAINTING";
+export type MediumType = "PHOTO" | "POW" | "PAINTING" | "ARTIST_BOOK";
 export type ArtworkStatus = "available" | "sold" | "reserved";
 
 export interface CatalogArtwork {

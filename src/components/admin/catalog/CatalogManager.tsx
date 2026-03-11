@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useCatalogArtworks, useUpdateCatalogField, type MediumType, type CatalogArtwork } from "@/hooks/useCatalog";
+import { useDeleteArtwork } from "@/hooks/useArtworkMutations";
 import { useSeries } from "@/hooks/useSeries";
 import { CatalogFilters } from "./CatalogFilters";
 import { CatalogRow, type ThumbSize } from "./CatalogRow";
@@ -14,7 +15,7 @@ type SortDir = "asc" | "desc";
 const SIZE_ORDER: Record<string, number> = { S: 1, M: 2, L: 3 };
 const STATUS_ORDER: Record<string, number> = { available: 1, reserved: 2, sold: 3 };
 
-const CATEGORIES: MediumType[] = ["PAINTING", "POW", "PHOTO"];
+const CATEGORIES: MediumType[] = ["PAINTING", "POW", "PHOTO", "ARTIST_BOOK"];
 
 interface CatalogManagerProps {
   onEdit?: (artwork: any) => void;
@@ -24,6 +25,7 @@ const CatalogManager = ({ onEdit }: CatalogManagerProps = {}) => {
   const { data: artworks = [], isLoading } = useCatalogArtworks();
   const { data: series = [] } = useSeries();
   const updateField = useUpdateCatalogField();
+  const deleteMutation = useDeleteArtwork();
 
   const [search, setSearch] = useState("");
   const [yearFilter, setYearFilter] = useState("all");
@@ -167,6 +169,7 @@ const CatalogManager = ({ onEdit }: CatalogManagerProps = {}) => {
                     showEdition={showEdition}
                     onFieldUpdate={handleFieldUpdate}
                     onEdit={onEdit ? (a) => onEdit(a as any) : undefined}
+                    onDelete={(id) => deleteMutation.mutate(id)}
                     catalogSeriesSuggestions={catalogSeriesNames}
                   />
               ))}
