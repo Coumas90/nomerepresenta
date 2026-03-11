@@ -100,12 +100,12 @@ const SortableImage = ({ image, index, artworkData, onDelete, onSetMain, onCapti
             variant={image.is_main ? "default" : "secondary"}
             size="icon"
             className="h-8 w-8 pointer-events-auto"
-            disabled={image.is_detail}
+            disabled={image.is_detail || image.is_install}
             onClick={(e) => {
               e.stopPropagation();
               onSetMain(image.id);
             }}
-            title={image.is_detail ? "Detail images cannot be main" : "Set as main image"}
+            title={image.is_detail ? "Detail images cannot be main" : image.is_install ? "Install images cannot be main" : "Set as main image"}
           >
             <Star className={`h-4 w-4 ${image.is_main ? 'fill-current' : ''}`} />
           </Button>
