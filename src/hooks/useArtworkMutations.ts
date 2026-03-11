@@ -36,6 +36,7 @@ export const useCreateArtwork = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["artworks"] });
+      queryClient.invalidateQueries({ queryKey: ["catalog-artworks"] });
       toast({
         title: "Artwork Created",
         description: "The artwork has been created successfully.",
