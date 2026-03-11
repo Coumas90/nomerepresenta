@@ -68,13 +68,24 @@ export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpd
                 loading="lazy"
               />
             </button>
-            <button
-              onClick={() => setImagesExpanded(!imagesExpanded)}
-              className="flex items-center gap-0.5 text-[10px] text-muted-foreground hover:text-foreground transition-colors"
-            >
-              {imagesExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-              {imagesExpanded ? "Hide" : "Images"}
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setImagesExpanded(!imagesExpanded)}
+                className="flex items-center gap-0.5 text-[10px] text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {imagesExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                {imagesExpanded ? "Hide" : "Images"}
+              </button>
+              {onEdit && (
+                <button
+                  onClick={() => onEdit(artwork)}
+                  className="text-[10px] text-muted-foreground hover:text-foreground transition-colors ml-1"
+                  title="Edit artwork"
+                >
+                  <Edit className="h-3 w-3" />
+                </button>
+              )}
+            </div>
           </div>
         </td>
 
