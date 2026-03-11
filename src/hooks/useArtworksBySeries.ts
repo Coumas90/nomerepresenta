@@ -67,7 +67,7 @@ export const useArtworksBySeries = () => {
               imageOverridesByArtwork: Object.keys(imageOverridesByArtwork).length > 0 ? imageOverridesByArtwork : undefined,
             };
           })
-          .filter((block) => block.artworks.length > 0);
+          .filter((block): block is NonNullable<typeof block> => block !== null && block.artworks.length > 0);
 
         // Flatten for backward compat
         const allArtworks = seriesBlocks.flatMap((b) => b.artworks);
