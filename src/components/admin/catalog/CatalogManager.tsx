@@ -25,6 +25,7 @@ const CatalogManager = ({ onEdit }: CatalogManagerProps = {}) => {
   const { data: artworks = [], isLoading } = useCatalogArtworks();
   const { data: series = [] } = useSeries();
   const updateField = useUpdateCatalogField();
+  const deleteMutation = useDeleteArtwork();
 
   const [search, setSearch] = useState("");
   const [yearFilter, setYearFilter] = useState("all");
