@@ -70,6 +70,7 @@ export const useUpdateArtwork = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["artworks"] });
+      queryClient.invalidateQueries({ queryKey: ["catalog-artworks"] });
       toast({
         title: "Artwork Updated",
         description: "The artwork has been updated successfully.",
