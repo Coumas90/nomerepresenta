@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { GripVertical, Trash2, ChevronDown, ChevronUp } from "lucide-react";
-import { CatalogImageGallery } from "@/components/admin/catalog/CatalogImageGallery";
+import { WorksImageGallery } from "@/components/admin/works/WorksImageGallery";
 import type { WorksBlockWithItems } from "@/hooks/useWorksBlocks";
 import {
   DndContext,
