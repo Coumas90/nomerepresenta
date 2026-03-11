@@ -176,6 +176,7 @@ const WorksBlockManager = () => {
   const { data: series = [], isLoading: seriesLoading } = useSeries();
   const createBlock = useCreateWorksBlock();
   const deleteBlock = useDeleteWorksBlock();
+  const updateBlock = useUpdateWorksBlock();
   const reorderBlocks = useReorderWorksBlocks();
   const addItem = useAddBlockItem();
   const removeItem = useRemoveBlockItem();
