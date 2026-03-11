@@ -326,6 +326,7 @@ const WorksBlockManager = () => {
                                   onAddArtwork={handleAddArtwork}
                                   onRemoveItem={(itemId) => removeItem.mutate(itemId)}
                                   onReorderItems={handleReorderItems}
+                                  onChangeType={(blockId, type) => updateBlock.mutate({ id: blockId, updates: { block_type: type } })}
                                 />
                               ))}
                             </SortableContext>
