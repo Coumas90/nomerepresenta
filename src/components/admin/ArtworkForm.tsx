@@ -178,7 +178,22 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
               </Select>
             </div>
 
-            {isEditing && (
+            <div className="space-y-2">
+              <Label htmlFor="medium_type">Category *</Label>
+              <Select
+                value={formData.medium_type}
+                onValueChange={(value) => setFormData({ ...formData, medium_type: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="PAINTING">Painting</SelectItem>
+                  <SelectItem value="POW">POW (Drawing)</SelectItem>
+                  <SelectItem value="PHOTO">Photograph</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
               <div className="space-y-2">
                 <Label htmlFor="display_order">Display Order</Label>
                 <Input
