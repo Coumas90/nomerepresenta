@@ -84,7 +84,11 @@ const SortableCarouselThumb = ({
       </div>
       {showImages && (
         <div className="mt-2 p-2 bg-muted/30 rounded-md w-full min-w-[200px]">
-          <CatalogImageGallery artworkId={item.artwork_id} />
+          <WorksImageGallery
+            artworkId={item.artwork_id}
+            blockItemId={item.id}
+            imageOverrides={item.image_overrides as any}
+          />
         </div>
       )}
     </div>
