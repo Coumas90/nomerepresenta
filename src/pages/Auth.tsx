@@ -270,13 +270,13 @@ const Auth = () => {
     // 3. Supabase appends #access_token=...&type=recovery to the URL
     // 4. ResetPassword.tsx detects the session and allows password update
     // Important: Make sure Supabase Auth settings have the correct Site URL and Redirect URLs
-    const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+    const { error } = await supabase.auth.resetPasswordForEmail(normalizedResetEmail, {
       redirectTo: `${window.location.origin}/reset-password`,
     });
     setIsSubmitting(false);
 
-    // Always record the attempt (even on success to prevent enumeration)
-    resetRateLimiter.recordFailedAttempt(resetEmail);
+    // Always record the attempt
+    resetRateLimiter.recordFailedAttempt(normalizedResetEmail);
 
     if (error) {
       toast({
