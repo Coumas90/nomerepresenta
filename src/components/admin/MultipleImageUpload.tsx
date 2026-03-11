@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { useUploadImage } from "@/hooks/useArtworkMutations";
 import { useArtworkImages, useAddArtworkImage, useDeleteArtworkImage, useUpdateImageOrder, useSetMainImage, useUpdateImageCaption, useUpdateImageMetadata } from "@/hooks/useArtworkImages";
 import { Card } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   DndContext,
   closestCenter,
