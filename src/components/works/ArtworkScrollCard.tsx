@@ -303,7 +303,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
                         </p>
                       )}
                       {(allImages[currentImageIndex]?.dimensions || artwork.dimensions) && (
-                        <p className="text-stone-500 text-xs md:text-sm mt-[3px] md:mt-[8px]">
+                        <p className="text-stone-500 text-xs md:text-sm mt-[2px] md:mt-[5px]">
                           {allImages[currentImageIndex]?.dimensions || artwork.dimensions}
                         </p>
                       )}
