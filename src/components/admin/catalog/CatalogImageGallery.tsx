@@ -60,6 +60,11 @@ export const CatalogImageGallery = ({ artworkId }: CatalogImageGalleryProps) => 
                     Detail
                   </Badge>
                 )}
+                {(img as any).is_install && (
+                  <Badge variant="outline" className="text-[8px] px-1 py-0 h-4 bg-blue-600/80 text-white border-0">
+                    Install
+                  </Badge>
+                )}
               </div>
               <button
                 onClick={() =>

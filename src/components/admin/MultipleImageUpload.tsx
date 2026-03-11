@@ -100,12 +100,12 @@ const SortableImage = ({ image, index, artworkData, onDelete, onSetMain, onCapti
             variant={image.is_main ? "default" : "secondary"}
             size="icon"
             className="h-8 w-8 pointer-events-auto"
-            disabled={image.is_detail}
+            disabled={image.is_detail || image.is_install}
             onClick={(e) => {
               e.stopPropagation();
               onSetMain(image.id);
             }}
-            title={image.is_detail ? "Detail images cannot be main" : "Set as main image"}
+            title={image.is_detail ? "Detail images cannot be main" : image.is_install ? "Install images cannot be main" : "Set as main image"}
           >
             <Star className={`h-4 w-4 ${image.is_main ? 'fill-current' : ''}`} />
           </Button>
@@ -124,11 +124,16 @@ const SortableImage = ({ image, index, artworkData, onDelete, onSetMain, onCapti
         </div>
         <div className="absolute bottom-2 left-2 flex gap-1">
           <span className="bg-background/90 text-xs px-2 py-1 rounded font-medium">
-            {image.is_main ? "Main Image" : `Image ${index + 1}`}
+            {image.is_main ? "Main" : image.is_install ? "Install" : image.is_detail ? `Detail` : `Image ${index + 1}`}
           </span>
           {image.is_detail && (
             <span className="bg-primary/90 text-primary-foreground text-xs px-2 py-1 rounded font-medium">
               DETAIL
+            </span>
+          )}
+          {image.is_install && (
+            <span className="bg-blue-600/90 text-white text-xs px-2 py-1 rounded font-medium">
+              INSTALL
             </span>
           )}
         </div>
@@ -136,17 +141,28 @@ const SortableImage = ({ image, index, artworkData, onDelete, onSetMain, onCapti
 
       {/* Metadata section */}
       <div className="p-2 border-t space-y-2" onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()}>
-        {/* DETAIL toggle */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Eye className="h-3.5 w-3.5 text-muted-foreground" />
-            <Label className="text-xs font-medium cursor-pointer">Detail</Label>
+        {/* Image type toggles */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5">
+            <Switch
+              checked={image.is_detail || false}
+              onCheckedChange={(checked) => {
+                onMetadataChange(image.id, { is_detail: checked, ...(checked ? { is_install: false } : {}) });
+              }}
+              className="scale-75"
+            />
+            <Label className="text-[10px] font-medium cursor-pointer uppercase tracking-wide">Detail</Label>
           </div>
-          <Switch
-            checked={image.is_detail || false}
-            onCheckedChange={handleDetailToggle}
-            className="scale-75"
-          />
+          <div className="flex items-center gap-1.5">
+            <Switch
+              checked={image.is_install || false}
+              onCheckedChange={(checked) => {
+                onMetadataChange(image.id, { is_install: checked, ...(checked ? { is_detail: false } : {}) });
+              }}
+              className="scale-75"
+            />
+            <Label className="text-[10px] font-medium cursor-pointer uppercase tracking-wide">Install</Label>
+          </div>
         </div>
 
         {/* Expand/collapse metadata */}
@@ -400,9 +416,9 @@ const MultipleImageUpload = ({ artworkId, artworkData, onImagesChange }: Multipl
 
   const handleSetMain = async (imageId: string) => {
     if (!artworkId || !images) return;
-    // Prevent setting a detail image as main
+    // Prevent setting a detail or install image as main
     const targetImage = images.find(img => img.id === imageId);
-    if (targetImage?.is_detail) return;
+    if (targetImage?.is_detail || (targetImage as any)?.is_install) return;
     await setMainImageMutation.mutateAsync({ imageId, artworkId });
     if (onImagesChange) onImagesChange();
   };
@@ -416,13 +432,13 @@ const MultipleImageUpload = ({ artworkId, artworkData, onImagesChange }: Multipl
     if (!artworkId || !images) return;
     await updateMetadataMutation.mutateAsync({ imageId, artworkId, updates });
 
-    // If toggling detail ON for the current main image, reassign main to first non-detail
-    if (updates.is_detail === true) {
+    // If toggling detail or install ON for the current main image, reassign main
+    if (updates.is_detail === true || updates.is_install === true) {
       const targetImage = images.find(img => img.id === imageId);
       if (targetImage?.is_main) {
-        const firstNonDetail = images.find(img => img.id !== imageId && !img.is_detail);
-        if (firstNonDetail) {
-          await setMainImageMutation.mutateAsync({ imageId: firstNonDetail.id, artworkId });
+        const firstNonSpecial = images.find(img => img.id !== imageId && !img.is_detail && !(img as any).is_install);
+        if (firstNonSpecial) {
+          await setMainImageMutation.mutateAsync({ imageId: firstNonSpecial.id, artworkId });
         }
       }
     }
