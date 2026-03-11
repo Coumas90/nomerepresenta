@@ -134,17 +134,34 @@ const SessionLogTable = ({ startDate: parentStart, endDate: parentEnd }: Session
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
             <CardTitle>Session Log</CardTitle>
             <p className="text-xs text-muted-foreground">
               {data ? `${data.totalCount} sessions` : "Loading..."}
             </p>
           </div>
-          <Button variant="outline" size="sm" onClick={exportCSV} disabled={!data?.sessions.length}>
-            <Download className="h-3.5 w-3.5 mr-1.5" />
-            Export CSV
-          </Button>
+          <div className="flex items-center gap-2">
+            {[
+              { label: "Last 24h", value: "24h" },
+              { label: "7 days", value: "7d" },
+              { label: "30 days", value: "30d" },
+              { label: "Custom", value: "parent" },
+            ].map((p) => (
+              <Button
+                key={p.value}
+                variant={localPreset === p.value ? "default" : "outline"}
+                size="sm"
+                onClick={() => { setLocalPreset(p.value); setPage(0); }}
+              >
+                {p.label}
+              </Button>
+            ))}
+            <Button variant="outline" size="sm" onClick={exportCSV} disabled={!data?.sessions.length}>
+              <Download className="h-3.5 w-3.5 mr-1.5" />
+              CSV
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
