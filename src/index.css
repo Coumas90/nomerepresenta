@@ -267,22 +267,33 @@ img {
     display: grid !important;
   }
 
-  /* Force white background on all pricelist rows (remove selection highlight) */
+  /* Force white background and compact rows — 3 per page */
   [role="button"] {
     background: white !important;
-    padding-top: 1rem !important;
-    padding-bottom: 1rem !important;
-    height: calc((100vh - 80px) / 3) !important;
-    box-sizing: border-box !important;
-    overflow: hidden !important;
-    display: flex !important;
-    align-items: center !important;
-  }
-
-  /* Prevent page breaks inside rows */
-  [role="button"] {
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+    border-bottom-width: 1px !important;
     break-inside: avoid;
     page-break-inside: avoid;
+  }
+
+  /* Constrain image height in print for consistent 3-per-page */
+  [role="button"] img {
+    max-height: 200px !important;
+    width: auto !important;
+    object-fit: contain !important;
+  }
+
+  /* Reduce container padding in print */
+  .print\:py-4 {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+
+  /* Tighter grid gap */
+  .grid {
+    gap: 2rem !important;
+    break-inside: avoid;
   }
 
   /* Ensure all content flows naturally across pages */
