@@ -56,7 +56,7 @@ const SortableCarouselThumb = ({
           <img
             src={item.artwork?.image_url || ""}
             alt={item.artwork?.title || ""}
-            className="w-24 h-24 object-cover rounded border border-border"
+            className="w-32 h-32 object-cover rounded border border-border"
             loading="lazy"
           />
           <span className="absolute top-0.5 left-0.5 bg-background/80 text-[9px] font-medium px-1 rounded">
@@ -71,7 +71,7 @@ const SortableCarouselThumb = ({
             <Trash2 className="h-3 w-3 text-destructive" />
           </Button>
         </div>
-        <p className="text-[10px] text-muted-foreground mt-1 max-w-24 truncate text-center">
+        <p className="text-[10px] text-muted-foreground mt-1 max-w-32 truncate text-center">
           {item.artwork?.title || "Unknown"}
         </p>
         <button

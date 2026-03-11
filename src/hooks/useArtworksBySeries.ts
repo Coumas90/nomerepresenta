@@ -36,6 +36,9 @@ export const useArtworksBySeries = () => {
               .filter((item) => item.artwork && item.artwork.is_visible !== false)
               .sort((a, b) => a.display_order - b.display_order);
 
+            // Skip hidden blocks in public display
+            if ((block as any).is_hidden === true) return null;
+
             const imageOverridesByArtwork: Record<string, { hidden_images?: string[]; image_order?: string[] }> = {};
             for (const item of validItems) {
               const overrides = (item as any).image_overrides;
@@ -64,7 +67,7 @@ export const useArtworksBySeries = () => {
               imageOverridesByArtwork: Object.keys(imageOverridesByArtwork).length > 0 ? imageOverridesByArtwork : undefined,
             };
           })
-          .filter((block) => block.artworks.length > 0);
+          .filter((block): block is NonNullable<typeof block> => block !== null && block.artworks.length > 0);
 
         // Flatten for backward compat
         const allArtworks = seriesBlocks.flatMap((b) => b.artworks);

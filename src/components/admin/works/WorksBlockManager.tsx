@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Plus, Trash2, GripVertical, Image, Images, ChevronDown, ChevronUp } from "lucide-react";
+import { Plus, Trash2, GripVertical, Image, Images, ChevronDown, ChevronUp, Eye, EyeOff } from "lucide-react";
 import { WorksImageGallery } from "@/components/admin/works/WorksImageGallery";
 import { useSeries } from "@/hooks/useSeries";
 import {
@@ -58,7 +58,7 @@ const SortableBlockArtwork = ({
         <img
           src={item.artwork?.image_url || ""}
           alt={item.artwork?.title || ""}
-          className="w-8 h-8 object-cover rounded"
+          className="w-12 h-12 object-cover rounded"
         />
         <div className="flex-1 min-w-0">
           <p className="text-sm truncate">{item.artwork?.title || "Unknown"}</p>
@@ -98,6 +98,7 @@ const SortableBlock = ({
   onRemoveItem,
   onReorderItems,
   onChangeType,
+  onToggleHidden,
 }: {
   block: WorksBlockWithItems;
   onDelete: () => void;
@@ -105,9 +106,11 @@ const SortableBlock = ({
   onRemoveItem: (itemId: string) => void;
   onReorderItems: (blockId: string, items: { id: string; display_order: number }[]) => void;
   onChangeType: (blockId: string, type: BlockType) => void;
+  onToggleHidden: (blockId: string, isHidden: boolean) => void;
 }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: block.id });
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 };
+  const isHidden = (block as any).is_hidden === true;
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
@@ -125,8 +128,8 @@ const SortableBlock = ({
 
   const isCarousel = block.block_type === "carousel";
 
-  return (
-    <div ref={setNodeRef} style={style} className="border rounded-lg p-3 mb-2 bg-background">
+    return (
+    <div ref={setNodeRef} style={style} className={`border rounded-lg p-3 mb-2 bg-background ${isHidden ? "opacity-50" : ""}`}>
       <div className="flex items-center gap-2 mb-2">
         <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
           <GripVertical className="h-4 w-4 text-muted-foreground" />
@@ -152,6 +155,15 @@ const SortableBlock = ({
           {block.items.length} artwork{block.items.length !== 1 ? "s" : ""}
         </span>
         <div className="flex-1" />
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7"
+          onClick={() => onToggleHidden(block.id, !isHidden)}
+          title={isHidden ? "Show in public Works" : "Hide from public Works"}
+        >
+          {isHidden ? <EyeOff className="h-3.5 w-3.5 text-muted-foreground" /> : <Eye className="h-3.5 w-3.5 text-foreground" />}
+        </Button>
         <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => onAddArtwork(block.id)}>
           <Plus className="h-3 w-3 mr-1" />
           Add
@@ -339,6 +351,7 @@ const WorksBlockManager = () => {
                                   onRemoveItem={(itemId) => removeItem.mutate(itemId)}
                                   onReorderItems={handleReorderItems}
                                   onChangeType={(blockId, type) => updateBlock.mutate({ id: blockId, updates: { block_type: type } })}
+                                  onToggleHidden={(blockId, hidden) => updateBlock.mutate({ id: blockId, updates: { is_hidden: hidden } as any })}
                                 />
                               ))}
                             </SortableContext>

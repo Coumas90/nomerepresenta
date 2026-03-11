@@ -57,12 +57,12 @@ const SortableImageThumb = ({
       >
         <GripVertical className="h-2.5 w-2.5 text-muted-foreground" />
       </div>
-      <img
-        src={image.image_url}
-        alt={image.title || "Image"}
-        className="w-20 h-20 object-cover rounded border border-border"
-        loading="lazy"
-      />
+        <img
+          src={image.image_url}
+          alt={image.title || "Image"}
+          className="w-28 h-28 object-cover rounded border border-border"
+          loading="lazy"
+        />
       <div className="absolute bottom-0 left-0 right-0 flex gap-0.5 p-0.5">
         {image.is_main && (
           <Badge variant="secondary" className="text-[8px] px-1 py-0 h-4 bg-background/80">

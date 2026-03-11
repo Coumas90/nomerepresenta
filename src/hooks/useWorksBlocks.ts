@@ -121,7 +121,7 @@ export const useDeleteWorksBlock = () => {
 export const useUpdateWorksBlock = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, updates }: { id: string; updates: Partial<Pick<WorksBlock, "block_type" | "display_order">> }) => {
+    mutationFn: async ({ id, updates }: { id: string; updates: Partial<Pick<WorksBlock, "block_type" | "display_order"> & { is_hidden?: boolean }> }) => {
       const { error } = await supabase.from("works_blocks" as any).update(updates as any).eq("id", id);
       if (error) throw error;
     },
