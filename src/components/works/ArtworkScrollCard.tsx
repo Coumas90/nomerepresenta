@@ -263,56 +263,59 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
                 </>
               )}
             </div>
-            {/* Pagination — numerals on desktop, dots on mobile */}
-            {allImages.length > 1 && (
-              isMobile ? (
-                <div className="mt-3 flex gap-1.5">
-                  {allImages.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentImageIndex(index)}
-                      className={cn(
-                        "w-1.5 h-1.5 rounded-full transition-all duration-300",
-                        index === currentImageIndex 
-                          ? "bg-stone-900" 
-                          : "bg-stone-400"
-                      )}
-                      aria-label={`Go to image ${index + 1}`}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <p className="mt-3 text-stone-500 text-sm">
-                  {currentImageIndex + 1} / {allImages.length}
-                </p>
-              )
+            {/* Mobile dots */}
+            {isMobile && allImages.length > 1 && (
+              <div className="mt-3 flex gap-1.5">
+                {allImages.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentImageIndex(index)}
+                    className={cn(
+                      "w-1.5 h-1.5 rounded-full transition-all duration-300",
+                      index === currentImageIndex 
+                        ? "bg-stone-900" 
+                        : "bg-stone-400"
+                    )}
+                    aria-label={`Go to image ${index + 1}`}
+                  />
+                ))}
+              </div>
             )}
 
-            {/* Caption — aligned with image */}
+            {/* Caption row — caption left, pagination right on desktop */}
             <figcaption className="mt-3 md:mt-4 text-left leading-snug">
-              {allImages[currentImageIndex]?.caption ? (
-                <p className="text-stone-600 text-xs md:text-sm font-bold">
-                  {allImages[currentImageIndex].caption}
-                </p>
-              ) : (
-                <>
-                  <p className="text-stone-600 text-xs md:text-[15px] font-bold">
-                    {allImages[currentImageIndex]?.title || artwork.title}
-                    {(allImages[currentImageIndex]?.year || artwork.year) && <>, {allImages[currentImageIndex]?.year || artwork.year}</>}
-                    {isViewingDetail && <span className="font-normal text-stone-500"> (DETAIL)</span>}
+              <div className="flex justify-between items-start gap-4">
+                <div>
+                  {allImages[currentImageIndex]?.caption ? (
+                    <p className="text-stone-600 text-xs md:text-sm font-bold">
+                      {allImages[currentImageIndex].caption}
+                    </p>
+                  ) : (
+                    <>
+                      <p className="text-stone-600 text-xs md:text-[15px] font-bold">
+                        {allImages[currentImageIndex]?.title || artwork.title}
+                        {(allImages[currentImageIndex]?.year || artwork.year) && <>, {allImages[currentImageIndex]?.year || artwork.year}</>}
+                        {isViewingDetail && <span className="font-normal text-stone-500"> (DETAIL)</span>}
+                      </p>
+                      {(allImages[currentImageIndex]?.materials || artwork.materials) && (
+                        <p className="text-stone-500 text-xs md:text-sm mt-[2px] md:mt-[6px]">
+                          {allImages[currentImageIndex]?.materials || artwork.materials}
+                        </p>
+                      )}
+                      {(allImages[currentImageIndex]?.dimensions || artwork.dimensions) && (
+                        <p className="text-stone-500 text-xs md:text-sm mt-[1px]">
+                          {allImages[currentImageIndex]?.dimensions || artwork.dimensions}
+                        </p>
+                      )}
+                    </>
+                  )}
+                </div>
+                {!isMobile && allImages.length > 1 && (
+                  <p className="text-stone-500 text-sm whitespace-nowrap shrink-0">
+                    {currentImageIndex + 1} / {allImages.length}
                   </p>
-                  {(allImages[currentImageIndex]?.materials || artwork.materials) && (
-                    <p className="text-stone-500 text-xs md:text-sm mt-[2px] md:mt-[6px]">
-                      {allImages[currentImageIndex]?.materials || artwork.materials}
-                    </p>
-                  )}
-                  {(allImages[currentImageIndex]?.dimensions || artwork.dimensions) && (
-                    <p className="text-stone-500 text-xs md:text-sm mt-[1px]">
-                      {allImages[currentImageIndex]?.dimensions || artwork.dimensions}
-                    </p>
-                  )}
-                </>
-              )}
+                )}
+              </div>
             </figcaption>
           </div>
 
