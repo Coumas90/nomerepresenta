@@ -160,7 +160,7 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="series">Series *</Label>
+              <Label htmlFor="series">Series</Label>
               <Select
                 value={formData.series_id}
                 onValueChange={(value) => setFormData({ ...formData, series_id: value })}
@@ -169,11 +169,14 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
                   <SelectValue placeholder="Select a series" />
                 </SelectTrigger>
                 <SelectContent>
-                  {seriesList?.map((series) => (
-                    <SelectItem key={series.id} value={series.id}>
-                      {series.name}
-                    </SelectItem>
-                  ))}
+                  {seriesList
+                    ?.slice()
+                    .sort((a, b) => (a.name === "None" ? -1 : b.name === "None" ? 1 : 0))
+                    .map((series) => (
+                      <SelectItem key={series.id} value={series.id}>
+                        {series.name}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </div>
