@@ -14,7 +14,7 @@ type SortDir = "asc" | "desc";
 const SIZE_ORDER: Record<string, number> = { S: 1, M: 2, L: 3 };
 const STATUS_ORDER: Record<string, number> = { available: 1, reserved: 2, sold: 3 };
 
-const CATEGORIES: MediumType[] = ["PAINTING", "POW", "PHOTO"];
+const CATEGORIES: MediumType[] = ["PAINTING", "POW", "PHOTO", "ARTIST_BOOK"];
 
 interface CatalogManagerProps {
   onEdit?: (artwork: any) => void;
