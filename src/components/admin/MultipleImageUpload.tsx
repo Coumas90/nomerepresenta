@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Upload, X, GripVertical, Star, Loader2, ChevronDown, ChevronUp, Eye } from "lucide-react";
+import { Upload, X, GripVertical, Star, Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useUploadImage } from "@/hooks/useArtworkMutations";
 import { useArtworkImages, useAddArtworkImage, useDeleteArtworkImage, useUpdateImageOrder, useSetMainImage, useUpdateImageCaption, useUpdateImageMetadata } from "@/hooks/useArtworkImages";
