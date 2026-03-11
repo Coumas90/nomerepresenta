@@ -101,6 +101,7 @@ export const useDeleteArtwork = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["artworks"] });
+      queryClient.invalidateQueries({ queryKey: ["catalog-artworks"] });
       toast({
         title: "Artwork Deleted",
         description: "The artwork has been deleted successfully.",
