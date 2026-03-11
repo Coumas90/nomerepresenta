@@ -27,6 +27,7 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
     description: artwork?.description || "",
     series_id: artwork?.series_id || preselectedSeriesId || "",
     display_order: artwork?.display_order || 0,
+    medium_type: (artwork as any)?.medium_type || "",
   });
 
   // Track if artwork was just created (to show gallery immediately)
@@ -48,6 +49,7 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
         description: artwork.description,
         series_id: artwork.series_id,
         display_order: artwork.display_order,
+        medium_type: (artwork as any).medium_type || "",
       });
       setCreatedArtworkId(artwork.id);
     } else if (preselectedSeriesId) {
@@ -97,8 +99,8 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
         if (onSuccess) onSuccess();
       } else {
         // Create new artwork - need at least a title and series
-        if (!formData.title || !formData.series_id) {
-          toast.error("Title and Series are required");
+        if (!formData.title || !formData.series_id || !formData.medium_type) {
+          toast.error("Title, Series, and Category are required");
           return;
         }
         const newArtwork = await createMutation.mutateAsync({
@@ -172,6 +174,23 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
                       {series.name}
                     </SelectItem>
                   ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="medium_type">Category *</Label>
+              <Select
+                value={formData.medium_type}
+                onValueChange={(value) => setFormData({ ...formData, medium_type: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="PAINTING">Painting</SelectItem>
+                  <SelectItem value="POW">POW (Drawing)</SelectItem>
+                  <SelectItem value="PHOTO">Photograph</SelectItem>
                 </SelectContent>
               </Select>
             </div>
