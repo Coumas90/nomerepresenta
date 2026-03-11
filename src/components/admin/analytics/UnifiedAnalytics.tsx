@@ -78,8 +78,6 @@ const UnifiedAnalytics = () => {
       {/* Pricelist / Available Analytics */}
       <PricelistAnalyticsCard startDate={startDate} endDate={endDate} />
 
-      {/* Most Clicked Artworks */}
-      <TopArtworksCard startDate={startDate} endDate={endDate} />
 
       {/* Session Insights */}
       <div className="grid gap-6 md:grid-cols-2">
