@@ -166,6 +166,7 @@ const CatalogManager = ({ onEdit }: CatalogManagerProps = {}) => {
                     thumbSize={thumbSize}
                     showEdition={showEdition}
                     onFieldUpdate={handleFieldUpdate}
+                    onEdit={onEdit ? (a) => onEdit(a as any) : undefined}
                     catalogSeriesSuggestions={catalogSeriesNames}
                   />
               ))}
