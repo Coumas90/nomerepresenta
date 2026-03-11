@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { subDays, subHours, startOfDay, endOfDay } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -48,12 +49,20 @@ const deviceIcon = (type: string | null) => {
   return <Monitor className="h-3.5 w-3.5" />;
 };
 
-const SessionLogTable = ({ startDate, endDate }: SessionLogTableProps) => {
+const SessionLogTable = ({ startDate: parentStart, endDate: parentEnd }: SessionLogTableProps) => {
   const [page, setPage] = useState(0);
   const [filters, setFilters] = useState<SessionLogFilters>({});
   const [sortField, setSortField] = useState<SortField>("started_at");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [localPreset, setLocalPreset] = useState<string>("parent");
+
+  const { startDate, endDate } = useMemo(() => {
+    if (localPreset === "24h") return { startDate: subHours(new Date(), 24), endDate: new Date() };
+    if (localPreset === "7d") return { startDate: startOfDay(subDays(new Date(), 7)), endDate: endOfDay(new Date()) };
+    if (localPreset === "30d") return { startDate: startOfDay(subDays(new Date(), 30)), endDate: endOfDay(new Date()) };
+    return { startDate: parentStart, endDate: parentEnd };
+  }, [localPreset, parentStart, parentEnd]);
 
   const { data, isLoading } = useSessionLog(
     startDate,
@@ -125,17 +134,34 @@ const SessionLogTable = ({ startDate, endDate }: SessionLogTableProps) => {
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
             <CardTitle>Session Log</CardTitle>
             <p className="text-xs text-muted-foreground">
               {data ? `${data.totalCount} sessions` : "Loading..."}
             </p>
           </div>
-          <Button variant="outline" size="sm" onClick={exportCSV} disabled={!data?.sessions.length}>
-            <Download className="h-3.5 w-3.5 mr-1.5" />
-            Export CSV
-          </Button>
+          <div className="flex items-center gap-2">
+            {[
+              { label: "Last 24h", value: "24h" },
+              { label: "7 days", value: "7d" },
+              { label: "30 days", value: "30d" },
+              { label: "Custom", value: "parent" },
+            ].map((p) => (
+              <Button
+                key={p.value}
+                variant={localPreset === p.value ? "default" : "outline"}
+                size="sm"
+                onClick={() => { setLocalPreset(p.value); setPage(0); }}
+              >
+                {p.label}
+              </Button>
+            ))}
+            <Button variant="outline" size="sm" onClick={exportCSV} disabled={!data?.sessions.length}>
+              <Download className="h-3.5 w-3.5 mr-1.5" />
+              CSV
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
