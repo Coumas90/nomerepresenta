@@ -58,7 +58,7 @@ const SortableBlockArtwork = ({
         <img
           src={item.artwork?.image_url || ""}
           alt={item.artwork?.title || ""}
-          className="w-20 h-20 object-cover rounded"
+          className="w-32 h-32 object-cover rounded"
         />
         <div className="flex-1 min-w-0">
           <p className="text-sm truncate">{item.artwork?.title || "Unknown"}</p>
