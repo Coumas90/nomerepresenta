@@ -3,7 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Plus, Trash2, GripVertical, Image, Images } from "lucide-react";
+import { Plus, Trash2, GripVertical, Image, Images, ChevronDown, ChevronUp } from "lucide-react";
+import { CatalogImageGallery } from "@/components/admin/catalog/CatalogImageGallery";
 import { useSeries } from "@/hooks/useSeries";
 import {
   useWorksBlocks,
@@ -40,26 +41,43 @@ const SortableBlockArtwork = ({
   item: WorksBlockWithItems["items"][0];
   onRemove: () => void;
 }) => {
+  const [imagesExpanded, setImagesExpanded] = useState(false);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item.id });
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 };
 
   return (
-    <div ref={setNodeRef} style={style} className="flex items-center gap-2 p-2 bg-muted/30 rounded-md mb-1">
-      <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
-        <GripVertical className="h-4 w-4 text-muted-foreground" />
+    <div ref={setNodeRef} style={style} className="bg-muted/30 rounded-md mb-1">
+      <div className="flex items-center gap-2 p-2">
+        <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
+          <GripVertical className="h-4 w-4 text-muted-foreground" />
+        </div>
+        <img
+          src={item.artwork?.image_url || ""}
+          alt={item.artwork?.title || ""}
+          className="w-8 h-8 object-cover rounded"
+        />
+        <div className="flex-1 min-w-0">
+          <p className="text-sm truncate">{item.artwork?.title || "Unknown"}</p>
+          <div className="flex items-center gap-2">
+            <p className="text-xs text-muted-foreground">{item.artwork?.year}</p>
+            <button
+              onClick={() => setImagesExpanded(!imagesExpanded)}
+              className="flex items-center gap-0.5 text-[10px] text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {imagesExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+              {imagesExpanded ? "Hide" : "Images"}
+            </button>
+          </div>
+        </div>
+        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onRemove}>
+          <Trash2 className="h-3.5 w-3.5 text-destructive" />
+        </Button>
       </div>
-      <img
-        src={item.artwork?.image_url || ""}
-        alt={item.artwork?.title || ""}
-        className="w-8 h-8 object-cover rounded"
-      />
-      <div className="flex-1 min-w-0">
-        <p className="text-sm truncate">{item.artwork?.title || "Unknown"}</p>
-        <p className="text-xs text-muted-foreground">{item.artwork?.year}</p>
-      </div>
-      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onRemove}>
-        <Trash2 className="h-3.5 w-3.5 text-destructive" />
-      </Button>
+      {imagesExpanded && (
+        <div className="px-3 pb-3 pt-1 border-t border-border/50">
+          <CatalogImageGallery artworkId={item.artwork_id} />
+        </div>
+      )}
     </div>
   );
 };
