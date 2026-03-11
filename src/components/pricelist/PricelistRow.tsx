@@ -113,8 +113,8 @@ export const PricelistRow = ({ item, activeCurrency, selected, onSelect, onViewI
             className="w-full h-auto object-contain"
             loading="lazy"
           />
-          <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-60 transition-opacity duration-300">
-            <Plus className="w-3 h-3 text-stone-500" strokeWidth={1.5} />
+          <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <Plus className="w-4 h-4 text-stone-700" strokeWidth={1.5} />
           </div>
         </div>
         <div className="space-y-0.5">
