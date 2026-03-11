@@ -18,6 +18,7 @@ import { useStudioAnalytics } from "@/hooks/useStudioAnalytics";
 import { useUserEventsAnalytics } from "@/hooks/useUserEventsAnalytics";
 import { usePricelistAnalytics } from "@/hooks/usePricelistAnalytics";
 import SessionLogTable from "./SessionLogTable";
+import PricelistSessionLog from "./PricelistSessionLog";
 import { TopLandingPagesCard, CommonPathsCard } from "./SessionInsightWidgets";
 import type { DailyVisitors } from "@/types";
 
