@@ -11,6 +11,7 @@ interface CarouselBlockProps {
   allArtworkImages?: Record<string, ArtworkImage[]>;
   eager?: boolean;
   onGalleryNavigate?: (artworkId: string) => void;
+  imageOverridesByArtwork?: Record<string, { hidden_images?: string[]; image_order?: string[] }>;
 }
 
 const cursorLeftSvg = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23787874' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m15 18-6-6 6-6'/%3E%3C/svg%3E") 12 12, pointer`;
