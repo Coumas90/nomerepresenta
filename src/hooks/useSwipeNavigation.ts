@@ -73,7 +73,7 @@ export function useSwipeNavigation({
   const [isScrolling, setIsScrolling] = useState(false);
   const [swipeProgress, setSwipeProgress] = useState<SwipeProgress | null>(null);
   
-  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const touchStartRef = useRef({ x: 0, y: 0, time: 0 });
   const lastTouchRef = useRef({ x: 0, y: 0, time: 0 });
   const haptic = useHapticFeedback();
