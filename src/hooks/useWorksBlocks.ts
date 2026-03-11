@@ -19,6 +19,10 @@ export interface WorksBlockItem {
   artwork_id: string;
   display_order: number;
   created_at: string;
+  image_overrides: {
+    hidden_images?: string[];
+    image_order?: string[];
+  } | null;
 }
 
 export interface WorksBlockWithItems extends WorksBlock {
