@@ -27,6 +27,7 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
     description: artwork?.description || "",
     series_id: artwork?.series_id || preselectedSeriesId || "",
     display_order: artwork?.display_order || 0,
+    medium_type: (artwork as any)?.medium_type || "",
   });
 
   // Track if artwork was just created (to show gallery immediately)
