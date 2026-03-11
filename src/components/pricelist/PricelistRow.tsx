@@ -1,4 +1,4 @@
-import { Check, Expand } from "lucide-react";
+import { Check, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { ArtworkImage } from "@/types";
@@ -113,8 +113,8 @@ export const PricelistRow = ({ item, activeCurrency, selected, onSelect, onViewI
             className="w-full h-auto object-contain"
             loading="lazy"
           />
-          <div className="absolute top-1.5 left-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-background/70 rounded p-1">
-            <Expand className="w-3.5 h-3.5 text-stone-600" />
+          <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-60 transition-opacity duration-300">
+            <Plus className="w-3 h-3 text-stone-500" strokeWidth={1.5} />
           </div>
         </div>
         <div className="space-y-0.5">
