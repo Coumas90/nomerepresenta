@@ -266,6 +266,11 @@ img {
     display: grid !important;
   }
 
+  /* Force white background on all pricelist rows (remove selection highlight) */
+  [role="button"] {
+    background: white !important;
+  }
+
   /* Prevent page breaks inside rows */
   .grid {
     break-inside: avoid;
