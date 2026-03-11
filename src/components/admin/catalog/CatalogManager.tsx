@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useCatalogArtworks, useUpdateCatalogField, type MediumType, type CatalogArtwork } from "@/hooks/useCatalog";
+import { useDeleteArtwork } from "@/hooks/useArtworkMutations";
 import { useSeries } from "@/hooks/useSeries";
 import { CatalogFilters } from "./CatalogFilters";
 import { CatalogRow, type ThumbSize } from "./CatalogRow";
