@@ -350,6 +350,7 @@ const WorksBlockManager = () => {
                                   onRemoveItem={(itemId) => removeItem.mutate(itemId)}
                                   onReorderItems={handleReorderItems}
                                   onChangeType={(blockId, type) => updateBlock.mutate({ id: blockId, updates: { block_type: type } })}
+                                  onToggleHidden={(blockId, hidden) => updateBlock.mutate({ id: blockId, updates: { is_hidden: hidden } as any })}
                                 />
                               ))}
                             </SortableContext>
