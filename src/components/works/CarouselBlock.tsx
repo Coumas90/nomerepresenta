@@ -27,6 +27,7 @@ export const CarouselBlock = ({
   allArtworkImages,
   eager = false,
   onGalleryNavigate,
+  imageOverridesByArtwork,
 }: CarouselBlockProps) => {
   const isMobile = useIsMobile();
   const containerRef = useRef<HTMLDivElement>(null);
