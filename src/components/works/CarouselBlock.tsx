@@ -38,17 +38,32 @@ export const CarouselBlock = ({
   // For each artwork in the carousel, use its main image
   const images = useMemo(() => {
     return artworks.map((artwork) => {
-      const artImages = allArtworkImages?.[artwork.id];
+      let artImages = allArtworkImages?.[artwork.id];
       if (artImages && artImages.length > 0) {
+        const overrides = imageOverridesByArtwork?.[artwork.id];
+        // Filter hidden images
+        if (overrides?.hidden_images?.length) {
+          const hiddenSet = new Set(overrides.hidden_images);
+          artImages = artImages.filter(img => !hiddenSet.has(img.id));
+        }
+        // Apply custom order
+        if (overrides?.image_order?.length) {
+          const orderMap = new Map(overrides.image_order.map((id, i) => [id, i]));
+          artImages = [...artImages].sort((a, b) => {
+            const aIdx = orderMap.get(a.id) ?? 9999;
+            const bIdx = orderMap.get(b.id) ?? 9999;
+            return aIdx - bIdx;
+          });
+        }
         const mainImg = artImages.find((img) => img.is_main) || artImages[0];
         return {
-          url: mainImg.image_url,
-          altText: mainImg.alt_text || artwork.title,
+          url: mainImg?.image_url || artwork.image_url,
+          altText: mainImg?.alt_text || artwork.title,
         };
       }
       return { url: artwork.image_url, altText: artwork.title };
     });
-  }, [artworks, allArtworkImages]);
+  }, [artworks, allArtworkImages, imageOverridesByArtwork]);
 
   const currentImage = images[currentIndex]?.url || currentArtwork?.image_url;
 
