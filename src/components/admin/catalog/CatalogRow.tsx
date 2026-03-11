@@ -87,6 +87,32 @@ export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpd
                   <Edit className="h-3 w-3" />
                 </button>
               )}
+              {onDelete && (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <button
+                      className="text-[10px] text-muted-foreground hover:text-destructive transition-colors ml-1"
+                      title="Delete artwork"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete "{artwork.title}"?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will permanently remove this artwork and all its images. This action cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => onDelete(artwork.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
             </div>
           </div>
         </td>
