@@ -220,6 +220,13 @@ const Auth = () => {
     }
   };
 
+  const RESET_WHITELIST = [
+    "ivncoms@gmail.com",
+    "ianrebbel@gmail.com",
+    "contact@ivancomas.studio",
+    "contact@spiritualized.cc",
+  ];
+
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -233,13 +240,25 @@ const Auth = () => {
       return;
     }
     
-    const emailValidation = z.string().email().safeParse(resetEmail);
+    const normalizedResetEmail = resetEmail.trim().toLowerCase();
+    const emailValidation = z.string().email().safeParse(normalizedResetEmail);
     if (!emailValidation.success) {
       toast({
         title: "Invalid Email",
         description: "Please enter a valid email address.",
         variant: "destructive",
       });
+      return;
+    }
+
+    if (!RESET_WHITELIST.includes(normalizedResetEmail)) {
+      // Show same generic message to prevent email enumeration
+      toast({
+        title: "Email Sent!",
+        description: "If an account exists with this email, you'll receive a password reset link.",
+      });
+      setShowForgotPassword(false);
+      setResetEmail("");
       return;
     }
 
@@ -251,13 +270,13 @@ const Auth = () => {
     // 3. Supabase appends #access_token=...&type=recovery to the URL
     // 4. ResetPassword.tsx detects the session and allows password update
     // Important: Make sure Supabase Auth settings have the correct Site URL and Redirect URLs
-    const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+    const { error } = await supabase.auth.resetPasswordForEmail(normalizedResetEmail, {
       redirectTo: `${window.location.origin}/reset-password`,
     });
     setIsSubmitting(false);
 
-    // Always record the attempt (even on success to prevent enumeration)
-    resetRateLimiter.recordFailedAttempt(resetEmail);
+    // Always record the attempt
+    resetRateLimiter.recordFailedAttempt(normalizedResetEmail);
 
     if (error) {
       toast({
