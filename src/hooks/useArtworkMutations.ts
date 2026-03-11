@@ -180,6 +180,7 @@ export const useUpdateArtworksOrder = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["artworks"] });
+      queryClient.invalidateQueries({ queryKey: ["catalog-artworks"] });
     },
     onError: (error) => {
       toast({
