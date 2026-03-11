@@ -201,21 +201,27 @@ export const CarouselBlock = ({
               )}
             </div>
 
-            {/* Dots */}
+            {/* Pagination */}
             {artworks.length > 1 && (
-              <div className="mt-3 flex gap-1.5">
-                {artworks.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentIndex(index)}
-                    className={cn(
-                      "w-1.5 h-1.5 rounded-full transition-all duration-300",
-                      index === currentIndex ? "bg-stone-900" : "bg-stone-400"
-                    )}
-                    aria-label={`Go to artwork ${index + 1}`}
-                  />
-                ))}
-              </div>
+              isMobile ? (
+                <div className="mt-3 flex gap-1.5">
+                  {artworks.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentIndex(index)}
+                      className={cn(
+                        "w-1.5 h-1.5 rounded-full transition-all duration-300",
+                        index === currentIndex ? "bg-stone-900" : "bg-stone-400"
+                      )}
+                      aria-label={`Go to artwork ${index + 1}`}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-3 text-stone-500 text-sm">
+                  {currentIndex + 1} / {artworks.length}
+                </p>
+              )
             )}
 
             {/* Caption for current artwork */}
