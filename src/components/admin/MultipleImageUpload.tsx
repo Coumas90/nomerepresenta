@@ -141,17 +141,28 @@ const SortableImage = ({ image, index, artworkData, onDelete, onSetMain, onCapti
 
       {/* Metadata section */}
       <div className="p-2 border-t space-y-2" onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()}>
-        {/* DETAIL toggle */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Eye className="h-3.5 w-3.5 text-muted-foreground" />
-            <Label className="text-xs font-medium cursor-pointer">Detail</Label>
+        {/* Image type toggles */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5">
+            <Switch
+              checked={image.is_detail || false}
+              onCheckedChange={(checked) => {
+                onMetadataChange(image.id, { is_detail: checked, ...(checked ? { is_install: false } : {}) });
+              }}
+              className="scale-75"
+            />
+            <Label className="text-[10px] font-medium cursor-pointer uppercase tracking-wide">Detail</Label>
           </div>
-          <Switch
-            checked={image.is_detail || false}
-            onCheckedChange={handleDetailToggle}
-            className="scale-75"
-          />
+          <div className="flex items-center gap-1.5">
+            <Switch
+              checked={image.is_install || false}
+              onCheckedChange={(checked) => {
+                onMetadataChange(image.id, { is_install: checked, ...(checked ? { is_detail: false } : {}) });
+              }}
+              className="scale-75"
+            />
+            <Label className="text-[10px] font-medium cursor-pointer uppercase tracking-wide">Install</Label>
+          </div>
         </div>
 
         {/* Expand/collapse metadata */}
