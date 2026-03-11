@@ -2,12 +2,12 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Upload, X, GripVertical, Star, Loader2, ChevronDown, ChevronUp, Eye } from "lucide-react";
+import { Upload, X, GripVertical, Star, Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useUploadImage } from "@/hooks/useArtworkMutations";
 import { useArtworkImages, useAddArtworkImage, useDeleteArtworkImage, useUpdateImageOrder, useSetMainImage, useUpdateImageCaption, useUpdateImageMetadata } from "@/hooks/useArtworkImages";
 import { Card } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   DndContext,
   closestCenter,
@@ -141,28 +141,30 @@ const SortableImage = ({ image, index, artworkData, onDelete, onSetMain, onCapti
 
       {/* Metadata section */}
       <div className="p-2 border-t space-y-2" onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()}>
-        {/* Image type toggles */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5">
-            <Switch
-              checked={image.is_detail || false}
-              onCheckedChange={(checked) => {
-                onMetadataChange(image.id, { is_detail: checked, ...(checked ? { is_install: false } : {}) });
-              }}
-              className="scale-75"
-            />
-            <Label className="text-[10px] font-medium cursor-pointer uppercase tracking-wide">Detail</Label>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <Switch
-              checked={image.is_install || false}
-              onCheckedChange={(checked) => {
-                onMetadataChange(image.id, { is_install: checked, ...(checked ? { is_detail: false } : {}) });
-              }}
-              className="scale-75"
-            />
-            <Label className="text-[10px] font-medium cursor-pointer uppercase tracking-wide">Install</Label>
-          </div>
+        {/* Image type selector */}
+        <div className="flex items-center gap-2">
+          <Label className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground shrink-0">Type</Label>
+          <Select
+            value={image.is_main ? "main" : image.is_detail ? "detail" : image.is_install ? "install" : "secondary"}
+            onValueChange={(v) => {
+              const updates: Record<string, any> = {
+                is_detail: v === "detail",
+                is_install: v === "install",
+              };
+              onMetadataChange(image.id, updates);
+              if (v === "main") onSetMain(image.id);
+            }}
+          >
+            <SelectTrigger className="h-6 text-[10px] w-[90px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="main">Main</SelectItem>
+              <SelectItem value="secondary">Secondary</SelectItem>
+              <SelectItem value="detail">Detail</SelectItem>
+              <SelectItem value="install">Install</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Expand/collapse metadata */}
