@@ -10,11 +10,13 @@ import {
   useWorksBlocks,
   useCreateWorksBlock,
   useDeleteWorksBlock,
+  useUpdateWorksBlock,
   useReorderWorksBlocks,
   useAddBlockItem,
   useRemoveBlockItem,
   useReorderBlockItems,
   type WorksBlockWithItems,
+  type BlockType,
 } from "@/hooks/useWorksBlocks";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ArtworkPicker from "./ArtworkPicker";
