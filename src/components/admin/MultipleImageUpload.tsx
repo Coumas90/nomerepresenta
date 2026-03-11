@@ -432,13 +432,13 @@ const MultipleImageUpload = ({ artworkId, artworkData, onImagesChange }: Multipl
     if (!artworkId || !images) return;
     await updateMetadataMutation.mutateAsync({ imageId, artworkId, updates });
 
-    // If toggling detail ON for the current main image, reassign main to first non-detail
-    if (updates.is_detail === true) {
+    // If toggling detail or install ON for the current main image, reassign main
+    if (updates.is_detail === true || updates.is_install === true) {
       const targetImage = images.find(img => img.id === imageId);
       if (targetImage?.is_main) {
-        const firstNonDetail = images.find(img => img.id !== imageId && !img.is_detail);
-        if (firstNonDetail) {
-          await setMainImageMutation.mutateAsync({ imageId: firstNonDetail.id, artworkId });
+        const firstNonSpecial = images.find(img => img.id !== imageId && !img.is_detail && !(img as any).is_install);
+        if (firstNonSpecial) {
+          await setMainImageMutation.mutateAsync({ imageId: firstNonSpecial.id, artworkId });
         }
       }
     }
