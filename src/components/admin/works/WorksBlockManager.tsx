@@ -98,6 +98,7 @@ const SortableBlock = ({
   onRemoveItem,
   onReorderItems,
   onChangeType,
+  onToggleHidden,
 }: {
   block: WorksBlockWithItems;
   onDelete: () => void;
