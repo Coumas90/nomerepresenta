@@ -80,6 +80,15 @@ const UnifiedAnalytics = () => {
 
       {/* Most Clicked Artworks */}
       <TopArtworksCard startDate={startDate} endDate={endDate} />
+
+      {/* Session Insights */}
+      <div className="grid gap-6 md:grid-cols-2">
+        <TopLandingPagesCard startDate={startDate} endDate={endDate} />
+        <CommonPathsCard startDate={startDate} endDate={endDate} />
+      </div>
+
+      {/* Session Log */}
+      <SessionLogTable startDate={startDate} endDate={endDate} />
     </div>
   );
 };
