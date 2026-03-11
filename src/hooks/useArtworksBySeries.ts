@@ -36,6 +36,9 @@ export const useArtworksBySeries = () => {
               .filter((item) => item.artwork && item.artwork.is_visible !== false)
               .sort((a, b) => a.display_order - b.display_order);
 
+            // Skip hidden blocks in public display
+            if ((block as any).is_hidden === true) return null;
+
             const imageOverridesByArtwork: Record<string, { hidden_images?: string[]; image_order?: string[] }> = {};
             for (const item of validItems) {
               const overrides = (item as any).image_overrides;
