@@ -191,6 +191,7 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
                   <SelectItem value="PAINTING">Painting</SelectItem>
                   <SelectItem value="POW">POW (Drawing)</SelectItem>
                   <SelectItem value="PHOTO">Photograph</SelectItem>
+                  <SelectItem value="ARTIST_BOOK">Artist Book</SelectItem>
                 </SelectContent>
               </Select>
             </div>
