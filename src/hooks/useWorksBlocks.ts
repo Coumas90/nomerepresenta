@@ -50,10 +50,10 @@ export const useWorksBlocks = () => {
         .order("display_order", { ascending: true });
       if (blocksError) throw blocksError;
 
-      const { data: items, error: itemsError } = await supabase
+      const { data: items, error: itemsError } = await (supabase
         .from("works_block_items" as any)
         .select("*, artwork:artworks(id, title, year, dimensions, materials, description, image_url, image_detail_url, series_id, is_visible, display_order)")
-        .order("display_order", { ascending: true });
+        .order("display_order", { ascending: true }) as any);
       if (itemsError) throw itemsError;
 
       const itemsByBlock = new Map<string, typeof items>();
