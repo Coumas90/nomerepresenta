@@ -79,7 +79,11 @@ const SortableBlockArtwork = ({
       </div>
       {imagesExpanded && (
         <div className="px-3 pb-3 pt-1 border-t border-border/50">
-          <CatalogImageGallery artworkId={item.artwork_id} />
+          <WorksImageGallery
+            artworkId={item.artwork_id}
+            blockItemId={item.id}
+            imageOverrides={item.image_overrides as any}
+          />
         </div>
       )}
     </div>
