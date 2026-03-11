@@ -1,4 +1,4 @@
-import { Check } from "lucide-react";
+import { Check, Expand } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { ArtworkImage } from "@/types";
