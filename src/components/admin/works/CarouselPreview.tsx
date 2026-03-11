@@ -71,7 +71,7 @@ const SortableCarouselThumb = ({
             <Trash2 className="h-3 w-3 text-destructive" />
           </Button>
         </div>
-        <p className="text-[10px] text-muted-foreground mt-1 max-w-32 truncate text-center">
+        <p className="text-xs text-muted-foreground mt-1 max-w-44 truncate text-center">
           {item.artwork?.title || "Unknown"}
         </p>
         <button
