@@ -49,6 +49,7 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
         description: artwork.description,
         series_id: artwork.series_id,
         display_order: artwork.display_order,
+        medium_type: (artwork as any).medium_type || "",
       });
       setCreatedArtworkId(artwork.id);
     } else if (preselectedSeriesId) {
