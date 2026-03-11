@@ -33,7 +33,7 @@ const SortableImageThumb = ({
   isHidden,
   onToggleVisibility,
 }: {
-  image: { id: string; image_url: string; title: string | null; is_main: boolean | null; is_detail: boolean; is_install: boolean };
+  image: { id: string; image_url: string; title: string | null; is_main: boolean | null; is_detail: boolean; is_install?: boolean };
   isHidden: boolean;
   onToggleVisibility: () => void;
 }) => {
