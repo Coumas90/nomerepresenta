@@ -8,6 +8,8 @@ export interface WorksBlockDisplay {
   block_type: "single" | "carousel";
   display_order: number;
   artworks: ArtworkData[];
+  /** Per-artwork image overrides from works_block_items, keyed by artwork_id */
+  imageOverridesByArtwork?: Record<string, { hidden_images?: string[]; image_order?: string[] }>;
 }
 
 export interface SeriesWithBlocks extends SeriesData {
