@@ -880,6 +880,7 @@ export type Database = {
           created_at: string
           display_order: number
           id: string
+          is_hidden: boolean
           series_id: string
           updated_at: string
         }
@@ -888,6 +889,7 @@ export type Database = {
           created_at?: string
           display_order?: number
           id?: string
+          is_hidden?: boolean
           series_id: string
           updated_at?: string
         }
@@ -896,6 +898,7 @@ export type Database = {
           created_at?: string
           display_order?: number
           id?: string
+          is_hidden?: boolean
           series_id?: string
           updated_at?: string
         }
