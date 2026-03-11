@@ -194,6 +194,8 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
                 </SelectContent>
               </Select>
             </div>
+
+            {isEditing && (
               <div className="space-y-2">
                 <Label htmlFor="display_order">Display Order</Label>
                 <Input
