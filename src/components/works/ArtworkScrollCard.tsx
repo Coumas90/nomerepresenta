@@ -311,7 +311,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
                   )}
                 </div>
                 {!isMobile && allImages.length > 1 && (
-                  <p className="text-stone-500 text-sm whitespace-nowrap shrink-0">
+                  <p className="text-stone-500 text-xs md:text-sm whitespace-nowrap shrink-0">
                     {currentImageIndex + 1} / {allImages.length}
                   </p>
                 )}
