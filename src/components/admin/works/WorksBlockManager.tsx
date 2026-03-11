@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Plus, Trash2, GripVertical, Image, Images, ChevronDown, ChevronUp } from "lucide-react";
+import { Plus, Trash2, GripVertical, Image, Images, ChevronDown, ChevronUp, Eye, EyeOff } from "lucide-react";
 import { WorksImageGallery } from "@/components/admin/works/WorksImageGallery";
 import { useSeries } from "@/hooks/useSeries";
 import {
