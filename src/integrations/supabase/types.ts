@@ -124,6 +124,7 @@ export type Database = {
           image_url: string
           is_catalog_visible: boolean
           is_detail: boolean
+          is_install: boolean
           is_main: boolean | null
           materials: string | null
           title: string | null
@@ -140,6 +141,7 @@ export type Database = {
           image_url: string
           is_catalog_visible?: boolean
           is_detail?: boolean
+          is_install?: boolean
           is_main?: boolean | null
           materials?: string | null
           title?: string | null
@@ -156,6 +158,7 @@ export type Database = {
           image_url?: string
           is_catalog_visible?: boolean
           is_detail?: boolean
+          is_install?: boolean
           is_main?: boolean | null
           materials?: string | null
           title?: string | null

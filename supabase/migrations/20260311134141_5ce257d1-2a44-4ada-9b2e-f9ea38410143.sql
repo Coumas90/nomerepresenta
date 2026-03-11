@@ -1,0 +1,1 @@
+ALTER TABLE public.artwork_images ADD COLUMN is_install boolean NOT NULL DEFAULT false;
