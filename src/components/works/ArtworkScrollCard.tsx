@@ -292,7 +292,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
                     </>
                   )}
                 </div>
-                {!isMobile && allImages.length > 1 && (
+                {allImages.length > 1 && (
                   <p className="text-stone-400 text-[10px] md:text-xs whitespace-nowrap shrink-0" style={{ letterSpacing: '0.5px' }}>
                     [ {currentImageIndex + 1} / {allImages.length} ]
                   </p>
