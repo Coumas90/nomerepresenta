@@ -166,7 +166,6 @@ const SortableImage = ({ image, index, artworkData, onDelete, onSetMain, onCapti
             </SelectContent>
           </Select>
         </div>
-        </div>
 
         {/* Expand/collapse metadata */}
         <button
