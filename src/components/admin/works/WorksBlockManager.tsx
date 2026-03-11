@@ -20,6 +20,7 @@ import {
 } from "@/hooks/useWorksBlocks";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ArtworkPicker from "./ArtworkPicker";
+import CarouselPreview from "./CarouselPreview";
 import {
   DndContext,
   closestCenter,
