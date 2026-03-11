@@ -1,0 +1,1 @@
+ALTER TABLE public.works_block_items ADD COLUMN image_overrides jsonb DEFAULT '{}'::jsonb;

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { GripVertical, Trash2, ChevronDown, ChevronUp } from "lucide-react";
-import { CatalogImageGallery } from "@/components/admin/catalog/CatalogImageGallery";
+import { WorksImageGallery } from "@/components/admin/works/WorksImageGallery";
 import type { WorksBlockWithItems } from "@/hooks/useWorksBlocks";
 import {
   DndContext,
@@ -84,7 +84,11 @@ const SortableCarouselThumb = ({
       </div>
       {showImages && (
         <div className="mt-2 p-2 bg-muted/30 rounded-md w-full min-w-[200px]">
-          <CatalogImageGallery artworkId={item.artwork_id} />
+          <WorksImageGallery
+            artworkId={item.artwork_id}
+            blockItemId={item.id}
+            imageOverrides={item.image_overrides as any}
+          />
         </div>
       )}
     </div>

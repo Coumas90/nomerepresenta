@@ -8,6 +8,8 @@ export interface WorksBlockDisplay {
   block_type: "single" | "carousel";
   display_order: number;
   artworks: ArtworkData[];
+  /** Per-artwork image overrides from works_block_items, keyed by artwork_id */
+  imageOverridesByArtwork?: Record<string, { hidden_images?: string[]; image_order?: string[] }>;
 }
 
 export interface SeriesWithBlocks extends SeriesData {
@@ -29,14 +31,24 @@ export const useArtworksBySeries = () => {
         const seriesBlocks = allBlocks
           .filter((b) => b.series_id === s.id)
           .sort((a, b) => a.display_order - b.display_order)
-          .map((block) => ({
-            id: block.id,
-            block_type: block.block_type as "single" | "carousel",
-            display_order: block.display_order,
-            artworks: block.items
+          .map((block) => {
+            const validItems = block.items
               .filter((item) => item.artwork && item.artwork.is_visible !== false)
-              .sort((a, b) => a.display_order - b.display_order)
-              .map((item) => ({
+              .sort((a, b) => a.display_order - b.display_order);
+
+            const imageOverridesByArtwork: Record<string, { hidden_images?: string[]; image_order?: string[] }> = {};
+            for (const item of validItems) {
+              const overrides = (item as any).image_overrides;
+              if (overrides && (overrides.hidden_images?.length || overrides.image_order?.length)) {
+                imageOverridesByArtwork[item.artwork_id] = overrides;
+              }
+            }
+
+            return {
+              id: block.id,
+              block_type: block.block_type as "single" | "carousel",
+              display_order: block.display_order,
+              artworks: validItems.map((item) => ({
                 id: item.artwork.id,
                 title: item.artwork.title,
                 year: item.artwork.year || "",
@@ -49,7 +61,9 @@ export const useArtworksBySeries = () => {
                 display_order: item.artwork.display_order,
                 is_visible: item.artwork.is_visible,
               })) as ArtworkData[],
-          }))
+              imageOverridesByArtwork: Object.keys(imageOverridesByArtwork).length > 0 ? imageOverridesByArtwork : undefined,
+            };
+          })
           .filter((block) => block.artworks.length > 0);
 
         // Flatten for backward compat

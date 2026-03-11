@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Plus, Trash2, GripVertical, Image, Images, ChevronDown, ChevronUp } from "lucide-react";
-import { CatalogImageGallery } from "@/components/admin/catalog/CatalogImageGallery";
+import { WorksImageGallery } from "@/components/admin/works/WorksImageGallery";
 import { useSeries } from "@/hooks/useSeries";
 import {
   useWorksBlocks,
@@ -79,7 +79,11 @@ const SortableBlockArtwork = ({
       </div>
       {imagesExpanded && (
         <div className="px-3 pb-3 pt-1 border-t border-border/50">
-          <CatalogImageGallery artworkId={item.artwork_id} />
+          <WorksImageGallery
+            artworkId={item.artwork_id}
+            blockItemId={item.id}
+            imageOverrides={item.image_overrides as any}
+          />
         </div>
       )}
     </div>

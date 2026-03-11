@@ -839,6 +839,7 @@ export type Database = {
           created_at: string
           display_order: number
           id: string
+          image_overrides: Json | null
         }
         Insert: {
           artwork_id: string
@@ -846,6 +847,7 @@ export type Database = {
           created_at?: string
           display_order?: number
           id?: string
+          image_overrides?: Json | null
         }
         Update: {
           artwork_id?: string
@@ -853,6 +855,7 @@ export type Database = {
           created_at?: string
           display_order?: number
           id?: string
+          image_overrides?: Json | null
         }
         Relationships: [
           {

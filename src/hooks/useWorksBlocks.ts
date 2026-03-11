@@ -19,6 +19,10 @@ export interface WorksBlockItem {
   artwork_id: string;
   display_order: number;
   created_at: string;
+  image_overrides: {
+    hidden_images?: string[];
+    image_order?: string[];
+  } | null;
 }
 
 export interface WorksBlockWithItems extends WorksBlock {
@@ -189,5 +193,23 @@ export const useReorderBlockItems = () => {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["works-blocks"] });
     },
+  });
+};
+
+// Update image overrides for a block item (Works-specific image order/visibility)
+export const useUpdateImageOverrides = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ blockItemId, overrides }: { blockItemId: string; overrides: { hidden_images?: string[]; image_order?: string[] } }) => {
+      const { error } = await supabase
+        .from("works_block_items" as any)
+        .update({ image_overrides: overrides } as any)
+        .eq("id", blockItemId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["works-blocks"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
   });
 };

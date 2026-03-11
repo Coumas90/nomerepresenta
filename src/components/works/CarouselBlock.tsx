@@ -11,6 +11,7 @@ interface CarouselBlockProps {
   allArtworkImages?: Record<string, ArtworkImage[]>;
   eager?: boolean;
   onGalleryNavigate?: (artworkId: string) => void;
+  imageOverridesByArtwork?: Record<string, { hidden_images?: string[]; image_order?: string[] }>;
 }
 
 const cursorLeftSvg = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23787874' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m15 18-6-6 6-6'/%3E%3C/svg%3E") 12 12, pointer`;
@@ -26,6 +27,7 @@ export const CarouselBlock = ({
   allArtworkImages,
   eager = false,
   onGalleryNavigate,
+  imageOverridesByArtwork,
 }: CarouselBlockProps) => {
   const isMobile = useIsMobile();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -36,17 +38,32 @@ export const CarouselBlock = ({
   // For each artwork in the carousel, use its main image
   const images = useMemo(() => {
     return artworks.map((artwork) => {
-      const artImages = allArtworkImages?.[artwork.id];
+      let artImages = allArtworkImages?.[artwork.id];
       if (artImages && artImages.length > 0) {
+        const overrides = imageOverridesByArtwork?.[artwork.id];
+        // Filter hidden images
+        if (overrides?.hidden_images?.length) {
+          const hiddenSet = new Set(overrides.hidden_images);
+          artImages = artImages.filter(img => !hiddenSet.has(img.id));
+        }
+        // Apply custom order
+        if (overrides?.image_order?.length) {
+          const orderMap = new Map(overrides.image_order.map((id, i) => [id, i]));
+          artImages = [...artImages].sort((a, b) => {
+            const aIdx = orderMap.get(a.id) ?? 9999;
+            const bIdx = orderMap.get(b.id) ?? 9999;
+            return aIdx - bIdx;
+          });
+        }
         const mainImg = artImages.find((img) => img.is_main) || artImages[0];
         return {
-          url: mainImg.image_url,
-          altText: mainImg.alt_text || artwork.title,
+          url: mainImg?.image_url || artwork.image_url,
+          altText: mainImg?.alt_text || artwork.title,
         };
       }
       return { url: artwork.image_url, altText: artwork.title };
     });
-  }, [artworks, allArtworkImages]);
+  }, [artworks, allArtworkImages, imageOverridesByArtwork]);
 
   const currentImage = images[currentIndex]?.url || currentArtwork?.image_url;
 
