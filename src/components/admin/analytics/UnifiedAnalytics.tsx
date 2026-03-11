@@ -17,6 +17,8 @@ import { useCountryDistribution } from "@/hooks/useGeographicAnalytics";
 import { useStudioAnalytics } from "@/hooks/useStudioAnalytics";
 import { useUserEventsAnalytics } from "@/hooks/useUserEventsAnalytics";
 import { usePricelistAnalytics } from "@/hooks/usePricelistAnalytics";
+import SessionLogTable from "./SessionLogTable";
+import { TopLandingPagesCard, CommonPathsCard } from "./SessionInsightWidgets";
 import type { DailyVisitors } from "@/types";
 
 const UnifiedAnalytics = () => {
