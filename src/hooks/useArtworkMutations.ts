@@ -36,6 +36,7 @@ export const useCreateArtwork = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["artworks"] });
+      queryClient.invalidateQueries({ queryKey: ["catalog-artworks"] });
       toast({
         title: "Artwork Created",
         description: "The artwork has been created successfully.",
@@ -69,6 +70,7 @@ export const useUpdateArtwork = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["artworks"] });
+      queryClient.invalidateQueries({ queryKey: ["catalog-artworks"] });
       toast({
         title: "Artwork Updated",
         description: "The artwork has been updated successfully.",
@@ -99,6 +101,7 @@ export const useDeleteArtwork = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["artworks"] });
+      queryClient.invalidateQueries({ queryKey: ["catalog-artworks"] });
       toast({
         title: "Artwork Deleted",
         description: "The artwork has been deleted successfully.",
@@ -177,6 +180,7 @@ export const useUpdateArtworksOrder = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["artworks"] });
+      queryClient.invalidateQueries({ queryKey: ["catalog-artworks"] });
     },
     onError: (error) => {
       toast({
