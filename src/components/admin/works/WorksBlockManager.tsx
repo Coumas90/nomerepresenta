@@ -10,12 +10,15 @@ import {
   useWorksBlocks,
   useCreateWorksBlock,
   useDeleteWorksBlock,
+  useUpdateWorksBlock,
   useReorderWorksBlocks,
   useAddBlockItem,
   useRemoveBlockItem,
   useReorderBlockItems,
   type WorksBlockWithItems,
+  type BlockType,
 } from "@/hooks/useWorksBlocks";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ArtworkPicker from "./ArtworkPicker";
 import {
   DndContext,
@@ -89,12 +92,14 @@ const SortableBlock = ({
   onAddArtwork,
   onRemoveItem,
   onReorderItems,
+  onChangeType,
 }: {
   block: WorksBlockWithItems;
   onDelete: () => void;
   onAddArtwork: (blockId: string) => void;
   onRemoveItem: (itemId: string) => void;
   onReorderItems: (blockId: string, items: { id: string; display_order: number }[]) => void;
+  onChangeType: (blockId: string, type: BlockType) => void;
 }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: block.id });
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 };
@@ -114,7 +119,6 @@ const SortableBlock = ({
   };
 
   const isCarousel = block.block_type === "carousel";
-  const firstArtwork = block.items[0]?.artwork;
 
   return (
     <div ref={setNodeRef} style={style} className="border rounded-lg p-3 mb-2 bg-background">
@@ -127,8 +131,20 @@ const SortableBlock = ({
         ) : (
           <Image className="h-4 w-4 text-muted-foreground" />
         )}
-        <span className="text-xs font-medium text-muted-foreground uppercase">
-          {isCarousel ? "Carousel" : "Single"} · {block.items.length} artwork{block.items.length !== 1 ? "s" : ""}
+        <Select
+          value={block.block_type}
+          onValueChange={(v) => onChangeType(block.id, v as BlockType)}
+        >
+          <SelectTrigger className="h-7 w-[110px] text-xs uppercase font-medium">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="single">Single</SelectItem>
+            <SelectItem value="carousel">Carousel</SelectItem>
+          </SelectContent>
+        </Select>
+        <span className="text-xs text-muted-foreground">
+          {block.items.length} artwork{block.items.length !== 1 ? "s" : ""}
         </span>
         <div className="flex-1" />
         <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => onAddArtwork(block.id)}>
@@ -160,6 +176,7 @@ const WorksBlockManager = () => {
   const { data: series = [], isLoading: seriesLoading } = useSeries();
   const createBlock = useCreateWorksBlock();
   const deleteBlock = useDeleteWorksBlock();
+  const updateBlock = useUpdateWorksBlock();
   const reorderBlocks = useReorderWorksBlocks();
   const addItem = useAddBlockItem();
   const removeItem = useRemoveBlockItem();
@@ -309,6 +326,7 @@ const WorksBlockManager = () => {
                                   onAddArtwork={handleAddArtwork}
                                   onRemoveItem={(itemId) => removeItem.mutate(itemId)}
                                   onReorderItems={handleReorderItems}
+                                  onChangeType={(blockId, type) => updateBlock.mutate({ id: blockId, updates: { block_type: type } })}
                                 />
                               ))}
                             </SortableContext>
