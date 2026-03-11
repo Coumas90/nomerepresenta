@@ -263,24 +263,6 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
                 </>
               )}
             </div>
-            {/* Mobile dots */}
-            {isMobile && allImages.length > 1 && (
-              <div className="mt-3 flex gap-1.5">
-                {allImages.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentImageIndex(index)}
-                    className={cn(
-                      "w-1.5 h-1.5 rounded-full transition-all duration-300",
-                      index === currentImageIndex 
-                        ? "bg-stone-900" 
-                        : "bg-stone-400"
-                    )}
-                    aria-label={`Go to image ${index + 1}`}
-                  />
-                ))}
-              </div>
-            )}
 
             {/* Caption row — caption left, pagination right on desktop */}
             <figcaption className="mt-6 md:mt-9 text-left leading-snug">
@@ -310,7 +292,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
                     </>
                   )}
                 </div>
-                {!isMobile && allImages.length > 1 && (
+                {allImages.length > 1 && (
                   <p className="text-stone-400 text-[10px] md:text-xs whitespace-nowrap shrink-0" style={{ letterSpacing: '0.5px' }}>
                     [ {currentImageIndex + 1} / {allImages.length} ]
                   </p>
