@@ -49,12 +49,20 @@ const deviceIcon = (type: string | null) => {
   return <Monitor className="h-3.5 w-3.5" />;
 };
 
-const SessionLogTable = ({ startDate, endDate }: SessionLogTableProps) => {
+const SessionLogTable = ({ startDate: parentStart, endDate: parentEnd }: SessionLogTableProps) => {
   const [page, setPage] = useState(0);
   const [filters, setFilters] = useState<SessionLogFilters>({});
   const [sortField, setSortField] = useState<SortField>("started_at");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [localPreset, setLocalPreset] = useState<string>("parent");
+
+  const { startDate, endDate } = useMemo(() => {
+    if (localPreset === "24h") return { startDate: subHours(new Date(), 24), endDate: new Date() };
+    if (localPreset === "7d") return { startDate: startOfDay(subDays(new Date(), 7)), endDate: endOfDay(new Date()) };
+    if (localPreset === "30d") return { startDate: startOfDay(subDays(new Date(), 30)), endDate: endOfDay(new Date()) };
+    return { startDate: parentStart, endDate: parentEnd };
+  }, [localPreset, parentStart, parentEnd]);
 
   const { data, isLoading } = useSessionLog(
     startDate,
