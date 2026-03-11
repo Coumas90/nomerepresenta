@@ -95,6 +95,7 @@ export const SeriesSection = forwardRef<HTMLElement, SeriesSectionProps>(
                   allArtworkImages={allArtworkImages}
                   eager={isFirst && blockIdx === 0}
                   onGalleryNavigate={onGalleryNavigate}
+                  imageOverridesByArtwork={block.imageOverridesByArtwork}
                 />
               );
             }
@@ -109,6 +110,7 @@ export const SeriesSection = forwardRef<HTMLElement, SeriesSectionProps>(
                   preloadedImages={allArtworkImages?.[artwork.id]}
                   eager={isFirst && idx === 0}
                   onGalleryNavigate={onGalleryNavigate}
+                  imageOverrides={block.imageOverridesByArtwork?.[artwork.id]}
                 />
               );
             });
