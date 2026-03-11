@@ -16,6 +16,7 @@ import {
   useReorderBlockItems,
   type WorksBlockWithItems,
 } from "@/hooks/useWorksBlocks";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ArtworkPicker from "./ArtworkPicker";
 import {
   DndContext,
