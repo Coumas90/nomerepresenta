@@ -127,8 +127,8 @@ const SortableBlock = ({
 
   const isCarousel = block.block_type === "carousel";
 
-  return (
-    <div ref={setNodeRef} style={style} className="border rounded-lg p-3 mb-2 bg-background">
+    return (
+    <div ref={setNodeRef} style={style} className={`border rounded-lg p-3 mb-2 bg-background ${isHidden ? "opacity-50" : ""}`}>
       <div className="flex items-center gap-2 mb-2">
         <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
           <GripVertical className="h-4 w-4 text-muted-foreground" />
@@ -154,6 +154,15 @@ const SortableBlock = ({
           {block.items.length} artwork{block.items.length !== 1 ? "s" : ""}
         </span>
         <div className="flex-1" />
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7"
+          onClick={() => onToggleHidden(block.id, !isHidden)}
+          title={isHidden ? "Show in public Works" : "Hide from public Works"}
+        >
+          {isHidden ? <EyeOff className="h-3.5 w-3.5 text-muted-foreground" /> : <Eye className="h-3.5 w-3.5 text-foreground" />}
+        </Button>
         <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => onAddArtwork(block.id)}>
           <Plus className="h-3 w-3 mr-1" />
           Add
