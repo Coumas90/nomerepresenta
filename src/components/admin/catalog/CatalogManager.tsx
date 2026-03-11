@@ -169,6 +169,7 @@ const CatalogManager = ({ onEdit }: CatalogManagerProps = {}) => {
                     showEdition={showEdition}
                     onFieldUpdate={handleFieldUpdate}
                     onEdit={onEdit ? (a) => onEdit(a as any) : undefined}
+                    onDelete={(id) => deleteMutation.mutate(id)}
                     catalogSeriesSuggestions={catalogSeriesNames}
                   />
               ))}
