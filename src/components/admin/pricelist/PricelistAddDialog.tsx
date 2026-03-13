@@ -111,7 +111,8 @@ export const PricelistAddDialog = ({
                 className="pl-9"
               />
             </div>
-            <div className="mt-3 space-y-4 max-h-[65vh] overflow-y-auto">
+            <ScrollArea className="h-[60vh]">
+              <div className="space-y-4 pr-3">
               {[...grouped.entries()].map(([seriesName, works]) => {
                 const allSelected = works.every((w) => selectedIds.has(w.id));
                 const someSelected = works.some((w) => selectedIds.has(w.id));
