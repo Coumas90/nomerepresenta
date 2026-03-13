@@ -114,7 +114,14 @@ export const PricelistContent = ({
                 activeCurrency={activeCurrency}
                 selected={selectedIds.has(item.artwork_id)}
                 onSelect={toggleSelect}
-                onViewImages={() => setViewingArtworkId(item.artwork_id)}
+                onViewImages={() => {
+                  setViewingArtworkId(item.artwork_id);
+                  trackUserEvent("pricelist_artwork_view", {
+                    artwork_id: item.artwork_id,
+                    artwork_title: item.artwork?.title,
+                    pricelist: pricelistName,
+                  });
+                }}
                 images={allImages?.[item.artwork_id] || []}
               />
             ))}
