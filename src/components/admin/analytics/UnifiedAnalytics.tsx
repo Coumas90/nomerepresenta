@@ -711,45 +711,7 @@ const PricelistAnalyticsCard = ({ startDate, endDate }: { startDate: Date; endDa
               )}
             </div>
 
-            {/* Recent sessions table */}
-            {data.sessions.length > 0 && (
-              <div>
-                <h4 className="text-sm font-medium mb-2">Recent Sessions</h4>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Link</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Duration</TableHead>
-                      <TableHead>Device</TableHead>
-                      <TableHead>Location</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {data.sessions.slice(0, 15).map((s, i) => (
-                      <TableRow key={`${s.session_id}-${i}`}>
-                        <TableCell className="text-sm">{s.slug}</TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {format(new Date(s.viewed_at), "MMM dd, HH:mm")}
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {formatDuration(s.time_on_page_seconds || 0)}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-1.5">
-                            {deviceIcon(s.device_type || "desktop")}
-                            <span className="text-sm capitalize">{s.device_type || "unknown"}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {[s.city, s.country_name].filter(Boolean).join(", ") || "—"}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            )}
+            {/* Note: detailed expandable session log is rendered as a separate card above */}
           </div>
         )}
       </CardContent>
