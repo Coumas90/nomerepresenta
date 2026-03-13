@@ -14,6 +14,7 @@ interface PricelistContentProps {
   allImages?: Record<string, ArtworkImage[]>;
   isLoading: boolean;
   pricelistName?: string;
+  headerName?: string | null;
   seriesName?: string;
   activeCurrency?: PricelistCurrency;
 }
