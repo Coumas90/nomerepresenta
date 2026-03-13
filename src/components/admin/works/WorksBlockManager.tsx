@@ -47,10 +47,11 @@ const SortableBlockArtwork = ({
 }) => {
   const [imagesExpanded, setImagesExpanded] = useState(false);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item.id });
-  const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 };
+  const isArtworkHidden = item.artwork?.is_visible === false;
+  const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : isArtworkHidden ? 0.45 : 1 };
 
   return (
-    <div ref={setNodeRef} style={style} className="bg-muted/30 rounded-md mb-1">
+    <div ref={setNodeRef} style={style} className={`bg-muted/30 rounded-md mb-1 ${isArtworkHidden ? "border border-dashed border-muted-foreground/30" : ""}`}>
       <div className="flex items-center gap-2 p-2">
         <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
           <GripVertical className="h-4 w-4 text-muted-foreground" />
