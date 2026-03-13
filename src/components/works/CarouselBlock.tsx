@@ -36,7 +36,6 @@ export const CarouselBlock = ({
   const isMobile = useIsMobile();
   const containerRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const imgFrameRef = useRef<HTMLDivElement>(null);
 
   // Flatten all images from all artworks into a single slide list
   const slides = useMemo(() => {
@@ -70,6 +69,8 @@ export const CarouselBlock = ({
           });
         }
         for (const img of artImages) {
+          // Ignore install shots in multi-artwork carousels to keep visual scale/caption rhythm consistent
+          if (img.is_install) continue;
           result.push({
             url: img.image_url,
             altText: img.alt_text || img.title || artwork.title,
@@ -213,11 +214,7 @@ export const CarouselBlock = ({
             onTouchEnd={handleTouchEnd}
           >
             {/* Image container */}
-            <div
-              ref={imgFrameRef}
-              className="relative w-full"
-              
-            >
+            <div className="relative w-full">
               {currentImage && (
                 <ProgressiveImage
                   src={currentImage}
