@@ -99,21 +99,27 @@ export const CarouselBlock = ({
   const currentImage = currentSlide?.url;
   const totalSlides = slides.length;
 
-  // Lock the image container height to the first rendered image to prevent layout jumps
+  // Lock desktop carousel image box to the first rendered slide size to prevent layout jumps
   useEffect(() => {
-    if (lockedHeight || !imageWrapperRef.current) return;
+    if (isMobile) {
+      setLockedDimensions(null);
+      return;
+    }
+    if (lockedDimensions || !imageWrapperRef.current) return;
+
     const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        const h = entry.contentRect.height;
-        if (h > 0) {
-          setLockedHeight(h);
+        const { width, height } = entry.contentRect;
+        if (width > 0 && height > 0) {
+          setLockedDimensions({ width, height });
           observer.disconnect();
         }
       }
     });
+
     observer.observe(imageWrapperRef.current);
     return () => observer.disconnect();
-  }, [lockedHeight]);
+  }, [isMobile, lockedDimensions]);
 
   useEffect(() => {
     const dpr = window.devicePixelRatio || 1;
