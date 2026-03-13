@@ -232,7 +232,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
               <ProgressiveImage
                   src={currentImage}
                   alt={allImages[currentImageIndex]?.altText || artwork.title || "Artwork"}
-                  className="relative z-10 [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh]"
+                  className="relative z-10 [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh] [&_picture]:max-h-[75vh] [&_picture]:md:max-h-[80vh] [&_picture]:lg:max-h-[85vh] max-h-[75vh] md:max-h-[80vh] lg:max-h-[85vh]"
                   objectFit="contain"
                   eager={eager}
                   skipInternalFade
