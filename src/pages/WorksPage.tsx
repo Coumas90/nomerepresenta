@@ -74,16 +74,9 @@ const WorksPage = () => {
     (seriesId: string, isIntersecting: boolean) => {
       if (isIntersecting) {
         setActiveSeriesId(seriesId);
-        
-        // Update URL hash without triggering scroll
-        const series = seriesWithArtworks?.find((s) => s.id === seriesId);
-        if (series) {
-          const slug = series.name.toLowerCase().replace(/\s+/g, "-");
-          window.history.replaceState(null, "", `/works#${slug}`);
-        }
       }
     },
-    [seriesWithArtworks]
+    []
   );
 
   // Scroll suave al clickear serie en header
