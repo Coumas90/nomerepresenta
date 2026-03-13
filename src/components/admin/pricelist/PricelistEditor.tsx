@@ -21,6 +21,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Plus } from "lucide-react";
 import { useCatalogArtworks } from "@/hooks/useCatalog";
 import { useSeries } from "@/hooks/useSeries";
+import type { ArtworkData } from "@/types";
 import {
   usePricelistItems,
   useAddPricelistItem,
