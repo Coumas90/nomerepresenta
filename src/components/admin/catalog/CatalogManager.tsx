@@ -53,7 +53,7 @@ const CatalogManager = ({ onEdit }: CatalogManagerProps = {}) => {
     return [...items].sort((a, b) => {
       let cmp = 0;
       if (sortField === "title") {
-        cmp = (a.title || "").localeCompare(b.title || "");
+        cmp = (a.title || "").localeCompare(b.title || "", undefined, { sensitivity: "base", numeric: true });
       } else if (sortField === "year") {
         cmp = (a.year || "").localeCompare(b.year || "");
       } else if (sortField === "size_category") {
