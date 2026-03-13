@@ -1,0 +1,1 @@
+ALTER TABLE public.pricelists ADD COLUMN header_name text;
