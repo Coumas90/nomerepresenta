@@ -66,7 +66,7 @@ export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpd
               <img
                 src={artwork.image_url}
                 alt={artwork.title}
-                className={`${THUMB_SIZES[thumbSize]} object-cover rounded`}
+                className={`${THUMB_SIZES[thumbSize]} object-contain rounded`}
                 loading="lazy"
               />
             </button>
