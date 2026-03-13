@@ -10,6 +10,7 @@ export interface Pricelist {
   slug: string;
   password: string;
   series_name: string;
+  header_name: string | null;
   active_currency: PricelistCurrency;
   created_at: string;
   updated_at: string;
