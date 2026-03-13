@@ -244,6 +244,8 @@ img {
     background: white !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+    width: 100% !important;
+    min-width: 900px !important;
   }
 
   /* Remove browser headers/footers by eliminating page margins */
