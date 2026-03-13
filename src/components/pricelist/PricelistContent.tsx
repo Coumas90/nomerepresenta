@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Undo2, Download } from "lucide-react";
 import type { SeriesData, ArtworkImage } from "@/types";
 import type { PricelistItemWithArtwork, PricelistCurrency } from "@/hooks/usePricelist";
+import { useAnalytics } from "@/hooks/useAnalytics";
 import { PricelistRow } from "./PricelistRow";
 import { PricelistImageViewer } from "./PricelistImageViewer";
 import { PricelistInquiryBar } from "./PricelistInquiryBar";
