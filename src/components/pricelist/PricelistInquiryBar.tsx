@@ -157,7 +157,7 @@ export const PricelistInquiryBar = ({ selectedCount, selectedTitles, selectedArt
               {selectedCount} {selectedCount === 1 ? "work" : "works"} selected
             </span>
             <button
-              onClick={() => setShowForm(true)}
+              onClick={handleOpenForm}
               className="flex items-center gap-2 text-xs md:text-sm tracking-wide uppercase text-stone-800 hover:text-stone-600 transition-colors group"
             >
               <span>Send inquiry</span>
