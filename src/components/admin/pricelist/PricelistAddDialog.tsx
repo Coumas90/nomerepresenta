@@ -94,7 +94,7 @@ export const PricelistAddDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-lg max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Add Artworks to Pricelist</DialogTitle>
         </DialogHeader>
