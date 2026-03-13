@@ -69,6 +69,8 @@ export const CarouselBlock = ({
           });
         }
         for (const img of artImages) {
+          // Ignore install shots in multi-artwork carousels to keep visual scale/caption rhythm consistent
+          if (img.is_install) continue;
           result.push({
             url: img.image_url,
             altText: img.alt_text || img.title || artwork.title,
