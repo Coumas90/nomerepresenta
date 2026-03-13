@@ -205,27 +205,27 @@ export const CarouselBlock = ({
 
   return (
     <article className="relative w-full flex flex-col items-center">
-      <figure className="inline-flex flex-col items-start max-w-[95vw] md:max-w-[60vw] lg:max-w-[50vw] mx-auto overflow-visible">
+      <figure className="w-full flex flex-col items-start max-w-[95vw] md:max-w-[60vw] lg:max-w-[50vw] mx-auto overflow-visible">
         <div className="relative w-full flex items-center">
           <div
             ref={containerRef}
-            className="flex-1 min-w-0 select-none"
+            className="w-full flex-1 min-w-0 select-none"
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
             {/* Fixed-height image container: all slides share the same height so caption never jumps */}
             <div className="relative w-full h-[65vh] md:h-[72vh] lg:h-[78vh]">
               {currentImage && (
-              <ProgressiveImage
+                <ProgressiveImage
                   src={currentImage}
                   alt={currentSlide?.altText || "Artwork"}
                   className={cn(
                     "relative z-10",
                     // Override contain-mode w-fit: force full-width wrapper
                     "!w-full",
-                    // Force img to fill width and use object-contain within the fixed-height parent
+                    // Fill frame and keep left edge stable across slides
                     "[&_picture]:w-full [&_picture]:h-full",
-                    "[&_img]:!w-full [&_img]:!h-full [&_img]:!object-contain"
+                    "[&_img]:!w-full [&_img]:!h-full [&_img]:!object-contain [&_img]:object-left"
                   )}
                   objectFit="contain"
                   eager={eager}
