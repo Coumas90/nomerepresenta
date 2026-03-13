@@ -64,7 +64,7 @@ export const usePricelistBySlug = (slug: string) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("pricelists" as any)
-        .select("id, name, slug, series_name, active_currency, created_at, updated_at")
+        .select("id, name, slug, series_name, header_name, active_currency, created_at, updated_at")
         .eq("slug", slug)
         .single();
       if (error) throw error;
