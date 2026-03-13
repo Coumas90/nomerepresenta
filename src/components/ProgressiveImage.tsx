@@ -162,7 +162,7 @@ export const ProgressiveImage = ({
   const showWebp = (webpSrcSet || webpSrc) && !webpFailed;
 
   return (
-    <div ref={imgRef} className={`relative ${isContain ? "w-fit" : "overflow-hidden"} ${className}`}>
+    <div ref={imgRef} className={`relative ${isContain ? "w-fit max-w-full" : "overflow-hidden"} ${className}`}>
       {/* Skeleton loading state - shown until placeholder or main image loads */}
       {!isLoaded && !placeholderLoaded && !skipInternalFade && (
         <ImageSkeleton 
@@ -186,7 +186,7 @@ export const ProgressiveImage = ({
       
       {/* Main image with AVIF, WebP, and responsive srcset support using picture element */}
       {shouldLoad && (
-        <picture className="w-full h-full block">
+        <picture className={isContain ? "block max-w-full" : "w-full h-full block"}>
           {/* AVIF source (best compression) - browsers that support AVIF will use this first */}
           {showAvif && avifSrcSet && (
             <source 

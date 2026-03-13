@@ -212,7 +212,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
   return (
     <article className="relative w-full flex flex-col items-center">
       {/* Figure: image + caption stacked vertically, normal flow */}
-      <figure className="inline-flex flex-col items-start max-w-[95vw] md:max-w-[60vw] lg:max-w-[50vw] mx-auto overflow-visible">
+      <figure className="inline-flex flex-col items-start max-w-[95vw] md:max-w-[60vw] lg:max-w-[50vw] mx-auto overflow-hidden">
         {/* Image container with navigation */}
         <div className="relative w-full flex items-center">
 
