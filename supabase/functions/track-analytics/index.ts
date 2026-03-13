@@ -474,6 +474,11 @@ serve(async (req) => {
           'contact_click',
           'works_scroll_complete',
           'gallery_navigate',
+          'pricelist_select',
+          'pricelist_unselect',
+          'pricelist_inquiry_open',
+          'pricelist_inquiry_sent',
+          'pricelist_download_pdf',
         ];
 
         if (!data.eventType || !validEventTypes.includes(data.eventType)) {
