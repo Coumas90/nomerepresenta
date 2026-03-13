@@ -33,7 +33,7 @@ const SortableImageThumb = ({
   isHidden,
   onToggleVisibility,
 }: {
-  image: { id: string; image_url: string; title: string | null; is_main: boolean | null; is_detail: boolean; is_install?: boolean };
+  image: { id: string; image_url: string; title: string | null; is_main: boolean | null; is_detail: boolean; is_install?: boolean; is_catalog_visible?: boolean };
   isHidden: boolean;
   onToggleVisibility: () => void;
 }) => {
@@ -131,7 +131,7 @@ export const WorksImageGallery = ({ artworkId, blockItemId, imageOverrides }: Wo
     return ordered;
   }, [images, imageOverrides?.image_order]);
 
-  const visibleCount = orderedImages.filter((img) => !hiddenSet.has(img.id)).length;
+  const visibleCount = orderedImages.filter((img) => !hiddenSet.has(img.id) && (img as any).is_catalog_visible !== false).length;
   const hiddenCount = orderedImages.length - visibleCount;
 
   const saveOverrides = (newHidden: string[], newOrder: string[]) => {
@@ -179,7 +179,7 @@ export const WorksImageGallery = ({ artworkId, blockItemId, imageOverrides }: Wo
               <SortableImageThumb
                 key={img.id}
                 image={img}
-                isHidden={hiddenSet.has(img.id)}
+                isHidden={hiddenSet.has(img.id) || (img as any).is_catalog_visible === false}
                 onToggleVisibility={() => toggleVisibility(img.id)}
               />
             ))}
