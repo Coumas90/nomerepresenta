@@ -14,6 +14,8 @@ export interface PricelistSessionData {
   source: string;
   referrer: string | null;
   is_returning: boolean;
+  /** How many times this visitor accessed any pricelist page (total across all time) */
+  visit_count: number;
 }
 
 export interface PricelistAnalyticsSummary {
