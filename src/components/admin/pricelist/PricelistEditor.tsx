@@ -59,7 +59,13 @@ export const PricelistEditor = ({ pricelist }: PricelistEditorProps) => {
   const seriesMap = new Map(series.map((s) => [s.id, s.name]));
 
   const existingArtworkIds = new Set(items.map((i) => i.artwork_id));
-  const availableArtworks = artworks.filter((a) => !existingArtworkIds.has(a.id));
+  const availableArtworks = catalogArtworks
+    .filter((a) => !existingArtworkIds.has(a.id))
+    .map((a) => ({
+      ...a,
+      description: null,
+      image_detail_url: null,
+    }));
 
   const handleAdd = (artworkIds: string[]) => {
     artworkIds.forEach((artworkId, idx) => {
