@@ -231,22 +231,22 @@ export const CarouselBlock = ({
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
-            {/* Image container: lock height after first image renders to prevent caption jump */}
+            {/* Image container */}
             <div
               ref={imgFrameRef}
-              className="relative flex w-full items-center justify-center max-w-full"
-              style={
-                !isMobile && lockedHeight
-                  ? { height: lockedHeight }
-                  : undefined
-              }
+              className="relative w-full"
               onLoad={handleFirstImageLoad}
             >
               {currentImage && (
                 <ProgressiveImage
                   src={currentImage}
                   alt={currentSlide?.altText || "Artwork"}
-                  className="relative z-10 [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh]"
+                  className={cn(
+                    "relative z-10",
+                    // Force w-full on wrapper (override w-fit from contain mode)
+                    // and w-full h-auto on img so all same-format images render identically
+                    "!w-full [&_picture]:w-full [&_img]:!w-full [&_img]:!h-auto [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh]"
+                  )}
                   objectFit="contain"
                   eager={eager}
                   skipInternalFade
