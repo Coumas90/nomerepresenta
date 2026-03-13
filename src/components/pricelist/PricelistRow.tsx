@@ -105,7 +105,7 @@ export const PricelistRow = ({ item, activeCurrency, selected, onSelect, onViewI
       </div>
 
       {/* Desktop grid layout (also used for print) */}
-      <div className="hidden md:grid print:!grid grid-cols-[264px_1fr_auto] gap-20 items-center">
+      <div className="hidden md:grid print:!grid grid-cols-[264px_1fr_auto] print:!grid-cols-[220px_1fr_auto] gap-20 items-center">
         <div className="relative group cursor-pointer" data-thumbnail>
           <img
             src={artwork.image_url}
