@@ -232,9 +232,16 @@ const PricelistSessionRow = ({ session, isExpanded, onToggle, expandedSessionId 
               </div>
             </TableCell>
             <TableCell>
-              <span className={`text-xs px-1.5 py-0.5 rounded ${session.is_returning ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300" : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"}`}>
-                {session.is_returning ? "Returning" : "New"}
-              </span>
+              <div className="flex items-center gap-1.5">
+                <span className={`text-xs px-1.5 py-0.5 rounded ${session.is_returning ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300" : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"}`}>
+                  {session.is_returning ? "Returning" : "New"}
+                </span>
+                {session.visit_count > 1 && (
+                  <span className="text-xs px-1.5 py-0.5 rounded bg-muted text-muted-foreground font-medium">
+                    {session.visit_count}×
+                  </span>
+                )}
+              </div>
             </TableCell>
           </TableRow>
         </CollapsibleTrigger>
