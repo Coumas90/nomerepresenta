@@ -131,7 +131,7 @@ export const WorksImageGallery = ({ artworkId, blockItemId, imageOverrides }: Wo
     return ordered;
   }, [images, imageOverrides?.image_order]);
 
-  const visibleCount = orderedImages.filter((img) => !hiddenSet.has(img.id) && (img as any).is_catalog_visible !== false).length;
+  const visibleCount = orderedImages.filter((img) => !hiddenSet.has(img.id) && img.is_catalog_visible !== false).length;
   const hiddenCount = orderedImages.length - visibleCount;
 
   const saveOverrides = (newHidden: string[], newOrder: string[]) => {
