@@ -216,7 +216,7 @@ export const CarouselBlock = ({
             <div
               ref={imgFrameRef}
               className="relative w-full"
-              onLoad={handleFirstImageLoad}
+              
             >
               {currentImage && (
                 <ProgressiveImage
