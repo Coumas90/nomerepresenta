@@ -233,14 +233,17 @@ export const CarouselBlock = ({
           >
             <div
               ref={imageWrapperRef}
-              className="relative flex items-center justify-center"
-              style={lockedHeight ? { minHeight: lockedHeight } : undefined}
+              className="relative flex items-center justify-center max-w-full"
+              style={!isMobile && lockedDimensions ? { width: lockedDimensions.width, minHeight: lockedDimensions.height } : undefined}
             >
               {currentImage && (
                 <ProgressiveImage
                   src={currentImage}
                   alt={currentSlide?.altText || "Artwork"}
-                  className="relative z-10 [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh]"
+                  className={cn(
+                    "relative z-10 [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh]",
+                    !isMobile && lockedDimensions && "[&_img]:w-full [&_img]:h-full"
+                  )}
                   objectFit="contain"
                   eager={eager}
                   skipInternalFade
@@ -268,47 +271,50 @@ export const CarouselBlock = ({
               )}
             </div>
 
-            {/* Pagination */}
-            {totalSlides > 1 && (
-              isMobile ? (
-                <div className="mt-3 flex gap-1.5">
-                  {slides.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentIndex(index)}
-                      className={cn(
-                        "w-1.5 h-1.5 rounded-full transition-all duration-300",
-                        index === currentIndex ? "bg-stone-900" : "bg-stone-400"
-                      )}
-                      aria-label={`Go to image ${index + 1}`}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <p className="mt-3 text-stone-500 text-sm">
-                  {currentIndex + 1} / {totalSlides}
-                </p>
-              )
+            {/* Mobile pagination */}
+            {isMobile && totalSlides > 1 && (
+              <div className="mt-3 flex gap-1.5">
+                {slides.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentIndex(index)}
+                    className={cn(
+                      "w-1.5 h-1.5 rounded-full transition-all duration-300",
+                      index === currentIndex ? "bg-stone-900" : "bg-stone-400"
+                    )}
+                    aria-label={`Go to image ${index + 1}`}
+                  />
+                ))}
+              </div>
             )}
 
             {/* Caption for current slide */}
             {currentSlide && (
-              <figcaption className="mt-3 md:mt-4 text-left leading-snug">
-                <p className="text-stone-600 text-xs md:text-[15px] font-bold">
-                  {currentSlide.title}
-                  {currentSlide.isDetail && " (DETAIL)"}
-                  {currentSlide.year && <>, {currentSlide.year}</>}
-                </p>
-                {currentSlide.materials && (
-                  <p className="text-stone-500 text-xs md:text-sm mt-[2px] md:mt-[6px]">
-                    {currentSlide.materials}
-                  </p>
-                )}
-                {currentSlide.dimensions && (
-                  <p className="text-stone-500 text-xs md:text-sm mt-[1px]">
-                    {currentSlide.dimensions}
-                  </p>
-                )}
+              <figcaption className="mt-6 md:mt-9 text-left leading-snug">
+                <div className="flex justify-between items-start gap-4">
+                  <div>
+                    <p className="text-stone-500 text-[13px] md:text-[15px] font-bold">
+                      {currentSlide.title}
+                      {currentSlide.isDetail && <span className="font-normal text-stone-500"> (DETAIL)</span>}
+                      {currentSlide.year && <>, {currentSlide.year}</>}
+                    </p>
+                    {currentSlide.materials && (
+                      <p className="text-stone-500 text-[11px] md:text-[13px] mt-[3px] md:mt-[6px]">
+                        {currentSlide.materials}
+                      </p>
+                    )}
+                    {currentSlide.dimensions && (
+                      <p className="text-stone-500 text-[11px] md:text-[13px] mt-[4px] md:mt-[5px]">
+                        {currentSlide.dimensions}
+                      </p>
+                    )}
+                  </div>
+                  {!isMobile && totalSlides > 1 && (
+                    <p className="text-stone-400 text-[9px] md:text-[11px] whitespace-nowrap shrink-0" style={{ letterSpacing: "0.5px" }}>
+                      [ {currentIndex + 1} / {totalSlides} ]
+                    </p>
+                  )}
+                </div>
               </figcaption>
             )}
           </div>
