@@ -65,6 +65,8 @@ export interface ArtworkImage {
   materials: string | null;
   is_detail: boolean;
   alt_text: string | null;
+  is_catalog_visible: boolean;
+  is_install: boolean;
 }
 
 /**
