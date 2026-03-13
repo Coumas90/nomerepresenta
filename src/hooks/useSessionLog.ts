@@ -23,6 +23,7 @@ export interface SessionLogEntry {
   utm_medium: string | null;
   utm_campaign: string | null;
   page_details: PageDetail[];
+  user_events: UserEventDetail[];
 }
 
 export interface PageDetail {
@@ -30,6 +31,12 @@ export interface PageDetail {
   page_name: string | null;
   viewed_at: string;
   time_on_page_seconds: number | null;
+}
+
+export interface UserEventDetail {
+  event_type: string;
+  event_data: Record<string, unknown> | null;
+  created_at: string;
 }
 
 export interface SessionLogFilters {
