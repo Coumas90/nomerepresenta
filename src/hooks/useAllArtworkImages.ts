@@ -17,13 +17,15 @@ export const useAllArtworkImages = () => {
 
       if (error) throw error;
 
-      // Group by artwork_id for O(1) lookup
+      // Group by artwork_id for O(1) lookup, filtering out hidden images
       const grouped: Record<string, ArtworkImage[]> = {};
-      for (const img of (data as ArtworkImage[])) {
+      for (const img of (data as any[])) {
+        // Skip images hidden via is_catalog_visible
+        if (img.is_catalog_visible === false) continue;
         if (!grouped[img.artwork_id]) {
           grouped[img.artwork_id] = [];
         }
-        grouped[img.artwork_id].push(img);
+        grouped[img.artwork_id].push(img as ArtworkImage);
       }
       return grouped;
     },
