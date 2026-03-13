@@ -230,10 +230,11 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
 
           <div className="space-y-2">
             <Label htmlFor="materials">Materials</Label>
-            <Input
+            <AutocompleteInput
               id="materials"
               value={formData.materials}
-              onChange={(e) => setFormData({ ...formData, materials: e.target.value })}
+              onChange={(val) => setFormData({ ...formData, materials: val })}
+              suggestions={materialsSuggestions}
             />
           </div>
 
