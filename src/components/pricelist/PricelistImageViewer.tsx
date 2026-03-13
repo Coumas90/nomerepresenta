@@ -19,8 +19,15 @@ export const PricelistImageViewer = ({
   const touchStartX = useRef(0);
   const touchDeltaX = useRef(0);
 
+  // Lock body scroll when viewer is open
   useEffect(() => {
-    if (open) setCurrentIndex(0);
+    if (open) {
+      setCurrentIndex(0);
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
   }, [open]);
 
   const close = useCallback(() => onOpenChange(false), [onOpenChange]);
@@ -68,7 +75,7 @@ export const PricelistImageViewer = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-stone-100 flex items-center justify-center select-none"
+      className="fixed inset-0 z-[100] bg-stone-100 flex items-center justify-center select-none"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
