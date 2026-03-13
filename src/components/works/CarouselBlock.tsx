@@ -99,7 +99,22 @@ export const CarouselBlock = ({
   const currentImage = currentSlide?.url;
   const totalSlides = slides.length;
 
-  // Preload adjacent images at the width+format the browser will actually pick
+  // Lock the image container height to the first rendered image to prevent layout jumps
+  useEffect(() => {
+    if (lockedHeight || !imageWrapperRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const h = entry.contentRect.height;
+        if (h > 0) {
+          setLockedHeight(h);
+          observer.disconnect();
+        }
+      }
+    });
+    observer.observe(imageWrapperRef.current);
+    return () => observer.disconnect();
+  }, [lockedHeight]);
+
   useEffect(() => {
     const dpr = window.devicePixelRatio || 1;
     const vw = window.innerWidth;
