@@ -37,7 +37,6 @@ export const CarouselBlock = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const imgFrameRef = useRef<HTMLDivElement>(null);
-  const [lockedHeight, setLockedHeight] = useState<number | null>(null);
 
   // Flatten all images from all artworks into a single slide list
   const slides = useMemo(() => {
@@ -101,24 +100,6 @@ export const CarouselBlock = ({
   const currentSlide = slides[currentIndex];
   const currentImage = currentSlide?.url;
   const totalSlides = slides.length;
-  // Lock the container height after the first image renders so the caption doesn't jump.
-  // We compute the rendered height from the image's natural aspect ratio and the container width,
-  // because with object-fit:contain the img element's offsetHeight ≠ visible image height.
-  const handleFirstImageLoad = useCallback(() => {
-    if (!isMobile && lockedHeight === null && imgFrameRef.current) {
-      const img = imgFrameRef.current.querySelector("img");
-      if (img && img.naturalWidth > 0 && img.naturalHeight > 0) {
-        const containerWidth = imgFrameRef.current.offsetWidth;
-        const imageAspect = img.naturalWidth / img.naturalHeight;
-        // The image renders at container width constrained by max-height
-        const maxH = window.innerHeight * 0.8; // matches md:max-h-[80vh]
-        const renderedHeight = Math.min(containerWidth / imageAspect, maxH);
-        if (renderedHeight > 0) {
-          setLockedHeight(renderedHeight);
-        }
-      }
-    }
-  }, [isMobile, lockedHeight]);
 
   // Preload adjacent slides
   useEffect(() => {
@@ -231,22 +212,22 @@ export const CarouselBlock = ({
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
-            {/* Image container: lock height after first image renders to prevent caption jump */}
+            {/* Image container */}
             <div
               ref={imgFrameRef}
-              className="relative flex w-full items-center justify-center max-w-full"
-              style={
-                !isMobile && lockedHeight
-                  ? { height: lockedHeight }
-                  : undefined
-              }
-              onLoad={handleFirstImageLoad}
+              className="relative w-full"
+              
             >
               {currentImage && (
                 <ProgressiveImage
                   src={currentImage}
                   alt={currentSlide?.altText || "Artwork"}
-                  className="relative z-10 [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh]"
+                  className={cn(
+                    "relative z-10",
+                    // Force w-full on wrapper (override w-fit from contain mode)
+                    // and w-full h-auto on img so all same-format images render identically
+                    "!w-full [&_picture]:w-full [&_img]:!w-full [&_img]:!h-auto [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh]"
+                  )}
                   objectFit="contain"
                   eager={eager}
                   skipInternalFade
