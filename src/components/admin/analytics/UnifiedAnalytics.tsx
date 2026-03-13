@@ -628,7 +628,7 @@ const PricelistAnalyticsCard = ({ startDate, endDate }: { startDate: Date; endDa
           <Skeleton className="h-48" />
         ) : !data || data.totalViews === 0 ? (
           <p className="text-sm text-muted-foreground py-4">
-            No pricelist views yet. Share a /selection/ link to start tracking.
+            No pricelist views yet. Share a /selected/ link to start tracking.
           </p>
         ) : (
           <div className="space-y-6">
@@ -664,7 +664,7 @@ const PricelistAnalyticsCard = ({ startDate, endDate }: { startDate: Date; endDa
                   <TableBody>
                     {data.bySlug.map((s) => (
                       <TableRow key={s.slug}>
-                        <TableCell className="font-medium">/selection/{s.slug}</TableCell>
+                        <TableCell className="font-medium">/selected/{s.slug}</TableCell>
                         <TableCell className="text-right">{s.views}</TableCell>
                         <TableCell className="text-right">{s.uniqueSessions}</TableCell>
                         <TableCell className="text-right">{formatDuration(s.avgDuration)}</TableCell>

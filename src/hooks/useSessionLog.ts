@@ -272,7 +272,7 @@ export const useSessionLog = (
         entries = entries.filter((e) => {
           const ev = (e as SessionLogEntry & { _events: Set<string> })._events;
           const hasContactClick = ev?.has("contact_click") || ev?.has("email_click");
-          const hasPricelist = e.visitor_path.some((p) => p.includes("/selection/"));
+          const hasPricelist = e.visitor_path.some((p) => p.includes("/selected/"));
           return (
             e.duration_seconds > 60 ||
             e.pages_viewed >= 3 ||

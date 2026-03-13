@@ -50,7 +50,7 @@ const PricelistManager = () => {
   };
 
   const handleCopyLink = (slug: string) => {
-    const url = `${window.location.origin}/selection/${slug}`;
+    const url = `${window.location.origin}/selected/${slug}`;
     navigator.clipboard.writeText(url);
     toast.success("Link copied to clipboard");
   };
@@ -122,7 +122,7 @@ const PricelistManager = () => {
                         onKeyDown={(e) => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }}
                       />
                       <label className="flex items-center gap-1 font-mono bg-muted px-2 py-0.5 rounded text-xs text-muted-foreground">
-                        <span>/selection/</span>
+                        <span>/selected/</span>
                         <Input
                           defaultValue={pl.slug}
                           className="h-5 w-24 text-xs font-mono bg-transparent border-none shadow-none px-0 py-0 focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -198,7 +198,7 @@ const PricelistManager = () => {
                       Copy Link
                     </Button>
                     <Button variant="outline" size="sm" asChild>
-                      <a href={`/selection/${pl.slug}`} target="_blank" rel="noopener noreferrer">
+                      <a href={`/selected/${pl.slug}`} target="_blank" rel="noopener noreferrer">
                         <ExternalLink className="h-3 w-3 mr-1" />
                         View
                       </a>
@@ -241,7 +241,7 @@ const PricelistManager = () => {
             <div>
               <Label>Slug (URL)</Label>
               <div className="flex items-center gap-2 mt-1">
-                <span className="text-sm text-muted-foreground">/selection/</span>
+                <span className="text-sm text-muted-foreground">/selected/</span>
                 <Input
                   value={newSlug}
                   onChange={(e) => setNewSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
