@@ -49,6 +49,7 @@ export const PricelistInquiryBar = ({ selectedCount, selectedTitles, selectedArt
       if (data?.error) throw new Error(data.error);
 
       setSent(true);
+      trackUserEvent("pricelist_inquiry_sent", { pricelist: pricelistName, selected_count: selectedTitles.length });
       setTimeout(() => {
         setSent(false);
         setShowForm(false);
