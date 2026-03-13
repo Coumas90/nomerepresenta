@@ -62,7 +62,10 @@ const SortableBlockArtwork = ({
           className="w-32 h-32 object-cover rounded"
         />
         <div className="flex-1 min-w-0">
-          <p className="text-sm truncate">{item.artwork?.title || "Unknown"}</p>
+          <p className="text-sm truncate">
+            {item.artwork?.title || "Unknown"}
+            {isArtworkHidden && <span className="ml-1.5 text-[10px] text-muted-foreground font-normal">(hidden)</span>}
+          </p>
           <div className="flex items-center gap-2">
             <p className="text-xs text-muted-foreground">{item.artwork?.year}</p>
             <button
