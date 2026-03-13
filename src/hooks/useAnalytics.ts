@@ -51,7 +51,10 @@ const trackAnalytics = async (action: string, data: Record<string, unknown>) => 
     });
     
     if (response.error) {
-      console.error('[Analytics] Edge function error:', response.error);
+      // Silently ignore non-critical analytics errors (e.g. stale session)
+      if (import.meta.env.DEV) {
+        console.warn('[Analytics] Edge function error:', response.error);
+      }
       return null;
     }
     
