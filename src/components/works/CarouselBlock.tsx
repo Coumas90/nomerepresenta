@@ -32,7 +32,9 @@ export const CarouselBlock = ({
 }: CarouselBlockProps) => {
   const isMobile = useIsMobile();
   const containerRef = useRef<HTMLDivElement>(null);
+  const imageWrapperRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [lockedHeight, setLockedHeight] = useState<number | null>(null);
 
   // Flatten all images from all artworks into a single slide list
   const slides = useMemo(() => {
@@ -97,7 +99,22 @@ export const CarouselBlock = ({
   const currentImage = currentSlide?.url;
   const totalSlides = slides.length;
 
-  // Preload adjacent images at the width+format the browser will actually pick
+  // Lock the image container height to the first rendered image to prevent layout jumps
+  useEffect(() => {
+    if (lockedHeight || !imageWrapperRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const h = entry.contentRect.height;
+        if (h > 0) {
+          setLockedHeight(h);
+          observer.disconnect();
+        }
+      }
+    });
+    observer.observe(imageWrapperRef.current);
+    return () => observer.disconnect();
+  }, [lockedHeight]);
+
   useEffect(() => {
     const dpr = window.devicePixelRatio || 1;
     const vw = window.innerWidth;
@@ -208,7 +225,11 @@ export const CarouselBlock = ({
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
-            <div className="relative">
+            <div
+              ref={imageWrapperRef}
+              className="relative flex items-center justify-center"
+              style={lockedHeight ? { minHeight: lockedHeight } : undefined}
+            >
               {currentImage && (
                 <ProgressiveImage
                   src={currentImage}
