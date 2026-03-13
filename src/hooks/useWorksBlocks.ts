@@ -72,6 +72,7 @@ export const useWorksBlocks = () => {
         items: (itemsByBlock.get(block.id) || []) as WorksBlockWithItems["items"],
       })) as WorksBlockWithItems[];
     },
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
 

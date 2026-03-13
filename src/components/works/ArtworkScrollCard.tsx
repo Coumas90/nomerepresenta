@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ProgressiveImage } from "@/components/ProgressiveImage";
 import { ImageSkeleton } from "@/components/ImageSkeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import { getAVIFUrl, getWebPUrl } from "@/lib/imageUtils";
 import type { ArtworkData, ArtworkImage } from "@/types";
 
 interface ArtworkScrollCardProps {
@@ -85,14 +85,18 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
     setCurrentImageIndex(0);
   }, [artwork.id]);
 
-  // Preload adjacent images so carousel transitions are instant
+  // Preload adjacent images in the format the browser will actually use
   useEffect(() => {
     const preloadIndexes = [currentImageIndex - 1, currentImageIndex + 1];
     preloadIndexes.forEach(i => {
       const url = allImages[i]?.url;
       if (url) {
+        // Preload the best format the browser will pick from <picture>
+        const avif = getAVIFUrl(url);
+        const webp = getWebPUrl(url);
+        const preloadUrl = avif || webp || url;
         const img = new Image();
-        img.src = url;
+        img.src = preloadUrl;
       }
     });
   }, [currentImageIndex, allImages]);
