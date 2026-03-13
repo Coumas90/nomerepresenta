@@ -145,7 +145,7 @@ const PricelistSessionRow = ({ session, isExpanded, onToggle }: RowProps) => (
           <TableCell>
             {isExpanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
           </TableCell>
-          <TableCell className="text-sm font-medium">/available/{session.slug}</TableCell>
+          <TableCell className="text-sm font-medium">/selection/{session.slug}</TableCell>
           <TableCell className="text-sm whitespace-nowrap">
             {format(new Date(session.viewed_at), "MMM dd, HH:mm")}
           </TableCell>
