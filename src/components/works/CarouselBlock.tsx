@@ -225,7 +225,11 @@ export const CarouselBlock = ({
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
-            <div className="relative">
+            <div
+              ref={imageWrapperRef}
+              className="relative flex items-center justify-center"
+              style={lockedHeight ? { minHeight: lockedHeight } : undefined}
+            >
               {currentImage && (
                 <ProgressiveImage
                   src={currentImage}
