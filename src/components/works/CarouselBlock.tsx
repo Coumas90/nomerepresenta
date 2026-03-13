@@ -215,8 +215,6 @@ export const CarouselBlock = ({
           >
             {/* Image container */}
             <div className="relative w-full">
-              
-            >
               {currentImage && (
                 <ProgressiveImage
                   src={currentImage}
