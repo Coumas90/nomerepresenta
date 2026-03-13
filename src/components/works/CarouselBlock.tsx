@@ -21,6 +21,9 @@ const cursorRightSvg = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 /**
  * Carousel block: displays multiple artworks in a single carousel.
  * Each artwork shows its own caption/metadata when active.
+ * 
+ * On desktop, the image container uses a fixed height so that switching
+ * between slides of similar proportions doesn't shift the caption below.
  */
 export const CarouselBlock = ({
   artworks,
@@ -96,9 +99,8 @@ export const CarouselBlock = ({
   const currentSlide = slides[currentIndex];
   const currentImage = currentSlide?.url;
   const totalSlides = slides.length;
-    return () => observer.disconnect();
-  }, [isMobile, lockedDimensions]);
 
+  // Preload adjacent slides
   useEffect(() => {
     const dpr = window.devicePixelRatio || 1;
     const vw = window.innerWidth;
@@ -209,19 +211,18 @@ export const CarouselBlock = ({
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
+            {/* Fixed-height container on desktop prevents caption jumping */}
             <div
-              ref={imageWrapperRef}
-              className="relative flex items-center justify-center max-w-full"
-              style={!isMobile && lockedDimensions ? { width: lockedDimensions.width, minHeight: lockedDimensions.height } : undefined}
+              className={cn(
+                "relative flex items-center justify-center max-w-full",
+                !isMobile && "h-[80vh]"
+              )}
             >
               {currentImage && (
                 <ProgressiveImage
                   src={currentImage}
                   alt={currentSlide?.altText || "Artwork"}
-                  className={cn(
-                    "relative z-10 [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh]",
-                    !isMobile && lockedDimensions && "[&_img]:w-full [&_img]:h-full"
-                  )}
+                  className="relative z-10 [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh]"
                   objectFit="contain"
                   eager={eager}
                   skipInternalFade
