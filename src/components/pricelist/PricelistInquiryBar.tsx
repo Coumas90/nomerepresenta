@@ -12,6 +12,7 @@ interface PricelistInquiryBarProps {
 }
 
 export const PricelistInquiryBar = ({ selectedCount, selectedTitles, selectedArtworks, pricelistName, onClearSelection }: PricelistInquiryBarProps) => {
+  const { trackUserEvent } = useAnalytics();
   const [showForm, setShowForm] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -19,6 +20,11 @@ export const PricelistInquiryBar = ({ selectedCount, selectedTitles, selectedArt
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
+
+  const handleOpenForm = () => {
+    setShowForm(true);
+    trackUserEvent("pricelist_inquiry_open", { pricelist: pricelistName, selected_count: selectedCount });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
