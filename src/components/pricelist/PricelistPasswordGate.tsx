@@ -1,16 +1,20 @@
 import { useState } from "react";
 
 interface PricelistPasswordGateProps {
-  onSubmit: (password: string) => boolean;
+  onSubmit: (password: string) => Promise<boolean>;
 }
 
 export const PricelistPasswordGate = ({ onSubmit }: PricelistPasswordGateProps) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const success = onSubmit(password);
+    setLoading(true);
+    setError(false);
+    const success = await onSubmit(password);
+    setLoading(false);
     if (!success) {
       setError(true);
       setPassword("");
@@ -32,16 +36,18 @@ export const PricelistPasswordGate = ({ onSubmit }: PricelistPasswordGateProps) 
           }}
           placeholder="Enter password"
           autoFocus
-          className="w-full border-b border-stone-300 bg-transparent py-2 text-center text-base tracking-wide text-stone-800 placeholder:text-stone-400 focus:border-stone-800 focus:outline-none transition-colors"
+          disabled={loading}
+          className="w-full border-b border-stone-300 bg-transparent py-2 text-center text-base tracking-wide text-stone-800 placeholder:text-stone-400 focus:border-stone-800 focus:outline-none transition-colors disabled:opacity-50"
         />
         {error && (
           <p className="text-xs text-red-500">Incorrect password</p>
         )}
         <button
           type="submit"
-          className="text-xs tracking-[0.15em] uppercase text-stone-500 hover:text-stone-800 transition-colors"
+          disabled={loading}
+          className="text-xs tracking-[0.15em] uppercase text-stone-500 hover:text-stone-800 transition-colors disabled:opacity-50"
         >
-          Enter
+          {loading ? "Verifying…" : "Enter"}
         </button>
       </form>
     </div>
