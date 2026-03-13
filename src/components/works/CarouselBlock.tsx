@@ -213,17 +213,19 @@ export const CarouselBlock = ({
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
-            {/* Image container */}
-            <div className="relative w-full">
+            {/* Fixed-height image container: all slides share the same height so caption never jumps */}
+            <div className="relative w-full h-[65vh] md:h-[72vh] lg:h-[78vh]">
               {currentImage && (
-                <ProgressiveImage
+              <ProgressiveImage
                   src={currentImage}
                   alt={currentSlide?.altText || "Artwork"}
                   className={cn(
                     "relative z-10",
-                    // Force w-full on wrapper (override w-fit from contain mode)
-                    // and w-full h-auto on img so all same-format images render identically
-                    "!w-full [&_picture]:w-full [&_img]:!w-full [&_img]:!h-auto [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh]"
+                    // Override contain-mode w-fit: force full-width wrapper
+                    "!w-full",
+                    // Force img to fill width and use object-contain within the fixed-height parent
+                    "[&_picture]:w-full [&_picture]:h-full",
+                    "[&_img]:!w-full [&_img]:!h-full [&_img]:!object-contain"
                   )}
                   objectFit="contain"
                   eager={eager}
