@@ -106,7 +106,7 @@ export const usePricelistAnalytics = (startDate: Date, endDate: Date) => {
 
       const enrichedSessions: PricelistSessionData[] = pageViews.map((pv) => {
         const session = sessionMap.get(pv.session_id);
-        const slug = pv.page_path.replace("/available/", "");
+        const slug = pv.page_path.replace("/selection/", "");
         const { browser, os } = parseUserAgent(session?.user_agent || null);
         const source = normalizeSource(session?.referrer || null, session?.utm_source || null);
         const isReturning = session?.visitor_fingerprint ? (fpCounts.get(session.visitor_fingerprint) || 0) > 0 : false;
