@@ -214,9 +214,7 @@ export const CarouselBlock = ({
             onTouchEnd={handleTouchEnd}
           >
             {/* Image container */}
-            <div
-              ref={imgFrameRef}
-              className="relative w-full"
+            <div className="relative w-full">
               
             >
               {currentImage && (
