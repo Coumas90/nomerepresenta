@@ -67,7 +67,8 @@ export const usePricelistBySlug = (slug: string) => {
         .eq("slug", slug)
         .single();
       if (error) throw error;
-      return { ...data, password: "" } as unknown as Pricelist;
+      const pricelist = data as any;
+      return { ...pricelist, password: "" } as Pricelist;
     },
     enabled: !!slug,
   });
