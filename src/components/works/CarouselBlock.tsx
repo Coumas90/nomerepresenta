@@ -213,8 +213,8 @@ export const CarouselBlock = ({
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
-            {/* Image container */}
-            <div className="relative w-full">
+            {/* Fixed-height image container: all slides share the same height so caption never jumps */}
+            <div className="relative w-full h-[65vh] md:h-[72vh] lg:h-[78vh]">
               {currentImage && (
               <ProgressiveImage
                   src={currentImage}
