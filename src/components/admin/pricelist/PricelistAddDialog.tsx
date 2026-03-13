@@ -183,7 +183,8 @@ export const PricelistAddDialog = ({
                     : "No artworks match your search."}
                 </p>
               )}
-            </div>
+              </div>
+            </ScrollArea>
           </div>
 
           <Button onClick={handleAdd} disabled={selectedIds.size === 0} className="w-full">
