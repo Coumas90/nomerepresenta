@@ -664,7 +664,7 @@ const PricelistAnalyticsCard = ({ startDate, endDate }: { startDate: Date; endDa
                   <TableBody>
                     {data.bySlug.map((s) => (
                       <TableRow key={s.slug}>
-                        <TableCell className="font-medium">/selection/{s.slug}</TableCell>
+                        <TableCell className="font-medium">/selected/{s.slug}</TableCell>
                         <TableCell className="text-right">{s.views}</TableCell>
                         <TableCell className="text-right">{s.uniqueSessions}</TableCell>
                         <TableCell className="text-right">{formatDuration(s.avgDuration)}</TableCell>

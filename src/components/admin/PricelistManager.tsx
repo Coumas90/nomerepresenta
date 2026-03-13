@@ -241,7 +241,7 @@ const PricelistManager = () => {
             <div>
               <Label>Slug (URL)</Label>
               <div className="flex items-center gap-2 mt-1">
-                <span className="text-sm text-muted-foreground">/selection/</span>
+                <span className="text-sm text-muted-foreground">/selected/</span>
                 <Input
                   value={newSlug}
                   onChange={(e) => setNewSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
