@@ -3,7 +3,7 @@ import { ProgressiveImage } from "@/components/ProgressiveImage";
 import { ImageSkeleton } from "@/components/ImageSkeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
-import { getAVIFUrl, getWebPUrl } from "@/lib/imageUtils";
+import { getOptimizedImageUrl } from "@/lib/imageUtils";
 import type { ArtworkData, ArtworkImage } from "@/types";
 
 interface CarouselBlockProps {
@@ -68,18 +68,23 @@ export const CarouselBlock = ({
 
   const currentImage = images[currentIndex]?.url || currentArtwork?.image_url;
 
-  // Preload adjacent images in the format the browser will actually use
+  // Preload adjacent images at the width+format the browser will actually pick
   useEffect(() => {
+    const dpr = window.devicePixelRatio || 1;
+    const vw = window.innerWidth;
+    const cssWidth = vw <= 768 ? vw * 0.9 : vw <= 1024 ? vw * 0.7 : vw * 0.6;
+    const targetPx = cssWidth * dpr;
+    const widths = [320, 640, 960, 1280, 1920, 2560];
+    const bestWidth = widths.find(w => w >= targetPx) || widths[widths.length - 1];
+
     [currentIndex - 1, currentIndex + 1].forEach((i) => {
-      // Support wrapping for infinite loop
       const wrappedIdx = i < 0 ? images.length - 1 : i >= images.length ? 0 : i;
       const url = images[wrappedIdx]?.url;
       if (url) {
-        const avif = getAVIFUrl(url);
-        const webp = getWebPUrl(url);
-        const preloadUrl = avif || webp || url;
         const img = new Image();
-        img.src = preloadUrl;
+        img.src = getOptimizedImageUrl(url, { width: bestWidth, format: "avif" });
+        const img2 = new Image();
+        img2.src = getOptimizedImageUrl(url, { width: bestWidth, format: "webp" });
       }
     });
   }, [currentIndex, images]);
