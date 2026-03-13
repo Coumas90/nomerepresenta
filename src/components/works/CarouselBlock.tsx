@@ -100,24 +100,6 @@ export const CarouselBlock = ({
   const currentSlide = slides[currentIndex];
   const currentImage = currentSlide?.url;
   const totalSlides = slides.length;
-  // Lock the container height after the first image renders so the caption doesn't jump.
-  // We compute the rendered height from the image's natural aspect ratio and the container width,
-  // because with object-fit:contain the img element's offsetHeight ≠ visible image height.
-  const handleFirstImageLoad = useCallback(() => {
-    if (!isMobile && lockedHeight === null && imgFrameRef.current) {
-      const img = imgFrameRef.current.querySelector("img");
-      if (img && img.naturalWidth > 0 && img.naturalHeight > 0) {
-        const containerWidth = imgFrameRef.current.offsetWidth;
-        const imageAspect = img.naturalWidth / img.naturalHeight;
-        // The image renders at container width constrained by max-height
-        const maxH = window.innerHeight * 0.8; // matches md:max-h-[80vh]
-        const renderedHeight = Math.min(containerWidth / imageAspect, maxH);
-        if (renderedHeight > 0) {
-          setLockedHeight(renderedHeight);
-        }
-      }
-    }
-  }, [isMobile, lockedHeight]);
 
   // Preload adjacent slides
   useEffect(() => {
