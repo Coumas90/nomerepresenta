@@ -85,18 +85,28 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
     setCurrentImageIndex(0);
   }, [artwork.id]);
 
-  // Preload adjacent images in the format the browser will actually use
+  // Preload adjacent images at the width+format the browser will actually pick
   useEffect(() => {
+    const dpr = window.devicePixelRatio || 1;
+    const vw = window.innerWidth;
+    // Match the sizes attr: (max-width: 768px) 90vw, (max-width: 1024px) 70vw, 60vw
+    const cssWidth = vw <= 768 ? vw * 0.9 : vw <= 1024 ? vw * 0.7 : vw * 0.6;
+    const targetPx = cssWidth * dpr;
+    // Pick the smallest srcset width that covers the target
+    const widths = [320, 640, 960, 1280, 1920, 2560];
+    const bestWidth = widths.find(w => w >= targetPx) || widths[widths.length - 1];
+
     const preloadIndexes = [currentImageIndex - 1, currentImageIndex + 1];
     preloadIndexes.forEach(i => {
-      const url = allImages[i]?.url;
+      // Wrap for infinite loop
+      const wrappedIdx = i < 0 ? allImages.length - 1 : i >= allImages.length ? 0 : i;
+      const url = allImages[wrappedIdx]?.url;
       if (url) {
-        // Preload the best format the browser will pick from <picture>
-        const avif = getAVIFUrl(url);
-        const webp = getWebPUrl(url);
-        const preloadUrl = avif || webp || url;
         const img = new Image();
-        img.src = preloadUrl;
+        img.src = getOptimizedImageUrl(url, { width: bestWidth, format: "avif" });
+        // Also preload webp as fallback
+        const img2 = new Image();
+        img2.src = getOptimizedImageUrl(url, { width: bestWidth, format: "webp" });
       }
     });
   }, [currentImageIndex, allImages]);
