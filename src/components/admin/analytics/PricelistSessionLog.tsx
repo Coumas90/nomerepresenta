@@ -92,7 +92,7 @@ const PricelistSessionLog = ({ startDate, endDate }: PricelistSessionLogProps) =
           <Skeleton className="h-[200px]" />
         ) : sessions.length === 0 ? (
           <p className="text-sm text-muted-foreground py-8 text-center">
-            No pricelist sessions found. Share a /selection/ link to start tracking.
+            No pricelist sessions found. Share a /selected/ link to start tracking.
           </p>
         ) : (
           <div className="overflow-x-auto">
