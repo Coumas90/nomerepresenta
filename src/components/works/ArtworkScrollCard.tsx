@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ProgressiveImage } from "@/components/ProgressiveImage";
 import { ImageSkeleton } from "@/components/ImageSkeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import { getAVIFUrl, getWebPUrl } from "@/lib/imageUtils";
 import type { ArtworkData, ArtworkImage } from "@/types";
 
 interface ArtworkScrollCardProps {
