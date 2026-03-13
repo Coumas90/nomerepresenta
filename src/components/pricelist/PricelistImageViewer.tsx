@@ -75,7 +75,7 @@ export const PricelistImageViewer = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-stone-100 flex items-center justify-center select-none"
+      className="fixed inset-0 z-[100] bg-stone-100 flex items-center justify-center select-none"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
