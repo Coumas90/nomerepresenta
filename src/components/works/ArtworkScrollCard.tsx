@@ -279,7 +279,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
             </div>
 
             {/* Caption row — caption left, pagination right on desktop */}
-            <figcaption className="mt-6 md:mt-9 text-left leading-snug">
+            <figcaption className="mt-4 md:mt-6 text-left leading-snug">
               <div className="flex justify-between items-start gap-4">
                 <div>
                   {allImages[currentImageIndex]?.caption ? (
