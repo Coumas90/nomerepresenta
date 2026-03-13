@@ -232,6 +232,7 @@ export const useSessionLog = (
           utm_medium: s.utm_medium,
           utm_campaign: s.utm_campaign,
           page_details: pages,
+          user_events: eventDetailsMap.get(s.session_id) || [],
           _events: events, // temp for filtering
         } as SessionLogEntry & { _events: Set<string> };
       });
