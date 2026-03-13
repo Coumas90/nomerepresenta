@@ -47,10 +47,11 @@ const SortableBlockArtwork = ({
 }) => {
   const [imagesExpanded, setImagesExpanded] = useState(false);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item.id });
-  const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 };
+  const isArtworkHidden = item.artwork?.is_visible === false;
+  const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : isArtworkHidden ? 0.45 : 1 };
 
   return (
-    <div ref={setNodeRef} style={style} className="bg-muted/30 rounded-md mb-1">
+    <div ref={setNodeRef} style={style} className={`bg-muted/30 rounded-md mb-1 ${isArtworkHidden ? "border border-dashed border-muted-foreground/30" : ""}`}>
       <div className="flex items-center gap-2 p-2">
         <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
           <GripVertical className="h-4 w-4 text-muted-foreground" />
@@ -61,7 +62,10 @@ const SortableBlockArtwork = ({
           className="w-32 h-32 object-cover rounded"
         />
         <div className="flex-1 min-w-0">
-          <p className="text-sm truncate">{item.artwork?.title || "Unknown"}</p>
+          <p className="text-sm truncate">
+            {item.artwork?.title || "Unknown"}
+            {isArtworkHidden && <span className="ml-1.5 text-[10px] text-muted-foreground font-normal">(hidden)</span>}
+          </p>
           <div className="flex items-center gap-2">
             <p className="text-xs text-muted-foreground">{item.artwork?.year}</p>
             <button
