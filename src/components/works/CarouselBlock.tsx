@@ -96,26 +96,6 @@ export const CarouselBlock = ({
   const currentSlide = slides[currentIndex];
   const currentImage = currentSlide?.url;
   const totalSlides = slides.length;
-
-  // Lock desktop carousel image box to the first rendered slide size to prevent layout jumps
-  useEffect(() => {
-    if (isMobile) {
-      setLockedDimensions(null);
-      return;
-    }
-    if (lockedDimensions || !imageWrapperRef.current) return;
-
-    const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const { width, height } = entry.contentRect;
-        if (width > 0 && height > 0) {
-          setLockedDimensions({ width, height });
-          observer.disconnect();
-        }
-      }
-    });
-
-    observer.observe(imageWrapperRef.current);
     return () => observer.disconnect();
   }, [isMobile, lockedDimensions]);
 
