@@ -25,6 +25,7 @@ export const PricelistContent = ({
   allImages,
   isLoading,
   pricelistName,
+  headerName,
   seriesName,
   activeCurrency = "USD",
 }: PricelistContentProps) => {
