@@ -36,6 +36,7 @@ export const CarouselBlock = ({
   const isMobile = useIsMobile();
   const containerRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [referenceAspectRatio, setReferenceAspectRatio] = useState<number | null>(null);
 
   // Flatten all images from all artworks into a single slide list
   const slides = useMemo(() => {
