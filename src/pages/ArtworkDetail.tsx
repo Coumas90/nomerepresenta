@@ -25,8 +25,13 @@ const ArtworkDetail = () => {
     error
   } = useArtwork(id);
   const {
-    data: images
+    data: rawImages
   } = useArtworkImages(artwork?.id);
+  // Filter out images hidden via is_catalog_visible
+  const images = useMemo(
+    () => rawImages?.filter((img: any) => img.is_catalog_visible !== false),
+    [rawImages]
+  );
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const viewIdRef = useRef<string | null>(null);
