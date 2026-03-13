@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,10 +7,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCreateArtwork, useUpdateArtwork } from "@/hooks/useArtworkMutations";
 import { useSeries } from "@/hooks/useSeries";
+import { useArtworks } from "@/hooks/useArtworks";
 import type { ArtworkData } from "@/types";
 import MultipleImageUpload from "./MultipleImageUpload";
 import { toast } from "sonner";
 import { useArtworkImages } from "@/hooks/useArtworkImages";
+import AutocompleteInput from "./AutocompleteInput";
 
 interface ArtworkFormProps {
   artwork?: ArtworkData;
