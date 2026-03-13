@@ -17,8 +17,8 @@ export const CatalogImageGallery = ({ artworkId }: CatalogImageGalleryProps) => 
     return <p className="text-xs text-muted-foreground">No images</p>;
   }
 
-  const visibleImages = images.filter((img) => (img as any).is_catalog_visible !== false);
-  const hiddenImages = images.filter((img) => (img as any).is_catalog_visible === false);
+  const visibleImages = images.filter((img) => img.is_catalog_visible !== false);
+  const hiddenImages = images.filter((img) => img.is_catalog_visible === false);
   const displayImages = showHidden ? images : visibleImages;
 
   return (
