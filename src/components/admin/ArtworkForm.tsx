@@ -166,10 +166,11 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
 
             <div className="space-y-2">
               <Label htmlFor="dimensions">Dimensions</Label>
-              <Input
+              <AutocompleteInput
                 id="dimensions"
                 value={formData.dimensions}
-                onChange={(e) => setFormData({ ...formData, dimensions: e.target.value })}
+                onChange={(val) => setFormData({ ...formData, dimensions: val })}
+                suggestions={dimensionSuggestions}
                 placeholder="e.g., 120 x 100 cm"
               />
             </div>
