@@ -179,7 +179,7 @@ export const WorksImageGallery = ({ artworkId, blockItemId, imageOverrides }: Wo
               <SortableImageThumb
                 key={img.id}
                 image={img}
-                isHidden={hiddenSet.has(img.id) || (img as any).is_catalog_visible === false}
+                isHidden={hiddenSet.has(img.id) || img.is_catalog_visible === false}
                 onToggleVisibility={() => toggleVisibility(img.id)}
               />
             ))}
