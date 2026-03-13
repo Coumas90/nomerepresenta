@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Dialog,
   DialogContent,
