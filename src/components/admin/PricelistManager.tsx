@@ -198,7 +198,7 @@ const PricelistManager = () => {
                       Copy Link
                     </Button>
                     <Button variant="outline" size="sm" asChild>
-                      <a href={`/available/${pl.slug}`} target="_blank" rel="noopener noreferrer">
+                      <a href={`/selection/${pl.slug}`} target="_blank" rel="noopener noreferrer">
                         <ExternalLink className="h-3 w-3 mr-1" />
                         View
                       </a>
