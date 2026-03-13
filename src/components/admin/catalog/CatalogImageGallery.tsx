@@ -40,7 +40,7 @@ export const CatalogImageGallery = ({ artworkId }: CatalogImageGalleryProps) => 
       </div>
       <div className="flex flex-wrap gap-2">
         {displayImages.map((img, idx) => {
-          const isVisible = (img as any).is_catalog_visible !== false;
+          const isVisible = img.is_catalog_visible !== false;
           return (
             <div key={img.id} className={`relative group ${!isVisible ? "opacity-40 ring-1 ring-dashed ring-muted-foreground/30 rounded" : ""}`}>
               <img
