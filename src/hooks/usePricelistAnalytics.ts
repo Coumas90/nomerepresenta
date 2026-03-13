@@ -72,7 +72,7 @@ export const usePricelistAnalytics = (startDate: Date, endDate: Date) => {
       const { data: pageViews } = await supabase
         .from("page_views")
         .select("session_id, page_path, viewed_at, time_on_page_seconds")
-        .like("page_path", "/available/%")
+        .like("page_path", "/selection/%")
         .gte("viewed_at", startDate.toISOString())
         .lte("viewed_at", endDate.toISOString())
         .order("viewed_at", { ascending: false });
