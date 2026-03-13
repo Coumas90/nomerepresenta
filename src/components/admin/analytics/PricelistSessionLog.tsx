@@ -76,7 +76,7 @@ const PricelistSessionLog = ({ startDate, endDate }: PricelistSessionLogProps) =
               <SelectContent>
                 <SelectItem value="all">All links</SelectItem>
                 {slugs.map((slug) => (
-                  <SelectItem key={slug} value={slug}>/selection/{slug}</SelectItem>
+                  <SelectItem key={slug} value={slug}>/selected/{slug}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
