@@ -33,7 +33,7 @@ const CatalogManager = ({ onEdit }: CatalogManagerProps = {}) => {
   const [mediumFilter, setMediumFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [seriesFilter, setSeriesFilter] = useState("all");
-  const [thumbSize, setThumbSize] = useState<ThumbSize>("sm");
+  const [thumbSize, setThumbSize] = useState<ThumbSize>("md");
   const [openCategories, setOpenCategories] = useState<Set<MediumType>>(new Set(CATEGORIES));
   const [sortField, setSortField] = useState<SortField>(null);
   const [sortDir, setSortDir] = useState<SortDir>("asc");
