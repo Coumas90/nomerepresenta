@@ -146,6 +146,7 @@ export const usePricelistAnalytics = (startDate: Date, endDate: Date) => {
           source,
           referrer: session?.referrer || null,
           is_returning: isReturning,
+          visit_count: visitCount,
         };
       });
 
