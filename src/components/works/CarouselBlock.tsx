@@ -34,7 +34,7 @@ export const CarouselBlock = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const imageWrapperRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [lockedHeight, setLockedHeight] = useState<number | null>(null);
+  const [lockedDimensions, setLockedDimensions] = useState<{ width: number; height: number } | null>(null);
 
   // Flatten all images from all artworks into a single slide list
   const slides = useMemo(() => {
