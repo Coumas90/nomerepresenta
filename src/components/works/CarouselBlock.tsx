@@ -239,7 +239,14 @@ export const CarouselBlock = ({
             onTouchEnd={handleTouchEnd}
           >
             {/* Image container: keep a stable frame width so equal-format images render at equal display size */}
-            <div className="relative flex w-full items-center justify-center max-w-full">
+            <div
+              className="relative flex w-full items-center justify-center max-w-full"
+              style={
+                !isMobile && referenceAspectRatio
+                  ? { aspectRatio: `${referenceAspectRatio}` }
+                  : undefined
+              }
+            >
               {currentImage && (
                 <ProgressiveImage
                   src={currentImage}
