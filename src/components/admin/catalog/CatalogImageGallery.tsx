@@ -17,8 +17,8 @@ export const CatalogImageGallery = ({ artworkId }: CatalogImageGalleryProps) => 
     return <p className="text-xs text-muted-foreground">No images</p>;
   }
 
-  const visibleImages = images.filter((img) => (img as any).is_catalog_visible !== false);
-  const hiddenImages = images.filter((img) => (img as any).is_catalog_visible === false);
+  const visibleImages = images.filter((img) => img.is_catalog_visible !== false);
+  const hiddenImages = images.filter((img) => img.is_catalog_visible === false);
   const displayImages = showHidden ? images : visibleImages;
 
   return (
@@ -40,7 +40,7 @@ export const CatalogImageGallery = ({ artworkId }: CatalogImageGalleryProps) => 
       </div>
       <div className="flex flex-wrap gap-2">
         {displayImages.map((img, idx) => {
-          const isVisible = (img as any).is_catalog_visible !== false;
+          const isVisible = img.is_catalog_visible !== false;
           return (
             <div key={img.id} className={`relative group ${!isVisible ? "opacity-40 ring-1 ring-dashed ring-muted-foreground/30 rounded" : ""}`}>
               <img
@@ -60,7 +60,7 @@ export const CatalogImageGallery = ({ artworkId }: CatalogImageGalleryProps) => 
                     Detail
                   </Badge>
                 )}
-                {(img as any).is_install && (
+                {img.is_install && (
                   <Badge variant="outline" className="text-[8px] px-1 py-0 h-4 bg-blue-600/80 text-white border-0">
                     Install
                   </Badge>
