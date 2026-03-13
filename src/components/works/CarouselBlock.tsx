@@ -34,8 +34,6 @@ export const CarouselBlock = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const currentArtwork = artworks[currentIndex];
-
   // Flatten all images from all artworks into a single slide list
   const slides = useMemo(() => {
     const result: {
