@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,10 +7,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCreateArtwork, useUpdateArtwork } from "@/hooks/useArtworkMutations";
 import { useSeries } from "@/hooks/useSeries";
+import { useArtworks } from "@/hooks/useArtworks";
 import type { ArtworkData } from "@/types";
 import MultipleImageUpload from "./MultipleImageUpload";
 import { toast } from "sonner";
 import { useArtworkImages } from "@/hooks/useArtworkImages";
+import AutocompleteInput from "./AutocompleteInput";
 
 interface ArtworkFormProps {
   artwork?: ArtworkData;
@@ -35,9 +37,22 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
   const artworkId = createdArtworkId || artwork?.id;
 
   const { data: seriesList } = useSeries();
+  const { data: allArtworks } = useArtworks();
   const { data: artworkImages } = useArtworkImages(artworkId);
   const createMutation = useCreateArtwork();
   const updateMutation = useUpdateArtwork();
+
+  const dimensionSuggestions = useMemo(() => {
+    if (!allArtworks) return [];
+    const unique = new Set(allArtworks.map((a) => a.dimensions).filter(Boolean));
+    return Array.from(unique).sort() as string[];
+  }, [allArtworks]);
+
+  const materialsSuggestions = useMemo(() => {
+    if (!allArtworks) return [];
+    const unique = new Set(allArtworks.map((a) => a.materials).filter(Boolean));
+    return Array.from(unique).sort() as string[];
+  }, [allArtworks]);
 
   useEffect(() => {
     if (artwork) {
@@ -151,10 +166,11 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
 
             <div className="space-y-2">
               <Label htmlFor="dimensions">Dimensions</Label>
-              <Input
+              <AutocompleteInput
                 id="dimensions"
                 value={formData.dimensions}
-                onChange={(e) => setFormData({ ...formData, dimensions: e.target.value })}
+                onChange={(val) => setFormData({ ...formData, dimensions: val })}
+                suggestions={dimensionSuggestions}
                 placeholder="e.g., 120 x 100 cm"
               />
             </div>
@@ -214,10 +230,11 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
 
           <div className="space-y-2">
             <Label htmlFor="materials">Materials</Label>
-            <Input
+            <AutocompleteInput
               id="materials"
               value={formData.materials}
-              onChange={(e) => setFormData({ ...formData, materials: e.target.value })}
+              onChange={(val) => setFormData({ ...formData, materials: val })}
+              suggestions={materialsSuggestions}
             />
           </div>
 
