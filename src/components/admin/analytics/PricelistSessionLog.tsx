@@ -76,7 +76,7 @@ const PricelistSessionLog = ({ startDate, endDate }: PricelistSessionLogProps) =
               <SelectContent>
                 <SelectItem value="all">All links</SelectItem>
                 {slugs.map((slug) => (
-                  <SelectItem key={slug} value={slug}>/available/{slug}</SelectItem>
+                  <SelectItem key={slug} value={slug}>/selection/{slug}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -92,7 +92,7 @@ const PricelistSessionLog = ({ startDate, endDate }: PricelistSessionLogProps) =
           <Skeleton className="h-[200px]" />
         ) : sessions.length === 0 ? (
           <p className="text-sm text-muted-foreground py-8 text-center">
-            No pricelist sessions found. Share an /available/ link to start tracking.
+            No pricelist sessions found. Share a /selection/ link to start tracking.
           </p>
         ) : (
           <div className="overflow-x-auto">
@@ -145,7 +145,7 @@ const PricelistSessionRow = ({ session, isExpanded, onToggle }: RowProps) => (
           <TableCell>
             {isExpanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
           </TableCell>
-          <TableCell className="text-sm font-medium">/available/{session.slug}</TableCell>
+          <TableCell className="text-sm font-medium">/selection/{session.slug}</TableCell>
           <TableCell className="text-sm whitespace-nowrap">
             {format(new Date(session.viewed_at), "MMM dd, HH:mm")}
           </TableCell>

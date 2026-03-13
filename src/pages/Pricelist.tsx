@@ -35,7 +35,7 @@ const Pricelist = () => {
   // Track page view once authenticated
   useEffect(() => {
     if (authenticated && pricelist) {
-      trackPageView(`/available/${slug}`, `Pricelist - ${pricelist.name}`);
+      trackPageView(`/selection/${slug}`, `Pricelist - ${pricelist.name}`);
     }
   }, [authenticated, pricelist, slug, trackPageView]);
 
