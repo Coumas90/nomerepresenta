@@ -20,7 +20,7 @@ const STATUS_COLORS: Record<ArtworkStatus, string> = {
 const THUMB_SIZES = {
   sm: "w-14 h-14",
   md: "w-20 h-20",
-  lg: "w-28 h-28",
+  lg: "w-40 h-40",
 } as const;
 
 export type ThumbSize = keyof typeof THUMB_SIZES;
