@@ -92,18 +92,38 @@ export const usePricelistAnalytics = (startDate: Date, endDate: Date) => {
 
       const sessionMap = new Map((sessions || []).map((s) => [s.session_id, s]));
 
-      // Check returning visitors
+      // Check returning visitors & count total pricelist visits per fingerprint
       const fingerprints = (sessions || []).map((s) => s.visitor_fingerprint).filter(Boolean) as string[];
       const fpCounts = new Map<string, number>();
+      const fpTotalVisits = new Map<string, number>();
       if (fingerprints.length > 0) {
+        const uniqueFps = [...new Set(fingerprints)];
         const { data: prev } = await supabase
           .from("analytics_sessions")
           .select("visitor_fingerprint")
-          .in("visitor_fingerprint", [...new Set(fingerprints)])
+          .in("visitor_fingerprint", uniqueFps)
           .lt("started_at", startDate.toISOString());
         (prev || []).forEach((s) => {
           if (s.visitor_fingerprint) fpCounts.set(s.visitor_fingerprint, (fpCounts.get(s.visitor_fingerprint) || 0) + 1);
         });
+
+        // Count all pricelist page_views per fingerprint (all time)
+        const { data: allPricelistPvs } = await supabase
+          .from("page_views")
+          .select("session_id")
+          .like("page_path", "/selected/%");
+        if (allPricelistPvs) {
+          // Map session_id -> fingerprint
+          const { data: allSessions } = await supabase
+            .from("analytics_sessions")
+            .select("session_id, visitor_fingerprint")
+            .in("visitor_fingerprint", uniqueFps);
+          const sidToFp = new Map((allSessions || []).map((s) => [s.session_id, s.visitor_fingerprint]));
+          for (const pv of allPricelistPvs) {
+            const fp = sidToFp.get(pv.session_id);
+            if (fp) fpTotalVisits.set(fp, (fpTotalVisits.get(fp) || 0) + 1);
+          }
+        }
       }
 
       const enrichedSessions: PricelistSessionData[] = pageViews.map((pv) => {
