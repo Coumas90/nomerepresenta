@@ -21,6 +21,9 @@ const cursorRightSvg = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 /**
  * Carousel block: displays multiple artworks in a single carousel.
  * Each artwork shows its own caption/metadata when active.
+ * 
+ * On desktop, the image container uses a fixed height so that switching
+ * between slides of similar proportions doesn't shift the caption below.
  */
 export const CarouselBlock = ({
   artworks,
@@ -32,9 +35,7 @@ export const CarouselBlock = ({
 }: CarouselBlockProps) => {
   const isMobile = useIsMobile();
   const containerRef = useRef<HTMLDivElement>(null);
-  const imageWrapperRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [lockedDimensions, setLockedDimensions] = useState<{ width: number; height: number } | null>(null);
 
   // Flatten all images from all artworks into a single slide list
   const slides = useMemo(() => {
@@ -99,28 +100,7 @@ export const CarouselBlock = ({
   const currentImage = currentSlide?.url;
   const totalSlides = slides.length;
 
-  // Lock desktop carousel image box to the first rendered slide size to prevent layout jumps
-  useEffect(() => {
-    if (isMobile) {
-      setLockedDimensions(null);
-      return;
-    }
-    if (lockedDimensions || !imageWrapperRef.current) return;
-
-    const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const { width, height } = entry.contentRect;
-        if (width > 0 && height > 0) {
-          setLockedDimensions({ width, height });
-          observer.disconnect();
-        }
-      }
-    });
-
-    observer.observe(imageWrapperRef.current);
-    return () => observer.disconnect();
-  }, [isMobile, lockedDimensions]);
-
+  // Preload adjacent slides
   useEffect(() => {
     const dpr = window.devicePixelRatio || 1;
     const vw = window.innerWidth;
@@ -231,19 +211,18 @@ export const CarouselBlock = ({
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
+            {/* Fixed-height container on desktop prevents caption jumping */}
             <div
-              ref={imageWrapperRef}
-              className="relative flex items-center justify-center max-w-full"
-              style={!isMobile && lockedDimensions ? { width: lockedDimensions.width, minHeight: lockedDimensions.height } : undefined}
+              className={cn(
+                "relative flex items-center justify-center max-w-full",
+                !isMobile && "h-[80vh]"
+              )}
             >
               {currentImage && (
                 <ProgressiveImage
                   src={currentImage}
                   alt={currentSlide?.altText || "Artwork"}
-                  className={cn(
-                    "relative z-10 [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh]",
-                    !isMobile && lockedDimensions && "[&_img]:w-full [&_img]:h-full"
-                  )}
+                  className="relative z-10 [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh]"
                   objectFit="contain"
                   eager={eager}
                   skipInternalFade
