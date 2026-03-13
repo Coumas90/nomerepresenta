@@ -63,13 +63,26 @@ export const usePricelistBySlug = (slug: string) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("pricelists" as any)
-        .select("*")
+        .select("id, name, slug, series_name, active_currency, created_at, updated_at")
         .eq("slug", slug)
         .single();
       if (error) throw error;
-      return data as unknown as Pricelist;
+      const pricelist = data as any;
+      return { ...pricelist, password: "" } as Pricelist;
     },
     enabled: !!slug,
+  });
+};
+
+export const useVerifyPricelistPassword = () => {
+  return useMutation({
+    mutationFn: async ({ slug, password }: { slug: string; password: string }) => {
+      const { data, error } = await supabase.functions.invoke("verify-pricelist-password", {
+        body: { slug, password },
+      });
+      if (error) throw error;
+      return data as { success: boolean };
+    },
   });
 };
 

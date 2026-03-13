@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { usePricelistBySlug, usePricelistItems } from "@/hooks/usePricelist";
+import { usePricelistBySlug, usePricelistItems, useVerifyPricelistPassword } from "@/hooks/usePricelist";
 import { useAllArtworkImages } from "@/hooks/useAllArtworkImages";
 import { useSeries } from "@/hooks/useSeries";
 import { useAnalytics } from "@/hooks/useAnalytics";
@@ -11,21 +11,27 @@ const Pricelist = () => {
   const { slug = "main" } = useParams<{ slug: string }>();
   const { data: pricelist, isLoading: plLoading, error: plError } = usePricelistBySlug(slug);
   const { trackPageView } = useAnalytics();
+  const verifyPassword = useVerifyPricelistPassword();
 
   const [authenticated, setAuthenticated] = useState(() => {
     return sessionStorage.getItem(`pricelist-auth-${slug}`) === "true";
   });
 
   const handleAuth = useCallback(
-    (password: string) => {
-      if (pricelist && password === pricelist.password) {
-        sessionStorage.setItem(`pricelist-auth-${slug}`, "true");
-        setAuthenticated(true);
-        return true;
+    async (password: string): Promise<boolean> => {
+      try {
+        const result = await verifyPassword.mutateAsync({ slug, password });
+        if (result.success) {
+          sessionStorage.setItem(`pricelist-auth-${slug}`, "true");
+          setAuthenticated(true);
+          return true;
+        }
+        return false;
+      } catch {
+        return false;
       }
-      return false;
     },
-    [pricelist, slug]
+    [slug, verifyPassword]
   );
 
   const { data: items, isLoading: itemsLoading } = usePricelistItems(pricelist?.id || "");
