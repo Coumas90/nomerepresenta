@@ -34,11 +34,20 @@ export const CarouselBlock = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const currentArtwork = artworks[currentIndex];
+  // Flatten all images from all artworks into a single slide list
+  const slides = useMemo(() => {
+    const result: {
+      url: string;
+      altText: string;
+      title: string;
+      year: string;
+      materials: string;
+      dimensions: string;
+      isDetail: boolean;
+      artworkId: string;
+    }[] = [];
 
-  // For each artwork in the carousel, use its main image
-  const images = useMemo(() => {
-    return artworks.map((artwork) => {
+    for (const artwork of artworks) {
       let artImages = allArtworkImages?.[artwork.id];
       if (artImages && artImages.length > 0) {
         const overrides = imageOverridesByArtwork?.[artwork.id];
@@ -56,17 +65,37 @@ export const CarouselBlock = ({
             return aIdx - bIdx;
           });
         }
-        const mainImg = artImages.find((img) => img.is_main) || artImages[0];
-        return {
-          url: mainImg?.image_url || artwork.image_url,
-          altText: mainImg?.alt_text || artwork.title,
-        };
+        for (const img of artImages) {
+          result.push({
+            url: img.image_url,
+            altText: img.alt_text || img.title || artwork.title,
+            title: img.title || artwork.title,
+            year: img.year || artwork.year,
+            materials: img.materials || artwork.materials,
+            dimensions: img.dimensions || artwork.dimensions,
+            isDetail: img.is_detail,
+            artworkId: artwork.id,
+          });
+        }
+      } else {
+        result.push({
+          url: artwork.image_url,
+          altText: artwork.title,
+          title: artwork.title,
+          year: artwork.year,
+          materials: artwork.materials,
+          dimensions: artwork.dimensions,
+          isDetail: false,
+          artworkId: artwork.id,
+        });
       }
-      return { url: artwork.image_url, altText: artwork.title };
-    });
+    }
+    return result;
   }, [artworks, allArtworkImages, imageOverridesByArtwork]);
 
-  const currentImage = images[currentIndex]?.url || currentArtwork?.image_url;
+  const currentSlide = slides[currentIndex];
+  const currentImage = currentSlide?.url;
+  const totalSlides = slides.length;
 
   // Preload adjacent images at the width+format the browser will actually pick
   useEffect(() => {
@@ -78,8 +107,8 @@ export const CarouselBlock = ({
     const bestWidth = widths.find(w => w >= targetPx) || widths[widths.length - 1];
 
     [currentIndex - 1, currentIndex + 1].forEach((i) => {
-      const wrappedIdx = i < 0 ? images.length - 1 : i >= images.length ? 0 : i;
-      const url = images[wrappedIdx]?.url;
+      const wrappedIdx = i < 0 ? totalSlides - 1 : i >= totalSlides ? 0 : i;
+      const url = slides[wrappedIdx]?.url;
       if (url) {
         const img = new Image();
         img.src = getOptimizedImageUrl(url, { width: bestWidth, format: "avif" });
@@ -87,17 +116,17 @@ export const CarouselBlock = ({
         img2.src = getOptimizedImageUrl(url, { width: bestWidth, format: "webp" });
       }
     });
-  }, [currentIndex, images]);
+  }, [currentIndex, slides, totalSlides]);
 
   const goToPrev = useCallback(() => {
-    setCurrentIndex((prev) => (prev === 0 ? artworks.length - 1 : prev - 1));
-    onGalleryNavigate?.(currentArtwork?.id);
-  }, [artworks.length, onGalleryNavigate, currentArtwork?.id]);
+    setCurrentIndex((prev) => (prev === 0 ? totalSlides - 1 : prev - 1));
+    onGalleryNavigate?.(currentSlide?.artworkId);
+  }, [totalSlides, onGalleryNavigate, currentSlide?.artworkId]);
 
   const goToNext = useCallback(() => {
-    setCurrentIndex((prev) => (prev === artworks.length - 1 ? 0 : prev + 1));
-    onGalleryNavigate?.(currentArtwork?.id);
-  }, [artworks.length, onGalleryNavigate, currentArtwork?.id]);
+    setCurrentIndex((prev) => (prev === totalSlides - 1 ? 0 : prev + 1));
+    onGalleryNavigate?.(currentSlide?.artworkId);
+  }, [totalSlides, onGalleryNavigate, currentSlide?.artworkId]);
 
   // Mobile swipe
   const swipeStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
@@ -105,17 +134,17 @@ export const CarouselBlock = ({
 
   const handleTouchStart = useCallback(
     (e: React.TouchEvent) => {
-      if (!isMobile || artworks.length <= 1) return;
+      if (!isMobile || totalSlides <= 1) return;
       const touch = e.touches[0];
       swipeStartRef.current = { x: touch.clientX, y: touch.clientY, time: Date.now() };
       swipeLockedRef.current = null;
     },
-    [isMobile, artworks.length]
+    [isMobile, totalSlides]
   );
 
   const touchMoveHandler = useCallback(
     (e: TouchEvent) => {
-      if (!isMobile || !swipeStartRef.current || artworks.length <= 1) return;
+      if (!isMobile || !swipeStartRef.current || totalSlides <= 1) return;
       const touch = e.touches[0];
       const deltaX = touch.clientX - swipeStartRef.current.x;
       const deltaY = touch.clientY - swipeStartRef.current.y;
@@ -127,19 +156,19 @@ export const CarouselBlock = ({
         e.stopPropagation();
       }
     },
-    [isMobile, artworks.length]
+    [isMobile, totalSlides]
   );
 
   useEffect(() => {
     const el = containerRef.current;
-    if (!el || !isMobile || artworks.length <= 1) return;
+    if (!el || !isMobile || totalSlides <= 1) return;
     el.addEventListener("touchmove", touchMoveHandler, { passive: false });
     return () => el.removeEventListener("touchmove", touchMoveHandler);
-  }, [touchMoveHandler, isMobile, artworks.length]);
+  }, [touchMoveHandler, isMobile, totalSlides]);
 
   const handleTouchEnd = useCallback(
     (e: React.TouchEvent) => {
-      if (!isMobile || !swipeStartRef.current || artworks.length <= 1) return;
+      if (!isMobile || !swipeStartRef.current || totalSlides <= 1) return;
       if (swipeLockedRef.current !== "horizontal") {
         swipeStartRef.current = null;
         return;
@@ -156,7 +185,7 @@ export const CarouselBlock = ({
       swipeStartRef.current = null;
       swipeLockedRef.current = null;
     },
-    [isMobile, artworks.length, goToNext, goToPrev]
+    [isMobile, totalSlides, goToNext, goToPrev]
   );
 
   if (!isVisible) {
@@ -183,7 +212,7 @@ export const CarouselBlock = ({
               {currentImage && (
                 <ProgressiveImage
                   src={currentImage}
-                  alt={images[currentIndex]?.altText || currentArtwork?.title || "Artwork"}
+                  alt={currentSlide?.altText || "Artwork"}
                   className="relative z-10 [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh]"
                   objectFit="contain"
                   eager={eager}
@@ -196,7 +225,7 @@ export const CarouselBlock = ({
               )}
 
               {/* Mobile tap zones */}
-              {isMobile && artworks.length > 1 && (
+              {isMobile && totalSlides > 1 && (
                 <>
                   <button onClick={goToPrev} className="absolute left-0 top-0 bottom-0 w-[30%] z-20 focus:outline-none" aria-label="Previous artwork" />
                   <button onClick={goToNext} className="absolute right-0 top-0 bottom-0 w-[30%] z-20 focus:outline-none" aria-label="Next artwork" />
@@ -204,7 +233,7 @@ export const CarouselBlock = ({
               )}
 
               {/* Desktop click zones */}
-              {!isMobile && artworks.length > 1 && (
+              {!isMobile && totalSlides > 1 && (
                 <>
                   <button onClick={goToPrev} className="absolute top-0 bottom-0 z-20 focus:outline-none -left-[50vw] w-[calc(50%+50vw)]" style={{ cursor: cursorLeftSvg }} aria-label="Previous artwork" />
                   <button onClick={goToNext} className="absolute top-0 bottom-0 z-20 focus:outline-none -right-[50vw] w-[calc(50%+50vw)]" style={{ cursor: cursorRightSvg }} aria-label="Next artwork" />
@@ -213,10 +242,10 @@ export const CarouselBlock = ({
             </div>
 
             {/* Pagination */}
-            {artworks.length > 1 && (
+            {totalSlides > 1 && (
               isMobile ? (
                 <div className="mt-3 flex gap-1.5">
-                  {artworks.map((_, index) => (
+                  {slides.map((_, index) => (
                     <button
                       key={index}
                       onClick={() => setCurrentIndex(index)}
@@ -224,34 +253,37 @@ export const CarouselBlock = ({
                         "w-1.5 h-1.5 rounded-full transition-all duration-300",
                         index === currentIndex ? "bg-stone-900" : "bg-stone-400"
                       )}
-                      aria-label={`Go to artwork ${index + 1}`}
+                      aria-label={`Go to image ${index + 1}`}
                     />
                   ))}
                 </div>
               ) : (
                 <p className="mt-3 text-stone-500 text-sm">
-                  {currentIndex + 1} / {artworks.length}
+                  {currentIndex + 1} / {totalSlides}
                 </p>
               )
             )}
 
-            {/* Caption for current artwork */}
-            <figcaption className="mt-3 md:mt-4 text-left leading-snug">
-              <p className="text-stone-600 text-xs md:text-[15px] font-bold">
-                {currentArtwork?.title}
-                {currentArtwork?.year && <>, {currentArtwork.year}</>}
-              </p>
-              {currentArtwork?.materials && (
-                <p className="text-stone-500 text-xs md:text-sm mt-[2px] md:mt-[6px]">
-                  {currentArtwork.materials}
+            {/* Caption for current slide */}
+            {currentSlide && (
+              <figcaption className="mt-3 md:mt-4 text-left leading-snug">
+                <p className="text-stone-600 text-xs md:text-[15px] font-bold">
+                  {currentSlide.title}
+                  {currentSlide.isDetail && " (DETAIL)"}
+                  {currentSlide.year && <>, {currentSlide.year}</>}
                 </p>
-              )}
-              {currentArtwork?.dimensions && (
-                <p className="text-stone-500 text-xs md:text-sm mt-[1px]">
-                  {currentArtwork.dimensions}
-                </p>
-              )}
-            </figcaption>
+                {currentSlide.materials && (
+                  <p className="text-stone-500 text-xs md:text-sm mt-[2px] md:mt-[6px]">
+                    {currentSlide.materials}
+                  </p>
+                )}
+                {currentSlide.dimensions && (
+                  <p className="text-stone-500 text-xs md:text-sm mt-[1px]">
+                    {currentSlide.dimensions}
+                  </p>
+                )}
+              </figcaption>
+            )}
           </div>
         </div>
       </figure>

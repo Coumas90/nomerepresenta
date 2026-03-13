@@ -48,7 +48,7 @@ const SortableImageThumb = ({
     <div
       ref={setNodeRef}
       style={style}
-      className={`relative group ${isHidden ? "opacity-40 ring-1 ring-dashed ring-muted-foreground/30 rounded" : ""}`}
+      className={`relative group ${isHidden ? "opacity-20 ring-1 ring-dashed ring-muted-foreground/30 rounded" : ""}`}
     >
       <div
         {...attributes}
