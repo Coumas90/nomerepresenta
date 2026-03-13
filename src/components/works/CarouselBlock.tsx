@@ -251,7 +251,7 @@ export const CarouselBlock = ({
                 <ProgressiveImage
                   src={currentImage}
                   alt={currentSlide?.altText || "Artwork"}
-                  className="relative z-10 w-full [&_picture]:w-full [&_img]:w-full [&_img]:h-auto [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh]"
+                  className="relative z-10 w-full h-full [&_picture]:w-full [&_picture]:h-full [&_img]:w-full [&_img]:h-full [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh]"
                   objectFit="contain"
                   eager={eager}
                   skipInternalFade
