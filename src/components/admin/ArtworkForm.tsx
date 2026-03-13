@@ -37,9 +37,22 @@ const ArtworkForm = ({ artwork, preselectedSeriesId, onSuccess }: ArtworkFormPro
   const artworkId = createdArtworkId || artwork?.id;
 
   const { data: seriesList } = useSeries();
+  const { data: allArtworks } = useArtworks();
   const { data: artworkImages } = useArtworkImages(artworkId);
   const createMutation = useCreateArtwork();
   const updateMutation = useUpdateArtwork();
+
+  const dimensionSuggestions = useMemo(() => {
+    if (!allArtworks) return [];
+    const unique = new Set(allArtworks.map((a) => a.dimensions).filter(Boolean));
+    return Array.from(unique).sort() as string[];
+  }, [allArtworks]);
+
+  const materialsSuggestions = useMemo(() => {
+    if (!allArtworks) return [];
+    const unique = new Set(allArtworks.map((a) => a.materials).filter(Boolean));
+    return Array.from(unique).sort() as string[];
+  }, [allArtworks]);
 
   useEffect(() => {
     if (artwork) {
