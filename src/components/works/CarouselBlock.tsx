@@ -36,9 +36,20 @@ export const CarouselBlock = ({
 
   const currentArtwork = artworks[currentIndex];
 
-  // For each artwork in the carousel, use its main image
-  const images = useMemo(() => {
-    return artworks.map((artwork) => {
+  // Flatten all images from all artworks into a single slide list
+  const slides = useMemo(() => {
+    const result: {
+      url: string;
+      altText: string;
+      title: string;
+      year: string;
+      materials: string;
+      dimensions: string;
+      isDetail: boolean;
+      artworkId: string;
+    }[] = [];
+
+    for (const artwork of artworks) {
       let artImages = allArtworkImages?.[artwork.id];
       if (artImages && artImages.length > 0) {
         const overrides = imageOverridesByArtwork?.[artwork.id];
@@ -56,14 +67,32 @@ export const CarouselBlock = ({
             return aIdx - bIdx;
           });
         }
-        const mainImg = artImages.find((img) => img.is_main) || artImages[0];
-        return {
-          url: mainImg?.image_url || artwork.image_url,
-          altText: mainImg?.alt_text || artwork.title,
-        };
+        for (const img of artImages) {
+          result.push({
+            url: img.image_url,
+            altText: img.alt_text || img.title || artwork.title,
+            title: img.title || artwork.title,
+            year: img.year || artwork.year,
+            materials: img.materials || artwork.materials,
+            dimensions: img.dimensions || artwork.dimensions,
+            isDetail: img.is_detail,
+            artworkId: artwork.id,
+          });
+        }
+      } else {
+        result.push({
+          url: artwork.image_url,
+          altText: artwork.title,
+          title: artwork.title,
+          year: artwork.year,
+          materials: artwork.materials,
+          dimensions: artwork.dimensions,
+          isDetail: false,
+          artworkId: artwork.id,
+        });
       }
-      return { url: artwork.image_url, altText: artwork.title };
-    });
+    }
+    return result;
   }, [artworks, allArtworkImages, imageOverridesByArtwork]);
 
   const currentImage = images[currentIndex]?.url || currentArtwork?.image_url;
