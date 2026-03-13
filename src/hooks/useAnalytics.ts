@@ -77,54 +77,54 @@ export const useAnalytics = () => {
 
     const initSession = async () => {
       let sessionId = localStorage.getItem(STORAGE_KEY);
-      
+
       if (!sessionId) {
         sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         localStorage.setItem(STORAGE_KEY, sessionId);
-        
-        // Get geolocation data with AbortController
-        let geoData = { country: null, countryName: null, city: null };
-        try {
-          const geoResponse = await fetch('https://ipapi.co/json/', {
-            signal: abortController.signal,
-          });
-          if (geoResponse.ok) {
-            const geo = await geoResponse.json();
-            geoData = {
-              country: geo.country_code || null,
-              countryName: geo.country_name || null,
-              city: geo.city || null,
-            };
-          }
-        } catch (error) {
-          // Ignore abort errors
-          if (error instanceof Error && error.name === 'AbortError') {
-            return;
-          }
-        }
-        
-        // Capture UTM parameters from URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const utmSource = urlParams.get('utm_source');
-        const utmMedium = urlParams.get('utm_medium');
-        const utmCampaign = urlParams.get('utm_campaign');
-
-        // Create new session via Edge Function (server-side validated)
-        await trackAnalytics('create_session', {
-          sessionId,
-          fingerprint: generateFingerprint(),
-          referrer: document.referrer || null,
-          userAgent: navigator.userAgent,
-          deviceType: getDeviceType(),
-          country: geoData.country,
-          countryName: geoData.countryName,
-          city: geoData.city,
-          utmSource: utmSource || null,
-          utmMedium: utmMedium || null,
-          utmCampaign: utmCampaign || null,
-        });
       }
-      
+
+      // Get geolocation data with AbortController
+      let geoData = { country: null, countryName: null, city: null };
+      try {
+        const geoResponse = await fetch('https://ipapi.co/json/', {
+          signal: abortController.signal,
+        });
+        if (geoResponse.ok) {
+          const geo = await geoResponse.json();
+          geoData = {
+            country: geo.country_code || null,
+            countryName: geo.country_name || null,
+            city: geo.city || null,
+          };
+        }
+      } catch (error) {
+        // Ignore abort errors
+        if (error instanceof Error && error.name === 'AbortError') {
+          return;
+        }
+      }
+
+      // Capture UTM parameters from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const utmSource = urlParams.get('utm_source');
+      const utmMedium = urlParams.get('utm_medium');
+      const utmCampaign = urlParams.get('utm_campaign');
+
+      // Always (re)create session server-side to recover from stale local session IDs
+      await trackAnalytics('create_session', {
+        sessionId,
+        fingerprint: generateFingerprint(),
+        referrer: document.referrer || null,
+        userAgent: navigator.userAgent,
+        deviceType: getDeviceType(),
+        country: geoData.country,
+        countryName: geoData.countryName,
+        city: geoData.city,
+        utmSource: utmSource || null,
+        utmMedium: utmMedium || null,
+        utmCampaign: utmCampaign || null,
+      });
+
       sessionIdRef.current = sessionId;
       sessionStartRef.current = new Date();
     };

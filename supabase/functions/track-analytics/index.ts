@@ -489,18 +489,29 @@ serve(async (req) => {
           );
         }
 
-        // Verify session exists
-        const { data: eventSession } = await supabase
+        // Ensure session exists (recover from stale local session IDs)
+        const { data: eventSession, error: eventSessionLookupError } = await supabase
           .from('analytics_sessions')
           .select('id')
           .eq('session_id', data.sessionId)
-          .single();
+          .maybeSingle();
+
+        if (eventSessionLookupError) {
+          console.error('[Analytics] Error checking session for user event:', eventSessionLookupError);
+          throw eventSessionLookupError;
+        }
 
         if (!eventSession) {
-          return new Response(
-            JSON.stringify({ error: 'Session not found' }),
-            { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
+          const { error: createSessionError } = await supabase.from('analytics_sessions').insert({
+            session_id: data.sessionId,
+            started_at: new Date().toISOString(),
+            device_type: 'desktop',
+          });
+
+          if (createSessionError) {
+            console.error('[Analytics] Error auto-creating missing session for user event:', createSessionError);
+            throw createSessionError;
+          }
         }
 
         const { error } = await supabase.from('user_events').insert({
