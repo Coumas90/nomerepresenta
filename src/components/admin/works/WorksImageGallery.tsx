@@ -41,14 +41,14 @@ const SortableImageThumb = ({
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging ? 0.5 : isHidden ? 0.2 : 1,
   };
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`relative group ${isHidden ? "opacity-20 ring-1 ring-dashed ring-muted-foreground/30 rounded" : ""}`}
+      className={`relative group ${isHidden ? "ring-1 ring-dashed ring-muted-foreground/30 rounded" : ""}`}
     >
       <div
         {...attributes}
