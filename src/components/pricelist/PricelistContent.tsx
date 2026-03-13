@@ -46,13 +46,19 @@ export const PricelistContent = ({
       const wasSelected = next.has(artworkId);
       if (wasSelected) next.delete(artworkId);
       else next.add(artworkId);
+
+      const clickedArtwork = Array.from(grouped.values())
+        .flat()
+        .find((entry) => entry.artwork_id === artworkId)?.artwork;
+
       trackUserEvent(wasSelected ? "pricelist_unselect" : "pricelist_select", {
         artwork_id: artworkId,
+        artwork_title: clickedArtwork?.title || null,
         pricelist: pricelistName,
       });
       return next;
     });
-  }, [trackUserEvent, pricelistName]);
+  }, [trackUserEvent, pricelistName, grouped]);
 
   if (isLoading) {
     return (
