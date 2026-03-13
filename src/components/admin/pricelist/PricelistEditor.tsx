@@ -62,10 +62,18 @@ export const PricelistEditor = ({ pricelist }: PricelistEditorProps) => {
   const availableArtworks = catalogArtworks
     .filter((a) => !existingArtworkIds.has(a.id))
     .map((a) => ({
-      ...a,
-      description: null,
-      image_detail_url: null,
-    }));
+      id: a.id,
+      title: a.title,
+      year: a.year || "",
+      dimensions: a.dimensions || "",
+      materials: a.materials || "",
+      description: "",
+      image_url: a.image_url,
+      image_detail_url: "",
+      series_id: a.series_id,
+      display_order: 0,
+      is_visible: a.is_visible,
+    } as ArtworkData));
 
   const handleAdd = (artworkIds: string[]) => {
     artworkIds.forEach((artworkId, idx) => {
