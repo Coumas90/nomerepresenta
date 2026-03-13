@@ -27,6 +27,7 @@ import {
   type SortField,
   type SortDirection,
   type SessionLogEntry,
+  type UserEventDetail,
 } from "@/hooks/useSessionLog";
 
 interface SessionLogTableProps {
