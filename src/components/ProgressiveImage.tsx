@@ -122,14 +122,17 @@ export const ProgressiveImage = ({
     return getWebPUrl(src);
   }, [src, modernFormats, webp, webpFailed]);
 
-  // Reset states when src changes
+  // Reset states when src changes — but skip resetting isLoaded when
+  // skipInternalFade is active (carousel mode) to avoid white flashes
   useEffect(() => {
-    setIsLoaded(false);
-    setPlaceholderLoaded(false);
+    if (!skipInternalFade) {
+      setIsLoaded(false);
+      setPlaceholderLoaded(false);
+    }
     setError(false);
     setAvifFailed(false);
     setWebpFailed(false);
-  }, [src, setIsLoaded]);
+  }, [src, setIsLoaded, skipInternalFade]);
 
   const handleImageLoad = () => {
     setIsLoaded(true);

@@ -68,13 +68,18 @@ export const CarouselBlock = ({
 
   const currentImage = images[currentIndex]?.url || currentArtwork?.image_url;
 
-  // Preload adjacent
+  // Preload adjacent images in the format the browser will actually use
   useEffect(() => {
     [currentIndex - 1, currentIndex + 1].forEach((i) => {
-      const url = images[i]?.url;
+      // Support wrapping for infinite loop
+      const wrappedIdx = i < 0 ? images.length - 1 : i >= images.length ? 0 : i;
+      const url = images[wrappedIdx]?.url;
       if (url) {
+        const avif = getAVIFUrl(url);
+        const webp = getWebPUrl(url);
+        const preloadUrl = avif || webp || url;
         const img = new Image();
-        img.src = url;
+        img.src = preloadUrl;
       }
     });
   }, [currentIndex, images]);
