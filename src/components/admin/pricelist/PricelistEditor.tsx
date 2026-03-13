@@ -43,7 +43,7 @@ export const PricelistEditor = ({ pricelist }: PricelistEditorProps) => {
   const [thumbSize, setThumbSize] = useState<ThumbSize>("sm");
   const activeCurrency = (pricelist.active_currency || "USD") as PricelistCurrency;
   const { data: items = [] } = usePricelistItems(pricelist.id);
-  const { data: artworks = [] } = useArtworks();
+  const { data: catalogArtworks = [] } = useCatalogArtworks();
   const { data: series = [] } = useSeries();
   const addItem = useAddPricelistItem();
   const deleteItem = useDeletePricelistItem();
