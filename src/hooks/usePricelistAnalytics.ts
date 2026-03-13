@@ -132,6 +132,7 @@ export const usePricelistAnalytics = (startDate: Date, endDate: Date) => {
         const { browser, os } = parseUserAgent(session?.user_agent || null);
         const source = normalizeSource(session?.referrer || null, session?.utm_source || null);
         const isReturning = session?.visitor_fingerprint ? (fpCounts.get(session.visitor_fingerprint) || 0) > 0 : false;
+        const visitCount = session?.visitor_fingerprint ? (fpTotalVisits.get(session.visitor_fingerprint) || 1) : 1;
         return {
           slug,
           session_id: pv.session_id,
