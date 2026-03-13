@@ -103,6 +103,13 @@ export const PricelistContent = ({
         </button>
       </div>
 
+      {/* Inquiry hint — hidden when printing */}
+      <div className="px-3 md:px-12 pt-1.5 md:pt-2 print:hidden">
+        <span className="text-[9px] md:text-[11px] tracking-[0.12em] md:tracking-[0.15em] uppercase text-stone-400 font-light">
+          Select works to make an inquiry
+        </span>
+      </div>
+
       {/* Print-only header title */}
       <div className="hidden print:block px-10 pt-12 pb-4 border-b border-stone-300">
         <h1 className="text-sm font-medium tracking-[0.15em] uppercase text-stone-800">
