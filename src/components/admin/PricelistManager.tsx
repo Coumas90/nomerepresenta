@@ -50,7 +50,7 @@ const PricelistManager = () => {
   };
 
   const handleCopyLink = (slug: string) => {
-    const url = `${window.location.origin}/selection/${slug}`;
+    const url = `${window.location.origin}/selected/${slug}`;
     navigator.clipboard.writeText(url);
     toast.success("Link copied to clipboard");
   };
