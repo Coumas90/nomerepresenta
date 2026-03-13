@@ -46,7 +46,7 @@ export const CatalogImageGallery = ({ artworkId }: CatalogImageGalleryProps) => 
               <img
                 src={img.image_url}
                 alt={img.title || `Image ${idx + 1}`}
-                className="w-20 h-20 object-cover rounded border border-border"
+                className="w-28 h-28 object-cover rounded border border-border"
                 loading="lazy"
               />
               <div className="absolute bottom-0 left-0 right-0 flex gap-0.5 p-0.5">
