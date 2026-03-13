@@ -100,6 +100,32 @@ export const CarouselBlock = ({
   const currentSlide = slides[currentIndex];
   const currentImage = currentSlide?.url;
   const totalSlides = slides.length;
+  const referenceSlide = slides.find((slide) => !slide.isDetail) ?? slides[0];
+
+  useEffect(() => {
+    if (isMobile || !referenceSlide?.url) {
+      setReferenceAspectRatio(null);
+      return;
+    }
+
+    let isCancelled = false;
+    const img = new Image();
+
+    img.onload = () => {
+      if (isCancelled || !img.naturalWidth || !img.naturalHeight) return;
+      setReferenceAspectRatio(img.naturalWidth / img.naturalHeight);
+    };
+
+    img.onerror = () => {
+      if (!isCancelled) setReferenceAspectRatio(1);
+    };
+
+    img.src = referenceSlide.url;
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [isMobile, referenceSlide?.url]);
 
   // Preload adjacent slides
   useEffect(() => {
