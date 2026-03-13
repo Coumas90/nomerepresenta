@@ -186,7 +186,7 @@ export const ProgressiveImage = ({
       
       {/* Main image with AVIF, WebP, and responsive srcset support using picture element */}
       {shouldLoad && (
-        <picture className="w-full h-full block">
+        <picture className={isContain ? "block max-w-full" : "w-full h-full block"}>
           {/* AVIF source (best compression) - browsers that support AVIF will use this first */}
           {showAvif && avifSrcSet && (
             <source 
