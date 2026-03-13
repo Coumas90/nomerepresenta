@@ -19,8 +19,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Plus } from "lucide-react";
-import { useArtworks } from "@/hooks/useArtworks";
+import { useCatalogArtworks } from "@/hooks/useCatalog";
 import { useSeries } from "@/hooks/useSeries";
+import type { ArtworkData } from "@/types";
 import {
   usePricelistItems,
   useAddPricelistItem,
@@ -43,7 +44,7 @@ export const PricelistEditor = ({ pricelist }: PricelistEditorProps) => {
   const [thumbSize, setThumbSize] = useState<ThumbSize>("sm");
   const activeCurrency = (pricelist.active_currency || "USD") as PricelistCurrency;
   const { data: items = [] } = usePricelistItems(pricelist.id);
-  const { data: artworks = [] } = useArtworks();
+  const { data: catalogArtworks = [] } = useCatalogArtworks();
   const { data: series = [] } = useSeries();
   const addItem = useAddPricelistItem();
   const deleteItem = useDeletePricelistItem();
@@ -59,7 +60,21 @@ export const PricelistEditor = ({ pricelist }: PricelistEditorProps) => {
   const seriesMap = new Map(series.map((s) => [s.id, s.name]));
 
   const existingArtworkIds = new Set(items.map((i) => i.artwork_id));
-  const availableArtworks = artworks.filter((a) => !existingArtworkIds.has(a.id));
+  const availableArtworks = catalogArtworks
+    .filter((a) => !existingArtworkIds.has(a.id))
+    .map((a) => ({
+      id: a.id,
+      title: a.title,
+      year: a.year || "",
+      dimensions: a.dimensions || "",
+      materials: a.materials || "",
+      description: "",
+      image_url: a.image_url,
+      image_detail_url: "",
+      series_id: a.series_id,
+      display_order: 0,
+      is_visible: a.is_visible,
+    } as ArtworkData));
 
   const handleAdd = (artworkIds: string[]) => {
     artworkIds.forEach((artworkId, idx) => {

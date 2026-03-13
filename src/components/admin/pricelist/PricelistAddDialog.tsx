@@ -93,7 +93,7 @@ export const PricelistAddDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add Artworks to Pricelist</DialogTitle>
         </DialogHeader>
@@ -110,7 +110,7 @@ export const PricelistAddDialog = ({
                 className="pl-9"
               />
             </div>
-            <div className="mt-3 space-y-4 max-h-[50vh] overflow-y-auto">
+            <div className="mt-3 space-y-4 max-h-[65vh] overflow-y-auto">
               {[...grouped.entries()].map(([seriesName, works]) => {
                 const allSelected = works.every((w) => selectedIds.has(w.id));
                 const someSelected = works.some((w) => selectedIds.has(w.id));
