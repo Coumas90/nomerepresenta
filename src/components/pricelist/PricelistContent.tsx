@@ -28,6 +28,7 @@ export const PricelistContent = ({
   activeCurrency = "USD",
 }: PricelistContentProps) => {
   const navigate = useNavigate();
+  const { trackUserEvent } = useAnalytics();
   const [viewingArtworkId, setViewingArtworkId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
@@ -35,17 +36,23 @@ export const PricelistContent = ({
 
   const handleDownloadPdf = useCallback(() => {
     document.title = headerTitle;
+    trackUserEvent("pricelist_download_pdf", { pricelist: pricelistName });
     window.print();
-  }, [headerTitle]);
+  }, [headerTitle, trackUserEvent, pricelistName]);
 
   const toggleSelect = useCallback((artworkId: string) => {
     setSelectedIds((prev) => {
       const next = new Set(prev);
-      if (next.has(artworkId)) next.delete(artworkId);
+      const wasSelected = next.has(artworkId);
+      if (wasSelected) next.delete(artworkId);
       else next.add(artworkId);
+      trackUserEvent(wasSelected ? "pricelist_unselect" : "pricelist_select", {
+        artwork_id: artworkId,
+        pricelist: pricelistName,
+      });
       return next;
     });
-  }, []);
+  }, [trackUserEvent, pricelistName]);
 
   if (isLoading) {
     return (
