@@ -211,10 +211,10 @@ export const CarouselBlock = ({
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
-            {/* Fixed-height container on desktop prevents caption jumping */}
+            {/* Fixed-size frame on desktop keeps carousel image size stable between slides */}
             <div
               className={cn(
-                "relative flex items-center justify-center max-w-full",
+                "relative flex w-full items-center justify-center max-w-full",
                 !isMobile && "h-[80vh]"
               )}
             >
@@ -222,7 +222,12 @@ export const CarouselBlock = ({
                 <ProgressiveImage
                   src={currentImage}
                   alt={currentSlide?.altText || "Artwork"}
-                  className="relative z-10 [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh]"
+                  className={cn(
+                    "relative z-10 w-full",
+                    isMobile
+                      ? "[&_img]:max-h-[75vh]"
+                      : "h-full [&_picture]:h-full [&_img]:w-full [&_img]:h-full [&_img]:max-h-none"
+                  )}
                   objectFit="contain"
                   eager={eager}
                   skipInternalFade
@@ -250,23 +255,6 @@ export const CarouselBlock = ({
               )}
             </div>
 
-            {/* Mobile pagination */}
-            {isMobile && totalSlides > 1 && (
-              <div className="mt-3 flex gap-1.5">
-                {slides.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentIndex(index)}
-                    className={cn(
-                      "w-1.5 h-1.5 rounded-full transition-all duration-300",
-                      index === currentIndex ? "bg-stone-900" : "bg-stone-400"
-                    )}
-                    aria-label={`Go to image ${index + 1}`}
-                  />
-                ))}
-              </div>
-            )}
-
             {/* Caption for current slide */}
             {currentSlide && (
               <figcaption className="mt-6 md:mt-9 text-left leading-snug">
@@ -288,7 +276,7 @@ export const CarouselBlock = ({
                       </p>
                     )}
                   </div>
-                  {!isMobile && totalSlides > 1 && (
+                  {totalSlides > 1 && (
                     <p className="text-stone-400 text-[9px] md:text-[11px] whitespace-nowrap shrink-0" style={{ letterSpacing: "0.5px" }}>
                       [ {currentIndex + 1} / {totalSlides} ]
                     </p>
