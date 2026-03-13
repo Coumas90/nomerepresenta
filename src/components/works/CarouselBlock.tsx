@@ -36,7 +36,8 @@ export const CarouselBlock = ({
   const isMobile = useIsMobile();
   const containerRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [referenceAspectRatio, setReferenceAspectRatio] = useState<number | null>(null);
+  const imgFrameRef = useRef<HTMLDivElement>(null);
+  const [lockedHeight, setLockedHeight] = useState<number | null>(null);
 
   // Flatten all images from all artworks into a single slide list
   const slides = useMemo(() => {
@@ -100,32 +101,24 @@ export const CarouselBlock = ({
   const currentSlide = slides[currentIndex];
   const currentImage = currentSlide?.url;
   const totalSlides = slides.length;
-  const referenceSlide = slides.find((slide) => !slide.isDetail) ?? slides[0];
-
-  useEffect(() => {
-    if (isMobile || !referenceSlide?.url) {
-      setReferenceAspectRatio(null);
-      return;
+  // Lock the container height after the first image renders so the caption doesn't jump.
+  // We compute the rendered height from the image's natural aspect ratio and the container width,
+  // because with object-fit:contain the img element's offsetHeight ≠ visible image height.
+  const handleFirstImageLoad = useCallback(() => {
+    if (!isMobile && lockedHeight === null && imgFrameRef.current) {
+      const img = imgFrameRef.current.querySelector("img");
+      if (img && img.naturalWidth > 0 && img.naturalHeight > 0) {
+        const containerWidth = imgFrameRef.current.offsetWidth;
+        const imageAspect = img.naturalWidth / img.naturalHeight;
+        // The image renders at container width constrained by max-height
+        const maxH = window.innerHeight * 0.8; // matches md:max-h-[80vh]
+        const renderedHeight = Math.min(containerWidth / imageAspect, maxH);
+        if (renderedHeight > 0) {
+          setLockedHeight(renderedHeight);
+        }
+      }
     }
-
-    let isCancelled = false;
-    const img = new Image();
-
-    img.onload = () => {
-      if (isCancelled || !img.naturalWidth || !img.naturalHeight) return;
-      setReferenceAspectRatio(img.naturalWidth / img.naturalHeight);
-    };
-
-    img.onerror = () => {
-      if (!isCancelled) setReferenceAspectRatio(1);
-    };
-
-    img.src = referenceSlide.url;
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [isMobile, referenceSlide?.url]);
+  }, [isMobile, lockedHeight]);
 
   // Preload adjacent slides
   useEffect(() => {
@@ -238,20 +231,22 @@ export const CarouselBlock = ({
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
-            {/* Image container: keep a stable frame width so equal-format images render at equal display size */}
+            {/* Image container: lock height after first image renders to prevent caption jump */}
             <div
+              ref={imgFrameRef}
               className="relative flex w-full items-center justify-center max-w-full"
               style={
-                !isMobile && referenceAspectRatio
-                  ? { aspectRatio: `${referenceAspectRatio}` }
+                !isMobile && lockedHeight
+                  ? { height: lockedHeight }
                   : undefined
               }
+              onLoad={handleFirstImageLoad}
             >
               {currentImage && (
                 <ProgressiveImage
                   src={currentImage}
                   alt={currentSlide?.altText || "Artwork"}
-                  className="relative z-10 w-full h-full [&_picture]:w-full [&_picture]:h-full [&_img]:w-full [&_img]:h-full [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh]"
+                  className="relative z-10 [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh]"
                   objectFit="contain"
                   eager={eager}
                   skipInternalFade
