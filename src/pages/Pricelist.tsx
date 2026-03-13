@@ -83,6 +83,7 @@ const Pricelist = () => {
       allImages={allImages}
       isLoading={itemsLoading || imagesLoading}
       pricelistName={pricelist.name}
+      headerName={pricelist.header_name}
       seriesName={pricelist.series_name}
       activeCurrency={pricelist.active_currency || "USD"}
     />

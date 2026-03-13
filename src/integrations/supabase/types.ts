@@ -459,6 +459,7 @@ export type Database = {
         Row: {
           active_currency: string | null
           created_at: string
+          header_name: string | null
           id: string
           name: string
           password: string
@@ -469,6 +470,7 @@ export type Database = {
         Insert: {
           active_currency?: string | null
           created_at?: string
+          header_name?: string | null
           id?: string
           name: string
           password?: string
@@ -479,6 +481,7 @@ export type Database = {
         Update: {
           active_currency?: string | null
           created_at?: string
+          header_name?: string | null
           id?: string
           name?: string
           password?: string

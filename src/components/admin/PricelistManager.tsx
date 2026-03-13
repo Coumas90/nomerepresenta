@@ -138,7 +138,23 @@ const PricelistManager = () => {
                         />
                       </label>
                     </div>
-                    <div className="flex items-center gap-5 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-5 text-xs text-muted-foreground flex-wrap">
+                      <label className="flex items-center gap-1.5">
+                        <span className="shrink-0">Header:</span>
+                        <Input
+                          defaultValue={pl.header_name || ""}
+                          placeholder={pl.name}
+                          className="h-7 w-36 text-xs"
+                          onBlur={(e) => {
+                            const val = e.target.value.trim();
+                            if (val !== (pl.header_name || "")) {
+                              updatePricelist.mutate({ id: pl.id, updates: { header_name: val || null } });
+                              toast.success("Header name updated");
+                            }
+                          }}
+                          onKeyDown={(e) => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }}
+                        />
+                      </label>
                       <label className="flex items-center gap-1.5">
                         <span className="shrink-0">Series:</span>
                         <Input
