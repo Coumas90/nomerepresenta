@@ -213,23 +213,24 @@ export const CarouselBlock = ({
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
-            {/* Fixed-size frame on desktop keeps carousel image size stable between slides */}
+            {/* Image container: on desktop, lock to first-slide height to prevent caption jump */}
             <div
-              className={cn(
-                "relative flex w-full items-center justify-center max-w-full",
-                !isMobile && "h-[80vh]"
-              )}
+              ref={imgContainerRef}
+              className="relative flex w-full items-center justify-center max-w-full"
+              style={!isMobile && stableHeight ? { minHeight: stableHeight } : undefined}
+              onLoad={() => {
+                // After the first image renders, capture the container height
+                if (!isMobile && !stableHeight && imgContainerRef.current) {
+                  const h = imgContainerRef.current.getBoundingClientRect().height;
+                  if (h > 0) setStableHeight(h);
+                }
+              }}
             >
               {currentImage && (
                 <ProgressiveImage
                   src={currentImage}
                   alt={currentSlide?.altText || "Artwork"}
-                  className={cn(
-                    "relative z-10 w-full",
-                    isMobile
-                      ? "[&_img]:max-h-[75vh]"
-                      : "h-full [&_picture]:h-full [&_img]:w-full [&_img]:h-full [&_img]:max-h-none"
-                  )}
+                  className="relative z-10 [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh]"
                   objectFit="contain"
                   eager={eager}
                   skipInternalFade
