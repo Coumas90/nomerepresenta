@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ArrowRight, X, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 interface PricelistInquiryBarProps {
   selectedCount: number;
@@ -11,6 +12,7 @@ interface PricelistInquiryBarProps {
 }
 
 export const PricelistInquiryBar = ({ selectedCount, selectedTitles, selectedArtworks, pricelistName, onClearSelection }: PricelistInquiryBarProps) => {
+  const { trackUserEvent } = useAnalytics();
   const [showForm, setShowForm] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -18,6 +20,11 @@ export const PricelistInquiryBar = ({ selectedCount, selectedTitles, selectedArt
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
+
+  const handleOpenForm = () => {
+    setShowForm(true);
+    trackUserEvent("pricelist_inquiry_open", { pricelist: pricelistName, selected_count: selectedCount });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,6 +49,7 @@ export const PricelistInquiryBar = ({ selectedCount, selectedTitles, selectedArt
       if (data?.error) throw new Error(data.error);
 
       setSent(true);
+      trackUserEvent("pricelist_inquiry_sent", { pricelist: pricelistName, selected_count: selectedTitles.length });
       setTimeout(() => {
         setSent(false);
         setShowForm(false);
@@ -149,7 +157,7 @@ export const PricelistInquiryBar = ({ selectedCount, selectedTitles, selectedArt
               {selectedCount} {selectedCount === 1 ? "work" : "works"} selected
             </span>
             <button
-              onClick={() => setShowForm(true)}
+              onClick={handleOpenForm}
               className="flex items-center gap-2 text-xs md:text-sm tracking-wide uppercase text-stone-800 hover:text-stone-600 transition-colors group"
             >
               <span>Send inquiry</span>

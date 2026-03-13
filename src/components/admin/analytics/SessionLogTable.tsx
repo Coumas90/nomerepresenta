@@ -27,6 +27,7 @@ import {
   type SortField,
   type SortDirection,
   type SessionLogEntry,
+  type UserEventDetail,
 } from "@/hooks/useSessionLog";
 
 interface SessionLogTableProps {
@@ -403,6 +404,29 @@ const SessionRow = ({ session, isExpanded, onToggle }: SessionRowProps) => {
   );
 };
 
+// ─── Event label helper ─────────────────────────────────
+const EVENT_LABELS: Record<string, string> = {
+  pricelist_select: "Selected work",
+  pricelist_unselect: "Unselected work",
+  pricelist_inquiry_open: "Opened inquiry form",
+  pricelist_inquiry_sent: "Sent inquiry",
+  pricelist_download_pdf: "Downloaded PDF",
+  contact_click: "Clicked contact",
+  email_click: "Clicked email",
+};
+
+const formatEventLabel = (event: UserEventDetail) => {
+  const label = EVENT_LABELS[event.event_type] || event.event_type;
+  const data = event.event_data;
+  if (!data) return label;
+
+  const extras: string[] = [];
+  if (data.artwork_id) extras.push(`artwork: ${String(data.artwork_id).slice(0, 8)}…`);
+  if (data.pricelist) extras.push(`list: ${String(data.pricelist)}`);
+  if (data.selected_count) extras.push(`${data.selected_count} works`);
+  return extras.length ? `${label} (${extras.join(", ")})` : label;
+};
+
 // ─── Session Detail Panel ───────────────────────────────
 const SessionDetail = ({ session }: { session: SessionLogEntry }) => (
   <div className="bg-muted/30 border-t px-6 py-4 space-y-4">
@@ -460,6 +484,23 @@ const SessionDetail = ({ session }: { session: SessionLogEntry }) => (
               {pd.time_on_page_seconds != null && pd.time_on_page_seconds > 0 && (
                 <span className="text-xs text-muted-foreground">({formatDuration(pd.time_on_page_seconds)})</span>
               )}
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+
+    {/* User events / activity log */}
+    {session.user_events.length > 0 && (
+      <div>
+        <p className="text-xs text-muted-foreground mb-2">Activity Log</p>
+        <div className="space-y-1">
+          {session.user_events.map((ev, i) => (
+            <div key={`${ev.event_type}-${i}`} className="flex items-center gap-3 text-sm">
+              <span className="text-xs text-muted-foreground w-[100px] shrink-0">
+                {format(new Date(ev.created_at), "HH:mm:ss")}
+              </span>
+              <span className="font-medium">{formatEventLabel(ev)}</span>
             </div>
           ))}
         </div>

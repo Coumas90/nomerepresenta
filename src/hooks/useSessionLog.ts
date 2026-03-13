@@ -23,6 +23,7 @@ export interface SessionLogEntry {
   utm_medium: string | null;
   utm_campaign: string | null;
   page_details: PageDetail[];
+  user_events: UserEventDetail[];
 }
 
 export interface PageDetail {
@@ -30,6 +31,12 @@ export interface PageDetail {
   page_name: string | null;
   viewed_at: string;
   time_on_page_seconds: number | null;
+}
+
+export interface UserEventDetail {
+  event_type: string;
+  event_data: Record<string, unknown> | null;
+  created_at: string;
 }
 
 export interface SessionLogFilters {
@@ -128,11 +135,12 @@ export const useSessionLog = (
         .in("session_id", sessionIds)
         .order("viewed_at", { ascending: true });
 
-      // 3. Fetch user events for high-intent detection
+      // 3. Fetch user events with full data
       const { data: userEvents } = await supabase
         .from("user_events")
-        .select("session_id, event_type")
-        .in("session_id", sessionIds);
+        .select("session_id, event_type, event_data, created_at")
+        .in("session_id", sessionIds)
+        .order("created_at", { ascending: true });
 
       // 4. Find returning visitors by fingerprint
       const fingerprints = sessions
@@ -169,11 +177,18 @@ export const useSessionLog = (
         });
       });
 
-      // 6. Build user events set for high-intent
+      // 6. Build user events map (both set for filtering and full details)
       const eventMap = new Map<string, Set<string>>();
+      const eventDetailsMap = new Map<string, UserEventDetail[]>();
       (userEvents || []).forEach((e) => {
         if (!eventMap.has(e.session_id)) eventMap.set(e.session_id, new Set());
         eventMap.get(e.session_id)!.add(e.event_type);
+        if (!eventDetailsMap.has(e.session_id)) eventDetailsMap.set(e.session_id, []);
+        eventDetailsMap.get(e.session_id)!.push({
+          event_type: e.event_type,
+          event_data: e.event_data as Record<string, unknown> | null,
+          created_at: e.created_at,
+        });
       });
 
       // 7. Assemble session log entries
@@ -217,6 +232,7 @@ export const useSessionLog = (
           utm_medium: s.utm_medium,
           utm_campaign: s.utm_campaign,
           page_details: pages,
+          user_events: eventDetailsMap.get(s.session_id) || [],
           _events: events, // temp for filtering
         } as SessionLogEntry & { _events: Set<string> };
       });
