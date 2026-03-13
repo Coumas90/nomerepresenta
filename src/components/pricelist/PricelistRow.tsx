@@ -67,7 +67,7 @@ export const PricelistRow = ({ item, activeCurrency, selected, onSelect, onViewI
       <div className="md:hidden print:hidden relative">
         {/* Selection check — top right of card */}
         <div className={cn(
-          "absolute top-0 right-0 z-10 transition-all duration-300",
+          "absolute top-0 right-0 z-10 transition-all duration-300 print:hidden",
           selected ? "opacity-100 scale-100" : "opacity-0 scale-75"
         )}>
           <Check className="w-4 h-4 text-stone-600" strokeWidth={2.5} />
@@ -123,7 +123,7 @@ export const PricelistRow = ({ item, activeCurrency, selected, onSelect, onViewI
               {artwork.title}{artwork.year ? `, ${artwork.year}` : ""}
             </p>
             <div className={cn(
-              "transition-all duration-300",
+              "transition-all duration-300 print:hidden",
               selected ? "opacity-100 scale-100" : "opacity-0 scale-75"
             )}>
               <Check className="w-4 h-4 text-stone-600" strokeWidth={2.5} />
