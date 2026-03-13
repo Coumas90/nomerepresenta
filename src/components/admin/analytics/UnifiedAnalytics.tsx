@@ -628,7 +628,7 @@ const PricelistAnalyticsCard = ({ startDate, endDate }: { startDate: Date; endDa
           <Skeleton className="h-48" />
         ) : !data || data.totalViews === 0 ? (
           <p className="text-sm text-muted-foreground py-4">
-            No pricelist views yet. Share a /selection/ link to start tracking.
+            No pricelist views yet. Share a /selected/ link to start tracking.
           </p>
         ) : (
           <div className="space-y-6">
