@@ -36,6 +36,7 @@ export const CarouselBlock = ({
   const isMobile = useIsMobile();
   const containerRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [referenceAspectRatio, setReferenceAspectRatio] = useState<number | null>(null);
 
   // Flatten all images from all artworks into a single slide list
   const slides = useMemo(() => {
@@ -99,6 +100,32 @@ export const CarouselBlock = ({
   const currentSlide = slides[currentIndex];
   const currentImage = currentSlide?.url;
   const totalSlides = slides.length;
+  const referenceSlide = slides.find((slide) => !slide.isDetail) ?? slides[0];
+
+  useEffect(() => {
+    if (isMobile || !referenceSlide?.url) {
+      setReferenceAspectRatio(null);
+      return;
+    }
+
+    let isCancelled = false;
+    const img = new Image();
+
+    img.onload = () => {
+      if (isCancelled || !img.naturalWidth || !img.naturalHeight) return;
+      setReferenceAspectRatio(img.naturalWidth / img.naturalHeight);
+    };
+
+    img.onerror = () => {
+      if (!isCancelled) setReferenceAspectRatio(1);
+    };
+
+    img.src = referenceSlide.url;
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [isMobile, referenceSlide?.url]);
 
   // Preload adjacent slides
   useEffect(() => {
@@ -212,12 +239,19 @@ export const CarouselBlock = ({
             onTouchEnd={handleTouchEnd}
           >
             {/* Image container: keep a stable frame width so equal-format images render at equal display size */}
-            <div className="relative flex w-full items-center justify-center max-w-full">
+            <div
+              className="relative flex w-full items-center justify-center max-w-full"
+              style={
+                !isMobile && referenceAspectRatio
+                  ? { aspectRatio: `${referenceAspectRatio}` }
+                  : undefined
+              }
+            >
               {currentImage && (
                 <ProgressiveImage
                   src={currentImage}
                   alt={currentSlide?.altText || "Artwork"}
-                  className="relative z-10 w-full [&_picture]:w-full [&_img]:w-full [&_img]:h-auto [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh]"
+                  className="relative z-10 w-full h-full [&_picture]:w-full [&_picture]:h-full [&_img]:w-full [&_img]:h-full [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh]"
                   objectFit="contain"
                   eager={eager}
                   skipInternalFade
