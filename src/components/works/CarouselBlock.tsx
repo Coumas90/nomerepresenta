@@ -257,8 +257,8 @@ export const CarouselBlock = ({
                   <div>
                     <p className="text-stone-500 text-[13px] md:text-[15px] font-bold">
                       {currentSlide.title}
-                      {currentSlide.isDetail && <span className="font-normal text-stone-500"> (DETAIL)</span>}
                       {currentSlide.year && <>, {currentSlide.year}</>}
+                      {currentSlide.isDetail && <span className="font-normal text-stone-500"> (DETAIL)</span>}
                     </p>
                     {currentSlide.materials && (
                       <p className="text-stone-500 text-[11px] md:text-[13px] mt-[3px] md:mt-[6px]">
