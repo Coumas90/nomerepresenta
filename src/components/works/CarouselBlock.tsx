@@ -221,7 +221,7 @@ export const CarouselBlock = ({
                   className={cn(
                     "relative z-10 !w-full",
                     "[&_picture]:w-full",
-                    "[&_img]:!w-full [&_img]:!h-auto [&_img]:!object-contain [&_img]:object-left"
+                    "[&_img]:!w-full [&_img]:!h-auto [&_img]:!max-h-[85vh] [&_img]:!object-contain [&_img]:object-left"
                   )}
                   objectFit="contain"
                   eager={eager}
