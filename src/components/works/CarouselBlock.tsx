@@ -252,7 +252,7 @@ export const CarouselBlock = ({
 
             {/* Caption for current slide */}
             {currentSlide && (
-              <figcaption className="mt-4 md:mt-6 text-left leading-snug">
+              <figcaption className="mt-[18px] md:mt-[26px] text-left leading-snug">
                 <div className="flex justify-between items-start gap-4">
                   <div>
                     <p className="text-stone-500 text-[13px] md:text-[15px] font-bold">
