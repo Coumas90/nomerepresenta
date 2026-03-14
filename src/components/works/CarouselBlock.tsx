@@ -21,9 +21,9 @@ const cursorRightSvg = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 /**
  * Carousel block: displays multiple artworks in a single carousel.
  * Each artwork shows its own caption/metadata when active.
- * 
- * On desktop, the image container uses a fixed height so that switching
- * between slides of similar proportions doesn't shift the caption below.
+ *
+ * Uses natural image height (no fixed viewport-height frame) to avoid
+ * artificial blank space below certain images in mixed carousels.
  */
 export const CarouselBlock = ({
   artworks,
