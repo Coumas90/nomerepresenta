@@ -212,7 +212,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
   return (
     <article className="relative w-full flex flex-col items-center">
       {/* Figure: image + caption stacked vertically, normal flow */}
-      <figure className="flex flex-col items-start w-full max-w-[95vw] md:max-w-[54vw] lg:max-w-[45vw] mx-auto">
+      <figure className="inline-flex flex-col items-start max-w-[95vw] md:max-w-[54vw] lg:max-w-[45vw] mx-auto overflow-hidden">
         {/* Image container with navigation */}
         <div className="relative w-full flex items-center">
 
@@ -232,14 +232,14 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
               <ProgressiveImage
                   src={currentImage}
                   alt={allImages[currentImageIndex]?.altText || artwork.title || "Artwork"}
-                  className="relative z-10 [&_img]:!w-full [&_img]:!h-auto [&_img]:!object-cover"
-                  objectFit="cover"
+                  className="relative z-10 [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh]"
+                  objectFit="contain"
                   eager={eager}
                   skipInternalFade
                   blurUp={false}
                   modernFormats
                   responsivePreset="full"
-                  sizes="(max-width: 768px) 95vw, (max-width: 1024px) 54vw, 45vw"
+                  sizes="(max-width: 768px) 90vw, (max-width: 1024px) 70vw, 60vw"
                 />
               )}
 
@@ -279,7 +279,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
             </div>
 
             {/* Caption row — caption left, pagination right on desktop */}
-            <figcaption className="mt-[18px] md:mt-[26px] text-left leading-snug">
+            <figcaption className="mt-6 md:mt-9 text-left leading-snug">
               <div className="flex justify-between items-start gap-4">
                 <div>
                   {allImages[currentImageIndex]?.caption ? (

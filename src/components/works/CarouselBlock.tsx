@@ -21,9 +21,9 @@ const cursorRightSvg = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 /**
  * Carousel block: displays multiple artworks in a single carousel.
  * Each artwork shows its own caption/metadata when active.
- *
- * Uses natural image height (no fixed viewport-height frame) to avoid
- * artificial blank space below certain images in mixed carousels.
+ * 
+ * On desktop, the image container uses a fixed height so that switching
+ * between slides of similar proportions doesn't shift the caption below.
  */
 export const CarouselBlock = ({
   artworks,
@@ -213,15 +213,19 @@ export const CarouselBlock = ({
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
-            <div className="relative w-full">
+            {/* Fixed-height image container: all slides share the same height so caption never jumps */}
+            <div className="relative w-full h-[65vh] md:h-[72vh] lg:h-[78vh]">
               {currentImage && (
                 <ProgressiveImage
                   src={currentImage}
                   alt={currentSlide?.altText || "Artwork"}
                   className={cn(
-                    "relative z-10 !w-full",
-                    "[&_picture]:w-full",
-                    "[&_img]:!w-full [&_img]:!h-auto [&_img]:!object-contain [&_img]:object-left"
+                    "relative z-10",
+                    // Override contain-mode w-fit: force full-width wrapper
+                    "!w-full",
+                    // Fill frame and keep left edge stable across slides
+                    "[&_picture]:w-full [&_picture]:h-full",
+                    "[&_img]:!w-full [&_img]:!h-full [&_img]:!object-contain [&_img]:object-left"
                   )}
                   objectFit="contain"
                   eager={eager}
@@ -229,7 +233,7 @@ export const CarouselBlock = ({
                   blurUp={false}
                   modernFormats
                   responsivePreset="full"
-                  sizes="(max-width: 768px) 95vw, (max-width: 1024px) 54vw, 45vw"
+                  sizes="(max-width: 768px) 90vw, (max-width: 1024px) 70vw, 60vw"
                 />
               )}
 
@@ -252,13 +256,13 @@ export const CarouselBlock = ({
 
             {/* Caption for current slide */}
             {currentSlide && (
-              <figcaption className="mt-[18px] md:mt-[26px] text-left leading-snug">
+              <figcaption className="mt-6 md:mt-9 text-left leading-snug">
                 <div className="flex justify-between items-start gap-4">
                   <div>
                     <p className="text-stone-500 text-[13px] md:text-[15px] font-bold">
                       {currentSlide.title}
-                      {currentSlide.year && <>, {currentSlide.year}</>}
                       {currentSlide.isDetail && <span className="font-normal text-stone-500"> (DETAIL)</span>}
+                      {currentSlide.year && <>, {currentSlide.year}</>}
                     </p>
                     {currentSlide.materials && (
                       <p className="text-stone-500 text-[11px] md:text-[13px] mt-[3px] md:mt-[6px]">
