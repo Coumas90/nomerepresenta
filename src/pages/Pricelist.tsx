@@ -45,12 +45,20 @@ const Pricelist = () => {
   const { data: allImages, isLoading: imagesLoading } = useAllArtworkImages();
   const { data: series } = useSeries();
 
+  // Auto-authenticate via magic token
+  useEffect(() => {
+    if (isMagicAuth && !authenticated) {
+      sessionStorage.setItem(`pricelist-auth-${slug}`, "true");
+      setAuthenticated(true);
+    }
+  }, [isMagicAuth, authenticated, slug]);
+
   // Track page view once authenticated
   useEffect(() => {
-    if (authenticated && pricelist) {
+    if ((authenticated || isMagicAuth) && pricelist) {
       trackPageView(`/selected/${slug}`, `Pricelist - ${pricelist.name}`);
     }
-  }, [authenticated, pricelist, slug, trackPageView]);
+  }, [authenticated, isMagicAuth, pricelist, slug, trackPageView]);
 
   if (plLoading) {
     return (
