@@ -693,6 +693,89 @@ export type Database = {
         }
         Relationships: []
       }
+      sold_artworks: {
+        Row: {
+          artwork_id: string
+          collector_city: string | null
+          collector_country: string | null
+          collector_email: string | null
+          collector_name: string | null
+          collector_phone: string | null
+          collector_type: string | null
+          commission_percentage: number | null
+          created_at: string
+          currency: string | null
+          date_sold: string | null
+          gallery_name: string | null
+          id: string
+          installment_count: number | null
+          installment_end_date: string | null
+          installment_start_date: string | null
+          invoice_url: string | null
+          notes: string | null
+          payment_status: string | null
+          sale_price: number | null
+          sold_through: string | null
+          updated_at: string
+        }
+        Insert: {
+          artwork_id: string
+          collector_city?: string | null
+          collector_country?: string | null
+          collector_email?: string | null
+          collector_name?: string | null
+          collector_phone?: string | null
+          collector_type?: string | null
+          commission_percentage?: number | null
+          created_at?: string
+          currency?: string | null
+          date_sold?: string | null
+          gallery_name?: string | null
+          id?: string
+          installment_count?: number | null
+          installment_end_date?: string | null
+          installment_start_date?: string | null
+          invoice_url?: string | null
+          notes?: string | null
+          payment_status?: string | null
+          sale_price?: number | null
+          sold_through?: string | null
+          updated_at?: string
+        }
+        Update: {
+          artwork_id?: string
+          collector_city?: string | null
+          collector_country?: string | null
+          collector_email?: string | null
+          collector_name?: string | null
+          collector_phone?: string | null
+          collector_type?: string | null
+          commission_percentage?: number | null
+          created_at?: string
+          currency?: string | null
+          date_sold?: string | null
+          gallery_name?: string | null
+          id?: string
+          installment_count?: number | null
+          installment_end_date?: string | null
+          installment_start_date?: string | null
+          invoice_url?: string | null
+          notes?: string | null
+          payment_status?: string | null
+          sale_price?: number | null
+          sold_through?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sold_artworks_artwork_id_fkey"
+            columns: ["artwork_id"]
+            isOneToOne: false
+            referencedRelation: "artworks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       studio_images: {
         Row: {
           created_at: string
