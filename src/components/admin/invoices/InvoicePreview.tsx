@@ -1,8 +1,9 @@
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useMemo } from "react";
 import { ArrowLeft, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { resolveArtworkImageUrl } from "@/lib/artworkImageUrl";
+import { useAllArtworkImages } from "@/hooks/useAllArtworkImages";
 
 interface ArtworkInfo {
   id: string;
@@ -77,6 +78,7 @@ const waitForImageReady = (img: HTMLImageElement) =>
 const InvoicePreview = ({ invoice, onBack, isPublic = false }: Props) => {
   const previewRef = useRef<HTMLDivElement>(null);
   const [generating, setGenerating] = useState(false);
+  const { data: allArtworkImages = {} } = useAllArtworkImages();
 
   const formatDate = (date: string) => {
     const d = new Date(date + "T00:00:00");
@@ -113,19 +115,45 @@ const InvoicePreview = ({ invoice, onBack, isPublic = false }: Props) => {
         .save();
 
       // Restore original src
-      originals.forEach(({ el, src }) => { el.src = src; });
+      originals.forEach(({ el, src }) => {
+        el.src = src;
+      });
       toast.success("PDF downloaded");
-    } catch (err) {
+    } catch {
       toast.error("Failed to generate PDF");
     } finally {
       setGenerating(false);
     }
   }, [invoice.invoiceNumber]);
 
+  const artworksForPreview = useMemo(() => {
+    const pickField = (primary?: string | null, fallback?: string | null) => {
+      const trimmedPrimary = primary?.trim();
+      if (trimmedPrimary) return trimmedPrimary;
+
+      const trimmedFallback = fallback?.trim();
+      return trimmedFallback || null;
+    };
+
+    return invoice.artworks.map((art) => {
+      const variants = allArtworkImages[art.id] || [];
+      const mainImage = variants.find((img) => img.is_main) || variants[0];
+
+      return {
+        ...art,
+        image_url: (mainImage?.image_url || art.image_url || "").trim(),
+        title: pickField(mainImage?.title, art.title) || art.title,
+        year: pickField(mainImage?.year, art.year),
+        materials: pickField(mainImage?.materials, art.materials),
+        dimensions: pickField(mainImage?.dimensions, art.dimensions),
+      };
+    });
+  }, [allArtworkImages, invoice.artworks]);
+
   // Group artworks into rows of 2
   const artworkRows: ArtworkInfo[][] = [];
-  for (let i = 0; i < invoice.artworks.length; i += 2) {
-    artworkRows.push(invoice.artworks.slice(i, i + 2));
+  for (let i = 0; i < artworksForPreview.length; i += 2) {
+    artworkRows.push(artworksForPreview.slice(i, i + 2));
   }
 
   return (
@@ -216,7 +244,7 @@ const InvoicePreview = ({ invoice, onBack, isPublic = false }: Props) => {
                     >
                       <img
                         data-artwork="true"
-                        src={resolveArtworkImageUrl(art.image_url)}
+                        src={resolveArtworkImageUrl(art.image_url.trim())}
                         alt={art.title}
                         crossOrigin="anonymous"
                         style={{
@@ -226,15 +254,19 @@ const InvoicePreview = ({ invoice, onBack, isPublic = false }: Props) => {
                           display: "block",
                         }}
                       />
-                      <div style={{ marginTop: "10px", fontSize: "12px", lineHeight: 1.5 }}>
-                        <div style={{ fontStyle: "italic" }}>
+                      <div style={{ marginTop: "18px", textAlign: "left" }}>
+                        <div style={{ fontSize: "12px", lineHeight: 1.4, fontWeight: 700, color: "#78716c" }}>
                           {art.title}{art.year ? `, ${art.year}` : ""}
                         </div>
                         {art.materials && (
-                          <div style={{ color: "#555" }}>{art.materials}</div>
+                          <div style={{ marginTop: "3px", fontSize: "11px", lineHeight: 1.4, color: "#78716c" }}>
+                            {art.materials}
+                          </div>
                         )}
                         {art.dimensions && (
-                          <div style={{ color: "#555" }}>{art.dimensions}</div>
+                          <div style={{ marginTop: "4px", fontSize: "11px", lineHeight: 1.4, color: "#78716c" }}>
+                            {art.dimensions}
+                          </div>
                         )}
                       </div>
                     </div>
