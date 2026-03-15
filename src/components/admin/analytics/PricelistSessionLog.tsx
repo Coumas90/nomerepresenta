@@ -89,13 +89,21 @@ const eventIcon = (type: string) => {
 const PricelistSessionLog = ({ startDate, endDate }: PricelistSessionLogProps) => {
   const { data, isLoading } = usePricelistAnalytics(startDate, endDate);
   const [selectedSlug, setSelectedSlug] = useState<string>("all");
+  const [sortBySlug, setSortBySlug] = useState<"none" | "asc" | "desc">("none");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null);
 
   const slugs = data?.bySlug.map((s) => s.slug) || [];
-  const sessions = selectedSlug === "all"
+  const filtered = selectedSlug === "all"
     ? data?.sessions || []
     : (data?.sessions || []).filter((s) => s.slug === selectedSlug);
+
+  const sessions = sortBySlug === "none"
+    ? filtered
+    : [...filtered].sort((a, b) => {
+        const cmp = a.slug.localeCompare(b.slug);
+        return sortBySlug === "asc" ? cmp : -cmp;
+      });
 
   const exportCSV = () => {
     if (!sessions.length) return;
