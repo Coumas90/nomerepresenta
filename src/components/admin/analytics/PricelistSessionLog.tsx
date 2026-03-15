@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ChevronDown, ChevronUp, Download, Monitor, Smartphone, Tablet, ShoppingBag, Eye, Send, MousePointerClick } from "lucide-react";
+import { ChevronDown, ChevronUp, Download, Monitor, Smartphone, Tablet, ShoppingBag, Eye, Send, MousePointerClick, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { format } from "date-fns";
 import { usePricelistAnalytics, type PricelistSessionData } from "@/hooks/usePricelistAnalytics";
 import { supabase } from "@/integrations/supabase/client";
@@ -89,13 +89,21 @@ const eventIcon = (type: string) => {
 const PricelistSessionLog = ({ startDate, endDate }: PricelistSessionLogProps) => {
   const { data, isLoading } = usePricelistAnalytics(startDate, endDate);
   const [selectedSlug, setSelectedSlug] = useState<string>("all");
+  const [sortBySlug, setSortBySlug] = useState<"none" | "asc" | "desc">("none");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null);
 
   const slugs = data?.bySlug.map((s) => s.slug) || [];
-  const sessions = selectedSlug === "all"
+  const filtered = selectedSlug === "all"
     ? data?.sessions || []
     : (data?.sessions || []).filter((s) => s.slug === selectedSlug);
+
+  const sessions = sortBySlug === "none"
+    ? filtered
+    : [...filtered].sort((a, b) => {
+        const cmp = a.slug.localeCompare(b.slug);
+        return sortBySlug === "asc" ? cmp : -cmp;
+      });
 
   const exportCSV = () => {
     if (!sessions.length) return;
@@ -160,7 +168,17 @@ const PricelistSessionLog = ({ startDate, endDate }: PricelistSessionLogProps) =
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-8" />
-                  <TableHead>Link</TableHead>
+                  <TableHead
+                    className="cursor-pointer select-none"
+                    onClick={() => setSortBySlug(sortBySlug === "none" ? "asc" : sortBySlug === "asc" ? "desc" : "none")}
+                  >
+                    <span className="inline-flex items-center gap-1">
+                      Link
+                      {sortBySlug === "none" && <ArrowUpDown className="h-3 w-3 text-muted-foreground" />}
+                      {sortBySlug === "asc" && <ArrowUp className="h-3 w-3" />}
+                      {sortBySlug === "desc" && <ArrowDown className="h-3 w-3" />}
+                    </span>
+                  </TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>Duration</TableHead>
                   <TableHead>Source</TableHead>
