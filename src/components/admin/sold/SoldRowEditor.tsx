@@ -12,15 +12,19 @@ const COLLECTOR_TYPES = ["Private", "Institution", "Gallery"];
 const SOLD_THROUGH_OPTIONS = ["Studio", "Gallery", "Fair", "Online", "Friend space", "Other"];
 const CURRENCIES = ["USD", "EUR", "BRL", "GBP"];
 
+export type ThumbSize = "sm" | "md" | "lg";
+const THUMB_SIZES: Record<ThumbSize, number> = { sm: 40, md: 64, lg: 120 };
+
 interface SoldRowEditorProps {
   item: SoldArtwork;
+  thumbSize: ThumbSize;
   onUpdate: (id: string, updates: Record<string, unknown>) => void;
   onDelete: (id: string) => void;
   onUploadInvoice: (soldId: string, file: File) => void;
   onDownloadInvoice: (path: string) => void;
 }
 
-export const SoldRowEditor = ({ item, onUpdate, onDelete, onUploadInvoice, onDownloadInvoice }: SoldRowEditorProps) => {
+export const SoldRowEditor = ({ item, thumbSize, onUpdate, onDelete, onUploadInvoice, onDownloadInvoice }: SoldRowEditorProps) => {
   const fileRef = useRef<HTMLInputElement>(null);
   const [showInstallments, setShowInstallments] = useState(item.payment_status === "installments");
 
@@ -38,14 +42,19 @@ export const SoldRowEditor = ({ item, onUpdate, onDelete, onUploadInvoice, onDow
   return (
     <TableRow className="align-top">
       {/* Artwork info */}
-      <TableCell className="w-[200px]">
-        <div className="flex items-center gap-2">
+      <TableCell className="min-w-[260px]">
+        <div className="flex items-center gap-3">
           {item.artwork && (
-            <img src={item.artwork.image_url} alt={item.artwork.title} className="w-10 h-10 object-cover rounded" />
+            <img
+              src={item.artwork.image_url}
+              alt={item.artwork.title}
+              style={{ width: THUMB_SIZES[thumbSize], height: THUMB_SIZES[thumbSize] }}
+              className="object-contain rounded shrink-0"
+            />
           )}
-          <div className="min-w-0">
-            <p className="text-xs font-medium truncate">{item.artwork?.title || "—"}</p>
-            <p className="text-[10px] text-muted-foreground truncate">
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-medium leading-tight">{item.artwork?.title || "—"}</p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">
               {item.artwork?.catalog_series || ""} {item.artwork?.year ? `· ${item.artwork.year}` : ""}
             </p>
           </div>
