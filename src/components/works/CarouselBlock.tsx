@@ -242,8 +242,8 @@ export const CarouselBlock = ({
               {/* Desktop click zones */}
               {!isMobile && totalSlides > 1 && (
                 <>
-                  <button onClick={goToPrev} className="absolute top-0 bottom-0 z-20 focus:outline-none -left-[50vw] w-[calc(50%+50vw)]" style={{ cursor: cursorLeftSvg }} aria-label="Previous artwork" />
-                  <button onClick={goToNext} className="absolute top-0 bottom-0 z-20 focus:outline-none -right-[50vw] w-[calc(50%+50vw)]" style={{ cursor: cursorRightSvg }} aria-label="Next artwork" />
+                  <button onClick={goToPrev} className="absolute top-0 bottom-0 z-20 focus:outline-none -left-[100vw] w-[calc(50%+100vw)]" style={{ cursor: cursorLeftSvg }} aria-label="Previous artwork" />
+                  <button onClick={goToNext} className="absolute top-0 bottom-0 z-20 focus:outline-none -right-[100vw] w-[calc(50%+100vw)]" style={{ cursor: cursorRightSvg }} aria-label="Next artwork" />
                 </>
               )}
             </div>
