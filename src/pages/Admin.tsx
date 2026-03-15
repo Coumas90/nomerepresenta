@@ -157,6 +157,13 @@ const Admin = () => {
           </Suspense>
         );
       
+      case "content-invoices":
+        return (
+          <Suspense fallback={<LoadingSkeleton type="analytics" />}>
+            <InvoiceManager />
+          </Suspense>
+        );
+      
       case "settings-compression":
         return <ImageCompressionSettings />;
       
