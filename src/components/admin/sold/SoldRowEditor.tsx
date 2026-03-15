@@ -42,14 +42,19 @@ export const SoldRowEditor = ({ item, thumbSize, onUpdate, onDelete, onUploadInv
   return (
     <TableRow className="align-top">
       {/* Artwork info */}
-      <TableCell className="w-[200px]">
-        <div className="flex items-center gap-2">
+      <TableCell className="min-w-[260px]">
+        <div className="flex items-center gap-3">
           {item.artwork && (
-            <img src={item.artwork.image_url} alt={item.artwork.title} className="w-10 h-10 object-cover rounded" />
+            <img
+              src={item.artwork.image_url}
+              alt={item.artwork.title}
+              style={{ width: THUMB_SIZES[thumbSize], height: THUMB_SIZES[thumbSize] }}
+              className="object-contain rounded shrink-0"
+            />
           )}
-          <div className="min-w-0">
-            <p className="text-xs font-medium truncate">{item.artwork?.title || "—"}</p>
-            <p className="text-[10px] text-muted-foreground truncate">
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-medium leading-tight">{item.artwork?.title || "—"}</p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">
               {item.artwork?.catalog_series || ""} {item.artwork?.year ? `· ${item.artwork.year}` : ""}
             </p>
           </div>
