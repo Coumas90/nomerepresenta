@@ -220,6 +220,8 @@ const CatalogManager = ({ onEdit }: CatalogManagerProps = {}) => {
         </ToggleGroup>
       </div>
 
+      <CatalogSeriesManager />
+
       <CatalogFilters
         search={search}
         onSearchChange={setSearch}
