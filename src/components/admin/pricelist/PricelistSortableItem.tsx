@@ -50,6 +50,7 @@ export const PricelistSortableItem = ({
   const currencyKey = activeCurrency.toLowerCase() as "usd" | "eur" | "brl";
   const currentValue = item[`price_${currencyKey}`] || "";
   const [priceValue, setPriceValue] = useState(currentValue);
+  const updateOverrides = useUpdatePricelistItemOverrides();
 
   // Fetch all images for this artwork (only when expanded)
   const { data: artworkImages } = useArtworkImages(expanded ? item.artwork_id : undefined);
