@@ -168,14 +168,30 @@ const InvoicePreview = ({ invoice, onBack, isPublic = false }: Props) => {
 
     return invoice.artworks.map((art) => {
       const variants = allArtworkImages[art.id] || [];
-      const mainImage = variants.find((img) => img.is_main) || variants[0];
+      const nonInstallVariants = variants.filter((img) => !img.is_install);
+      const thumbnailVariant = nonInstallVariants[0] || variants[0];
+      const mainVariant =
+        nonInstallVariants.find((img) => img.is_main) ||
+        variants.find((img) => img.is_main) ||
+        thumbnailVariant;
+
+      const candidateUrls = [
+        thumbnailVariant?.image_url,
+        mainVariant?.image_url,
+        art.image_url,
+      ]
+        .map((url) => resolveArtworkImageUrl((url || "").trim()))
+        .filter(Boolean)
+        .filter((url, index, arr) => arr.indexOf(url) === index);
+
       return {
         ...art,
-        image_url: (mainImage?.image_url || art.image_url || "").trim(),
-        title: pickField(mainImage?.title, art.title) || art.title,
-        year: pickField(mainImage?.year, art.year),
-        materials: pickField(mainImage?.materials, art.materials),
-        dimensions: pickField(mainImage?.dimensions, art.dimensions),
+        image_url: candidateUrls[0] || "",
+        image_candidates: candidateUrls,
+        title: pickField(mainVariant?.title, art.title) || art.title,
+        year: pickField(mainVariant?.year, art.year),
+        materials: pickField(mainVariant?.materials, art.materials),
+        dimensions: pickField(mainVariant?.dimensions, art.dimensions),
       };
     });
   }, [allArtworkImages, invoice.artworks]);
