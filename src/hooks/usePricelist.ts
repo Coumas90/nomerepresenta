@@ -12,6 +12,7 @@ export interface Pricelist {
   series_name: string;
   header_name: string | null;
   active_currency: PricelistCurrency;
+  magic_token: string | null;
   created_at: string;
   updated_at: string;
 }
