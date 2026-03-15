@@ -461,6 +461,7 @@ export type Database = {
           created_at: string
           header_name: string | null
           id: string
+          magic_token: string | null
           name: string
           password: string
           series_name: string | null
@@ -472,6 +473,7 @@ export type Database = {
           created_at?: string
           header_name?: string | null
           id?: string
+          magic_token?: string | null
           name: string
           password?: string
           series_name?: string | null
@@ -483,6 +485,7 @@ export type Database = {
           created_at?: string
           header_name?: string | null
           id?: string
+          magic_token?: string | null
           name?: string
           password?: string
           series_name?: string | null
