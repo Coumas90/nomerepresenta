@@ -86,13 +86,15 @@ const InvoicePreview = ({ invoice, onBack, isPublic = false }: Props) => {
     if (!previewRef.current) return;
     setGenerating(true);
     try {
-      // Pre-convert all images to base64 to avoid CORS issues
+      // Convert artwork images to data URLs and ensure they are fully loaded before capture
       const imgs = previewRef.current.querySelectorAll<HTMLImageElement>("img[data-artwork]");
       const originals: { el: HTMLImageElement; src: string }[] = [];
       await Promise.all(
         Array.from(imgs).map(async (img) => {
           originals.push({ el: img, src: img.src });
-          img.src = await toBase64(img.src);
+          const converted = await toDataUrl(img.src);
+          img.src = converted;
+          await waitForImageReady(img);
         })
       );
 
