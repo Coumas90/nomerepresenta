@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ChevronDown, ChevronUp, Download, Monitor, Smartphone, Tablet, ShoppingBag, Eye, Send, MousePointerClick } from "lucide-react";
+import { ChevronDown, ChevronUp, Download, Monitor, Smartphone, Tablet, ShoppingBag, Eye, Send, MousePointerClick, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { format } from "date-fns";
 import { usePricelistAnalytics, type PricelistSessionData } from "@/hooks/usePricelistAnalytics";
 import { supabase } from "@/integrations/supabase/client";
