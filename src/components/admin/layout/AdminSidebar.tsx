@@ -10,6 +10,7 @@ import {
   ExternalLink,
   BookOpen,
   Ticket,
+  FileText,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
@@ -44,6 +45,7 @@ const contentItems = [
   { title: "Bio", url: "/admin?section=content-bio", icon: Users },
   { title: "Pricelist", url: "/admin?section=content-pricelist", icon: DollarSign },
   { title: "Sold", url: "/admin?section=content-sold", icon: DollarSign },
+  { title: "Invoices", url: "/admin?section=content-invoices", icon: FileText },
   { title: "Shows", url: "/admin?section=content-shows", icon: Ticket },
 ];
 

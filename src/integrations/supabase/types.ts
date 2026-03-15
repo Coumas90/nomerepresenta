@@ -368,6 +368,131 @@ export type Database = {
         }
         Relationships: []
       }
+      invoice_artworks: {
+        Row: {
+          artwork_id: string
+          created_at: string | null
+          display_order: number | null
+          id: string
+          invoice_id: string
+        }
+        Insert: {
+          artwork_id: string
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          invoice_id: string
+        }
+        Update: {
+          artwork_id?: string
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          invoice_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_artworks_artwork_id_fkey"
+            columns: ["artwork_id"]
+            isOneToOne: false
+            referencedRelation: "artworks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoice_artworks_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoice_line_items: {
+        Row: {
+          created_at: string | null
+          description: string
+          display_order: number | null
+          id: string
+          invoice_id: string
+          price: number
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string
+          display_order?: number | null
+          id?: string
+          invoice_id: string
+          price?: number
+        }
+        Update: {
+          created_at?: string | null
+          description?: string
+          display_order?: number | null
+          id?: string
+          invoice_id?: string
+          price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_line_items_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoices: {
+        Row: {
+          buyer_address: string | null
+          buyer_name: string | null
+          conditions: string | null
+          created_at: string
+          currency: string | null
+          id: string
+          invoice_date: string
+          invoice_number: string
+          magic_token: string | null
+          seller_address: string | null
+          seller_name: string | null
+          status: string | null
+          total_price: number | null
+          updated_at: string
+        }
+        Insert: {
+          buyer_address?: string | null
+          buyer_name?: string | null
+          conditions?: string | null
+          created_at?: string
+          currency?: string | null
+          id?: string
+          invoice_date?: string
+          invoice_number: string
+          magic_token?: string | null
+          seller_address?: string | null
+          seller_name?: string | null
+          status?: string | null
+          total_price?: number | null
+          updated_at?: string
+        }
+        Update: {
+          buyer_address?: string | null
+          buyer_name?: string | null
+          conditions?: string | null
+          created_at?: string
+          currency?: string | null
+          id?: string
+          invoice_date?: string
+          invoice_number?: string
+          magic_token?: string | null
+          seller_address?: string | null
+          seller_name?: string | null
+          status?: string | null
+          total_price?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       page_views: {
         Row: {
           created_at: string
@@ -1016,6 +1141,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      next_invoice_number: { Args: never; Returns: string }
     }
     Enums: {
       app_role: "admin" | "user"

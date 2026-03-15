@@ -23,6 +23,7 @@ const Contact = lazy(() => import("./pages/Contact"));
 const Pricelist = lazy(() => import("./pages/Pricelist"));
 const Shows = lazy(() => import("./pages/Shows"));
 const ShowDetail = lazy(() => import("./pages/ShowDetail"));
+const InvoicePublic = lazy(() => import("./pages/InvoicePublic"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -94,6 +95,7 @@ const App = () => (
             <Route path="/selected/:slug" element={<Pricelist />} />
             <Route path="/shows" element={<Shows />} />
             <Route path="/shows/:slug" element={<ShowDetail />} />
+            <Route path="/invoice/:token" element={<InvoicePublic />} />
             <Route 
               path="/admin" 
               element={

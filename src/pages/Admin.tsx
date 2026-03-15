@@ -18,6 +18,7 @@ const CatalogManager = lazy(() => import("@/components/admin/catalog/CatalogMana
 const ShowsManager = lazy(() => import("@/components/admin/ShowsManager"));
 const WorksBlockManager = lazy(() => import("@/components/admin/works/WorksBlockManager"));
 const SoldManager = lazy(() => import("@/components/admin/sold/SoldManager"));
+const InvoiceManager = lazy(() => import("@/components/admin/invoices/InvoiceManager"));
 
 const Admin = () => {
   const location = useLocation();
@@ -153,6 +154,13 @@ const Admin = () => {
         return (
           <Suspense fallback={<LoadingSkeleton type="analytics" />}>
             <SoldManager />
+          </Suspense>
+        );
+      
+      case "content-invoices":
+        return (
+          <Suspense fallback={<LoadingSkeleton type="analytics" />}>
+            <InvoiceManager />
           </Suspense>
         );
       
