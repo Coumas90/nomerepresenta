@@ -55,6 +55,13 @@ const PricelistManager = () => {
     toast.success("Link copied to clipboard");
   };
 
+  const handleCopyMagicLink = (slug: string, token: string | null) => {
+    if (!token) return;
+    const url = `${window.location.origin}/selected/${slug}?token=${token}`;
+    navigator.clipboard.writeText(url);
+    toast.success("Magic link copied — no password needed");
+  };
+
   const togglePasswordVisibility = (id: string) => {
     setShowPasswords((prev) => {
       const next = new Set(prev);
