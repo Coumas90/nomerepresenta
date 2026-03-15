@@ -12,6 +12,7 @@ export interface Pricelist {
   series_name: string;
   header_name: string | null;
   active_currency: PricelistCurrency;
+  magic_token: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -64,7 +65,7 @@ export const usePricelistBySlug = (slug: string) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("pricelists" as any)
-        .select("id, name, slug, series_name, header_name, active_currency, created_at, updated_at")
+        .select("id, name, slug, series_name, header_name, active_currency, magic_token, created_at, updated_at")
         .eq("slug", slug)
         .single();
       if (error) throw error;

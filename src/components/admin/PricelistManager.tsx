@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, ExternalLink, Trash2, Copy, Eye, EyeOff } from "lucide-react";
+import { Plus, ExternalLink, Trash2, Copy, Eye, EyeOff, Link2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -53,6 +53,13 @@ const PricelistManager = () => {
     const url = `${window.location.origin}/selected/${slug}`;
     navigator.clipboard.writeText(url);
     toast.success("Link copied to clipboard");
+  };
+
+  const handleCopyMagicLink = (slug: string, token: string | null) => {
+    if (!token) return;
+    const url = `${window.location.origin}/selected/${slug}?token=${token}`;
+    navigator.clipboard.writeText(url);
+    toast.success("Magic link copied — no password needed");
   };
 
   const togglePasswordVisibility = (id: string) => {
@@ -209,6 +216,10 @@ const PricelistManager = () => {
                     </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
+                    <Button variant="outline" size="sm" onClick={() => handleCopyMagicLink(pl.slug, pl.magic_token)}>
+                      <Link2 className="h-3 w-3 mr-1" />
+                      Magic Link
+                    </Button>
                     <Button variant="outline" size="sm" onClick={() => handleCopyLink(pl.slug)}>
                       <Copy className="h-3 w-3 mr-1" />
                       Copy Link

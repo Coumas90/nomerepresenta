@@ -1,0 +1,1 @@
+ALTER TABLE public.pricelists ADD COLUMN magic_token TEXT UNIQUE DEFAULT encode(gen_random_bytes(16), 'hex');

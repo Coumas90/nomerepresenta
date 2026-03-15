@@ -1,5 +1,5 @@
-import { useState, useCallback, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useState, useCallback, useEffect, useMemo } from "react";
+import { useParams, useSearchParams } from "react-router-dom";
 import { usePricelistBySlug, usePricelistItems, useVerifyPricelistPassword } from "@/hooks/usePricelist";
 import { useAllArtworkImages } from "@/hooks/useAllArtworkImages";
 import { useSeries } from "@/hooks/useSeries";
@@ -9,9 +9,16 @@ import { PricelistContent } from "@/components/pricelist/PricelistContent";
 
 const Pricelist = () => {
   const { slug = "main" } = useParams<{ slug: string }>();
+  const [searchParams] = useSearchParams();
+  const magicToken = searchParams.get("token");
   const { data: pricelist, isLoading: plLoading, error: plError } = usePricelistBySlug(slug);
   const { trackPageView } = useAnalytics();
   const verifyPassword = useVerifyPricelistPassword();
+
+  // Check magic token match
+  const isMagicAuth = useMemo(() => {
+    return !!(magicToken && pricelist?.magic_token && magicToken === pricelist.magic_token);
+  }, [magicToken, pricelist?.magic_token]);
 
   const [authenticated, setAuthenticated] = useState(() => {
     return sessionStorage.getItem(`pricelist-auth-${slug}`) === "true";
@@ -38,12 +45,20 @@ const Pricelist = () => {
   const { data: allImages, isLoading: imagesLoading } = useAllArtworkImages();
   const { data: series } = useSeries();
 
+  // Auto-authenticate via magic token
+  useEffect(() => {
+    if (isMagicAuth && !authenticated) {
+      sessionStorage.setItem(`pricelist-auth-${slug}`, "true");
+      setAuthenticated(true);
+    }
+  }, [isMagicAuth, authenticated, slug]);
+
   // Track page view once authenticated
   useEffect(() => {
-    if (authenticated && pricelist) {
+    if ((authenticated || isMagicAuth) && pricelist) {
       trackPageView(`/selected/${slug}`, `Pricelist - ${pricelist.name}`);
     }
-  }, [authenticated, pricelist, slug, trackPageView]);
+  }, [authenticated, isMagicAuth, pricelist, slug, trackPageView]);
 
   if (plLoading) {
     return (
