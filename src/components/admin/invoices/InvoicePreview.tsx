@@ -12,6 +12,7 @@ interface ArtworkInfo {
   dimensions: string | null;
   materials: string | null;
   image_url: string;
+  image_candidates?: string[];
 }
 
 interface LineItem {
@@ -40,38 +41,20 @@ interface Props {
   isPublic?: boolean;
 }
 
-/** Convert an image URL to a base64 data URL via an offscreen canvas */
 const toDataUrl = async (url: string): Promise<string> => {
   try {
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.src = url;
-    await new Promise<void>((resolve, reject) => {
-      img.onload = () => resolve();
-      img.onerror = () => reject(new Error("Image load failed"));
+    const response = await fetch(url, { mode: "cors", cache: "no-store" });
+    if (!response.ok) return url;
+    const blob = await response.blob();
+
+    return await new Promise<string>((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve((reader.result as string) || url);
+      reader.onerror = () => resolve(url);
+      reader.readAsDataURL(blob);
     });
-    const canvas = document.createElement("canvas");
-    canvas.width = img.naturalWidth;
-    canvas.height = img.naturalHeight;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return url;
-    ctx.drawImage(img, 0, 0);
-    return canvas.toDataURL("image/jpeg", 0.95);
   } catch {
-    // Fallback: try fetch approach
-    try {
-      const response = await fetch(url, { mode: "cors", cache: "no-store" });
-      if (!response.ok) return url;
-      const blob = await response.blob();
-      return await new Promise<string>((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve((reader.result as string) || url);
-        reader.onerror = () => resolve(url);
-        reader.readAsDataURL(blob);
-      });
-    } catch {
-      return url;
-    }
+    return url;
   }
 };
 
@@ -89,6 +72,29 @@ const waitForImageReady = (img: HTMLImageElement) =>
     img.onload = done;
     img.onerror = done;
   });
+
+const canLoadImage = (url: string) =>
+  new Promise<boolean>((resolve) => {
+    if (!url) {
+      resolve(false);
+      return;
+    }
+
+    const testImage = new Image();
+    testImage.onload = () => resolve(true);
+    testImage.onerror = () => resolve(false);
+    testImage.src = url;
+  });
+
+const pickFirstLoadableImage = async (candidates: string[]) => {
+  for (const candidate of candidates) {
+    if (!candidate) continue;
+    const ok = await canLoadImage(candidate);
+    if (ok) return candidate;
+  }
+
+  return candidates.find(Boolean) || "";
+};
 
 const InvoicePreview = ({ invoice, onBack, isPublic = false }: Props) => {
   const previewRef = useRef<HTMLDivElement>(null);
