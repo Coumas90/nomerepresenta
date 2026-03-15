@@ -237,6 +237,7 @@ const InvoicePreview = ({ invoice, onBack, isPublic = false }: Props) => {
                           <div style={{ color: "#555" }}>{art.dimensions}</div>
                         )}
                       </div>
+                    </div>
                   ))}
                 </div>
               ))}
