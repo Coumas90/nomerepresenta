@@ -92,9 +92,12 @@ const CatalogManager = ({ onEdit }: CatalogManagerProps = {}) => {
   }, [artworks, search, yearFilter, sizeFilter, mediumFilter, statusFilter, seriesFilter]);
 
   const catalogSeriesNames = useMemo(() => {
-    const set = new Set(artworks.map((a) => a.catalog_series).filter(Boolean) as string[]);
+    const set = new Set([
+      ...managedCatalogSeries,
+      ...(artworks.map((a) => a.catalog_series).filter(Boolean) as string[]),
+    ]);
     return Array.from(set).sort();
-  }, [artworks]);
+  }, [artworks, managedCatalogSeries]);
 
   const grouped = useMemo(() => {
     const map: Record<string, typeof filtered> = {};
