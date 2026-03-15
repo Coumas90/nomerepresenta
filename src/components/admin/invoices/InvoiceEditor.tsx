@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import ArtworkPicker from "@/components/admin/works/ArtworkPicker";
 import InvoicePreview from "./InvoicePreview";
 import { useCatalogArtworks } from "@/hooks/useCatalog";
+import { resolveArtworkImageUrl } from "@/lib/artworkImageUrl";
 
 interface LineItem {
   description: string;

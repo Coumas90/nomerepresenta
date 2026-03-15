@@ -2,6 +2,7 @@ import { useRef, useState, useCallback } from "react";
 import { ArrowLeft, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { resolveArtworkImageUrl } from "@/lib/artworkImageUrl";
 
 interface ArtworkInfo {
   id: string;
