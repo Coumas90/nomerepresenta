@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useCallback } from "react";
 import { ArrowLeft, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -38,6 +38,22 @@ interface Props {
   isPublic?: boolean;
 }
 
+/** Convert an image URL to a base64 data URL to avoid CORS issues in html2canvas */
+const toBase64 = (url: string): Promise<string> =>
+  new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      const c = document.createElement("canvas");
+      c.width = img.naturalWidth;
+      c.height = img.naturalHeight;
+      c.getContext("2d")!.drawImage(img, 0, 0);
+      resolve(c.toDataURL("image/jpeg", 0.95));
+    };
+    img.onerror = () => resolve(url); // fallback to original
+    img.src = url;
+  });
+
 const InvoicePreview = ({ invoice, onBack, isPublic = false }: Props) => {
   const previewRef = useRef<HTMLDivElement>(null);
   const [generating, setGenerating] = useState(false);
@@ -47,29 +63,42 @@ const InvoicePreview = ({ invoice, onBack, isPublic = false }: Props) => {
     return d.toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric" });
   };
 
-  const handleDownloadPDF = async () => {
+  const handleDownloadPDF = useCallback(async () => {
     if (!previewRef.current) return;
     setGenerating(true);
     try {
+      // Pre-convert all images to base64 to avoid CORS issues
+      const imgs = previewRef.current.querySelectorAll<HTMLImageElement>("img[data-artwork]");
+      const originals: { el: HTMLImageElement; src: string }[] = [];
+      await Promise.all(
+        Array.from(imgs).map(async (img) => {
+          originals.push({ el: img, src: img.src });
+          img.src = await toBase64(img.src);
+        })
+      );
+
       const html2pdf = (await import("html2pdf.js")).default;
       await html2pdf()
         .set({
           margin: 0,
           filename: `invoice-${invoice.invoiceNumber.replace("#", "")}.pdf`,
           image: { type: "jpeg", quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true, logging: false },
+          html2canvas: { scale: 2, useCORS: true, logging: false, allowTaint: true },
           jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
           pagebreak: { mode: ["avoid-all", "css", "legacy"] },
         })
         .from(previewRef.current)
         .save();
+
+      // Restore original src
+      originals.forEach(({ el, src }) => { el.src = src; });
       toast.success("PDF downloaded");
     } catch (err) {
       toast.error("Failed to generate PDF");
     } finally {
       setGenerating(false);
     }
-  };
+  }, [invoice.invoiceNumber]);
 
   // Group artworks into rows of 2
   const artworkRows: ArtworkInfo[][] = [];
@@ -107,35 +136,35 @@ const InvoicePreview = ({ invoice, onBack, isPublic = false }: Props) => {
             width: "210mm",
             minHeight: "297mm",
             padding: "25mm 30mm 20mm 30mm",
-            fontFamily: "'Times New Roman', 'Georgia', serif",
+            fontFamily: "'Georgia', 'Times New Roman', serif",
             color: "#000",
             position: "relative",
             boxSizing: "border-box",
           }}
         >
           {/* Header: Seller left, Invoice info right */}
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "28px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "32px" }}>
             <div>
-              <div style={{ fontWeight: 700, fontSize: "14px", marginBottom: "4px" }}>{invoice.sellerName}</div>
-              <div style={{ fontSize: "12px", whiteSpace: "pre-line", lineHeight: 1.5 }}>
+              <div style={{ fontWeight: 700, fontSize: "15px", marginBottom: "4px" }}>{invoice.sellerName}</div>
+              <div style={{ fontSize: "13px", whiteSpace: "pre-line", lineHeight: 1.6 }}>
                 {invoice.sellerAddress}
               </div>
             </div>
             <div style={{ textAlign: "right" }}>
-              <div style={{ fontWeight: 700, fontSize: "14px" }}>INVOICE {invoice.invoiceNumber}</div>
-              <div style={{ fontSize: "12px" }}>{formatDate(invoice.invoiceDate)}</div>
+              <div style={{ fontWeight: 700, fontSize: "15px" }}>INVOICE {invoice.invoiceNumber}</div>
+              <div style={{ fontSize: "13px" }}>{formatDate(invoice.invoiceDate)}</div>
             </div>
           </div>
 
           {/* Buyer */}
           {(invoice.buyerName || invoice.buyerAddress) && (
-            <div style={{ marginBottom: "28px" }}>
-              <div style={{ fontSize: "12px", fontWeight: 700, marginBottom: "4px" }}>TO:</div>
+            <div style={{ marginBottom: "32px" }}>
+              <div style={{ fontSize: "13px", fontWeight: 700, marginBottom: "4px" }}>TO:</div>
               {invoice.buyerName && (
-                <div style={{ fontSize: "12px" }}>{invoice.buyerName}</div>
+                <div style={{ fontSize: "13px" }}>{invoice.buyerName}</div>
               )}
               {invoice.buyerAddress && (
-                <div style={{ fontSize: "12px", whiteSpace: "pre-line", lineHeight: 1.5 }}>
+                <div style={{ fontSize: "13px", whiteSpace: "pre-line", lineHeight: 1.6 }}>
                   {invoice.buyerAddress}
                 </div>
               )}
@@ -144,7 +173,7 @@ const InvoicePreview = ({ invoice, onBack, isPublic = false }: Props) => {
 
           {/* Artworks Grid */}
           {artworkRows.length > 0 && (
-            <div style={{ marginBottom: "32px" }}>
+            <div style={{ marginBottom: "36px" }}>
               {artworkRows.map((row, ri) => (
                 <div
                   key={ri}
@@ -164,6 +193,7 @@ const InvoicePreview = ({ invoice, onBack, isPublic = false }: Props) => {
                       }}
                     >
                       <img
+                        data-artwork="true"
                         src={art.image_url}
                         alt={art.title}
                         crossOrigin="anonymous"
@@ -193,8 +223,8 @@ const InvoicePreview = ({ invoice, onBack, isPublic = false }: Props) => {
                       display: "flex",
                       justifyContent: "space-between",
                       alignItems: "baseline",
-                      fontSize: "13px",
-                      marginBottom: "6px",
+                      fontSize: "14px",
+                      marginBottom: "8px",
                       fontWeight: 600,
                     }}
                   >
@@ -202,8 +232,8 @@ const InvoicePreview = ({ invoice, onBack, isPublic = false }: Props) => {
                     <span
                       style={{
                         flex: 1,
-                        borderBottom: "1px dotted #999",
-                        margin: "0 12px",
+                        borderBottom: "1px solid #999",
+                        margin: "0 16px",
                         position: "relative",
                         top: "-3px",
                       }}
@@ -221,7 +251,7 @@ const InvoicePreview = ({ invoice, onBack, isPublic = false }: Props) => {
                   style={{
                     display: "flex",
                     justifyContent: "flex-end",
-                    fontSize: "14px",
+                    fontSize: "15px",
                     fontWeight: 700,
                     borderTop: "1px solid #000",
                     paddingTop: "8px",
@@ -241,14 +271,14 @@ const InvoicePreview = ({ invoice, onBack, isPublic = false }: Props) => {
               <div
                 style={{
                   borderTop: "3px solid #000",
-                  paddingTop: "20px",
+                  paddingTop: "24px",
                   marginTop: "8px",
                 }}
               >
-                <div style={{ fontSize: "14px", fontWeight: 700, marginBottom: "10px" }}>
+                <div style={{ fontSize: "16px", fontWeight: 700, marginBottom: "12px" }}>
                   Conditions of sale
                 </div>
-                <div style={{ fontSize: "12px", whiteSpace: "pre-line", lineHeight: 1.6 }}>
+                <div style={{ fontSize: "13px", whiteSpace: "pre-line", lineHeight: 1.7 }}>
                   {invoice.conditions}
                 </div>
               </div>
@@ -261,13 +291,21 @@ const InvoicePreview = ({ invoice, onBack, isPublic = false }: Props) => {
               position: "absolute",
               bottom: "20mm",
               left: "30mm",
-              fontSize: "10px",
-              fontWeight: 600,
-              letterSpacing: "0.5px",
-              color: "#666",
+              right: "30mm",
             }}
           >
-            IVAN COMAS STUDIO
+            <div style={{ borderTop: "3px solid #000", paddingTop: "16px" }}>
+              <div
+                style={{
+                  fontSize: "10px",
+                  fontWeight: 600,
+                  letterSpacing: "1px",
+                  color: "#000",
+                }}
+              >
+                IVAN COMAS STUDIO
+              </div>
+            </div>
           </div>
         </div>
       </div>
