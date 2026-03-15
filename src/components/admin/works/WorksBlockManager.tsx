@@ -362,7 +362,7 @@ const WorksBlockManager = () => {
                           </DndContext>
                         ) : (
                           <p className="text-sm text-muted-foreground text-center py-6">
-                            No blocks yet. Add a single or carousel block above.
+                            No blocks yet. Add a single or multiple block above.
                           </p>
                         )}
                       </AccordionContent>
