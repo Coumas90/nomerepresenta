@@ -1,12 +1,13 @@
 import { useState, useRef } from "react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Trash2, Upload, Download, FileText } from "lucide-react";
+import { Trash2, Upload, Download, FileText, ChevronDown } from "lucide-react";
 import type { SoldArtwork } from "@/hooks/useSoldArtworks";
 
-const PAYMENT_STATUSES = ["pending", "paid", "installments"];
+const PAYMENT_STATUSES = ["pending", "paid", "installments", "trade"];
 const COLLECTOR_TYPES = ["Private", "Institution", "Gallery"];
 const SOLD_THROUGH_OPTIONS = ["Studio", "Gallery", "Fair", "Online", "Friend space", "Other"];
 const CURRENCIES = ["USD", "EUR", "BRL", "GBP"];
@@ -203,6 +204,14 @@ export const SoldRowEditor = ({ item, onUpdate, onDelete, onUploadInvoice, onDow
         </div>
       </TableCell>
 
+      {/* Notes */}
+      <TableCell>
+        <NotesCell
+          value={item.notes || ""}
+          onSave={(v) => handleBlur("notes", v)}
+        />
+      </TableCell>
+
       {/* Invoice + Actions */}
       <TableCell>
         <div className="flex items-center gap-1">
@@ -234,5 +243,33 @@ export const SoldRowEditor = ({ item, onUpdate, onDelete, onUploadInvoice, onDow
         </div>
       </TableCell>
     </TableRow>
+  );
+};
+
+const MAX_PREVIEW = 60;
+
+const NotesCell = ({ value, onSave }: { value: string; onSave: (v: string) => void }) => {
+  const [expanded, setExpanded] = useState(false);
+  const isLong = value.length > MAX_PREVIEW;
+
+  return (
+    <div className="w-[160px]">
+      <textarea
+        defaultValue={value}
+        onBlur={(e) => onSave(e.target.value)}
+        className="flex w-full rounded-md border border-input bg-background px-2 py-1 text-xs ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
+        rows={expanded ? 5 : 2}
+        placeholder="Notes…"
+      />
+      {isLong && (
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="text-[10px] text-muted-foreground hover:text-foreground flex items-center gap-0.5 mt-0.5"
+        >
+          <ChevronDown className={`h-3 w-3 transition-transform ${expanded ? "rotate-180" : ""}`} />
+          {expanded ? "Less" : "More"}
+        </button>
+      )}
+    </div>
   );
 };
