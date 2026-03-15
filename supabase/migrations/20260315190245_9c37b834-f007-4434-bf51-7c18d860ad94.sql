@@ -1,0 +1,1 @@
+ALTER TABLE public.pricelist_items ADD COLUMN image_overrides jsonb DEFAULT '{}'::jsonb;

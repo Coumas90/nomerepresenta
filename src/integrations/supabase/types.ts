@@ -404,6 +404,7 @@ export type Database = {
           created_at: string
           display_order: number
           id: string
+          image_overrides: Json | null
           is_visible: boolean
           price: string
           price_brl: string | null
@@ -417,6 +418,7 @@ export type Database = {
           created_at?: string
           display_order?: number
           id?: string
+          image_overrides?: Json | null
           is_visible?: boolean
           price?: string
           price_brl?: string | null
@@ -430,6 +432,7 @@ export type Database = {
           created_at?: string
           display_order?: number
           id?: string
+          image_overrides?: Json | null
           is_visible?: boolean
           price?: string
           price_brl?: string | null
