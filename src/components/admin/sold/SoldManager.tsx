@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ArtworkPicker from "@/components/admin/works/ArtworkPicker";
-import { SoldRowEditor } from "./SoldRowEditor";
+import { SoldRowEditor, type ThumbSize } from "./SoldRowEditor";
 import {
   useSoldArtworks,
   useAddSoldArtwork,
