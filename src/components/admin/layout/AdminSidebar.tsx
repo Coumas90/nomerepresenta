@@ -43,6 +43,7 @@ const contentItems = [
   { title: "Studio", url: "/admin?section=content-studio", icon: Camera },
   { title: "Bio", url: "/admin?section=content-bio", icon: Users },
   { title: "Pricelist", url: "/admin?section=content-pricelist", icon: DollarSign },
+  { title: "Sold", url: "/admin?section=content-sold", icon: DollarSign },
   { title: "Shows", url: "/admin?section=content-shows", icon: Ticket },
 ];
 
