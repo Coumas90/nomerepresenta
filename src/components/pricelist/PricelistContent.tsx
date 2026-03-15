@@ -88,7 +88,27 @@ export const PricelistContent = ({
 
   const selectedTitles = selectedArtworks.map((a) => a.label);
 
-  const viewerImages = viewingArtworkId ? allImages?.[viewingArtworkId] || [] : [];
+  const viewerItem = allItems.find((item) => item.artwork_id === viewingArtworkId);
+  const viewerOverrides = viewerItem?.image_overrides;
+  const viewerHiddenSet = new Set(viewerOverrides?.hidden_images || []);
+  const rawViewerImages = viewingArtworkId ? allImages?.[viewingArtworkId] || [] : [];
+  
+  // Apply custom order and filter hidden
+  const viewerImages = (() => {
+    let imgs = rawViewerImages.filter((img) => !viewerHiddenSet.has(img.id));
+    const order = viewerOverrides?.image_order;
+    if (order && order.length > 0) {
+      const imgMap = new Map(imgs.map((img) => [img.id, img]));
+      const ordered: typeof imgs = [];
+      for (const id of order) {
+        const img = imgMap.get(id);
+        if (img) { ordered.push(img); imgMap.delete(id); }
+      }
+      for (const img of imgMap.values()) ordered.push(img);
+      imgs = ordered;
+    }
+    return imgs;
+  })();
   const viewingItem = allItems.find((item) => item.artwork_id === viewingArtworkId);
 
   return (

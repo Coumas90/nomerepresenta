@@ -27,6 +27,7 @@ export interface PricelistItem {
   price_brl: string;
   display_order: number;
   is_visible: boolean;
+  image_overrides: { hidden_images?: string[]; image_order?: string[] } | null;
   created_at: string;
   updated_at: string;
 }
@@ -276,6 +277,26 @@ export const useReorderPricelist = () => {
     },
     onSuccess: (pricelistId) => {
       queryClient.invalidateQueries({ queryKey: ["pricelist-items", pricelistId] });
+    },
+  });
+};
+
+export const useUpdatePricelistItemOverrides = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ itemId, pricelistId, overrides }: { itemId: string; pricelistId: string; overrides: { hidden_images?: string[]; image_order?: string[] } }) => {
+      const { error } = await supabase
+        .from("pricelist_items" as any)
+        .update({ image_overrides: overrides } as any)
+        .eq("id", itemId);
+      if (error) throw error;
+      return pricelistId;
+    },
+    onSuccess: (pricelistId) => {
+      queryClient.invalidateQueries({ queryKey: ["pricelist-items", pricelistId] });
+    },
+    onError: (error: Error) => {
+      toast.error(`Error: ${error.message}`);
     },
   });
 };

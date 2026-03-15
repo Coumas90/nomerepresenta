@@ -7,6 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { GripVertical, Trash2, Check, ChevronDown, ChevronUp } from "lucide-react";
 import { useArtworkImages } from "@/hooks/useArtworkImages";
 import type { PricelistItemWithArtwork, PricelistCurrency } from "@/hooks/usePricelist";
+import { useUpdatePricelistItemOverrides } from "@/hooks/usePricelist";
 import SortableImageGallery from "./SortableImageGallery";
 
 const CURRENCY_LABELS: Record<PricelistCurrency, string> = {
@@ -28,6 +29,7 @@ interface PricelistSortableItemProps {
   seriesName: string;
   activeCurrency: PricelistCurrency;
   thumbSize: ThumbSize;
+  pricelistId: string;
   onDelete: () => void;
   onPriceChange: (prices: { price_usd?: string; price_eur?: string; price_brl?: string }) => void;
   onToggleVisibility: (visible: boolean) => void;
@@ -38,6 +40,7 @@ export const PricelistSortableItem = ({
   seriesName,
   activeCurrency,
   thumbSize,
+  pricelistId,
   onDelete,
   onPriceChange,
   onToggleVisibility,
@@ -47,6 +50,7 @@ export const PricelistSortableItem = ({
   const currencyKey = activeCurrency.toLowerCase() as "usd" | "eur" | "brl";
   const currentValue = item[`price_${currencyKey}`] || "";
   const [priceValue, setPriceValue] = useState(currentValue);
+  const updateOverrides = useUpdatePricelistItemOverrides();
 
   // Fetch all images for this artwork (only when expanded)
   const { data: artworkImages } = useArtworkImages(expanded ? item.artwork_id : undefined);
@@ -145,7 +149,15 @@ export const PricelistSortableItem = ({
 
       {/* Expanded images gallery with drag-and-drop reordering */}
       {expanded && artworkImages && artworkImages.length > 0 && (
-        <SortableImageGallery images={artworkImages} artworkId={item.artwork_id} />
+        <SortableImageGallery
+          images={artworkImages}
+          artworkId={item.artwork_id}
+          pricelistItemId={item.id}
+          imageOverrides={item.image_overrides}
+          onOverridesChange={(overrides) =>
+            updateOverrides.mutate({ itemId: item.id, pricelistId, overrides })
+          }
+        />
       )}
     </div>
   );
