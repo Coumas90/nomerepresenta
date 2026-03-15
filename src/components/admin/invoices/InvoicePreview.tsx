@@ -297,9 +297,28 @@ const InvoicePreview = ({ invoice, onBack, isPublic = false }: Props) => {
                     >
                       <img
                         data-artwork="true"
-                        src={resolveArtworkImageUrl(art.image_url.trim())}
+                        src={art.image_url}
                         alt={art.title}
-                        crossOrigin="anonymous"
+                        data-image-candidates={JSON.stringify(art.image_candidates || [art.image_url])}
+                        data-image-fallback-index="0"
+                        onError={(e) => {
+                          const el = e.currentTarget;
+                          let candidates: string[] = [];
+
+                          try {
+                            candidates = JSON.parse(el.dataset.imageCandidates || "[]") as string[];
+                          } catch {
+                            candidates = [art.image_url];
+                          }
+
+                          const currentIndex = Number(el.dataset.imageFallbackIndex || "0");
+                          const nextIndex = currentIndex + 1;
+
+                          if (nextIndex < candidates.length) {
+                            el.dataset.imageFallbackIndex = String(nextIndex);
+                            el.src = candidates[nextIndex];
+                          }
+                        }}
                         style={{
                           width: "100%",
                           height: "auto",
