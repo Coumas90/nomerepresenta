@@ -4,7 +4,7 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Trash2, Upload, Download, FileText } from "lucide-react";
+import { Trash2, Upload, Download, FileText, ChevronDown } from "lucide-react";
 import type { SoldArtwork } from "@/hooks/useSoldArtworks";
 
 const PAYMENT_STATUSES = ["pending", "paid", "installments"];
