@@ -470,22 +470,45 @@ const SessionDetail = ({ session }: { session: SessionLogEntry }) => (
       </div>
     </div>
 
-    {/* Full visitor path */}
+    {/* Full visitor path with computed durations */}
     {session.page_details.length > 0 && (
       <div>
-        <p className="text-xs text-muted-foreground mb-2">Visitor Path</p>
-        <div className="space-y-1">
-          {session.page_details.map((pd, i) => (
-            <div key={`${pd.page_path}-${i}`} className="flex items-center gap-3 text-sm">
-              <span className="text-xs text-muted-foreground w-[100px] shrink-0">
-                {format(new Date(pd.viewed_at), "HH:mm:ss")}
-              </span>
-              <span className="font-medium">{pd.page_path}</span>
-              {pd.time_on_page_seconds != null && pd.time_on_page_seconds > 0 && (
-                <span className="text-xs text-muted-foreground">({formatDuration(pd.time_on_page_seconds)})</span>
-              )}
-            </div>
-          ))}
+        <p className="text-xs text-muted-foreground mb-2">Visitor Path ({session.page_details.length} pages)</p>
+        <div className="space-y-0.5">
+          {session.page_details.map((pd, i) => {
+            // Compute time on page from consecutive timestamps
+            const currentTime = new Date(pd.viewed_at).getTime();
+            const nextTime = i < session.page_details.length - 1
+              ? new Date(session.page_details[i + 1].viewed_at).getTime()
+              : null;
+            // Use DB value if available, otherwise compute from next page view
+            const timeOnPage = (pd.time_on_page_seconds != null && pd.time_on_page_seconds > 0)
+              ? pd.time_on_page_seconds
+              : nextTime
+                ? Math.max(0, Math.floor((nextTime - currentTime) / 1000))
+                : null;
+
+            return (
+              <div
+                key={`${pd.page_path}-${i}`}
+                className="flex items-center gap-3 text-sm py-1 px-2 rounded hover:bg-muted/50"
+              >
+                <span className="text-xs text-muted-foreground w-[70px] shrink-0 font-mono">
+                  {format(new Date(pd.viewed_at), "HH:mm:ss")}
+                </span>
+                <span className="text-muted-foreground shrink-0">→</span>
+                <span className="font-medium flex-1 truncate">{pd.page_path}</span>
+                {timeOnPage != null && (
+                  <span className="text-xs font-mono shrink-0 px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
+                    {timeOnPage < 60 ? `${timeOnPage}s` : `${Math.floor(timeOnPage / 60)}m ${timeOnPage % 60}s`}
+                  </span>
+                )}
+                {timeOnPage == null && (
+                  <span className="text-xs text-muted-foreground/50 shrink-0 italic">last page</span>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     )}
