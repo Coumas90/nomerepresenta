@@ -259,7 +259,7 @@ export const CarouselBlock = ({
               <figcaption className="mt-6 md:mt-9 text-left leading-snug">
                 <div className="flex justify-between items-start gap-4">
                   <div>
-                    <p className="text-stone-500 text-[13px] md:text-[15px] font-bold">
+                    <p className="text-stone-500 text-[12px] md:text-[15px] font-bold">
                       {currentSlide.title}
                       {currentSlide.isDetail && <span className="font-normal text-stone-500"> (DETAIL)</span>}
                       {currentSlide.year && <>, {currentSlide.year}</>}

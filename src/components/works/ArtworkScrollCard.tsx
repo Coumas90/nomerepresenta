@@ -288,7 +288,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
                     </p>
                   ) : (
                     <>
-                      <p className="text-stone-500 text-[13px] md:text-[15px] font-bold">
+                      <p className="text-stone-500 text-[12px] md:text-[15px] font-bold">
                         {allImages[currentImageIndex]?.title || artwork.title}
                         {(allImages[currentImageIndex]?.year || artwork.year) && <>, {allImages[currentImageIndex]?.year || artwork.year}</>}
                         {isViewingDetail && <span className="font-normal text-stone-500"> (DETAIL)</span>}
