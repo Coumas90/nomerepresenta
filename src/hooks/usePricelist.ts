@@ -27,6 +27,7 @@ export interface PricelistItem {
   price_brl: string;
   display_order: number;
   is_visible: boolean;
+  image_overrides: { hidden_images?: string[]; image_order?: string[] } | null;
   created_at: string;
   updated_at: string;
 }

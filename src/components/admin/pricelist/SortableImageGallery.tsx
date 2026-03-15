@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   DndContext,
   closestCenter,
@@ -16,20 +16,16 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { Badge } from "@/components/ui/badge";
 import { Eye, EyeOff, GripVertical } from "lucide-react";
-import { useUpdateImageOrder } from "@/hooks/useArtworkImages";
-import { useToggleCatalogVisibility } from "@/hooks/useToggleCatalogVisibility";
 import type { ArtworkImage } from "@/types";
 
 interface SortableImageThumbProps {
   image: ArtworkImage;
   index: number;
-  artworkId: string;
+  isHidden: boolean;
+  onToggleVisibility: () => void;
 }
 
-const SortableImageThumb = ({ image, index, artworkId }: SortableImageThumbProps) => {
-  const toggleVisibility = useToggleCatalogVisibility();
-  const isImgVisible = (image as any).is_catalog_visible !== false;
-
+const SortableImageThumb = ({ image, index, isHidden, onToggleVisibility }: SortableImageThumbProps) => {
   const {
     attributes,
     listeners,
@@ -42,14 +38,14 @@ const SortableImageThumb = ({ image, index, artworkId }: SortableImageThumbProps
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging ? 0.5 : isHidden ? 0.3 : 1,
   };
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`relative group flex-shrink-0 ${!isImgVisible ? "opacity-40" : ""}`}
+      className={`relative group flex-shrink-0 ${isHidden ? "ring-1 ring-dashed ring-muted-foreground/30 rounded" : ""}`}
     >
       <div
         {...attributes}
@@ -77,20 +73,17 @@ const SortableImageThumb = ({ image, index, artworkId }: SortableImageThumbProps
         )}
       </div>
       <button
-        onClick={() =>
-          toggleVisibility.mutate({
-            imageId: image.id,
-            artworkId,
-            visible: !isImgVisible,
-          })
-        }
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggleVisibility();
+        }}
         className="absolute top-0.5 right-0.5 bg-background/80 rounded p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
-        title={isImgVisible ? "Hide from catalog/pricelist" : "Show in catalog/pricelist"}
+        title={isHidden ? "Show in this pricelist" : "Hide from this pricelist"}
       >
-        {isImgVisible ? (
-          <Eye className="h-3 w-3 text-foreground" />
-        ) : (
+        {isHidden ? (
           <EyeOff className="h-3 w-3 text-muted-foreground" />
+        ) : (
+          <Eye className="h-3 w-3 text-foreground" />
         )}
       </button>
     </div>
@@ -100,58 +93,82 @@ const SortableImageThumb = ({ image, index, artworkId }: SortableImageThumbProps
 interface SortableImageGalleryProps {
   images: ArtworkImage[];
   artworkId: string;
+  pricelistItemId: string;
+  imageOverrides?: { hidden_images?: string[]; image_order?: string[] } | null;
+  onOverridesChange: (overrides: { hidden_images: string[]; image_order: string[] }) => void;
 }
 
-const SortableImageGallery = ({ images, artworkId }: SortableImageGalleryProps) => {
-  const [localImages, setLocalImages] = useState(images);
-  const updateOrder = useUpdateImageOrder();
-
-  // Sync when images prop changes
-  if (images.length !== localImages.length || images.some((img, i) => img.id !== localImages[i]?.id)) {
-    setLocalImages(images);
-  }
-
+const SortableImageGallery = ({ images, artworkId, pricelistItemId, imageOverrides, onOverridesChange }: SortableImageGalleryProps) => {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
   );
 
-  const imageCount = images.length;
-  const detailCount = images.filter((img) => img.is_detail).length;
+  const hiddenSet = useMemo(
+    () => new Set(imageOverrides?.hidden_images || []),
+    [imageOverrides?.hidden_images]
+  );
+
+  // Apply custom order if it exists
+  const orderedImages = useMemo(() => {
+    const order = imageOverrides?.image_order;
+    if (!order || order.length === 0) return images;
+
+    const imageMap = new Map(images.map((img) => [img.id, img]));
+    const ordered: typeof images = [];
+    for (const id of order) {
+      const img = imageMap.get(id);
+      if (img) {
+        ordered.push(img);
+        imageMap.delete(id);
+      }
+    }
+    for (const img of imageMap.values()) {
+      ordered.push(img);
+    }
+    return ordered;
+  }, [images, imageOverrides?.image_order]);
+
+  const visibleCount = orderedImages.filter((img) => !hiddenSet.has(img.id)).length;
+  const hiddenCount = orderedImages.length - visibleCount;
+
+  const saveOverrides = (newHidden: string[], newOrder: string[]) => {
+    onOverridesChange({ hidden_images: newHidden, image_order: newOrder });
+  };
+
+  const toggleVisibility = (imageId: string) => {
+    const newHidden = hiddenSet.has(imageId)
+      ? [...hiddenSet].filter((id) => id !== imageId)
+      : [...hiddenSet, imageId];
+    saveOverrides(newHidden, orderedImages.map((img) => img.id));
+  };
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
-    const oldIndex = localImages.findIndex((img) => img.id === active.id);
-    const newIndex = localImages.findIndex((img) => img.id === over.id);
-    const reordered = arrayMove(localImages, oldIndex, newIndex);
-    setLocalImages(reordered);
-
-    updateOrder.mutate(
-      reordered.map((img, idx) => ({
-        id: img.id,
-        display_order: idx,
-        artwork_id: artworkId,
-      }))
-    );
+    const oldIndex = orderedImages.findIndex((img) => img.id === active.id);
+    const newIndex = orderedImages.findIndex((img) => img.id === over.id);
+    const reordered = arrayMove(orderedImages, oldIndex, newIndex);
+    saveOverrides([...hiddenSet], reordered.map((img) => img.id));
   };
 
   return (
     <div className="mt-3 pt-3 border-t border-border">
       <p className="text-xs text-muted-foreground mb-2">
-        {imageCount} image{imageCount !== 1 ? "s" : ""}
-        {detailCount > 0 ? ` (${detailCount} detail${detailCount !== 1 ? "s" : ""})` : ""}
+        {visibleCount} image{visibleCount !== 1 ? "s" : ""}
+        {hiddenCount > 0 ? ` · ${hiddenCount} hidden in this pricelist` : ""}
         {" · drag to reorder"}
       </p>
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={localImages.map((img) => img.id)} strategy={horizontalListSortingStrategy}>
+        <SortableContext items={orderedImages.map((img) => img.id)} strategy={horizontalListSortingStrategy}>
           <div className="flex flex-wrap gap-2">
-            {localImages.map((img, idx) => (
+            {orderedImages.map((img, idx) => (
               <SortableImageThumb
                 key={img.id}
                 image={img}
                 index={idx}
-                artworkId={artworkId}
+                isHidden={hiddenSet.has(img.id)}
+                onToggleVisibility={() => toggleVisibility(img.id)}
               />
             ))}
           </div>
