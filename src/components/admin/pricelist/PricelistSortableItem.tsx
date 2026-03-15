@@ -7,6 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { GripVertical, Trash2, Check, ChevronDown, ChevronUp } from "lucide-react";
 import { useArtworkImages } from "@/hooks/useArtworkImages";
 import type { PricelistItemWithArtwork, PricelistCurrency } from "@/hooks/usePricelist";
+import { useUpdatePricelistItemOverrides } from "@/hooks/usePricelist";
 import SortableImageGallery from "./SortableImageGallery";
 
 const CURRENCY_LABELS: Record<PricelistCurrency, string> = {
