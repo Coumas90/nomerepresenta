@@ -109,14 +109,27 @@ const InvoicePreview = ({ invoice, onBack, isPublic = false }: Props) => {
   const handleDownloadPDF = useCallback(async () => {
     if (!previewRef.current) return;
     setGenerating(true);
+
     try {
       const imgs = previewRef.current.querySelectorAll<HTMLImageElement>("img[data-artwork]");
       const originals: { el: HTMLImageElement; src: string }[] = [];
+
       await Promise.all(
         Array.from(imgs).map(async (img) => {
           originals.push({ el: img, src: img.src });
-          const converted = await toDataUrl(img.src);
-          img.src = converted;
+
+          let candidateUrls: string[] = [];
+          try {
+            candidateUrls = JSON.parse(img.dataset.imageCandidates || "[]") as string[];
+          } catch {
+            candidateUrls = [];
+          }
+
+          const orderedCandidates = [img.src, ...candidateUrls.filter((url) => url !== img.src)].filter(Boolean);
+          const bestUrl = await pickFirstLoadableImage(orderedCandidates);
+          const converted = await toDataUrl(bestUrl || img.src);
+
+          img.src = converted || bestUrl || img.src;
           await waitForImageReady(img);
         })
       );
