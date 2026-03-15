@@ -216,6 +216,10 @@ const PricelistManager = () => {
                     </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
+                    <Button variant="outline" size="sm" onClick={() => handleCopyMagicLink(pl.slug, pl.magic_token)}>
+                      <Link2 className="h-3 w-3 mr-1" />
+                      Magic Link
+                    </Button>
                     <Button variant="outline" size="sm" onClick={() => handleCopyLink(pl.slug)}>
                       <Copy className="h-3 w-3 mr-1" />
                       Copy Link
