@@ -208,8 +208,9 @@ export const useUpdateInvoice = () => {
         if (liErr) throw liErr;
       }
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       qc.invalidateQueries({ queryKey: QUERY_KEY });
+      qc.invalidateQueries({ queryKey: ["invoice", variables.id] });
       toast.success("Invoice updated");
     },
     onError: (e: Error) => toast.error(e.message),
