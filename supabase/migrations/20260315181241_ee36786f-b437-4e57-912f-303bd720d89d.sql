@@ -1,0 +1,1 @@
+ALTER TABLE public.pricelist_items DROP CONSTRAINT pricelist_items_artwork_id_key;
