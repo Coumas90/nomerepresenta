@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-import { ArrowLeft, Plus, Trash2, Download, Link2, Eye } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ArrowLeft, Plus, Trash2, Link2, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import ArtworkPicker from "@/components/admin/works/ArtworkPicker";
 import InvoicePreview from "./InvoicePreview";
 import { useCatalogArtworks } from "@/hooks/useCatalog";
+import { resolveArtworkImageUrl } from "@/lib/artworkImageUrl";
 
 interface LineItem {
   description: string;
@@ -227,7 +228,7 @@ const InvoiceEditor = ({ invoiceId, onClose }: Props) => {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {selectedArtworks.map((art) => (
               <div key={art.id} className="relative border rounded-lg p-2 group">
-                <img src={art.image_url} alt={art.title} className="w-full aspect-square object-contain rounded" />
+                <img src={resolveArtworkImageUrl(art.image_url)} alt={art.title} className="w-full aspect-square object-contain rounded" />
                 <div className="mt-2 text-xs">
                   <p className="font-medium">{art.title}{art.year ? `, ${art.year}` : ""}</p>
                   {art.materials && <p className="text-muted-foreground">{art.materials}</p>}

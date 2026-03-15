@@ -2,6 +2,7 @@ import { useRef, useState, useCallback } from "react";
 import { ArrowLeft, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { resolveArtworkImageUrl } from "@/lib/artworkImageUrl";
 
 interface ArtworkInfo {
   id: string;
@@ -38,20 +39,39 @@ interface Props {
   isPublic?: boolean;
 }
 
-/** Convert an image URL to a base64 data URL to avoid CORS issues in html2canvas */
-const toBase64 = (url: string): Promise<string> =>
-  new Promise((resolve) => {
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => {
-      const c = document.createElement("canvas");
-      c.width = img.naturalWidth;
-      c.height = img.naturalHeight;
-      c.getContext("2d")!.drawImage(img, 0, 0);
-      resolve(c.toDataURL("image/jpeg", 0.95));
+/** Convert an image URL to a base64 data URL to make html2canvas/jsPDF reliable */
+const toDataUrl = async (url: string): Promise<string> => {
+  try {
+    const response = await fetch(url, { mode: "cors", cache: "no-store" });
+    if (!response.ok) return url;
+
+    const blob = await response.blob();
+    return await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve((reader.result as string) || url);
+      reader.onerror = () => reject(new Error("Failed to read image blob"));
+      reader.readAsDataURL(blob);
+    });
+  } catch {
+    return url;
+  }
+};
+
+const waitForImageReady = (img: HTMLImageElement) =>
+  new Promise<void>((resolve) => {
+    if (img.complete && img.naturalWidth > 0) {
+      resolve();
+      return;
+    }
+
+    const done = () => {
+      img.onload = null;
+      img.onerror = null;
+      resolve();
     };
-    img.onerror = () => resolve(url); // fallback to original
-    img.src = url;
+
+    img.onload = done;
+    img.onerror = done;
   });
 
 const InvoicePreview = ({ invoice, onBack, isPublic = false }: Props) => {
@@ -67,13 +87,15 @@ const InvoicePreview = ({ invoice, onBack, isPublic = false }: Props) => {
     if (!previewRef.current) return;
     setGenerating(true);
     try {
-      // Pre-convert all images to base64 to avoid CORS issues
+      // Convert artwork images to data URLs and ensure they are fully loaded before capture
       const imgs = previewRef.current.querySelectorAll<HTMLImageElement>("img[data-artwork]");
       const originals: { el: HTMLImageElement; src: string }[] = [];
       await Promise.all(
         Array.from(imgs).map(async (img) => {
           originals.push({ el: img, src: img.src });
-          img.src = await toBase64(img.src);
+          const converted = await toDataUrl(img.src);
+          img.src = converted;
+          await waitForImageReady(img);
         })
       );
 
@@ -194,7 +216,7 @@ const InvoicePreview = ({ invoice, onBack, isPublic = false }: Props) => {
                     >
                       <img
                         data-artwork="true"
-                        src={art.image_url}
+                        src={resolveArtworkImageUrl(art.image_url)}
                         alt={art.title}
                         crossOrigin="anonymous"
                         style={{
