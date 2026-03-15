@@ -55,9 +55,24 @@ const SoldManager = () => {
           <h2 className="text-lg font-semibold">Sold Artworks</h2>
           <p className="text-xs text-muted-foreground">{items.length} record{items.length !== 1 ? "s" : ""}</p>
         </div>
-        <Button onClick={() => setPickerOpen(true)} size="sm">
-          <Plus className="h-4 w-4 mr-1" /> Add Artwork
-        </Button>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center border rounded-md overflow-hidden">
+            {(["sm", "md", "lg"] as ThumbSize[]).map((size) => (
+              <button
+                key={size}
+                onClick={() => setThumbSize(size)}
+                className={`px-2 py-1 text-[10px] font-medium uppercase transition-colors ${
+                  thumbSize === size ? "bg-primary text-primary-foreground" : "hover:bg-muted"
+                }`}
+              >
+                {size}
+              </button>
+            ))}
+          </div>
+          <Button onClick={() => setPickerOpen(true)} size="sm">
+            <Plus className="h-4 w-4 mr-1" /> Add Artwork
+          </Button>
+        </div>
       </div>
 
       {items.length === 0 ? (
