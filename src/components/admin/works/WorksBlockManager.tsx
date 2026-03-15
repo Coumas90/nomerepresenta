@@ -299,7 +299,7 @@ const WorksBlockManager = () => {
         <div>
           <h2 className="text-xl font-semibold">Works</h2>
           <p className="text-sm text-muted-foreground">
-            Manage display blocks for the public Works page. Add single artworks or carousel blocks referencing your Catalog.
+            Manage display blocks for the public Works page. Add single artworks or multiple blocks referencing your Catalog.
           </p>
         </div>
 
