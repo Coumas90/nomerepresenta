@@ -149,6 +149,13 @@ const Admin = () => {
           </Suspense>
         );
       
+      case "content-sold":
+        return (
+          <Suspense fallback={<LoadingSkeleton type="analytics" />}>
+            <SoldManager />
+          </Suspense>
+        );
+      
       case "settings-compression":
         return <ImageCompressionSettings />;
       
