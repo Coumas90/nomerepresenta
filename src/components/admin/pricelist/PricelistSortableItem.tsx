@@ -29,6 +29,7 @@ interface PricelistSortableItemProps {
   seriesName: string;
   activeCurrency: PricelistCurrency;
   thumbSize: ThumbSize;
+  pricelistId: string;
   onDelete: () => void;
   onPriceChange: (prices: { price_usd?: string; price_eur?: string; price_brl?: string }) => void;
   onToggleVisibility: (visible: boolean) => void;
