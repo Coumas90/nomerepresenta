@@ -12,6 +12,7 @@ interface ArtworkInfo {
   dimensions: string | null;
   materials: string | null;
   image_url: string;
+  image_candidates?: string[];
 }
 
 interface LineItem {
@@ -40,38 +41,20 @@ interface Props {
   isPublic?: boolean;
 }
 
-/** Convert an image URL to a base64 data URL via an offscreen canvas */
 const toDataUrl = async (url: string): Promise<string> => {
   try {
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.src = url;
-    await new Promise<void>((resolve, reject) => {
-      img.onload = () => resolve();
-      img.onerror = () => reject(new Error("Image load failed"));
+    const response = await fetch(url, { mode: "cors", cache: "no-store" });
+    if (!response.ok) return url;
+    const blob = await response.blob();
+
+    return await new Promise<string>((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve((reader.result as string) || url);
+      reader.onerror = () => resolve(url);
+      reader.readAsDataURL(blob);
     });
-    const canvas = document.createElement("canvas");
-    canvas.width = img.naturalWidth;
-    canvas.height = img.naturalHeight;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return url;
-    ctx.drawImage(img, 0, 0);
-    return canvas.toDataURL("image/jpeg", 0.95);
   } catch {
-    // Fallback: try fetch approach
-    try {
-      const response = await fetch(url, { mode: "cors", cache: "no-store" });
-      if (!response.ok) return url;
-      const blob = await response.blob();
-      return await new Promise<string>((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve((reader.result as string) || url);
-        reader.onerror = () => resolve(url);
-        reader.readAsDataURL(blob);
-      });
-    } catch {
-      return url;
-    }
+    return url;
   }
 };
 
@@ -90,6 +73,29 @@ const waitForImageReady = (img: HTMLImageElement) =>
     img.onerror = done;
   });
 
+const canLoadImage = (url: string) =>
+  new Promise<boolean>((resolve) => {
+    if (!url) {
+      resolve(false);
+      return;
+    }
+
+    const testImage = new Image();
+    testImage.onload = () => resolve(true);
+    testImage.onerror = () => resolve(false);
+    testImage.src = url;
+  });
+
+const pickFirstLoadableImage = async (candidates: string[]) => {
+  for (const candidate of candidates) {
+    if (!candidate) continue;
+    const ok = await canLoadImage(candidate);
+    if (ok) return candidate;
+  }
+
+  return candidates.find(Boolean) || "";
+};
+
 const InvoicePreview = ({ invoice, onBack, isPublic = false }: Props) => {
   const previewRef = useRef<HTMLDivElement>(null);
   const [generating, setGenerating] = useState(false);
@@ -103,14 +109,27 @@ const InvoicePreview = ({ invoice, onBack, isPublic = false }: Props) => {
   const handleDownloadPDF = useCallback(async () => {
     if (!previewRef.current) return;
     setGenerating(true);
+
     try {
       const imgs = previewRef.current.querySelectorAll<HTMLImageElement>("img[data-artwork]");
       const originals: { el: HTMLImageElement; src: string }[] = [];
+
       await Promise.all(
         Array.from(imgs).map(async (img) => {
           originals.push({ el: img, src: img.src });
-          const converted = await toDataUrl(img.src);
-          img.src = converted;
+
+          let candidateUrls: string[] = [];
+          try {
+            candidateUrls = JSON.parse(img.dataset.imageCandidates || "[]") as string[];
+          } catch {
+            candidateUrls = [];
+          }
+
+          const orderedCandidates = [img.src, ...candidateUrls.filter((url) => url !== img.src)].filter(Boolean);
+          const bestUrl = await pickFirstLoadableImage(orderedCandidates);
+          const converted = await toDataUrl(bestUrl || img.src);
+
+          img.src = converted || bestUrl || img.src;
           await waitForImageReady(img);
         })
       );
@@ -149,14 +168,30 @@ const InvoicePreview = ({ invoice, onBack, isPublic = false }: Props) => {
 
     return invoice.artworks.map((art) => {
       const variants = allArtworkImages[art.id] || [];
-      const mainImage = variants.find((img) => img.is_main) || variants[0];
+      const nonInstallVariants = variants.filter((img) => !img.is_install);
+      const thumbnailVariant = nonInstallVariants[0] || variants[0];
+      const mainVariant =
+        nonInstallVariants.find((img) => img.is_main) ||
+        variants.find((img) => img.is_main) ||
+        thumbnailVariant;
+
+      const candidateUrls = [
+        thumbnailVariant?.image_url,
+        mainVariant?.image_url,
+        art.image_url,
+      ]
+        .map((url) => resolveArtworkImageUrl((url || "").trim()))
+        .filter(Boolean)
+        .filter((url, index, arr) => arr.indexOf(url) === index);
+
       return {
         ...art,
-        image_url: (mainImage?.image_url || art.image_url || "").trim(),
-        title: pickField(mainImage?.title, art.title) || art.title,
-        year: pickField(mainImage?.year, art.year),
-        materials: pickField(mainImage?.materials, art.materials),
-        dimensions: pickField(mainImage?.dimensions, art.dimensions),
+        image_url: candidateUrls[0] || "",
+        image_candidates: candidateUrls,
+        title: pickField(mainVariant?.title, art.title) || art.title,
+        year: pickField(mainVariant?.year, art.year),
+        materials: pickField(mainVariant?.materials, art.materials),
+        dimensions: pickField(mainVariant?.dimensions, art.dimensions),
       };
     });
   }, [allArtworkImages, invoice.artworks]);
@@ -262,9 +297,28 @@ const InvoicePreview = ({ invoice, onBack, isPublic = false }: Props) => {
                     >
                       <img
                         data-artwork="true"
-                        src={resolveArtworkImageUrl(art.image_url.trim())}
+                        src={art.image_url}
                         alt={art.title}
-                        crossOrigin="anonymous"
+                        data-image-candidates={JSON.stringify(art.image_candidates || [art.image_url])}
+                        data-image-fallback-index="0"
+                        onError={(e) => {
+                          const el = e.currentTarget;
+                          let candidates: string[] = [];
+
+                          try {
+                            candidates = JSON.parse(el.dataset.imageCandidates || "[]") as string[];
+                          } catch {
+                            candidates = [art.image_url];
+                          }
+
+                          const currentIndex = Number(el.dataset.imageFallbackIndex || "0");
+                          const nextIndex = currentIndex + 1;
+
+                          if (nextIndex < candidates.length) {
+                            el.dataset.imageFallbackIndex = String(nextIndex);
+                            el.src = candidates[nextIndex];
+                          }
+                        }}
                         style={{
                           width: "100%",
                           height: "auto",
