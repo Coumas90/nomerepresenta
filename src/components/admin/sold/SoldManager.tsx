@@ -102,6 +102,7 @@ const SoldManager = () => {
                   <SoldRowEditor
                     key={item.id}
                     item={item}
+                    thumbSize={thumbSize}
                     onUpdate={handleUpdate}
                     onDelete={handleDelete}
                     onUploadInvoice={handleUploadInvoice}
