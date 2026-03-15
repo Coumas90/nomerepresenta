@@ -226,6 +226,17 @@ const InvoicePreview = ({ invoice, onBack, isPublic = false }: Props) => {
                           display: "block",
                         }}
                       />
+                      <div style={{ marginTop: "10px", fontSize: "12px", lineHeight: 1.5 }}>
+                        <div style={{ fontStyle: "italic" }}>
+                          {art.title}{art.year ? `, ${art.year}` : ""}
+                        </div>
+                        {art.materials && (
+                          <div style={{ color: "#555" }}>{art.materials}</div>
+                        )}
+                        {art.dimensions && (
+                          <div style={{ color: "#555" }}>{art.dimensions}</div>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
