@@ -65,7 +65,7 @@ const SoldManager = () => {
         </div>
       ) : (
         <ScrollArea className="w-full">
-          <div className="min-w-[1200px]">
+          <div className="min-w-[1400px]">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -77,6 +77,7 @@ const SoldManager = () => {
                   <TableHead>Location</TableHead>
                   <TableHead>Contact</TableHead>
                   <TableHead>Channel</TableHead>
+                  <TableHead>Notes</TableHead>
                   <TableHead className="w-[100px]">Invoice</TableHead>
                 </TableRow>
               </TableHeader>
