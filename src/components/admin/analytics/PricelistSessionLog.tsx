@@ -168,7 +168,17 @@ const PricelistSessionLog = ({ startDate, endDate }: PricelistSessionLogProps) =
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-8" />
-                  <TableHead>Link</TableHead>
+                  <TableHead
+                    className="cursor-pointer select-none"
+                    onClick={() => setSortBySlug(sortBySlug === "none" ? "asc" : sortBySlug === "asc" ? "desc" : "none")}
+                  >
+                    <span className="inline-flex items-center gap-1">
+                      Link
+                      {sortBySlug === "none" && <ArrowUpDown className="h-3 w-3 text-muted-foreground" />}
+                      {sortBySlug === "asc" && <ArrowUp className="h-3 w-3" />}
+                      {sortBySlug === "desc" && <ArrowDown className="h-3 w-3" />}
+                    </span>
+                  </TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>Duration</TableHead>
                   <TableHead>Source</TableHead>
