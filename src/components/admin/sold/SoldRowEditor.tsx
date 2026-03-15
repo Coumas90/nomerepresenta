@@ -12,15 +12,19 @@ const COLLECTOR_TYPES = ["Private", "Institution", "Gallery"];
 const SOLD_THROUGH_OPTIONS = ["Studio", "Gallery", "Fair", "Online", "Friend space", "Other"];
 const CURRENCIES = ["USD", "EUR", "BRL", "GBP"];
 
+export type ThumbSize = "sm" | "md" | "lg";
+const THUMB_SIZES: Record<ThumbSize, number> = { sm: 40, md: 64, lg: 120 };
+
 interface SoldRowEditorProps {
   item: SoldArtwork;
+  thumbSize: ThumbSize;
   onUpdate: (id: string, updates: Record<string, unknown>) => void;
   onDelete: (id: string) => void;
   onUploadInvoice: (soldId: string, file: File) => void;
   onDownloadInvoice: (path: string) => void;
 }
 
-export const SoldRowEditor = ({ item, onUpdate, onDelete, onUploadInvoice, onDownloadInvoice }: SoldRowEditorProps) => {
+export const SoldRowEditor = ({ item, thumbSize, onUpdate, onDelete, onUploadInvoice, onDownloadInvoice }: SoldRowEditorProps) => {
   const fileRef = useRef<HTMLInputElement>(null);
   const [showInstallments, setShowInstallments] = useState(item.payment_status === "installments");
 
