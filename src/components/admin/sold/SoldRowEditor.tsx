@@ -245,3 +245,31 @@ export const SoldRowEditor = ({ item, onUpdate, onDelete, onUploadInvoice, onDow
     </TableRow>
   );
 };
+
+const MAX_PREVIEW = 60;
+
+const NotesCell = ({ value, onSave }: { value: string; onSave: (v: string) => void }) => {
+  const [expanded, setExpanded] = useState(false);
+  const isLong = value.length > MAX_PREVIEW;
+
+  return (
+    <div className="w-[160px]">
+      <textarea
+        defaultValue={value}
+        onBlur={(e) => onSave(e.target.value)}
+        className="flex w-full rounded-md border border-input bg-background px-2 py-1 text-xs ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
+        rows={expanded ? 5 : 2}
+        placeholder="Notes…"
+      />
+      {isLong && (
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="text-[10px] text-muted-foreground hover:text-foreground flex items-center gap-0.5 mt-0.5"
+        >
+          <ChevronDown className={`h-3 w-3 transition-transform ${expanded ? "rotate-180" : ""}`} />
+          {expanded ? "Less" : "More"}
+        </button>
+      )}
+    </div>
+  );
+};
