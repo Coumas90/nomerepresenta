@@ -204,6 +204,14 @@ export const SoldRowEditor = ({ item, onUpdate, onDelete, onUploadInvoice, onDow
         </div>
       </TableCell>
 
+      {/* Notes */}
+      <TableCell>
+        <NotesCell
+          value={item.notes || ""}
+          onSave={(v) => handleBlur("notes", v)}
+        />
+      </TableCell>
+
       {/* Invoice + Actions */}
       <TableCell>
         <div className="flex items-center gap-1">
