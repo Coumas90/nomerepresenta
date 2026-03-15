@@ -7,6 +7,7 @@ import { useSeries } from "@/hooks/useSeries";
 import { CatalogFilters } from "./CatalogFilters";
 import { CatalogRow, type ThumbSize } from "./CatalogRow";
 import { CategoryFolder } from "./CategoryFolder";
+import { CatalogSeriesManager, useCatalogSeriesNames } from "./CatalogSeriesManager";
 import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 
 type SortField = "title" | "year" | "size_category" | "status" | null;
@@ -26,6 +27,7 @@ const CatalogManager = ({ onEdit }: CatalogManagerProps = {}) => {
   const { data: series = [] } = useSeries();
   const updateField = useUpdateCatalogField();
   const deleteMutation = useDeleteArtwork();
+  const managedCatalogSeries = useCatalogSeriesNames();
 
   const [search, setSearch] = useState("");
   const [yearFilter, setYearFilter] = useState("all");
@@ -90,9 +92,12 @@ const CatalogManager = ({ onEdit }: CatalogManagerProps = {}) => {
   }, [artworks, search, yearFilter, sizeFilter, mediumFilter, statusFilter, seriesFilter]);
 
   const catalogSeriesNames = useMemo(() => {
-    const set = new Set(artworks.map((a) => a.catalog_series).filter(Boolean) as string[]);
+    const set = new Set([
+      ...managedCatalogSeries,
+      ...(artworks.map((a) => a.catalog_series).filter(Boolean) as string[]),
+    ]);
     return Array.from(set).sort();
-  }, [artworks]);
+  }, [artworks, managedCatalogSeries]);
 
   const grouped = useMemo(() => {
     const map: Record<string, typeof filtered> = {};
@@ -214,6 +219,8 @@ const CatalogManager = ({ onEdit }: CatalogManagerProps = {}) => {
           <ToggleGroupItem value="lg" className="text-xs px-2.5 h-8">L</ToggleGroupItem>
         </ToggleGroup>
       </div>
+
+      <CatalogSeriesManager />
 
       <CatalogFilters
         search={search}
