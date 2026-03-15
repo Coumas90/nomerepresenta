@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Trash2, Upload, Download, FileText, ChevronDown } from "lucide-react";
 import type { SoldArtwork } from "@/hooks/useSoldArtworks";
 
-const PAYMENT_STATUSES = ["pending", "paid", "installments"];
+const PAYMENT_STATUSES = ["pending", "paid", "installments", "trade"];
 const COLLECTOR_TYPES = ["Private", "Institution", "Gallery"];
 const SOLD_THROUGH_OPTIONS = ["Studio", "Gallery", "Fair", "Online", "Friend space", "Other"];
 const CURRENCIES = ["USD", "EUR", "BRL", "GBP"];
