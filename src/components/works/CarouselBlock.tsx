@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { ProgressiveImage } from "@/components/ProgressiveImage";
 import { ImageSkeleton } from "@/components/ImageSkeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { cn } from "@/lib/utils";
+
 import { getOptimizedImageUrl } from "@/lib/imageUtils";
 import type { ArtworkData, ArtworkImage } from "@/types";
 
@@ -205,28 +205,22 @@ export const CarouselBlock = ({
 
   return (
     <article className="relative w-full flex flex-col items-center">
-      <figure className="w-full flex flex-col items-start max-w-[95vw] md:max-w-[54vw] lg:max-w-[45vw] mx-auto overflow-visible">
+      {/* Match ArtworkScrollCard: inline-flex shrink-wraps to image width */}
+      <figure className="inline-flex flex-col items-start max-w-[95vw] md:max-w-[54vw] lg:max-w-[45vw] mx-auto overflow-hidden">
         <div className="relative w-full flex items-center">
           <div
             ref={containerRef}
-            className="w-full flex-1 min-w-0 select-none"
+            className="flex-1 min-w-0 select-none"
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
-            {/* Fixed-height image container: all slides share the same height so caption never jumps */}
-            <div className="relative w-full h-[65vh] md:h-[72vh] lg:h-[78vh]">
+            {/* Image wrapper — matches ArtworkScrollCard: natural sizing with max-h */}
+            <div className="relative">
               {currentImage && (
                 <ProgressiveImage
                   src={currentImage}
                   alt={currentSlide?.altText || "Artwork"}
-                  className={cn(
-                    "relative z-10",
-                    // Override contain-mode w-fit: force full-width wrapper
-                    "!w-full",
-                    // Fill frame and keep left edge stable across slides
-                    "[&_picture]:w-full [&_picture]:h-full",
-                    "[&_img]:!w-full [&_img]:!h-full [&_img]:!object-contain [&_img]:object-left"
-                  )}
+                  className="relative z-10 [&_img]:max-h-[75vh] [&_img]:md:max-h-[80vh] [&_img]:lg:max-h-[85vh]"
                   objectFit="contain"
                   eager={eager}
                   skipInternalFade
@@ -254,15 +248,15 @@ export const CarouselBlock = ({
               )}
             </div>
 
-            {/* Caption for current slide */}
+            {/* Caption — matches ArtworkScrollCard exactly */}
             {currentSlide && (
               <figcaption className="mt-6 md:mt-9 text-left leading-snug">
                 <div className="flex justify-between items-start gap-4">
                   <div>
                     <p className="text-stone-500 text-[12px] md:text-[15px] font-bold">
                       {currentSlide.title}
-                      {currentSlide.isDetail && <span className="font-normal text-stone-500"> (DETAIL)</span>}
                       {currentSlide.year && <>, {currentSlide.year}</>}
+                      {currentSlide.isDetail && <span className="font-normal text-stone-500"> (DETAIL)</span>}
                     </p>
                     {currentSlide.materials && (
                       <p className="text-stone-500 text-[11px] md:text-[13px] mt-[3px] md:mt-[6px]">
