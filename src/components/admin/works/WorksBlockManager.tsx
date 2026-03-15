@@ -152,7 +152,7 @@ const SortableBlock = ({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="single">Single</SelectItem>
-            <SelectItem value="carousel">Carousel</SelectItem>
+            <SelectItem value="carousel">Multiple</SelectItem>
           </SelectContent>
         </Select>
         <span className="text-xs text-muted-foreground">
