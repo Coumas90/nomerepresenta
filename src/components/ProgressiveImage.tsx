@@ -231,7 +231,7 @@ export const ProgressiveImage = ({
             onError={handleImageError}
             className={imageClasses}
             loading={eager ? "eager" : "lazy"}
-            decoding="async"
+            decoding={skipInternalFade ? "sync" : "async"}
             sizes={sizes}
           />
         </picture>
