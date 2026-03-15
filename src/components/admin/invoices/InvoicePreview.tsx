@@ -216,7 +216,7 @@ const InvoicePreview = ({ invoice, onBack, isPublic = false }: Props) => {
                     >
                       <img
                         data-artwork="true"
-                        src={art.image_url}
+                        src={resolveArtworkImageUrl(art.image_url)}
                         alt={art.title}
                         crossOrigin="anonymous"
                         style={{
