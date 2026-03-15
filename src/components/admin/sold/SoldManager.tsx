@@ -22,6 +22,7 @@ const SoldManager = () => {
   const uploadInvoice = useUploadInvoice();
   const downloadInvoice = useDownloadInvoice();
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [thumbSize, setThumbSize] = useState<ThumbSize>("sm");
 
   const existingArtworkIds = items.map((i) => i.artwork_id);
 
