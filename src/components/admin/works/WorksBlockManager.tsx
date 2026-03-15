@@ -152,7 +152,7 @@ const SortableBlock = ({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="single">Single</SelectItem>
-            <SelectItem value="carousel">Carousel</SelectItem>
+            <SelectItem value="carousel">Multiple</SelectItem>
           </SelectContent>
         </Select>
         <span className="text-xs text-muted-foreground">
@@ -299,7 +299,7 @@ const WorksBlockManager = () => {
         <div>
           <h2 className="text-xl font-semibold">Works</h2>
           <p className="text-sm text-muted-foreground">
-            Manage display blocks for the public Works page. Add single artworks or carousel blocks referencing your Catalog.
+            Manage display blocks for the public Works page. Add single artworks or multiple blocks referencing your Catalog.
           </p>
         </div>
 
@@ -335,7 +335,7 @@ const WorksBlockManager = () => {
                             disabled={createBlock.isPending}
                           >
                             <Images className="h-3.5 w-3.5 mr-1.5" />
-                            Carousel Block
+                            Multiple Block
                           </Button>
                         </div>
 
@@ -362,7 +362,7 @@ const WorksBlockManager = () => {
                           </DndContext>
                         ) : (
                           <p className="text-sm text-muted-foreground text-center py-6">
-                            No blocks yet. Add a single or carousel block above.
+                            No blocks yet. Add a single or multiple block above.
                           </p>
                         )}
                       </AccordionContent>
