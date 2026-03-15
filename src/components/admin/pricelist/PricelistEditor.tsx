@@ -160,6 +160,7 @@ export const PricelistEditor = ({ pricelist }: PricelistEditorProps) => {
               <SortableContext items={items.map((i) => i.id)} strategy={verticalListSortingStrategy}>
                 {items.map((item) => (
                   <PricelistSortableItem
+                    pricelistId={pricelist.id}
                     key={item.id}
                     item={item}
                     activeCurrency={activeCurrency}

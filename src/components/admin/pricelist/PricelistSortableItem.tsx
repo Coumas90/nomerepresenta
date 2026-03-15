@@ -149,7 +149,15 @@ export const PricelistSortableItem = ({
 
       {/* Expanded images gallery with drag-and-drop reordering */}
       {expanded && artworkImages && artworkImages.length > 0 && (
-        <SortableImageGallery images={artworkImages} artworkId={item.artwork_id} />
+        <SortableImageGallery
+          images={artworkImages}
+          artworkId={item.artwork_id}
+          pricelistItemId={item.id}
+          imageOverrides={item.image_overrides}
+          onOverridesChange={(overrides) =>
+            updateOverrides.mutate({ itemId: item.id, pricelistId, overrides })
+          }
+        />
       )}
     </div>
   );
