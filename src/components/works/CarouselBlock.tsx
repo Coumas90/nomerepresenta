@@ -205,7 +205,7 @@ export const CarouselBlock = ({
 
   return (
     <article className="relative w-full flex flex-col items-center">
-      <figure className="w-full flex flex-col items-start max-w-[95vw] md:max-w-[54vw] lg:max-w-[45vw] mx-auto overflow-visible">
+      <figure className="w-full flex flex-col items-start max-w-[95vw] md:max-w-[49vw] lg:max-w-[40vw] mx-auto overflow-visible">
         <div className="relative w-full flex items-center">
           <div
             ref={containerRef}
