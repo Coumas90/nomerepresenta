@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { ProgressiveImage } from "@/components/ProgressiveImage";
 import { ImageSkeleton } from "@/components/ImageSkeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { cn } from "@/lib/utils";
+
 import { getOptimizedImageUrl } from "@/lib/imageUtils";
 import type { ArtworkData, ArtworkImage } from "@/types";
 
