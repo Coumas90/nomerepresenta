@@ -10,6 +10,7 @@ import {
   ExternalLink,
   BookOpen,
   Ticket,
+  FileText,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
