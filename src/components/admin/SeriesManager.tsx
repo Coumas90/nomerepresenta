@@ -72,7 +72,6 @@ const SortableSeriesItem = ({ id, name, description, artworkCount, artworks, onE
               <div className="flex items-center gap-2 mt-1">
                 <p className="text-xs text-muted-foreground">
                   {artworkCount} artworks
-                  {!showNameInMenu && " · name hidden in menu"}
                 </p>
                 <button
                   onClick={() => setExpanded(!expanded)}
