@@ -287,6 +287,7 @@ export const SoldRowEditor = ({ item, thumbSize, onUpdate, onDelete, onUploadInv
                 <span>Due Date</span>
                 <span>Amount</span>
                 <span>Status</span>
+                <span></span>
                 <span>Paid Date</span>
                 <span>Notes</span>
               </div>
