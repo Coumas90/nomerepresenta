@@ -40,6 +40,14 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
     return Array.from(years).sort((a, b) => b.localeCompare(a));
   }, [artworks]);
 
+  const availableSubSeries = useMemo(() => {
+    const subs = new Set<string>();
+    for (const a of artworks) {
+      if (a.catalog_sub_series) subs.add(a.catalog_sub_series);
+    }
+    return Array.from(subs).sort();
+  }, [artworks]);
+
   const filtered = useMemo(() => {
     let result = artworks;
     if (sizeFilter !== "all") {
