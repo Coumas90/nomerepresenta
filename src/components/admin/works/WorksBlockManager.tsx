@@ -47,6 +47,7 @@ const SortableSection = ({
   blocks,
   onDelete,
   onRename,
+  onToggleHeader,
   onAddBlock,
   onDeleteBlock,
   onAddArtwork,
@@ -56,10 +57,11 @@ const SortableSection = ({
   onToggleHidden,
   onReorderBlocks,
 }: {
-  section: { id: string; name: string; is_visible: boolean };
+  section: { id: string; name: string; is_visible: boolean; show_in_header: boolean };
   blocks: WorksBlockWithItems[];
   onDelete: () => void;
   onRename: (name: string) => void;
+  onToggleHeader: (show: boolean) => void;
   onAddBlock: (type: BlockType) => void;
   onDeleteBlock: (blockId: string) => void;
   onAddArtwork: (blockId: string) => void;
