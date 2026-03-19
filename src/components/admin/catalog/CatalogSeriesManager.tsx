@@ -214,20 +214,38 @@ export const CatalogSeriesManager = () => {
               </div>
             );
           })}
-          {/* Add sub-series: single Add button with parent picker */}
+          {/* Add sub-series */}
           {addingSubFor === null ? (
-            <div className="flex items-center gap-1">
-              <Select onValueChange={(parent) => setAddingSubFor(parent)}>
-                <SelectTrigger className="h-5 w-auto gap-1 px-1.5 text-[10px] border-0 bg-transparent hover:bg-muted">
-                  <Plus className="h-2.5 w-2.5" />
-                  <span>Add</span>
-                </SelectTrigger>
-                <SelectContent>
-                  {managedNames.map((parent) => (
-                    <SelectItem key={parent} value={parent} className="text-xs">{parent}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-5 text-[10px] gap-0.5 px-1.5"
+              onClick={() => setAddingSubFor("__picking__")}
+            >
+              <Plus className="h-2.5 w-2.5" /> Add
+            </Button>
+          ) : addingSubFor === "__picking__" ? (
+            <div className="flex items-center gap-1 flex-wrap">
+              <span className="text-[10px] text-muted-foreground">To:</span>
+              {managedNames.map((parent) => (
+                <Button
+                  key={parent}
+                  variant="outline"
+                  size="sm"
+                  className="h-5 text-[10px] px-1.5"
+                  onClick={() => setAddingSubFor(parent)}
+                >
+                  {parent}
+                </Button>
+              ))}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-5 text-[10px] px-1.5"
+                onClick={() => setAddingSubFor(null)}
+              >
+                Cancel
+              </Button>
             </div>
           ) : (
             <Button
