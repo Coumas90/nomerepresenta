@@ -150,35 +150,25 @@ export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpd
 
         {/* Series */}
         <td className="py-2 px-3">
-          {editingField === "catalog_series" ? (
-            <div className="flex flex-col gap-1">
-              <div className="flex items-center gap-1">
-                <Input
-                  value={editValue}
-                  onChange={(e) => setEditValue(e.target.value)}
-                  className="h-7 w-28 text-xs"
-                  onKeyDown={(e) => e.key === "Enter" && saveField()}
-                  autoFocus
-                  list={`series-suggestions-${artwork.id}`}
-                />
-                <datalist id={`series-suggestions-${artwork.id}`}>
-                  {catalogSeriesSuggestions.map((s) => (
-                    <option key={s} value={s} />
-                  ))}
-                </datalist>
-                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={saveField}>
-                  <Check className="h-3 w-3" />
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <button
-              onClick={() => startEditing("catalog_series", artwork.catalog_series || "")}
-              className="text-xs px-1.5 py-0.5 rounded hover:bg-muted transition-colors min-w-[48px] text-left truncate max-w-[120px]"
-            >
-              {artwork.catalog_series || "—"}
-            </button>
-          )}
+          <Select
+            value={artwork.catalog_series || "none"}
+            onValueChange={(v) => onFieldUpdate(artwork.id, "catalog_series", v === "none" ? null : v)}
+          >
+            <SelectTrigger className="h-7 w-[120px] text-xs">
+              <SelectValue placeholder="—" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">—</SelectItem>
+              {catalogSeriesSuggestions.map((s) => (
+                <SelectItem key={s} value={s}>{s}</SelectItem>
+              ))}
+              {catalogSubSeriesSuggestions
+                .filter((sub) => !catalogSeriesSuggestions.includes(sub))
+                .map((s) => (
+                  <SelectItem key={s} value={s}>{s}</SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
         </td>
 
         {/* Sub-series */}
