@@ -57,9 +57,28 @@ export const useUpdateCatalogField = () => {
         .update({ [field]: value } as any)
         .eq("id", id);
       if (error) throw error;
+
+      // Auto-sync sold_artworks when status changes
+      if (field === "status") {
+        if (value === "sold") {
+          // Check if already exists
+          const { data: existing } = await supabase
+            .from("sold_artworks")
+            .select("id")
+            .eq("artwork_id", id)
+            .maybeSingle();
+          if (!existing) {
+            await supabase.from("sold_artworks").insert({ artwork_id: id });
+          }
+        } else {
+          // Remove from sold if status changed away from sold
+          await supabase.from("sold_artworks").delete().eq("artwork_id", id);
+        }
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["catalog-artworks"] });
+      queryClient.invalidateQueries({ queryKey: ["sold-artworks"] });
     },
     onError: (error: Error) => {
       toast.error(`Error: ${error.message}`);
