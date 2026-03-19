@@ -7,6 +7,7 @@ export interface WorksSection {
   name: string;
   display_order: number;
   is_visible: boolean;
+  show_in_header: boolean;
   created_at: string;
   updated_at: string;
 }
