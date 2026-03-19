@@ -58,7 +58,7 @@ const SortableSeriesItem = ({ id, name, description, artworkCount, artworks, onE
 
   return (
     <div ref={setNodeRef} style={style} className="mb-3">
-      <Card className={!isVisible ? "opacity-60" : ""}>
+      <Card>
         <CardContent className="p-4">
           <div className="flex items-center gap-3">
             <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
