@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { ZoomIn, ZoomOut } from "lucide-react";
+import { ZoomIn, ZoomOut, Type } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
@@ -28,6 +28,7 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
   const [sizeFilter, setSizeFilter] = useState<SizeFilter>("all");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [yearFilter, setYearFilter] = useState<string>("all");
+  const [showNames, setShowNames] = useState(true);
 
   // Extract unique years
   const availableYears = useMemo(() => {
@@ -153,6 +154,16 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
           </SelectContent>
         </Select>
 
+        <Button
+          variant={showNames ? "secondary" : "ghost"}
+          size="icon"
+          className="h-7 w-7"
+          onClick={() => setShowNames((v) => !v)}
+          title={showNames ? "Hide titles" : "Show titles"}
+        >
+          <Type className="h-3.5 w-3.5" />
+        </Button>
+
         <span className="text-[10px] text-muted-foreground ml-auto">
           {filtered.length} / {artworks.length} works
         </span>
@@ -160,7 +171,7 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
 
       {/* Ungrouped artworks */}
       {ungrouped.length > 0 && (
-        <ThumbnailGrid artworks={ungrouped} gridCols={gridCols} />
+        <ThumbnailGrid artworks={ungrouped} gridCols={gridCols} showNames={showNames} />
       )}
 
       {/* Sub-series groups */}
@@ -169,7 +180,7 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
           <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
             {subSeries} <span className="font-normal">({items.length})</span>
           </p>
-          <ThumbnailGrid artworks={items} gridCols={gridCols} />
+          <ThumbnailGrid artworks={items} gridCols={gridCols} showNames={showNames} />
         </div>
       ))}
 
@@ -182,7 +193,7 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
   );
 };
 
-const ThumbnailGrid = ({ artworks, gridCols }: { artworks: CatalogArtwork[]; gridCols: string }) => (
+const ThumbnailGrid = ({ artworks, gridCols, showNames }: { artworks: CatalogArtwork[]; gridCols: string; showNames: boolean }) => (
   <div className={`grid ${gridCols} gap-2`}>
     {artworks.map((a) => (
       <div key={a.id} className="group relative">
@@ -199,7 +210,7 @@ const ThumbnailGrid = ({ artworks, gridCols }: { artworks: CatalogArtwork[]; gri
             </span>
           )}
         </div>
-        <p className="text-[9px] text-muted-foreground truncate mt-0.5 leading-tight">{a.title}</p>
+        {showNames && <p className="text-[9px] text-muted-foreground truncate mt-0.5 leading-tight">{a.title}</p>}
       </div>
     ))}
   </div>
