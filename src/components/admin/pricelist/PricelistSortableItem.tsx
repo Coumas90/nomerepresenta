@@ -111,28 +111,20 @@ export const PricelistSortableItem = ({
 
         <div className="flex items-center gap-3">
           <div className="text-center min-w-[80px]">
-            {isEditing ? (
-              <div className="flex items-center gap-0.5">
-                <span className="text-xs text-muted-foreground">{CURRENCY_LABELS[activeCurrency]}</span>
-                <Input
-                  value={priceValue}
-                  onChange={(e) => setPriceValue(e.target.value)}
-                  className="w-24 h-7 text-xs"
-                  onKeyDown={(e) => e.key === "Enter" && handleSavePrice()}
-                  autoFocus
-                />
-                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleSavePrice}>
-                  <Check className="h-3 w-3" />
-                </Button>
-              </div>
-            ) : (
-              <button
-                onClick={startEditing}
-                className="text-sm font-medium px-2 py-1 rounded hover:bg-muted transition-colors"
-              >
-                {displayPrice}
-              </button>
-            )}
+            <div className="flex items-center gap-0.5">
+              <span className="text-xs text-muted-foreground">{CURRENCY_LABELS[activeCurrency]}</span>
+              <Input
+                defaultValue={currentValue}
+                onBlur={(e) => {
+                  const val = e.target.value;
+                  if (val !== currentValue) {
+                    onPriceChange({ [`price_${currencyKey}`]: val });
+                  }
+                }}
+                className="w-24 h-7 text-xs"
+                placeholder="0"
+              />
+            </div>
           </div>
 
           <Switch
