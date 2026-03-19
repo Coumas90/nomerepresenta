@@ -3,6 +3,7 @@ import { Plus, X, Tag, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { useSiteSetting, useUpdateSiteSetting } from "@/hooks/useSiteSettings";
 import { toast } from "sonner";
 
