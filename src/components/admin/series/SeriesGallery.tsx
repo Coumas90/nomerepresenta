@@ -76,25 +76,6 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
     return result;
   }, [artworks, sortMode, sizeFilter, statusFilter, yearFilter, subSeriesFilter]);
 
-  // Group by catalog_sub_series
-  const { ungrouped, sortedGroups } = useMemo(() => {
-    const grouped = new Map<string, CatalogArtwork[]>();
-    const ung: CatalogArtwork[] = [];
-    for (const a of filtered) {
-      if (a.catalog_sub_series) {
-        const existing = grouped.get(a.catalog_sub_series) || [];
-        existing.push(a);
-        grouped.set(a.catalog_sub_series, existing);
-      } else {
-        ung.push(a);
-      }
-    }
-    return {
-      ungrouped: ung,
-      sortedGroups: Array.from(grouped.entries()).sort(([a], [b]) => a.localeCompare(b)),
-    };
-  }, [filtered]);
-
   const zoomLevel = ZOOM_LEVELS[zoom];
 
   return (
@@ -164,22 +145,10 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
         </span>
       </div>
 
-      {/* Ungrouped artworks */}
-      {ungrouped.length > 0 && (
-        <ThumbnailGrid artworks={ungrouped} gridCols={zoomLevel.cols} titleClass={zoomLevel.titleClass} showNames={showNames} />
-      )}
-
-      {/* Sub-series groups */}
-      {sortedGroups.map(([subSeries, items]) => (
-        <div key={subSeries}>
-          <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
-            {subSeries} <span className="font-normal">({items.length})</span>
-          </p>
-          <ThumbnailGrid artworks={items} gridCols={zoomLevel.cols} titleClass={zoomLevel.titleClass} showNames={showNames} />
-        </div>
-      ))}
-
-      {filtered.length === 0 && (
+      {/* All works in a flat grid — sub-series shown as a badge on each thumbnail */}
+      {filtered.length > 0 ? (
+        <ThumbnailGrid artworks={filtered} gridCols={zoomLevel.cols} titleClass={zoomLevel.titleClass} showNames={showNames} />
+      ) : (
         <p className="text-xs text-muted-foreground py-2">
           {artworks.length === 0 ? "No artworks in this category." : "No artworks match the current filter."}
         </p>
@@ -187,7 +156,6 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
     </div>
   );
 };
-
 const ThumbnailCard = ({ artwork, titleClass, showNames }: { artwork: CatalogArtwork; titleClass: string; showNames: boolean }) => {
   const [expanded, setExpanded] = useState(false);
 
