@@ -213,20 +213,20 @@ export const CatalogSeriesManager = () => {
               </div>
             );
           })}
-          {/* Add sub-series button for any parent */}
+          {/* Add sub-series: single Add button with parent picker */}
           {addingSubFor === null ? (
             <div className="flex items-center gap-1">
-              {managedNames.map((parent) => (
-                <Button
-                  key={parent}
-                  variant="ghost"
-                  size="sm"
-                  className="h-5 text-[10px] gap-0.5 px-1.5"
-                  onClick={() => setAddingSubFor(parent)}
-                >
-                  <Plus className="h-2.5 w-2.5" /> {parent}
-                </Button>
-              ))}
+              <Select onValueChange={(parent) => setAddingSubFor(parent)}>
+                <SelectTrigger className="h-5 w-auto gap-1 px-1.5 text-[10px] border-0 bg-transparent hover:bg-muted">
+                  <Plus className="h-2.5 w-2.5" />
+                  <span>Add</span>
+                </SelectTrigger>
+                <SelectContent>
+                  {managedNames.map((parent) => (
+                    <SelectItem key={parent} value={parent} className="text-xs">{parent}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           ) : (
             <Button
