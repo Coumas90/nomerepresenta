@@ -206,18 +206,18 @@ const ThumbnailCard = ({ artwork, titleClass, showNames }: { artwork: CatalogArt
             SOLD
           </span>
         )}
+        {showNames && (
+          <button
+            onClick={() => setExpanded((v) => !v)}
+            className="absolute bottom-0.5 left-0.5 bg-background/70 hover:bg-background/90 rounded p-0.5 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+          </button>
+        )}
       </div>
       {showNames && (
         <div className="mt-0.5">
-          <div className="flex items-start gap-0.5">
-            <p className={`${titleClass} text-muted-foreground truncate leading-tight flex-1`}>{artwork.title}</p>
-            <button
-              onClick={() => setExpanded((v) => !v)}
-              className="shrink-0 text-muted-foreground hover:text-foreground transition-colors mt-px"
-            >
-              {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-            </button>
-          </div>
+          <p className={`${titleClass} text-muted-foreground truncate leading-tight`}>{artwork.title}</p>
           {expanded && (
             <div className="text-[10px] text-muted-foreground space-y-0.5 mt-1 bg-muted/40 rounded p-1.5">
               {artwork.year && <p><span className="font-medium">Year:</span> {artwork.year}</p>}
