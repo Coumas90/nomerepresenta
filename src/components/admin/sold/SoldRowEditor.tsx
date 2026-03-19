@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Upload, Download, FileText, ChevronDown } from "lucide-react";
+import { Trash2, Upload, Download, FileText, ChevronDown, Check } from "lucide-react";
 import type { SoldArtwork } from "@/hooks/useSoldArtworks";
 import { useSoldInstallments, useSyncInstallments, useUpdateInstallment, type SoldInstallment } from "@/hooks/useSoldInstallments";
 
@@ -282,18 +282,19 @@ export const SoldRowEditor = ({ item, thumbSize, onUpdate, onDelete, onUploadInv
               <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1">
                 Installments ({installments.length})
               </p>
-              <div className="grid grid-cols-[40px_100px_100px_90px_90px_1fr] gap-2 text-[10px] text-muted-foreground font-medium px-1">
+              <div className="grid grid-cols-[40px_100px_100px_80px_90px_90px_1fr] gap-2 text-[10px] text-muted-foreground font-medium px-1">
                 <span>#</span>
                 <span>Due Date</span>
                 <span>Amount</span>
                 <span>Status</span>
+                <span></span>
                 <span>Paid Date</span>
                 <span>Notes</span>
               </div>
               {installments.map((inst) => (
                 <div
                   key={inst.id}
-                  className="grid grid-cols-[40px_100px_100px_90px_90px_1fr] gap-2 items-center px-1 py-0.5 rounded hover:bg-muted/40 transition-colors"
+                  className="grid grid-cols-[40px_100px_100px_80px_90px_90px_1fr] gap-2 items-center px-1 py-0.5 rounded hover:bg-muted/40 transition-colors"
                 >
                   <span className="text-[10px] text-muted-foreground font-medium">{inst.installment_number}</span>
                   <Input
@@ -309,28 +310,50 @@ export const SoldRowEditor = ({ item, thumbSize, onUpdate, onDelete, onUploadInv
                     className="h-6 text-[10px] w-[90px]"
                     placeholder="0"
                   />
-                  <Select
-                    defaultValue={inst.status}
-                    onValueChange={(v) => handleInstallmentUpdate(inst, "status", v)}
-                  >
-                    <SelectTrigger className="h-6 text-[10px] w-[80px]">
-                      <Badge
-                        variant="outline"
-                        className={`text-[9px] px-1.5 ${
-                          inst.status === "paid"
-                            ? "bg-emerald-100 text-emerald-800 border-emerald-200"
-                            : "bg-amber-100 text-amber-800 border-amber-200"
-                        }`}
-                      >
-                        {inst.status}
-                      </Badge>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {INSTALLMENT_STATUSES.map((s) => (
-                        <SelectItem key={s} value={s} className="capitalize text-xs">{s}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="flex items-center">
+                    <Badge
+                      variant="outline"
+                      className={`text-[9px] px-1.5 ${
+                        inst.status === "paid"
+                          ? "bg-emerald-100 text-emerald-800 border-emerald-200"
+                          : "bg-amber-100 text-amber-800 border-amber-200"
+                      }`}
+                    >
+                      {inst.status}
+                    </Badge>
+                  </div>
+                  {inst.status === "pending" ? (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-6 text-[9px] px-2 gap-1 bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-800"
+                      onClick={() => {
+                        const today = new Date().toISOString().split("T")[0];
+                        updateInstallment.mutate({
+                          id: inst.id,
+                          soldArtworkId: item.id,
+                          updates: { status: "paid", paid_date: today },
+                        });
+                      }}
+                    >
+                      <Check className="h-3 w-3" /> Paid
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 text-[9px] px-2 text-muted-foreground"
+                      onClick={() => {
+                        updateInstallment.mutate({
+                          id: inst.id,
+                          soldArtworkId: item.id,
+                          updates: { status: "pending", paid_date: null },
+                        });
+                      }}
+                    >
+                      Undo
+                    </Button>
+                  )}
                   <Input
                     type="date"
                     defaultValue={inst.paid_date || ""}
