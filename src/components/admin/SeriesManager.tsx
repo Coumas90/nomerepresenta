@@ -86,8 +86,8 @@ const SortableSeriesItem = ({ id, name, description, artworkCount, artworks, onE
               <Button variant="outline" size="icon" onClick={onEdit}>
                 <Edit className="h-4 w-4" />
               </Button>
-              <Button variant="destructive" size="icon" onClick={onDelete}>
-                <Trash2 className="h-4 w-4" />
+              <Button variant="ghost" size="icon" onClick={onDelete}>
+                <Trash2 className="h-4 w-4 text-muted-foreground" />
               </Button>
             </div>
           </div>
