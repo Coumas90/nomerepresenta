@@ -39,7 +39,7 @@ interface SortableSeriesItemProps {
   onDelete: () => void;
 }
 
-const SortableSeriesItem = ({ id, name, description, isVisible, showNameInMenu, artworkCount, artworks, onEdit, onDelete, onToggleVisibility, onToggleNameInMenu }: SortableSeriesItemProps) => {
+const SortableSeriesItem = ({ id, name, description, artworkCount, artworks, onEdit, onDelete }: SortableSeriesItemProps) => {
   const [expanded, setExpanded] = useState(false);
   const {
     attributes,
