@@ -1145,6 +1145,7 @@ export type Database = {
           display_order: number
           id: string
           is_hidden: boolean
+          section_id: string | null
           series_id: string
           updated_at: string
         }
@@ -1154,6 +1155,7 @@ export type Database = {
           display_order?: number
           id?: string
           is_hidden?: boolean
+          section_id?: string | null
           series_id: string
           updated_at?: string
         }
@@ -1163,10 +1165,18 @@ export type Database = {
           display_order?: number
           id?: string
           is_hidden?: boolean
+          section_id?: string | null
           series_id?: string
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "works_blocks_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "works_sections"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "works_blocks_series_id_fkey"
             columns: ["series_id"]
@@ -1175,6 +1185,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      works_sections: {
+        Row: {
+          created_at: string
+          display_order: number
+          id: string
+          is_visible: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_visible?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_visible?: boolean
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
     }
     Views: {
