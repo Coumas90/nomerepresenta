@@ -157,6 +157,21 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
           </SelectContent>
         </Select>
 
+        {availableSubSeries.length > 0 && (
+          <Select value={subSeriesFilter} onValueChange={setSubSeriesFilter}>
+            <SelectTrigger className="h-7 w-[130px] text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All sub-series</SelectItem>
+              <SelectItem value="_none">No sub-series</SelectItem>
+              {availableSubSeries.map((s) => (
+                <SelectItem key={s} value={s}>{s}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+
         <Select value={sortMode} onValueChange={(v) => setSortMode(v as SortMode)}>
           <SelectTrigger className="h-7 w-[120px] text-xs">
             <SelectValue />
