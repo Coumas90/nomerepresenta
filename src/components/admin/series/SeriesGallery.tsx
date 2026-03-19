@@ -130,6 +130,18 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
           </SelectContent>
         </Select>
 
+        <Select value={yearFilter} onValueChange={setYearFilter}>
+          <SelectTrigger className="h-7 w-[100px] text-xs">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All years</SelectItem>
+            {availableYears.map((y) => (
+              <SelectItem key={y} value={y}>{y}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
         <Select value={sortMode} onValueChange={(v) => setSortMode(v as SortMode)}>
           <SelectTrigger className="h-7 w-[120px] text-xs">
             <SelectValue />
