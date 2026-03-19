@@ -5,11 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Edit, Trash2, GripVertical, Plus, X, Eye, EyeOff } from "lucide-react";
+import { Edit, Trash2, GripVertical, Plus, X, Eye, EyeOff, ChevronDown, ChevronUp } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useSeries } from "@/hooks/useSeries";
 import { useCreateSeries, useUpdateSeries, useDeleteSeries, useUpdateSeriesOrder } from "@/hooks/useSeriesMutations";
-import { useArtworks } from "@/hooks/useArtworks";
+import { useCatalogArtworks, type CatalogArtwork } from "@/hooks/useCatalog";
+import { SeriesGallery } from "@/components/admin/series/SeriesGallery";
 import {
   DndContext,
   closestCenter,
