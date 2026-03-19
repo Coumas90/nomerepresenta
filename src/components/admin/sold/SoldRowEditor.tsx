@@ -282,7 +282,7 @@ export const SoldRowEditor = ({ item, thumbSize, onUpdate, onDelete, onUploadInv
               <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1">
                 Installments ({installments.length})
               </p>
-              <div className="grid grid-cols-[40px_100px_100px_90px_90px_1fr] gap-2 text-[10px] text-muted-foreground font-medium px-1">
+              <div className="grid grid-cols-[40px_100px_100px_80px_90px_90px_1fr] gap-2 text-[10px] text-muted-foreground font-medium px-1">
                 <span>#</span>
                 <span>Due Date</span>
                 <span>Amount</span>
