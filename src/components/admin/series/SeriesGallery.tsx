@@ -29,6 +29,7 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
   const [sizeFilter, setSizeFilter] = useState<SizeFilter>("all");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [yearFilter, setYearFilter] = useState<string>("all");
+  const [subSeriesFilter, setSubSeriesFilter] = useState<string>("all");
   const [showNames, setShowNames] = useState(true);
 
   const availableYears = useMemo(() => {
