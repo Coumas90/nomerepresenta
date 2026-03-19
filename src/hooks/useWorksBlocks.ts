@@ -84,6 +84,13 @@ export const useWorksBlocksBySeries = (seriesId: string) => {
   return { data: blocks, ...rest };
 };
 
+// Fetch blocks for a specific section
+export const useWorksBlocksBySection = (sectionId: string) => {
+  const { data: allBlocks, ...rest } = useWorksBlocks();
+  const blocks = allBlocks?.filter((b) => b.section_id === sectionId) || [];
+  return { data: blocks, ...rest };
+};
+
 // Create a new block
 export const useCreateWorksBlock = () => {
   const qc = useQueryClient();
