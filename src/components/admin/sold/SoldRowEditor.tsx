@@ -326,7 +326,7 @@ export const SoldRowEditor = ({ item, thumbSize, onUpdate, onDelete, onUploadInv
                     <Button
                       variant="outline"
                       size="sm"
-                      className="h-6 text-[9px] px-2 gap-1 bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-800"
+                      className="h-6 text-[9px] px-2 gap-1 bg-muted border-border text-muted-foreground hover:bg-muted/80"
                       onClick={() => {
                         const today = new Date().toISOString().split("T")[0];
                         updateInstallment.mutate({
