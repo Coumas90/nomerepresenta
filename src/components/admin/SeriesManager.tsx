@@ -73,10 +73,19 @@ const SortableSeriesItem = ({ id, name, description, isVisible, showNameInMenu, 
               {description && (
                 <p className="text-sm text-muted-foreground truncate">{description}</p>
               )}
-              <p className="text-xs text-muted-foreground mt-1">
-                {artworkCount} artworks
-                {!showNameInMenu && " · name hidden in menu"}
-              </p>
+              <div className="flex items-center gap-2 mt-1">
+                <p className="text-xs text-muted-foreground">
+                  {artworkCount} artworks
+                  {!showNameInMenu && " · name hidden in menu"}
+                </p>
+                <button
+                  onClick={() => setExpanded(!expanded)}
+                  className="flex items-center gap-0.5 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                  {expanded ? "Hide gallery" : "Show gallery"}
+                </button>
+              </div>
             </div>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
@@ -103,6 +112,10 @@ const SortableSeriesItem = ({ id, name, description, isVisible, showNameInMenu, 
               </Button>
             </div>
           </div>
+
+          {expanded && (
+            <SeriesGallery artworks={artworks} />
+          )}
         </CardContent>
       </Card>
     </div>
