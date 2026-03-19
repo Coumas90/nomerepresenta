@@ -904,6 +904,50 @@ export type Database = {
           },
         ]
       }
+      sold_installments: {
+        Row: {
+          amount: number | null
+          created_at: string
+          due_date: string | null
+          id: string
+          installment_number: number
+          notes: string | null
+          paid_date: string | null
+          sold_artwork_id: string
+          status: string
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          installment_number?: number
+          notes?: string | null
+          paid_date?: string | null
+          sold_artwork_id: string
+          status?: string
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          installment_number?: number
+          notes?: string | null
+          paid_date?: string | null
+          sold_artwork_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sold_installments_sold_artwork_id_fkey"
+            columns: ["sold_artwork_id"]
+            isOneToOne: false
+            referencedRelation: "sold_artworks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       studio_images: {
         Row: {
           created_at: string
