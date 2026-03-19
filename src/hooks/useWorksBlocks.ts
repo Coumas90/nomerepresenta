@@ -7,6 +7,7 @@ export type BlockType = "single" | "carousel";
 export interface WorksBlock {
   id: string;
   series_id: string;
+  section_id: string | null;
   block_type: BlockType;
   display_order: number;
   created_at: string;
