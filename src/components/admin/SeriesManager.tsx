@@ -284,6 +284,7 @@ const SeriesManager = () => {
                       isVisible={s.is_visible !== false}
                       showNameInMenu={s.show_name_in_menu !== false}
                       artworkCount={getArtworkCount(s.id)}
+                      artworks={getSeriesArtworks(s.id)}
                       onEdit={() => handleEdit(s.id, s.name, s.description)}
                       onDelete={() => handleDeleteClick(s.id)}
                       onToggleVisibility={() => updateMutation.mutate({ id: s.id, is_visible: s.is_visible === false })}
