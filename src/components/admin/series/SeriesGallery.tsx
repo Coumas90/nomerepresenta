@@ -210,7 +210,7 @@ const ThumbnailGrid = ({ artworks, gridCols, showNames }: { artworks: CatalogArt
             </span>
           )}
         </div>
-        <p className="text-[9px] text-muted-foreground truncate mt-0.5 leading-tight">{a.title}</p>
+        {showNames && <p className="text-[9px] text-muted-foreground truncate mt-0.5 leading-tight">{a.title}</p>}
       </div>
     ))}
   </div>
