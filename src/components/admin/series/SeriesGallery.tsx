@@ -219,7 +219,7 @@ const ThumbnailCard = ({ artwork, titleClass, showNames }: { artwork: CatalogArt
             <p className={`${titleClass} text-muted-foreground truncate leading-tight`}>{artwork.title}</p>
           </div>
           {expanded && (
-            <div className="text-[10px] text-muted-foreground space-y-0.5 mt-1 bg-muted/40 rounded p-1.5">
+            <div className={`${titleClass} text-muted-foreground space-y-0.5 mt-1 bg-muted/40 rounded p-1.5`}>
               {artwork.year && <p><span className="font-medium">Year:</span> {artwork.year}</p>}
               {artwork.dimensions && <p><span className="font-medium">Dim:</span> {artwork.dimensions}</p>}
               {artwork.materials && <p><span className="font-medium">Mat:</span> {artwork.materials}</p>}
