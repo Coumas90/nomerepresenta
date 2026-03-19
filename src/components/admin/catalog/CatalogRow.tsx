@@ -210,6 +210,9 @@ export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpd
               {artwork.catalog_sub_series || "—"}
             </button>
           )}
+        </td>
+
+        {/* Year */}
         <td className="py-2 px-3 text-sm text-center">{artwork.year || "—"}</td>
 
         {/* Size */}
