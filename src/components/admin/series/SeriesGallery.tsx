@@ -171,7 +171,7 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
 
       {/* Ungrouped artworks */}
       {ungrouped.length > 0 && (
-        <ThumbnailGrid artworks={ungrouped} gridCols={gridCols} />
+        <ThumbnailGrid artworks={ungrouped} gridCols={gridCols} showNames={showNames} />
       )}
 
       {/* Sub-series groups */}
