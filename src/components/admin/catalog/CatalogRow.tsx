@@ -36,7 +36,7 @@ interface CatalogRowProps {
   catalogSubSeriesSuggestions?: string[];
 }
 
-export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpdate, onEdit, onDelete, catalogSeriesSuggestions = [] }: CatalogRowProps) => {
+export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpdate, onEdit, onDelete, catalogSeriesSuggestions = [], catalogSubSeriesSuggestions = [] }: CatalogRowProps) => {
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const [imageOpen, setImageOpen] = useState(false);
