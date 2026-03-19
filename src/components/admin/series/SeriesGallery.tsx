@@ -3,7 +3,8 @@ import { ZoomIn, ZoomOut, Type, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import type { CatalogArtwork } from "@/hooks/useCatalog";
+import { CategoryFolder } from "@/components/admin/catalog/CategoryFolder";
+import type { CatalogArtwork, MediumType } from "@/hooks/useCatalog";
 
 interface SeriesGalleryProps {
   artworks: CatalogArtwork[];
@@ -19,6 +20,8 @@ const ZOOM_LEVELS = [
   { cols: "grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2", titleClass: "text-sm" },
 ];
 
+const MEDIUM_TYPES: MediumType[] = ["PAINTING", "POW", "PHOTO", "ARTIST_BOOK"];
+
 type SortMode = "default" | "year-asc" | "year-desc";
 type SizeFilter = "all" | "S" | "M" | "L";
 type StatusFilter = "all" | "available" | "sold";
@@ -31,6 +34,7 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
   const [yearFilter, setYearFilter] = useState<string>("all");
   const [subSeriesFilter, setSubSeriesFilter] = useState<string>("all");
   const [showNames, setShowNames] = useState(true);
+  const [openCategories, setOpenCategories] = useState<Set<MediumType>>(new Set());
 
   const availableYears = useMemo(() => {
     const years = new Set<string>();
@@ -76,23 +80,29 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
     return result;
   }, [artworks, sortMode, sizeFilter, statusFilter, yearFilter, subSeriesFilter]);
 
-  const { ungrouped, sortedGroups } = useMemo(() => {
-    const grouped = new Map<string, CatalogArtwork[]>();
-    const ung: CatalogArtwork[] = [];
-    for (const a of filtered) {
-      if (a.catalog_sub_series) {
-        const existing = grouped.get(a.catalog_sub_series) || [];
-        existing.push(a);
-        grouped.set(a.catalog_sub_series, existing);
-      } else {
-        ung.push(a);
-      }
+  // Group filtered artworks by medium_type
+  const byMediumType = useMemo(() => {
+    const map = new Map<MediumType, CatalogArtwork[]>();
+    for (const mt of MEDIUM_TYPES) {
+      map.set(mt, []);
     }
-    return {
-      ungrouped: ung,
-      sortedGroups: Array.from(grouped.entries()).sort(([a], [b]) => a.localeCompare(b)),
-    };
+    for (const a of filtered) {
+      const mt = (a.medium_type as MediumType) || "PAINTING";
+      const arr = map.get(mt) || [];
+      arr.push(a);
+      map.set(mt, arr);
+    }
+    return map;
   }, [filtered]);
+
+  const toggleCategory = (mt: MediumType) => {
+    setOpenCategories((prev) => {
+      const next = new Set(prev);
+      if (next.has(mt)) next.delete(mt);
+      else next.add(mt);
+      return next;
+    });
+  };
 
   const zoomLevel = ZOOM_LEVELS[zoom];
 
@@ -198,24 +208,34 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
         </span>
       </div>
 
-      {ungrouped.length > 0 && (
-        <ThumbnailGrid artworks={ungrouped} gridCols={zoomLevel.cols} titleClass={zoomLevel.titleClass} showNames={showNames} />
-      )}
-
-      {sortedGroups.map(([subSeries, items]) => (
-        <div key={subSeries}>
-          <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
-            {subSeries} <span className="font-normal">({items.length})</span>
-          </p>
-          <ThumbnailGrid artworks={items} gridCols={zoomLevel.cols} titleClass={zoomLevel.titleClass} showNames={showNames} />
-        </div>
-      ))}
-
-      {filtered.length === 0 && (
-        <p className="text-xs text-muted-foreground py-2">
-          {artworks.length === 0 ? "No artworks in this series." : "No artworks match the current filter."}
-        </p>
-      )}
+      {/* Category folders */}
+      <div className="space-y-2">
+        {MEDIUM_TYPES.map((mt) => {
+          const items = byMediumType.get(mt) || [];
+          return (
+            <CategoryFolder
+              key={mt}
+              category={mt}
+              count={items.length}
+              isOpen={openCategories.has(mt)}
+              onToggle={() => toggleCategory(mt)}
+            >
+              {items.length > 0 ? (
+                <div className="p-3">
+                  <ThumbnailGrid
+                    artworks={items}
+                    gridCols={zoomLevel.cols}
+                    titleClass={zoomLevel.titleClass}
+                    showNames={showNames}
+                  />
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground py-3 px-4">No artworks in this category.</p>
+              )}
+            </CategoryFolder>
+          );
+        })}
+      </div>
     </div>
   );
 };
@@ -259,6 +279,7 @@ const ThumbnailCard = ({ artwork, titleClass, showNames }: { artwork: CatalogArt
               {artwork.location && <p><span className="font-medium">Location:</span> {artwork.location}</p>}
               {artwork.edition && <p><span className="font-medium">Edition:</span> {artwork.edition}</p>}
               {artwork.ref && <p><span className="font-medium">Ref:</span> {artwork.ref}</p>}
+              {artwork.catalog_sub_series && <p><span className="font-medium">Sub-series:</span> {artwork.catalog_sub_series}</p>}
             </div>
           )}
         </div>
