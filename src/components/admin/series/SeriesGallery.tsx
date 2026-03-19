@@ -180,7 +180,7 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
           <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
             {subSeries} <span className="font-normal">({items.length})</span>
           </p>
-          <ThumbnailGrid artworks={items} gridCols={gridCols} />
+          <ThumbnailGrid artworks={items} gridCols={gridCols} showNames={showNames} />
         </div>
       ))}
 
