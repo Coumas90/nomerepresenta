@@ -185,6 +185,7 @@ const CatalogManager = ({ onEdit }: CatalogManagerProps = {}) => {
                     onEdit={onEdit ? (a) => onEdit(a as any) : undefined}
                     onDelete={(id) => deleteMutation.mutate(id)}
                     catalogSeriesSuggestions={catalogSeriesNames}
+                    catalogSubSeriesSuggestions={catalogSubSeriesNames}
                   />
               ))}
             </tbody>
