@@ -5,8 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Edit, Trash2, GripVertical, Plus, X, Eye, EyeOff, ChevronDown, ChevronUp } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
+import { Edit, Trash2, GripVertical, Plus, X, ChevronDown, ChevronUp } from "lucide-react";
+
 import { useSeries } from "@/hooks/useSeries";
 import { useCreateSeries, useUpdateSeries, useDeleteSeries, useUpdateSeriesOrder } from "@/hooks/useSeriesMutations";
 import { useCatalogArtworks, type CatalogArtwork } from "@/hooks/useCatalog";
@@ -33,17 +33,13 @@ interface SortableSeriesItemProps {
   id: string;
   name: string;
   description: string | null;
-  isVisible: boolean;
-  showNameInMenu: boolean;
   artworkCount: number;
   artworks: CatalogArtwork[];
   onEdit: () => void;
   onDelete: () => void;
-  onToggleVisibility: () => void;
-  onToggleNameInMenu: () => void;
 }
 
-const SortableSeriesItem = ({ id, name, description, isVisible, showNameInMenu, artworkCount, artworks, onEdit, onDelete, onToggleVisibility, onToggleNameInMenu }: SortableSeriesItemProps) => {
+const SortableSeriesItem = ({ id, name, description, artworkCount, artworks, onEdit, onDelete }: SortableSeriesItemProps) => {
   const [expanded, setExpanded] = useState(false);
   const {
     attributes,
@@ -62,7 +58,7 @@ const SortableSeriesItem = ({ id, name, description, isVisible, showNameInMenu, 
 
   return (
     <div ref={setNodeRef} style={style} className="mb-3">
-      <Card className={!isVisible ? "opacity-60" : ""}>
+      <Card>
         <CardContent className="p-4">
           <div className="flex items-center gap-3">
             <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
@@ -76,7 +72,6 @@ const SortableSeriesItem = ({ id, name, description, isVisible, showNameInMenu, 
               <div className="flex items-center gap-2 mt-1">
                 <p className="text-xs text-muted-foreground">
                   {artworkCount} artworks
-                  {!showNameInMenu && " · name hidden in menu"}
                 </p>
                 <button
                   onClick={() => setExpanded(!expanded)}
@@ -87,23 +82,7 @@ const SortableSeriesItem = ({ id, name, description, isVisible, showNameInMenu, 
                 </button>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2">
-                <Switch
-                  checked={isVisible}
-                  onCheckedChange={onToggleVisibility}
-                  aria-label={isVisible ? "Hide series" : "Show series"}
-                />
-                <span className="text-xs text-muted-foreground">{isVisible ? "Visible" : "Hidden"}</span>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onToggleNameInMenu}
-                title={showNameInMenu ? "Hide name in Works menu" : "Show name in Works menu"}
-              >
-                {showNameInMenu ? <Eye className="h-4 w-4 text-emerald-600" /> : <EyeOff className="h-4 w-4 text-muted-foreground" />}
-              </Button>
+            <div className="flex items-center gap-2">
               <Button variant="outline" size="icon" onClick={onEdit}>
                 <Edit className="h-4 w-4" />
               </Button>
@@ -281,14 +260,10 @@ const SeriesManager = () => {
                       id={s.id}
                       name={s.name}
                       description={s.description}
-                      isVisible={s.is_visible !== false}
-                      showNameInMenu={s.show_name_in_menu !== false}
                       artworkCount={getArtworkCount(s.id)}
                       artworks={getSeriesArtworks(s.id)}
                       onEdit={() => handleEdit(s.id, s.name, s.description)}
                       onDelete={() => handleDeleteClick(s.id)}
-                      onToggleVisibility={() => updateMutation.mutate({ id: s.id, is_visible: s.is_visible === false })}
-                      onToggleNameInMenu={() => updateMutation.mutate({ id: s.id, show_name_in_menu: s.show_name_in_menu === false })}
                     />
                   ))}
                 </SortableContext>
