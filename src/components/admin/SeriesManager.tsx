@@ -33,14 +33,10 @@ interface SortableSeriesItemProps {
   id: string;
   name: string;
   description: string | null;
-  isVisible: boolean;
-  showNameInMenu: boolean;
   artworkCount: number;
   artworks: CatalogArtwork[];
   onEdit: () => void;
   onDelete: () => void;
-  onToggleVisibility: () => void;
-  onToggleNameInMenu: () => void;
 }
 
 const SortableSeriesItem = ({ id, name, description, isVisible, showNameInMenu, artworkCount, artworks, onEdit, onDelete, onToggleVisibility, onToggleNameInMenu }: SortableSeriesItemProps) => {
