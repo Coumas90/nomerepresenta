@@ -193,7 +193,7 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
   );
 };
 
-const ThumbnailGrid = ({ artworks, gridCols }: { artworks: CatalogArtwork[]; gridCols: string }) => (
+const ThumbnailGrid = ({ artworks, gridCols, showNames }: { artworks: CatalogArtwork[]; gridCols: string; showNames: boolean }) => (
   <div className={`grid ${gridCols} gap-2`}>
     {artworks.map((a) => (
       <div key={a.id} className="group relative">
