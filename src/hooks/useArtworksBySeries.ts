@@ -1,42 +1,46 @@
 import { useMemo } from "react";
-import { useSeries } from "@/hooks/useSeries";
+import { useWorksSections, type WorksSection } from "@/hooks/useWorksSections";
 import { useWorksBlocks, type WorksBlockWithItems } from "@/hooks/useWorksBlocks";
-import type { ArtworkData, SeriesData } from "@/types";
+import type { ArtworkData, ArtworkImage } from "@/types";
 
 export interface WorksBlockDisplay {
   id: string;
   block_type: "single" | "carousel";
   display_order: number;
   artworks: ArtworkData[];
-  /** Per-artwork image overrides from works_block_items, keyed by artwork_id */
   imageOverridesByArtwork?: Record<string, { hidden_images?: string[]; image_order?: string[] }>;
 }
 
-export interface SeriesWithBlocks extends SeriesData {
+export interface SectionWithBlocks {
+  id: string;
+  name: string;
+  description: string | null;
+  display_order: number;
+  is_visible: boolean;
+  show_name_in_menu: boolean;
   blocks: WorksBlockDisplay[];
-  /** Flattened artworks for backward compat (header counting, etc.) */
   artworks: ArtworkData[];
 }
 
 export const useArtworksBySeries = () => {
-  const { data: series, isLoading: seriesLoading, error: seriesError } = useSeries();
+  const { data: sections, isLoading: sectionsLoading, error: sectionsError } = useWorksSections();
   const { data: allBlocks, isLoading: blocksLoading, error: blocksError } = useWorksBlocks();
 
-  const seriesWithBlocks = useMemo(() => {
-    if (!series || !allBlocks) return [];
+  const sectionsWithBlocks = useMemo(() => {
+    if (!sections || !allBlocks) return [];
 
-    return series
+    return sections
       .filter((s) => s.is_visible !== false)
+      .sort((a, b) => a.display_order - b.display_order)
       .map((s) => {
-        const seriesBlocks = allBlocks
-          .filter((b) => b.series_id === s.id)
+        const sectionBlocks = allBlocks
+          .filter((b) => b.section_id === s.id)
           .sort((a, b) => a.display_order - b.display_order)
           .map((block) => {
             const validItems = block.items
               .filter((item) => item.artwork && item.artwork.is_visible !== false)
               .sort((a, b) => a.display_order - b.display_order);
 
-            // Skip hidden blocks in public display
             if ((block as any).is_hidden === true) return null;
 
             const imageOverridesByArtwork: Record<string, { hidden_images?: string[]; image_order?: string[] }> = {};
@@ -69,22 +73,26 @@ export const useArtworksBySeries = () => {
           })
           .filter((block): block is NonNullable<typeof block> => block !== null && block.artworks.length > 0);
 
-        // Flatten for backward compat
-        const allArtworks = seriesBlocks.flatMap((b) => b.artworks);
+        const allArtworks = sectionBlocks.flatMap((b) => b.artworks);
 
         return {
-          ...s,
-          blocks: seriesBlocks,
+          id: s.id,
+          name: s.name,
+          description: null,
+          display_order: s.display_order,
+          is_visible: s.is_visible,
+          show_name_in_menu: true,
+          blocks: sectionBlocks,
           artworks: allArtworks,
-        } as SeriesWithBlocks;
+        } as SectionWithBlocks;
       })
       .filter((s) => s.blocks.length > 0);
-  }, [series, allBlocks]);
+  }, [sections, allBlocks]);
 
   return {
-    data: seriesWithBlocks,
-    isLoading: seriesLoading || blocksLoading,
-    error: seriesError || blocksError,
-    series,
+    data: sectionsWithBlocks,
+    isLoading: sectionsLoading || blocksLoading,
+    error: sectionsError || blocksError,
+    series: sections,
   };
 };

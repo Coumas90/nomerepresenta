@@ -1,11 +1,9 @@
 import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Input } from "@/components/ui/input";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Plus, Trash2, GripVertical, Image, Images, ChevronDown, ChevronUp, Eye, EyeOff } from "lucide-react";
-import { WorksImageGallery } from "@/components/admin/works/WorksImageGallery";
-import { useSeries } from "@/hooks/useSeries";
+import { Plus, Trash2, GripVertical, Image, Images, Eye, EyeOff, Edit, ChevronDown, ChevronUp } from "lucide-react";
 import {
   useWorksBlocks,
   useCreateWorksBlock,
@@ -18,9 +16,15 @@ import {
   type WorksBlockWithItems,
   type BlockType,
 } from "@/hooks/useWorksBlocks";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  useWorksSections,
+  useCreateWorksSection,
+  useDeleteWorksSection,
+  useUpdateWorksSection,
+  useReorderWorksSections,
+} from "@/hooks/useWorksSections";
 import ArtworkPicker from "./ArtworkPicker";
-import CarouselPreview from "./CarouselPreview";
+import SortableBlock from "./SortableBlock";
 import {
   DndContext,
   closestCenter,
@@ -37,163 +41,118 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-// Sortable block item (artwork within a block)
-const SortableBlockArtwork = ({
-  item,
-  onRemove,
-}: {
-  item: WorksBlockWithItems["items"][0];
-  onRemove: () => void;
-}) => {
-  const [imagesExpanded, setImagesExpanded] = useState(false);
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item.id });
-  const isArtworkHidden = item.artwork?.is_visible === false;
-  const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : isArtworkHidden ? 0.45 : 1 };
-
-  return (
-    <div ref={setNodeRef} style={style} className={`bg-muted/30 rounded-md mb-1 ${isArtworkHidden ? "border border-dashed border-muted-foreground/30" : ""}`}>
-      <div className="flex items-center gap-2 p-2">
-        <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
-          <GripVertical className="h-4 w-4 text-muted-foreground" />
-        </div>
-        <img
-          src={item.artwork?.image_url || ""}
-          alt={item.artwork?.title || ""}
-          className="w-32 h-32 object-cover rounded"
-        />
-        <div className="flex-1 min-w-0">
-          <p className="text-sm truncate">
-            {item.artwork?.title || "Unknown"}
-            {isArtworkHidden && <span className="ml-1.5 text-[10px] text-muted-foreground font-normal">(hidden)</span>}
-          </p>
-          <div className="flex items-center gap-2">
-            <p className="text-xs text-muted-foreground">{item.artwork?.year}</p>
-            <button
-              onClick={() => setImagesExpanded(!imagesExpanded)}
-              className="flex items-center gap-0.5 text-[10px] text-muted-foreground hover:text-foreground transition-colors"
-            >
-              {imagesExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-              {imagesExpanded ? "Hide" : "Images"}
-            </button>
-          </div>
-        </div>
-        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onRemove}>
-          <Trash2 className="h-3.5 w-3.5 text-destructive" />
-        </Button>
-      </div>
-      {imagesExpanded && (
-        <div className="px-3 pb-3 pt-1 border-t border-border/50">
-          <WorksImageGallery
-            artworkId={item.artwork_id}
-            blockItemId={item.id}
-            imageOverrides={item.image_overrides as any}
-          />
-        </div>
-      )}
-    </div>
-  );
-};
-
-// Sortable block card
-const SortableBlock = ({
-  block,
+// Sortable section wrapper
+const SortableSection = ({
+  section,
+  blocks,
   onDelete,
+  onRename,
+  onAddBlock,
+  onDeleteBlock,
   onAddArtwork,
   onRemoveItem,
   onReorderItems,
   onChangeType,
   onToggleHidden,
+  onReorderBlocks,
 }: {
-  block: WorksBlockWithItems;
+  section: { id: string; name: string; is_visible: boolean };
+  blocks: WorksBlockWithItems[];
   onDelete: () => void;
+  onRename: (name: string) => void;
+  onAddBlock: (type: BlockType) => void;
+  onDeleteBlock: (blockId: string) => void;
   onAddArtwork: (blockId: string) => void;
   onRemoveItem: (itemId: string) => void;
   onReorderItems: (blockId: string, items: { id: string; display_order: number }[]) => void;
   onChangeType: (blockId: string, type: BlockType) => void;
   onToggleHidden: (blockId: string, isHidden: boolean) => void;
+  onReorderBlocks: (event: DragEndEvent) => void;
 }) => {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: block.id });
+  const [expanded, setExpanded] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editName, setEditName] = useState(section.name);
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: section.id });
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 };
-  const isHidden = (block as any).is_hidden === true;
 
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
+  const blockSensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
 
-  const handleItemDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-    const oldIdx = block.items.findIndex((i) => i.id === active.id);
-    const newIdx = block.items.findIndex((i) => i.id === over.id);
-    const reordered = arrayMove(block.items, oldIdx, newIdx);
-    onReorderItems(
-      block.id,
-      reordered.map((item, i) => ({ id: item.id, display_order: i }))
-    );
+  const handleSaveRename = () => {
+    if (editName.trim() && editName.trim() !== section.name) {
+      onRename(editName.trim());
+    }
+    setEditing(false);
   };
 
-  const isCarousel = block.block_type === "carousel";
-
-    return (
-    <div ref={setNodeRef} style={style} className={`border rounded-lg p-3 mb-2 bg-background ${isHidden ? "opacity-50" : ""}`}>
-      <div className="flex items-center gap-2 mb-2">
+  return (
+    <div ref={setNodeRef} style={style} className="border rounded-lg bg-card mb-3">
+      <div className="flex items-center gap-2 p-3">
         <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
           <GripVertical className="h-4 w-4 text-muted-foreground" />
         </div>
-        {isCarousel ? (
-          <Images className="h-4 w-4 text-muted-foreground" />
+        {editing ? (
+          <Input
+            value={editName}
+            onChange={(e) => setEditName(e.target.value)}
+            onBlur={handleSaveRename}
+            onKeyDown={(e) => e.key === "Enter" && handleSaveRename()}
+            className="h-7 text-sm font-semibold w-48"
+            autoFocus
+          />
         ) : (
-          <Image className="h-4 w-4 text-muted-foreground" />
+          <h3 className="text-sm font-semibold uppercase tracking-wide flex-1">{section.name}</h3>
         )}
-        <Select
-          value={block.block_type}
-          onValueChange={(v) => onChangeType(block.id, v as BlockType)}
-        >
-          <SelectTrigger className="h-7 w-[110px] text-xs uppercase font-medium">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="single">Single</SelectItem>
-            <SelectItem value="carousel">Multiple</SelectItem>
-          </SelectContent>
-        </Select>
         <span className="text-xs text-muted-foreground">
-          {block.items.length} artwork{block.items.length !== 1 ? "s" : ""}
+          {blocks.length} block{blocks.length !== 1 ? "s" : ""}
         </span>
-        <div className="flex-1" />
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-7 w-7"
-          onClick={() => onToggleHidden(block.id, !isHidden)}
-          title={isHidden ? "Show in public Works" : "Hide from public Works"}
+        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setEditName(section.name); setEditing(true); }}>
+          <Edit className="h-3.5 w-3.5 text-muted-foreground" />
+        </Button>
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="text-muted-foreground hover:text-foreground transition-colors"
         >
-          {isHidden ? <EyeOff className="h-3.5 w-3.5 text-muted-foreground" /> : <Eye className="h-3.5 w-3.5 text-foreground" />}
-        </Button>
-        <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => onAddArtwork(block.id)}>
-          <Plus className="h-3 w-3 mr-1" />
-          Add
-        </Button>
+          {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+        </button>
         <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onDelete}>
           <Trash2 className="h-3.5 w-3.5 text-destructive" />
         </Button>
       </div>
 
-      {isCarousel ? (
-        <CarouselPreview
-          items={block.items}
-          blockId={block.id}
-          onRemoveItem={onRemoveItem}
-          onReorderItems={onReorderItems}
-        />
-      ) : block.items.length > 0 ? (
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleItemDragEnd}>
-          <SortableContext items={block.items.map((i) => i.id)} strategy={verticalListSortingStrategy}>
-            {block.items.map((item) => (
-              <SortableBlockArtwork key={item.id} item={item} onRemove={() => onRemoveItem(item.id)} />
-            ))}
-          </SortableContext>
-        </DndContext>
-      ) : (
-        <p className="text-xs text-muted-foreground text-center py-3">No artworks in this block yet.</p>
+      {expanded && (
+        <div className="px-3 pb-3 border-t border-border/50 pt-2">
+          <div className="flex gap-2 mb-3">
+            <Button variant="outline" size="sm" onClick={() => onAddBlock("single")}>
+              <Image className="h-3.5 w-3.5 mr-1.5" />
+              Single Block
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => onAddBlock("carousel")}>
+              <Images className="h-3.5 w-3.5 mr-1.5" />
+              Multiple Block
+            </Button>
+          </div>
+
+          {blocks.length > 0 ? (
+            <DndContext sensors={blockSensors} collisionDetection={closestCenter} onDragEnd={onReorderBlocks}>
+              <SortableContext items={blocks.map((b) => b.id)} strategy={verticalListSortingStrategy}>
+                {blocks.map((block) => (
+                  <SortableBlock
+                    key={block.id}
+                    block={block}
+                    onDelete={() => onDeleteBlock(block.id)}
+                    onAddArtwork={onAddArtwork}
+                    onRemoveItem={onRemoveItem}
+                    onReorderItems={onReorderItems}
+                    onChangeType={onChangeType}
+                    onToggleHidden={onToggleHidden}
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
+          ) : (
+            <p className="text-xs text-muted-foreground text-center py-4">No blocks yet.</p>
+          )}
+        </div>
       )}
     </div>
   );
@@ -201,7 +160,7 @@ const SortableBlock = ({
 
 const WorksBlockManager = () => {
   const { data: allBlocks = [], isLoading: blocksLoading } = useWorksBlocks();
-  const { data: series = [], isLoading: seriesLoading } = useSeries();
+  const { data: sections = [], isLoading: sectionsLoading } = useWorksSections();
   const createBlock = useCreateWorksBlock();
   const deleteBlock = useDeleteWorksBlock();
   const updateBlock = useUpdateWorksBlock();
@@ -209,45 +168,51 @@ const WorksBlockManager = () => {
   const addItem = useAddBlockItem();
   const removeItem = useRemoveBlockItem();
   const reorderItems = useReorderBlockItems();
+  const createSection = useCreateWorksSection();
+  const deleteSection = useDeleteWorksSection();
+  const updateSection = useUpdateWorksSection();
+  const reorderSections = useReorderWorksSections();
 
-  const [activeSeries, setActiveSeries] = useState<string | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [pickerTarget, setPickerTarget] = useState<{ blockId: string; multiple: boolean } | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ type: "block" | "section"; id: string } | null>(null);
+  const [newSectionName, setNewSectionName] = useState("");
 
-  // Create a new block type picker
-  const [newBlockSeries, setNewBlockSeries] = useState<string | null>(null);
-  const [newBlockType, setNewBlockType] = useState<"single" | "carousel" | null>(null);
-
-  const blocksBySeries = useMemo(() => {
+  const blocksBySection = useMemo(() => {
     const map = new Map<string, WorksBlockWithItems[]>();
     for (const block of allBlocks) {
-      const list = map.get(block.series_id) || [];
+      const key = block.section_id || "";
+      const list = map.get(key) || [];
       list.push(block);
-      map.set(block.series_id, list);
+      map.set(key, list);
     }
     return map;
   }, [allBlocks]);
 
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
+  const sectionSensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
 
-  const handleAddBlock = async (seriesId: string, type: "single" | "carousel") => {
-    const seriesBlocks = blocksBySeries.get(seriesId) || [];
-    const maxOrder = seriesBlocks.reduce((max, b) => Math.max(max, b.display_order), -1);
+  const handleAddSection = async () => {
+    const name = newSectionName.trim();
+    if (!name) return;
+    await createSection.mutateAsync({ name, display_order: sections.length });
+    setNewSectionName("");
+  };
+
+  const handleAddBlock = async (sectionId: string, type: BlockType) => {
+    const sectionBlocks = blocksBySection.get(sectionId) || [];
+    const maxOrder = sectionBlocks.reduce((max, b) => Math.max(max, b.display_order), -1);
     const block = await createBlock.mutateAsync({
-      series_id: seriesId,
+      section_id: sectionId,
       block_type: type,
       display_order: maxOrder + 1,
     });
-    // Open picker immediately for the new block
     setPickerTarget({ blockId: block.id, multiple: type === "carousel" });
     setPickerOpen(true);
   };
 
   const handleAddArtwork = (blockId: string) => {
     const block = allBlocks.find((b) => b.id === blockId);
-    const isCarousel = block?.block_type === "carousel";
-    setPickerTarget({ blockId, multiple: isCarousel });
+    setPickerTarget({ blockId, multiple: block?.block_type === "carousel" });
     setPickerOpen(true);
   };
 
@@ -262,16 +227,21 @@ const WorksBlockManager = () => {
         display_order: startOrder + i,
       });
     }
-    // If a single block gets more than 1 item, convert to carousel
-    if (block && block.block_type === "single" && block.items.length + artworkIds.length > 1) {
-      // Auto-upgrade is handled by the admin; keep as-is for now
-    }
   };
 
-  const handleBlockDragEnd = (event: DragEndEvent, seriesId: string) => {
+  const handleSectionDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
-    const blocks = blocksBySeries.get(seriesId) || [];
+    const oldIdx = sections.findIndex((s) => s.id === active.id);
+    const newIdx = sections.findIndex((s) => s.id === over.id);
+    const reordered = arrayMove(sections, oldIdx, newIdx);
+    reorderSections.mutate(reordered.map((s, i) => ({ id: s.id, display_order: i })));
+  };
+
+  const handleBlockDragEnd = (sectionId: string) => (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const blocks = blocksBySection.get(sectionId) || [];
     const oldIdx = blocks.findIndex((b) => b.id === active.id);
     const newIdx = blocks.findIndex((b) => b.id === over.id);
     const reordered = arrayMove(blocks, oldIdx, newIdx);
@@ -282,14 +252,23 @@ const WorksBlockManager = () => {
     reorderItems.mutate(items);
   };
 
-  // Get artwork IDs already used in the target block (for excluding in picker)
+  const handleDeleteConfirm = () => {
+    if (!deleteTarget) return;
+    if (deleteTarget.type === "block") {
+      deleteBlock.mutate(deleteTarget.id);
+    } else {
+      deleteSection.mutate(deleteTarget.id);
+    }
+    setDeleteTarget(null);
+  };
+
   const getExcludeIds = () => {
     if (!pickerTarget) return [];
     const block = allBlocks.find((b) => b.id === pickerTarget.blockId);
     return block?.items.map((i) => i.artwork_id) || [];
   };
 
-  if (blocksLoading || seriesLoading) {
+  if (blocksLoading || sectionsLoading) {
     return <div className="text-center py-8">Loading...</div>;
   }
 
@@ -299,87 +278,62 @@ const WorksBlockManager = () => {
         <div>
           <h2 className="text-xl font-semibold">Works</h2>
           <p className="text-sm text-muted-foreground">
-            Manage display blocks for the public Works page. Add single artworks or multiple blocks referencing your Catalog.
+            Manage display sections and blocks for the public Works page. Sections are independent from Catalog series.
           </p>
         </div>
 
+        {/* Add new section */}
         <Card>
-          <CardHeader>
-            <CardTitle>Blocks by Series</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {series.length > 0 ? (
-              <Accordion type="single" collapsible value={activeSeries || undefined} onValueChange={setActiveSeries}>
-                {series.map((s) => {
-                  const blocks = blocksBySeries.get(s.id) || [];
-                  return (
-                    <AccordionItem key={s.id} value={s.id}>
-                      <AccordionTrigger className="text-base font-semibold">
-                        {s.name} ({blocks.length} block{blocks.length !== 1 ? "s" : ""})
-                      </AccordionTrigger>
-                      <AccordionContent>
-                        <div className="flex gap-2 mb-3">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleAddBlock(s.id, "single")}
-                            disabled={createBlock.isPending}
-                          >
-                            <Image className="h-3.5 w-3.5 mr-1.5" />
-                            Single Block
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleAddBlock(s.id, "carousel")}
-                            disabled={createBlock.isPending}
-                          >
-                            <Images className="h-3.5 w-3.5 mr-1.5" />
-                            Multiple Block
-                          </Button>
-                        </div>
-
-                        {blocks.length > 0 ? (
-                          <DndContext
-                            sensors={sensors}
-                            collisionDetection={closestCenter}
-                            onDragEnd={(e) => handleBlockDragEnd(e, s.id)}
-                          >
-                            <SortableContext items={blocks.map((b) => b.id)} strategy={verticalListSortingStrategy}>
-                              {blocks.map((block) => (
-                                <SortableBlock
-                                  key={block.id}
-                                  block={block}
-                                  onDelete={() => setDeleteTarget(block.id)}
-                                  onAddArtwork={handleAddArtwork}
-                                  onRemoveItem={(itemId) => removeItem.mutate(itemId)}
-                                  onReorderItems={handleReorderItems}
-                                  onChangeType={(blockId, type) => updateBlock.mutate({ id: blockId, updates: { block_type: type } })}
-                                  onToggleHidden={(blockId, hidden) => updateBlock.mutate({ id: blockId, updates: { is_hidden: hidden } as any })}
-                                />
-                              ))}
-                            </SortableContext>
-                          </DndContext>
-                        ) : (
-                          <p className="text-sm text-muted-foreground text-center py-6">
-                            No blocks yet. Add a single or multiple block above.
-                          </p>
-                        )}
-                      </AccordionContent>
-                    </AccordionItem>
-                  );
-                })}
-              </Accordion>
-            ) : (
-              <p className="text-center py-8 text-muted-foreground">
-                No series found. Create series first in Series (Works).
-              </p>
-            )}
+          <CardContent className="pt-4">
+            <div className="flex gap-2">
+              <Input
+                value={newSectionName}
+                onChange={(e) => setNewSectionName(e.target.value)}
+                placeholder="New section name (e.g. TRI-PEEL, BUILD UPS)"
+                className="flex-1"
+                onKeyDown={(e) => e.key === "Enter" && handleAddSection()}
+              />
+              <Button onClick={handleAddSection} disabled={!newSectionName.trim() || createSection.isPending}>
+                <Plus className="h-4 w-4 mr-1" />
+                Add Section
+              </Button>
+            </div>
           </CardContent>
         </Card>
+
+        {/* Sections list */}
+        {sections.length > 0 ? (
+          <DndContext sensors={sectionSensors} collisionDetection={closestCenter} onDragEnd={handleSectionDragEnd}>
+            <SortableContext items={sections.map((s) => s.id)} strategy={verticalListSortingStrategy}>
+              {sections.map((section) => {
+                const blocks = blocksBySection.get(section.id) || [];
+                return (
+                  <SortableSection
+                    key={section.id}
+                    section={section}
+                    blocks={blocks}
+                    onDelete={() => setDeleteTarget({ type: "section", id: section.id })}
+                    onRename={(name) => updateSection.mutate({ id: section.id, updates: { name } })}
+                    onAddBlock={(type) => handleAddBlock(section.id, type)}
+                    onDeleteBlock={(blockId) => setDeleteTarget({ type: "block", id: blockId })}
+                    onAddArtwork={handleAddArtwork}
+                    onRemoveItem={(itemId) => removeItem.mutate(itemId)}
+                    onReorderItems={handleReorderItems}
+                    onChangeType={(blockId, type) => updateBlock.mutate({ id: blockId, updates: { block_type: type } })}
+                    onToggleHidden={(blockId, hidden) => updateBlock.mutate({ id: blockId, updates: { is_hidden: hidden } as any })}
+                    onReorderBlocks={handleBlockDragEnd(section.id)}
+                  />
+                );
+              })}
+            </SortableContext>
+          </DndContext>
+        ) : (
+          <p className="text-center py-8 text-muted-foreground">
+            No sections yet. Create one above to start organizing your Works page.
+          </p>
+        )}
       </div>
 
-      {/* Artwork Picker */}
       <ArtworkPicker
         open={pickerOpen}
         onOpenChange={setPickerOpen}
@@ -388,25 +342,21 @@ const WorksBlockManager = () => {
         multiple={pickerTarget?.multiple || false}
       />
 
-      {/* Delete confirmation */}
       <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Block?</AlertDialogTitle>
+            <AlertDialogTitle>
+              Delete {deleteTarget?.type === "section" ? "Section" : "Block"}?
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              This will remove the block from the Works page. The artworks themselves will remain in the Catalog.
+              {deleteTarget?.type === "section"
+                ? "This will remove the section and all its blocks from the Works page. The artworks themselves will remain in the Catalog."
+                : "This will remove the block from the Works page. The artworks themselves will remain in the Catalog."}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                if (deleteTarget) deleteBlock.mutate(deleteTarget);
-                setDeleteTarget(null);
-              }}
-            >
-              Delete
-            </AlertDialogAction>
+            <AlertDialogAction onClick={handleDeleteConfirm}>Delete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
