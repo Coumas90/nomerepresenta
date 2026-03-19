@@ -7,7 +7,7 @@ import { useSeries } from "@/hooks/useSeries";
 import { CatalogFilters } from "./CatalogFilters";
 import { CatalogRow, type ThumbSize } from "./CatalogRow";
 import { CategoryFolder } from "./CategoryFolder";
-import { CatalogSeriesManager, useCatalogSeriesNames } from "./CatalogSeriesManager";
+import { CatalogSeriesManager, useCatalogSeriesNames, useCatalogSeriesHierarchy } from "./CatalogSeriesManager";
 import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 
 type SortField = "title" | "year" | "size_category" | "status" | null;
@@ -28,6 +28,7 @@ const CatalogManager = ({ onEdit }: CatalogManagerProps = {}) => {
   const updateField = useUpdateCatalogField();
   const deleteMutation = useDeleteArtwork();
   const managedCatalogSeries = useCatalogSeriesNames();
+  const seriesHierarchy = useCatalogSeriesHierarchy();
 
   const [search, setSearch] = useState("");
   const [yearFilter, setYearFilter] = useState("all");
@@ -99,6 +100,13 @@ const CatalogManager = ({ onEdit }: CatalogManagerProps = {}) => {
     return Array.from(set).sort();
   }, [artworks, managedCatalogSeries]);
 
+  const catalogSubSeriesNames = useMemo(() => {
+    const allSubs = Object.values(seriesHierarchy).flat();
+    const fromData = artworks.map((a) => a.catalog_sub_series).filter(Boolean) as string[];
+    const set = new Set([...allSubs, ...fromData]);
+    return Array.from(set).sort();
+  }, [artworks, seriesHierarchy]);
+
   const grouped = useMemo(() => {
     const map: Record<string, typeof filtered> = {};
     for (const cat of CATEGORIES) {
@@ -139,6 +147,7 @@ const CatalogManager = ({ onEdit }: CatalogManagerProps = {}) => {
                 </th>
                 <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Ref</th>
                 <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Series</th>
+                <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Sub-series</th>
                 <th
                   className="py-2 px-3 text-xs font-medium text-muted-foreground text-center cursor-pointer select-none hover:text-foreground transition-colors"
                   onClick={() => toggleSort("year")}
@@ -176,6 +185,7 @@ const CatalogManager = ({ onEdit }: CatalogManagerProps = {}) => {
                     onEdit={onEdit ? (a) => onEdit(a as any) : undefined}
                     onDelete={(id) => deleteMutation.mutate(id)}
                     catalogSeriesSuggestions={catalogSeriesNames}
+                    catalogSubSeriesSuggestions={catalogSubSeriesNames}
                   />
               ))}
             </tbody>

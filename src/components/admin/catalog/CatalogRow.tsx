@@ -33,9 +33,10 @@ interface CatalogRowProps {
   onEdit?: (artwork: CatalogArtwork) => void;
   onDelete?: (id: string) => void;
   catalogSeriesSuggestions?: string[];
+  catalogSubSeriesSuggestions?: string[];
 }
 
-export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpdate, onEdit, onDelete, catalogSeriesSuggestions = [] }: CatalogRowProps) => {
+export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpdate, onEdit, onDelete, catalogSeriesSuggestions = [], catalogSubSeriesSuggestions = [] }: CatalogRowProps) => {
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const [imageOpen, setImageOpen] = useState(false);
@@ -176,6 +177,37 @@ export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpd
               className="text-xs px-1.5 py-0.5 rounded hover:bg-muted transition-colors min-w-[48px] text-left truncate max-w-[120px]"
             >
               {artwork.catalog_series || "—"}
+            </button>
+          )}
+        </td>
+
+        {/* Sub-series */}
+        <td className="py-2 px-3">
+          {editingField === "catalog_sub_series" ? (
+            <div className="flex items-center gap-1">
+              <Input
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                className="h-7 w-28 text-xs"
+                onKeyDown={(e) => e.key === "Enter" && saveField()}
+                autoFocus
+                list={`sub-series-suggestions-${artwork.id}`}
+              />
+              <datalist id={`sub-series-suggestions-${artwork.id}`}>
+                {catalogSubSeriesSuggestions.map((s) => (
+                  <option key={s} value={s} />
+                ))}
+              </datalist>
+              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={saveField}>
+                <Check className="h-3 w-3" />
+              </Button>
+            </div>
+          ) : (
+            <button
+              onClick={() => startEditing("catalog_sub_series", artwork.catalog_sub_series || "")}
+              className="text-xs px-1.5 py-0.5 rounded hover:bg-muted transition-colors min-w-[48px] text-left truncate max-w-[120px]"
+            >
+              {artwork.catalog_sub_series || "—"}
             </button>
           )}
         </td>
