@@ -1,7 +1,8 @@
 import { useState, useMemo } from "react";
-import { ZoomIn, ZoomOut, ArrowUpDown } from "lucide-react";
+import { ZoomIn, ZoomOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import type { CatalogArtwork } from "@/hooks/useCatalog";
 
 interface SeriesGalleryProps {
@@ -13,32 +14,37 @@ const ZOOM_LEVELS = [
   { cols: "grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10", label: "S" },
   { cols: "grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8", label: "M" },
   { cols: "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5", label: "L" },
+  { cols: "grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4", label: "XL" },
+  { cols: "grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3", label: "XXL" },
 ];
 
-type SortMode = "default" | "size-asc" | "size-desc";
+type SortMode = "default" | "year-asc" | "year-desc";
+type SizeFilter = "all" | "S" | "M" | "L";
 type StatusFilter = "all" | "available" | "sold";
-
-const SIZE_ORDER: Record<string, number> = { S: 1, M: 2, L: 3 };
 
 export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
   const [zoom, setZoom] = useState(1);
   const [sortMode, setSortMode] = useState<SortMode>("default");
+  const [sizeFilter, setSizeFilter] = useState<SizeFilter>("all");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
 
   const filtered = useMemo(() => {
     let result = artworks;
+    if (sizeFilter !== "all") {
+      result = result.filter((a) => a.size_category === sizeFilter);
+    }
     if (statusFilter !== "all") {
       result = result.filter((a) => (a.status || "available") === statusFilter);
     }
     if (sortMode !== "default") {
       result = [...result].sort((a, b) => {
-        const aVal = SIZE_ORDER[a.size_category || ""] || 0;
-        const bVal = SIZE_ORDER[b.size_category || ""] || 0;
-        return sortMode === "size-asc" ? aVal - bVal : bVal - aVal;
+        const aYear = parseInt(a.year || "0") || 0;
+        const bYear = parseInt(b.year || "0") || 0;
+        return sortMode === "year-asc" ? aYear - bYear : bYear - aYear;
       });
     }
     return result;
-  }, [artworks, sortMode, statusFilter]);
+  }, [artworks, sortMode, sizeFilter, statusFilter]);
 
   // Group by catalog_sub_series
   const { ungrouped, sortedGroups } = useMemo(() => {
@@ -86,17 +92,19 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
           </Button>
         </div>
 
-        <Select value={sortMode} onValueChange={(v) => setSortMode(v as SortMode)}>
-          <SelectTrigger className="h-7 w-[130px] text-xs">
-            <ArrowUpDown className="h-3 w-3 mr-1" />
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="default">Default order</SelectItem>
-            <SelectItem value="size-asc">Size ↑ (S→L)</SelectItem>
-            <SelectItem value="size-desc">Size ↓ (L→S)</SelectItem>
-          </SelectContent>
-        </Select>
+        {/* Size filter badges */}
+        <div className="flex items-center gap-1">
+          {(["all", "S", "M", "L"] as const).map((size) => (
+            <Badge
+              key={size}
+              variant={sizeFilter === size ? "default" : "outline"}
+              className="cursor-pointer text-[10px] px-2 py-0 h-6"
+              onClick={() => setSizeFilter(size)}
+            >
+              {size === "all" ? "All" : size}
+            </Badge>
+          ))}
+        </div>
 
         <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as StatusFilter)}>
           <SelectTrigger className="h-7 w-[110px] text-xs">
@@ -106,6 +114,17 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
             <SelectItem value="all">All status</SelectItem>
             <SelectItem value="available">Available</SelectItem>
             <SelectItem value="sold">Sold</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={sortMode} onValueChange={(v) => setSortMode(v as SortMode)}>
+          <SelectTrigger className="h-7 w-[120px] text-xs">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="default">Default order</SelectItem>
+            <SelectItem value="year-asc">Year ↑ oldest</SelectItem>
+            <SelectItem value="year-desc">Year ↓ newest</SelectItem>
           </SelectContent>
         </Select>
 
