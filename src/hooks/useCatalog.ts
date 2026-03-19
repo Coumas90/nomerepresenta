@@ -22,6 +22,7 @@ export interface CatalogArtwork {
   notes: string | null;
   edition: string | null;
   catalog_series: string | null;
+  catalog_sub_series: string | null;
   ref: string | null;
   series_name?: string;
   series_visible?: boolean;
