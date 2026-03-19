@@ -59,6 +59,13 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
     if (yearFilter !== "all") {
       result = result.filter((a) => a.year === yearFilter);
     }
+    if (subSeriesFilter !== "all") {
+      if (subSeriesFilter === "_none") {
+        result = result.filter((a) => !a.catalog_sub_series);
+      } else {
+        result = result.filter((a) => a.catalog_sub_series === subSeriesFilter);
+      }
+    }
     if (sortMode !== "default") {
       result = [...result].sort((a, b) => {
         const aYear = parseInt(a.year || "0") || 0;
