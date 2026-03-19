@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -6,10 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Edit, Trash2, GripVertical, Plus, X, ChevronDown, ChevronUp } from "lucide-react";
-import { CategoryFolder } from "@/components/admin/catalog/CategoryFolder";
 import { useSeries } from "@/hooks/useSeries";
 import { useCreateSeries, useUpdateSeries, useDeleteSeries, useUpdateSeriesOrder } from "@/hooks/useSeriesMutations";
-import { useCatalogArtworks, type CatalogArtwork, type MediumType } from "@/hooks/useCatalog";
+import { useCatalogArtworks, type CatalogArtwork } from "@/hooks/useCatalog";
 import { SeriesGallery } from "@/components/admin/series/SeriesGallery";
 import {
   DndContext,
@@ -28,8 +27,6 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-
-const MEDIUM_TYPES: MediumType[] = ["PAINTING", "POW", "PHOTO", "ARTIST_BOOK"];
 
 interface SeriesItemProps {
   id: string;
@@ -102,52 +99,11 @@ const SeriesManager = () => {
   const [formData, setFormData] = useState({ name: "", description: "" });
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [seriesToDelete, setSeriesToDelete] = useState<string | null>(null);
-  const [openCategories, setOpenCategories] = useState<Set<MediumType>>(new Set());
 
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
-
-  // Map each series to its predominant medium_type based on artworks
-  const seriesByMediumType = useMemo(() => {
-    const result = new Map<MediumType, typeof series>();
-    for (const mt of MEDIUM_TYPES) {
-      result.set(mt, []);
-    }
-
-    for (const s of series) {
-      const seriesArtworks = catalogArtworks.filter(a => a.series_id === s.id);
-      // Determine predominant medium type
-      const typeCounts = new Map<string, number>();
-      for (const a of seriesArtworks) {
-        const mt = a.medium_type || "PAINTING";
-        typeCounts.set(mt, (typeCounts.get(mt) || 0) + 1);
-      }
-      let predominant: MediumType = "PAINTING";
-      let maxCount = 0;
-      for (const [mt, count] of typeCounts) {
-        if (count > maxCount) {
-          predominant = mt as MediumType;
-          maxCount = count;
-        }
-      }
-      const arr = result.get(predominant) || [];
-      arr.push(s);
-      result.set(predominant, arr);
-    }
-
-    return result;
-  }, [series, catalogArtworks]);
-
-  // Count artworks per medium type
-  const artworkCountByMediumType = useMemo(() => {
-    const counts = new Map<MediumType, number>();
-    for (const mt of MEDIUM_TYPES) {
-      counts.set(mt, catalogArtworks.filter(a => (a.medium_type || "PAINTING") === mt).length);
-    }
-    return counts;
-  }, [catalogArtworks]);
 
   const getArtworkCount = (seriesId: string) => {
     return catalogArtworks.filter(a => a.series_id === seriesId).length;
@@ -155,15 +111,6 @@ const SeriesManager = () => {
 
   const getSeriesArtworks = (seriesId: string) => {
     return catalogArtworks.filter(a => a.series_id === seriesId);
-  };
-
-  const toggleCategory = (mt: MediumType) => {
-    setOpenCategories((prev) => {
-      const next = new Set(prev);
-      if (next.has(mt)) next.delete(mt);
-      else next.add(mt);
-      return next;
-    });
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -221,7 +168,13 @@ const SeriesManager = () => {
   return (
     <>
       <div className="space-y-6">
-        {/* Form */}
+        <div>
+          <h2 className="text-xl font-semibold">Series (Catalog)</h2>
+          <p className="text-sm text-muted-foreground">
+            Manage series for organizing artworks in the Catalog. Expand to see works assigned to each series.
+          </p>
+        </div>
+
         {showForm ? (
           <Card>
             <CardHeader>
@@ -269,46 +222,27 @@ const SeriesManager = () => {
           </Button>
         )}
 
-        {/* Category Folders with Series inside */}
-        <div className="space-y-3">
-          {MEDIUM_TYPES.map((mt) => {
-            const mtSeries = seriesByMediumType.get(mt) || [];
-            const totalCount = artworkCountByMediumType.get(mt) || 0;
-
-            return (
-              <CategoryFolder
-                key={mt}
-                category={mt}
-                count={totalCount}
-                isOpen={openCategories.has(mt)}
-                onToggle={() => toggleCategory(mt)}
-              >
-                <div className="p-3 space-y-1">
-                  {mtSeries.length > 0 ? (
-                    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                      <SortableContext items={mtSeries.map(s => s.id)} strategy={verticalListSortingStrategy}>
-                        {mtSeries.map((s) => (
-                          <SortableSeriesItem
-                            key={s.id}
-                            id={s.id}
-                            name={s.name}
-                            description={s.description}
-                            artworkCount={getArtworkCount(s.id)}
-                            artworks={getSeriesArtworks(s.id)}
-                            onEdit={() => handleEdit(s.id, s.name, s.description)}
-                            onDelete={() => handleDeleteClick(s.id)}
-                          />
-                        ))}
-                      </SortableContext>
-                    </DndContext>
-                  ) : (
-                    <p className="text-xs text-muted-foreground py-2">No series in this category yet.</p>
-                  )}
-                </div>
-              </CategoryFolder>
-            );
-          })}
-        </div>
+        {/* Series list */}
+        {series.length > 0 ? (
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext items={series.map(s => s.id)} strategy={verticalListSortingStrategy}>
+              {series.map((s) => (
+                <SortableSeriesItem
+                  key={s.id}
+                  id={s.id}
+                  name={s.name}
+                  description={s.description}
+                  artworkCount={getArtworkCount(s.id)}
+                  artworks={getSeriesArtworks(s.id)}
+                  onEdit={() => handleEdit(s.id, s.name, s.description)}
+                  onDelete={() => handleDeleteClick(s.id)}
+                />
+              ))}
+            </SortableContext>
+          </DndContext>
+        ) : (
+          <p className="text-center py-8 text-muted-foreground">No series yet.</p>
+        )}
       </div>
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

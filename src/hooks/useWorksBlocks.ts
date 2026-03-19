@@ -7,6 +7,7 @@ export type BlockType = "single" | "carousel";
 export interface WorksBlock {
   id: string;
   series_id: string;
+  section_id: string | null;
   block_type: BlockType;
   display_order: number;
   created_at: string;
@@ -83,11 +84,18 @@ export const useWorksBlocksBySeries = (seriesId: string) => {
   return { data: blocks, ...rest };
 };
 
+// Fetch blocks for a specific section
+export const useWorksBlocksBySection = (sectionId: string) => {
+  const { data: allBlocks, ...rest } = useWorksBlocks();
+  const blocks = allBlocks?.filter((b) => b.section_id === sectionId) || [];
+  return { data: blocks, ...rest };
+};
+
 // Create a new block
 export const useCreateWorksBlock = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (data: { series_id: string; block_type: BlockType; display_order: number }) => {
+    mutationFn: async (data: { section_id: string; block_type: BlockType; display_order: number }) => {
       const { data: result, error } = await supabase
         .from("works_blocks" as any)
         .insert(data as any)
