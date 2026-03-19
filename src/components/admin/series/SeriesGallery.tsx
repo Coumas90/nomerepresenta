@@ -57,7 +57,7 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
       });
     }
     return result;
-  }, [artworks, sortMode, sizeFilter, statusFilter]);
+  }, [artworks, sortMode, sizeFilter, statusFilter, yearFilter]);
 
   // Group by catalog_sub_series
   const { ungrouped, sortedGroups } = useMemo(() => {
