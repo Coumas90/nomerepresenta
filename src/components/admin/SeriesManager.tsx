@@ -86,6 +86,7 @@ const SeriesManager = () => {
   };
 
   // Build 3-level hierarchy: medium_type → catalog_series → catalog_sub_series
+  // Merges standalone catalog_series that also appear as catalog_sub_series under a parent
   const structure = useMemo(() => {
     const result = new Map<
       MediumType,
@@ -103,53 +104,72 @@ const SeriesManager = () => {
       result.set(mt, { total: 0, seriesList: [] });
     }
 
-    // Group by medium_type → catalog_series
-    const byMtAndSeries = new Map<string, CatalogArtwork[]>();
-
+    // Per medium type, figure out which catalog_series names are actually sub-series of another
+    const byMt = new Map<MediumType, CatalogArtwork[]>();
     for (const a of catalogArtworks) {
       const mt = (a.medium_type as MediumType) || "PAINTING";
-      const series = a.catalog_series || "(No series)";
-      const key = `${mt}::${series}`;
-      const list = byMtAndSeries.get(key) || [];
+      const list = byMt.get(mt) || [];
       list.push(a);
-      byMtAndSeries.set(key, list);
-
+      byMt.set(mt, list);
       const entry = result.get(mt);
       if (entry) entry.total++;
     }
 
-    // Build seriesList for each medium type
     for (const mt of MEDIUM_TYPES) {
+      const artworks = byMt.get(mt) || [];
       const entry = result.get(mt)!;
-      const seriesNames = new Set<string>();
 
-      for (const [key] of byMtAndSeries) {
-        if (key.startsWith(`${mt}::`)) {
-          seriesNames.add(key.split("::")[1]);
+      // Collect all sub-series names that exist under a parent catalog_series
+      // e.g. catalog_series="TRI-PEEL", catalog_sub_series="BUILD UPS" → BUILD UPS is a child
+      const childToParent = new Map<string, string>();
+      for (const a of artworks) {
+        if (a.catalog_series && a.catalog_sub_series) {
+          childToParent.set(a.catalog_sub_series, a.catalog_series);
         }
       }
 
-      const sorted = Array.from(seriesNames).sort((a, b) => {
+      // Group artworks into parent series, folding standalone child series into the parent
+      const parentMap = new Map<string, { all: CatalogArtwork[]; subs: Map<string, CatalogArtwork[]> }>();
+
+      for (const a of artworks) {
+        const series = a.catalog_series || "(No series)";
+        const subSeries = a.catalog_sub_series || null;
+
+        // Check if this artwork's catalog_series is actually a child of another series
+        const parent = childToParent.get(series);
+
+        if (parent && series !== parent) {
+          // This artwork has catalog_series = "BUILD UPS" but BUILD UPS is a sub of TRI-PEEL
+          // Fold it into the parent, under sub-series = series name
+          if (!parentMap.has(parent)) parentMap.set(parent, { all: [], subs: new Map() });
+          const p = parentMap.get(parent)!;
+          p.all.push(a);
+          const subList = p.subs.get(series) || [];
+          subList.push(a);
+          p.subs.set(series, subList);
+        } else {
+          // Normal: belongs to its own catalog_series
+          if (!parentMap.has(series)) parentMap.set(series, { all: [], subs: new Map() });
+          const p = parentMap.get(series)!;
+          p.all.push(a);
+          if (subSeries) {
+            const subList = p.subs.get(subSeries) || [];
+            subList.push(a);
+            p.subs.set(subSeries, subList);
+          }
+        }
+      }
+
+      const sorted = Array.from(parentMap.keys()).sort((a, b) => {
         if (a === "(No series)") return 1;
         if (b === "(No series)") return -1;
         return a.localeCompare(b);
       });
 
       entry.seriesList = sorted.map((seriesName) => {
-        const allArtworks = byMtAndSeries.get(`${mt}::${seriesName}`) || [];
-
-        // Group sub-series
-        const subMap = new Map<string, CatalogArtwork[]>();
-        for (const a of allArtworks) {
-          if (a.catalog_sub_series) {
-            const list = subMap.get(a.catalog_sub_series) || [];
-            list.push(a);
-            subMap.set(a.catalog_sub_series, list);
-          }
-        }
-        const subSeries = Array.from(subMap.entries()).sort(([a], [b]) => a.localeCompare(b));
-
-        return { name: seriesName, allArtworks, subSeries };
+        const data = parentMap.get(seriesName)!;
+        const subSeries = Array.from(data.subs.entries()).sort(([a], [b]) => a.localeCompare(b));
+        return { name: seriesName, allArtworks: data.all, subSeries };
       });
     }
 
