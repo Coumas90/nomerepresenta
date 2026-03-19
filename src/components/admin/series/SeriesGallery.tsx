@@ -27,6 +27,16 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
   const [sortMode, setSortMode] = useState<SortMode>("default");
   const [sizeFilter, setSizeFilter] = useState<SizeFilter>("all");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [yearFilter, setYearFilter] = useState<string>("all");
+
+  // Extract unique years
+  const availableYears = useMemo(() => {
+    const years = new Set<string>();
+    for (const a of artworks) {
+      if (a.year) years.add(a.year);
+    }
+    return Array.from(years).sort((a, b) => b.localeCompare(a));
+  }, [artworks]);
 
   const filtered = useMemo(() => {
     let result = artworks;
@@ -36,6 +46,9 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
     if (statusFilter !== "all") {
       result = result.filter((a) => (a.status || "available") === statusFilter);
     }
+    if (yearFilter !== "all") {
+      result = result.filter((a) => a.year === yearFilter);
+    }
     if (sortMode !== "default") {
       result = [...result].sort((a, b) => {
         const aYear = parseInt(a.year || "0") || 0;
@@ -44,7 +57,7 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
       });
     }
     return result;
-  }, [artworks, sortMode, sizeFilter, statusFilter]);
+  }, [artworks, sortMode, sizeFilter, statusFilter, yearFilter]);
 
   // Group by catalog_sub_series
   const { ungrouped, sortedGroups } = useMemo(() => {
@@ -114,6 +127,18 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
             <SelectItem value="all">All status</SelectItem>
             <SelectItem value="available">Available</SelectItem>
             <SelectItem value="sold">Sold</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={yearFilter} onValueChange={setYearFilter}>
+          <SelectTrigger className="h-7 w-[100px] text-xs">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All years</SelectItem>
+            {availableYears.map((y) => (
+              <SelectItem key={y} value={y}>{y}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
 
