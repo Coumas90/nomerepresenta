@@ -144,7 +144,10 @@ const SeriesManager = () => {
   );
 
   const getArtworkCount = (seriesId: string) => {
-    return artworks.filter(a => a.series_id === seriesId).length;
+    return catalogArtworks.filter(a => a.series_id === seriesId).length;
+  };
+  const getSeriesArtworks = (seriesId: string) => {
+    return catalogArtworks.filter(a => a.series_id === seriesId);
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
