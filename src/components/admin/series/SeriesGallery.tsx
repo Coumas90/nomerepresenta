@@ -74,7 +74,7 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
       });
     }
     return result;
-  }, [artworks, sortMode, sizeFilter, statusFilter, yearFilter]);
+  }, [artworks, sortMode, sizeFilter, statusFilter, yearFilter, subSeriesFilter]);
 
   const { ungrouped, sortedGroups } = useMemo(() => {
     const grouped = new Map<string, CatalogArtwork[]>();
