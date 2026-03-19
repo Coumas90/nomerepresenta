@@ -294,7 +294,7 @@ export const SoldRowEditor = ({ item, thumbSize, onUpdate, onDelete, onUploadInv
               {installments.map((inst) => (
                 <div
                   key={inst.id}
-                  className="grid grid-cols-[40px_100px_100px_90px_90px_1fr] gap-2 items-center px-1 py-0.5 rounded hover:bg-muted/40 transition-colors"
+                  className="grid grid-cols-[40px_100px_100px_80px_90px_90px_1fr] gap-2 items-center px-1 py-0.5 rounded hover:bg-muted/40 transition-colors"
                 >
                   <span className="text-[10px] text-muted-foreground font-medium">{inst.installment_number}</span>
                   <Input
