@@ -310,16 +310,18 @@ export const SoldRowEditor = ({ item, thumbSize, onUpdate, onDelete, onUploadInv
                     className="h-6 text-[10px] w-[90px]"
                     placeholder="0"
                   />
-                  <Badge
-                    variant="outline"
-                    className={`text-[9px] px-1.5 ${
-                      inst.status === "paid"
-                        ? "bg-emerald-100 text-emerald-800 border-emerald-200"
-                        : "bg-amber-100 text-amber-800 border-amber-200"
-                    }`}
-                  >
-                    {inst.status}
-                  </Badge>
+                  <div className="flex items-center">
+                    <Badge
+                      variant="outline"
+                      className={`text-[9px] px-1.5 ${
+                        inst.status === "paid"
+                          ? "bg-emerald-100 text-emerald-800 border-emerald-200"
+                          : "bg-amber-100 text-amber-800 border-amber-200"
+                      }`}
+                    >
+                      {inst.status}
+                    </Badge>
+                  </div>
                   {inst.status === "pending" ? (
                     <Button
                       variant="outline"
@@ -351,7 +353,7 @@ export const SoldRowEditor = ({ item, thumbSize, onUpdate, onDelete, onUploadInv
                     >
                       Undo
                     </Button>
-                  )
+                  )}
                   <Input
                     type="date"
                     defaultValue={inst.paid_date || ""}
