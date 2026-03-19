@@ -29,6 +29,7 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
   const [sizeFilter, setSizeFilter] = useState<SizeFilter>("all");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [yearFilter, setYearFilter] = useState<string>("all");
+  const [subSeriesFilter, setSubSeriesFilter] = useState<string>("all");
   const [showNames, setShowNames] = useState(true);
 
   const availableYears = useMemo(() => {
@@ -37,6 +38,14 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
       if (a.year) years.add(a.year);
     }
     return Array.from(years).sort((a, b) => b.localeCompare(a));
+  }, [artworks]);
+
+  const availableSubSeries = useMemo(() => {
+    const subs = new Set<string>();
+    for (const a of artworks) {
+      if (a.catalog_sub_series) subs.add(a.catalog_sub_series);
+    }
+    return Array.from(subs).sort();
   }, [artworks]);
 
   const filtered = useMemo(() => {
@@ -50,6 +59,13 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
     if (yearFilter !== "all") {
       result = result.filter((a) => a.year === yearFilter);
     }
+    if (subSeriesFilter !== "all") {
+      if (subSeriesFilter === "_none") {
+        result = result.filter((a) => !a.catalog_sub_series);
+      } else {
+        result = result.filter((a) => a.catalog_sub_series === subSeriesFilter);
+      }
+    }
     if (sortMode !== "default") {
       result = [...result].sort((a, b) => {
         const aYear = parseInt(a.year || "0") || 0;
@@ -58,7 +74,7 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
       });
     }
     return result;
-  }, [artworks, sortMode, sizeFilter, statusFilter, yearFilter]);
+  }, [artworks, sortMode, sizeFilter, statusFilter, yearFilter, subSeriesFilter]);
 
   const { ungrouped, sortedGroups } = useMemo(() => {
     const grouped = new Map<string, CatalogArtwork[]>();
@@ -140,6 +156,21 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
             ))}
           </SelectContent>
         </Select>
+
+        {availableSubSeries.length > 0 && (
+          <Select value={subSeriesFilter} onValueChange={setSubSeriesFilter}>
+            <SelectTrigger className="h-7 w-[130px] text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All sub-series</SelectItem>
+              <SelectItem value="_none">No sub-series</SelectItem>
+              {availableSubSeries.map((s) => (
+                <SelectItem key={s} value={s}>{s}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
 
         <Select value={sortMode} onValueChange={(v) => setSortMode(v as SortMode)}>
           <SelectTrigger className="h-7 w-[120px] text-xs">
