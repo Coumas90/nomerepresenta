@@ -325,6 +325,7 @@ const WorksBlockManager = () => {
                     blocks={blocks}
                     onDelete={() => setDeleteTarget({ type: "section", id: section.id })}
                     onRename={(name) => updateSection.mutate({ id: section.id, updates: { name } })}
+                    onToggleHeader={(show) => updateSection.mutate({ id: section.id, updates: { show_in_header: show } })}
                     onAddBlock={(type) => handleAddBlock(section.id, type)}
                     onDeleteBlock={(blockId) => setDeleteTarget({ type: "block", id: blockId })}
                     onAddArtwork={handleAddArtwork}
