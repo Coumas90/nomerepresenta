@@ -310,28 +310,48 @@ export const SoldRowEditor = ({ item, thumbSize, onUpdate, onDelete, onUploadInv
                     className="h-6 text-[10px] w-[90px]"
                     placeholder="0"
                   />
-                  <Select
-                    defaultValue={inst.status}
-                    onValueChange={(v) => handleInstallmentUpdate(inst, "status", v)}
+                  <Badge
+                    variant="outline"
+                    className={`text-[9px] px-1.5 ${
+                      inst.status === "paid"
+                        ? "bg-emerald-100 text-emerald-800 border-emerald-200"
+                        : "bg-amber-100 text-amber-800 border-amber-200"
+                    }`}
                   >
-                    <SelectTrigger className="h-6 text-[10px] w-[80px]">
-                      <Badge
-                        variant="outline"
-                        className={`text-[9px] px-1.5 ${
-                          inst.status === "paid"
-                            ? "bg-emerald-100 text-emerald-800 border-emerald-200"
-                            : "bg-amber-100 text-amber-800 border-amber-200"
-                        }`}
-                      >
-                        {inst.status}
-                      </Badge>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {INSTALLMENT_STATUSES.map((s) => (
-                        <SelectItem key={s} value={s} className="capitalize text-xs">{s}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    {inst.status}
+                  </Badge>
+                  {inst.status === "pending" ? (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-6 text-[9px] px-2 gap-1 bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-800"
+                      onClick={() => {
+                        const today = new Date().toISOString().split("T")[0];
+                        updateInstallment.mutate({
+                          id: inst.id,
+                          soldArtworkId: item.id,
+                          updates: { status: "paid", paid_date: today },
+                        });
+                      }}
+                    >
+                      <Check className="h-3 w-3" /> Paid
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 text-[9px] px-2 text-muted-foreground"
+                      onClick={() => {
+                        updateInstallment.mutate({
+                          id: inst.id,
+                          soldArtworkId: item.id,
+                          updates: { status: "pending", paid_date: null },
+                        });
+                      }}
+                    >
+                      Undo
+                    </Button>
+                  )
                   <Input
                     type="date"
                     defaultValue={inst.paid_date || ""}
