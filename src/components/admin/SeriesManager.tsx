@@ -5,11 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Edit, Trash2, GripVertical, Plus, X, Eye, EyeOff } from "lucide-react";
+import { Edit, Trash2, GripVertical, Plus, X, Eye, EyeOff, ChevronDown, ChevronUp } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useSeries } from "@/hooks/useSeries";
 import { useCreateSeries, useUpdateSeries, useDeleteSeries, useUpdateSeriesOrder } from "@/hooks/useSeriesMutations";
-import { useArtworks } from "@/hooks/useArtworks";
+import { useCatalogArtworks, type CatalogArtwork } from "@/hooks/useCatalog";
+import { SeriesGallery } from "@/components/admin/series/SeriesGallery";
 import {
   DndContext,
   closestCenter,
@@ -35,13 +36,15 @@ interface SortableSeriesItemProps {
   isVisible: boolean;
   showNameInMenu: boolean;
   artworkCount: number;
+  artworks: CatalogArtwork[];
   onEdit: () => void;
   onDelete: () => void;
   onToggleVisibility: () => void;
   onToggleNameInMenu: () => void;
 }
 
-const SortableSeriesItem = ({ id, name, description, isVisible, showNameInMenu, artworkCount, onEdit, onDelete, onToggleVisibility, onToggleNameInMenu }: SortableSeriesItemProps) => {
+const SortableSeriesItem = ({ id, name, description, isVisible, showNameInMenu, artworkCount, artworks, onEdit, onDelete, onToggleVisibility, onToggleNameInMenu }: SortableSeriesItemProps) => {
+  const [expanded, setExpanded] = useState(false);
   const {
     attributes,
     listeners,
@@ -70,10 +73,19 @@ const SortableSeriesItem = ({ id, name, description, isVisible, showNameInMenu, 
               {description && (
                 <p className="text-sm text-muted-foreground truncate">{description}</p>
               )}
-              <p className="text-xs text-muted-foreground mt-1">
-                {artworkCount} artworks
-                {!showNameInMenu && " · name hidden in menu"}
-              </p>
+              <div className="flex items-center gap-2 mt-1">
+                <p className="text-xs text-muted-foreground">
+                  {artworkCount} artworks
+                  {!showNameInMenu && " · name hidden in menu"}
+                </p>
+                <button
+                  onClick={() => setExpanded(!expanded)}
+                  className="flex items-center gap-0.5 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                  {expanded ? "Hide gallery" : "Show gallery"}
+                </button>
+              </div>
             </div>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
@@ -100,6 +112,10 @@ const SortableSeriesItem = ({ id, name, description, isVisible, showNameInMenu, 
               </Button>
             </div>
           </div>
+
+          {expanded && (
+            <SeriesGallery artworks={artworks} />
+          )}
         </CardContent>
       </Card>
     </div>
@@ -108,7 +124,7 @@ const SortableSeriesItem = ({ id, name, description, isVisible, showNameInMenu, 
 
 const SeriesManager = () => {
   const { data: series = [], isLoading } = useSeries();
-  const { data: artworks = [] } = useArtworks();
+  const { data: catalogArtworks = [] } = useCatalogArtworks();
   const createMutation = useCreateSeries();
   const updateMutation = useUpdateSeries();
   const deleteMutation = useDeleteSeries();
@@ -128,7 +144,10 @@ const SeriesManager = () => {
   );
 
   const getArtworkCount = (seriesId: string) => {
-    return artworks.filter(a => a.series_id === seriesId).length;
+    return catalogArtworks.filter(a => a.series_id === seriesId).length;
+  };
+  const getSeriesArtworks = (seriesId: string) => {
+    return catalogArtworks.filter(a => a.series_id === seriesId);
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -265,6 +284,7 @@ const SeriesManager = () => {
                       isVisible={s.is_visible !== false}
                       showNameInMenu={s.show_name_in_menu !== false}
                       artworkCount={getArtworkCount(s.id)}
+                      artworks={getSeriesArtworks(s.id)}
                       onEdit={() => handleEdit(s.id, s.name, s.description)}
                       onDelete={() => handleDeleteClick(s.id)}
                       onToggleVisibility={() => updateMutation.mutate({ id: s.id, is_visible: s.is_visible === false })}
