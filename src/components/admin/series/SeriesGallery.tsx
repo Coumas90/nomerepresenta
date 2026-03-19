@@ -154,6 +154,16 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
           </SelectContent>
         </Select>
 
+        <Button
+          variant={showNames ? "secondary" : "ghost"}
+          size="icon"
+          className="h-7 w-7"
+          onClick={() => setShowNames((v) => !v)}
+          title={showNames ? "Hide titles" : "Show titles"}
+        >
+          <Type className="h-3.5 w-3.5" />
+        </Button>
+
         <span className="text-[10px] text-muted-foreground ml-auto">
           {filtered.length} / {artworks.length} works
         </span>
