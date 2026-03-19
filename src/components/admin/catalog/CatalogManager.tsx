@@ -147,6 +147,7 @@ const CatalogManager = ({ onEdit }: CatalogManagerProps = {}) => {
                 </th>
                 <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Ref</th>
                 <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Series</th>
+                <th className="py-2 px-3 text-xs font-medium text-muted-foreground">Sub-series</th>
                 <th
                   className="py-2 px-3 text-xs font-medium text-muted-foreground text-center cursor-pointer select-none hover:text-foreground transition-colors"
                   onClick={() => toggleSort("year")}
