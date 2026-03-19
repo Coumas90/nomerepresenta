@@ -33,6 +33,7 @@ interface CatalogRowProps {
   onEdit?: (artwork: CatalogArtwork) => void;
   onDelete?: (id: string) => void;
   catalogSeriesSuggestions?: string[];
+  catalogSubSeriesSuggestions?: string[];
 }
 
 export const CatalogRow = ({ artwork, thumbSize, showEdition = false, onFieldUpdate, onEdit, onDelete, catalogSeriesSuggestions = [] }: CatalogRowProps) => {
