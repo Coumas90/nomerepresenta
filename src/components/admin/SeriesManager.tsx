@@ -36,6 +36,7 @@ interface SortableSeriesItemProps {
   isVisible: boolean;
   showNameInMenu: boolean;
   artworkCount: number;
+  artworks: CatalogArtwork[];
   onEdit: () => void;
   onDelete: () => void;
   onToggleVisibility: () => void;
