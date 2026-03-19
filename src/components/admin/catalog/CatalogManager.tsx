@@ -7,7 +7,7 @@ import { useSeries } from "@/hooks/useSeries";
 import { CatalogFilters } from "./CatalogFilters";
 import { CatalogRow, type ThumbSize } from "./CatalogRow";
 import { CategoryFolder } from "./CategoryFolder";
-import { CatalogSeriesManager, useCatalogSeriesNames } from "./CatalogSeriesManager";
+import { CatalogSeriesManager, useCatalogSeriesNames, useCatalogSeriesHierarchy } from "./CatalogSeriesManager";
 import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 
 type SortField = "title" | "year" | "size_category" | "status" | null;
