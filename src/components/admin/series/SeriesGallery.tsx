@@ -46,6 +46,9 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
     if (statusFilter !== "all") {
       result = result.filter((a) => (a.status || "available") === statusFilter);
     }
+    if (yearFilter !== "all") {
+      result = result.filter((a) => a.year === yearFilter);
+    }
     if (sortMode !== "default") {
       result = [...result].sort((a, b) => {
         const aYear = parseInt(a.year || "0") || 0;
