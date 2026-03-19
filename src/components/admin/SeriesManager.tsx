@@ -124,7 +124,7 @@ const SortableSeriesItem = ({ id, name, description, isVisible, showNameInMenu, 
 
 const SeriesManager = () => {
   const { data: series = [], isLoading } = useSeries();
-  const { data: artworks = [] } = useArtworks();
+  const { data: catalogArtworks = [] } = useCatalogArtworks();
   const createMutation = useCreateSeries();
   const updateMutation = useUpdateSeries();
   const deleteMutation = useDeleteSeries();
