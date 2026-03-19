@@ -18,6 +18,7 @@ export interface SectionWithBlocks {
   display_order: number;
   is_visible: boolean;
   show_name_in_menu: boolean;
+  show_in_header: boolean;
   blocks: WorksBlockDisplay[];
   artworks: ArtworkData[];
 }
@@ -81,7 +82,8 @@ export const useArtworksBySeries = () => {
           description: null,
           display_order: s.display_order,
           is_visible: s.is_visible,
-          show_name_in_menu: true,
+          show_name_in_menu: s.show_in_header !== false,
+          show_in_header: s.show_in_header !== false,
           blocks: sectionBlocks,
           artworks: allArtworks,
         } as SectionWithBlocks;

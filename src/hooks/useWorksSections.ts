@@ -7,6 +7,7 @@ export interface WorksSection {
   name: string;
   display_order: number;
   is_visible: boolean;
+  show_in_header: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -46,7 +47,7 @@ export const useCreateWorksSection = () => {
 export const useUpdateWorksSection = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, updates }: { id: string; updates: Partial<Pick<WorksSection, "name" | "is_visible">> }) => {
+    mutationFn: async ({ id, updates }: { id: string; updates: Partial<Pick<WorksSection, "name" | "is_visible" | "show_in_header">> }) => {
       const { error } = await supabase
         .from("works_sections" as any)
         .update(updates as any)

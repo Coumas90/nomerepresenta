@@ -47,6 +47,7 @@ const SortableSection = ({
   blocks,
   onDelete,
   onRename,
+  onToggleHeader,
   onAddBlock,
   onDeleteBlock,
   onAddArtwork,
@@ -56,10 +57,11 @@ const SortableSection = ({
   onToggleHidden,
   onReorderBlocks,
 }: {
-  section: { id: string; name: string; is_visible: boolean };
+  section: { id: string; name: string; is_visible: boolean; show_in_header: boolean };
   blocks: WorksBlockWithItems[];
   onDelete: () => void;
   onRename: (name: string) => void;
+  onToggleHeader: (show: boolean) => void;
   onAddBlock: (type: BlockType) => void;
   onDeleteBlock: (blockId: string) => void;
   onAddArtwork: (blockId: string) => void;
@@ -105,6 +107,15 @@ const SortableSection = ({
         <span className="text-xs text-muted-foreground">
           {blocks.length} block{blocks.length !== 1 ? "s" : ""}
         </span>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7"
+          onClick={() => onToggleHeader(!section.show_in_header)}
+          title={section.show_in_header ? "Hide from Works header" : "Show in Works header"}
+        >
+          {section.show_in_header ? <Eye className="h-3.5 w-3.5 text-foreground" /> : <EyeOff className="h-3.5 w-3.5 text-muted-foreground" />}
+        </Button>
         <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setEditName(section.name); setEditing(true); }}>
           <Edit className="h-3.5 w-3.5 text-muted-foreground" />
         </Button>
@@ -314,6 +325,7 @@ const WorksBlockManager = () => {
                     blocks={blocks}
                     onDelete={() => setDeleteTarget({ type: "section", id: section.id })}
                     onRename={(name) => updateSection.mutate({ id: section.id, updates: { name } })}
+                    onToggleHeader={(show) => updateSection.mutate({ id: section.id, updates: { show_in_header: show } })}
                     onAddBlock={(type) => handleAddBlock(section.id, type)}
                     onDeleteBlock={(blockId) => setDeleteTarget({ type: "block", id: blockId })}
                     onAddArtwork={handleAddArtwork}
