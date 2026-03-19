@@ -27,6 +27,16 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
   const [sortMode, setSortMode] = useState<SortMode>("default");
   const [sizeFilter, setSizeFilter] = useState<SizeFilter>("all");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [yearFilter, setYearFilter] = useState<string>("all");
+
+  // Extract unique years
+  const availableYears = useMemo(() => {
+    const years = new Set<string>();
+    for (const a of artworks) {
+      if (a.year) years.add(a.year);
+    }
+    return Array.from(years).sort((a, b) => b.localeCompare(a));
+  }, [artworks]);
 
   const filtered = useMemo(() => {
     let result = artworks;
