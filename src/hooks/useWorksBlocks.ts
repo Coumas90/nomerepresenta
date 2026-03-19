@@ -95,7 +95,7 @@ export const useWorksBlocksBySection = (sectionId: string) => {
 export const useCreateWorksBlock = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (data: { series_id: string; block_type: BlockType; display_order: number }) => {
+    mutationFn: async (data: { section_id: string; block_type: BlockType; display_order: number }) => {
       const { data: result, error } = await supabase
         .from("works_blocks" as any)
         .insert(data as any)
