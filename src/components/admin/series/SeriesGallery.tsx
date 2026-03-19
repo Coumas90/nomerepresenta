@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { ZoomIn, ZoomOut, Type } from "lucide-react";
+import { ZoomIn, ZoomOut, Type, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
@@ -10,12 +10,13 @@ interface SeriesGalleryProps {
 }
 
 const ZOOM_LEVELS = [
-  { cols: "grid-cols-6 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12", label: "XS" },
-  { cols: "grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10", label: "S" },
-  { cols: "grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8", label: "M" },
-  { cols: "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5", label: "L" },
-  { cols: "grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4", label: "XL" },
-  { cols: "grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3", label: "XXL" },
+  { cols: "grid-cols-6 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12", titleClass: "text-[8px]" },
+  { cols: "grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10", titleClass: "text-[9px]" },
+  { cols: "grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8", titleClass: "text-[10px]" },
+  { cols: "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5", titleClass: "text-[11px]" },
+  { cols: "grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4", titleClass: "text-xs" },
+  { cols: "grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3", titleClass: "text-xs" },
+  { cols: "grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2", titleClass: "text-sm" },
 ];
 
 type SortMode = "default" | "year-asc" | "year-desc";
@@ -30,7 +31,6 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
   const [yearFilter, setYearFilter] = useState<string>("all");
   const [showNames, setShowNames] = useState(true);
 
-  // Extract unique years
   const availableYears = useMemo(() => {
     const years = new Set<string>();
     for (const a of artworks) {
@@ -60,7 +60,6 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
     return result;
   }, [artworks, sortMode, sizeFilter, statusFilter, yearFilter]);
 
-  // Group by catalog_sub_series
   const { ungrouped, sortedGroups } = useMemo(() => {
     const grouped = new Map<string, CatalogArtwork[]>();
     const ung: CatalogArtwork[] = [];
@@ -79,7 +78,7 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
     };
   }, [filtered]);
 
-  const gridCols = ZOOM_LEVELS[zoom].cols;
+  const zoomLevel = ZOOM_LEVELS[zoom];
 
   return (
     <div className="space-y-3 pt-3 border-t border-border mt-3">
@@ -106,7 +105,6 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
           </Button>
         </div>
 
-        {/* Size filter badges */}
         <div className="flex items-center gap-1">
           {(["all", "S", "M", "L"] as const).map((size) => (
             <Badge
@@ -169,18 +167,16 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
         </span>
       </div>
 
-      {/* Ungrouped artworks */}
       {ungrouped.length > 0 && (
-        <ThumbnailGrid artworks={ungrouped} gridCols={gridCols} showNames={showNames} />
+        <ThumbnailGrid artworks={ungrouped} gridCols={zoomLevel.cols} titleClass={zoomLevel.titleClass} showNames={showNames} />
       )}
 
-      {/* Sub-series groups */}
       {sortedGroups.map(([subSeries, items]) => (
         <div key={subSeries}>
           <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
             {subSeries} <span className="font-normal">({items.length})</span>
           </p>
-          <ThumbnailGrid artworks={items} gridCols={gridCols} showNames={showNames} />
+          <ThumbnailGrid artworks={items} gridCols={zoomLevel.cols} titleClass={zoomLevel.titleClass} showNames={showNames} />
         </div>
       ))}
 
@@ -193,25 +189,57 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
   );
 };
 
-const ThumbnailGrid = ({ artworks, gridCols, showNames }: { artworks: CatalogArtwork[]; gridCols: string; showNames: boolean }) => (
-  <div className={`grid ${gridCols} gap-2`}>
-    {artworks.map((a) => (
-      <div key={a.id} className="group relative">
-        <div className="aspect-square flex items-center justify-center bg-muted/30 rounded overflow-hidden relative">
-          <img
-            src={a.image_url}
-            alt={a.title}
-            className="max-w-full max-h-full object-contain"
-            loading="lazy"
-          />
-          {a.status === "sold" && (
-            <span className="absolute top-0.5 right-0.5 bg-destructive/80 text-destructive-foreground text-[7px] px-1 rounded leading-tight">
-              SOLD
-            </span>
+const ThumbnailCard = ({ artwork, titleClass, showNames }: { artwork: CatalogArtwork; titleClass: string; showNames: boolean }) => {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div className="group relative">
+      <div className="aspect-square flex items-center justify-center bg-muted/30 rounded overflow-hidden relative">
+        <img
+          src={artwork.image_url}
+          alt={artwork.title}
+          className="max-w-full max-h-full object-contain"
+          loading="lazy"
+        />
+        {artwork.status === "sold" && (
+          <span className="absolute top-0.5 right-0.5 bg-destructive/80 text-destructive-foreground text-[7px] px-1 rounded leading-tight">
+            SOLD
+          </span>
+        )}
+      </div>
+      {showNames && (
+        <div className="mt-0.5">
+          <div className="flex items-start gap-0.5">
+            <p className={`${titleClass} text-muted-foreground truncate leading-tight flex-1`}>{artwork.title}</p>
+            <button
+              onClick={() => setExpanded((v) => !v)}
+              className="shrink-0 text-muted-foreground hover:text-foreground transition-colors mt-px"
+            >
+              {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+            </button>
+          </div>
+          {expanded && (
+            <div className="text-[10px] text-muted-foreground space-y-0.5 mt-1 bg-muted/40 rounded p-1.5">
+              {artwork.year && <p><span className="font-medium">Year:</span> {artwork.year}</p>}
+              {artwork.dimensions && <p><span className="font-medium">Dim:</span> {artwork.dimensions}</p>}
+              {artwork.materials && <p><span className="font-medium">Mat:</span> {artwork.materials}</p>}
+              {artwork.size_category && <p><span className="font-medium">Size:</span> {artwork.size_category}</p>}
+              {artwork.status && <p><span className="font-medium">Status:</span> {artwork.status}</p>}
+              {artwork.location && <p><span className="font-medium">Location:</span> {artwork.location}</p>}
+              {artwork.edition && <p><span className="font-medium">Edition:</span> {artwork.edition}</p>}
+              {artwork.ref && <p><span className="font-medium">Ref:</span> {artwork.ref}</p>}
+            </div>
           )}
         </div>
-        {showNames && <p className="text-[9px] text-muted-foreground truncate mt-0.5 leading-tight">{a.title}</p>}
-      </div>
+      )}
+    </div>
+  );
+};
+
+const ThumbnailGrid = ({ artworks, gridCols, titleClass, showNames }: { artworks: CatalogArtwork[]; gridCols: string; titleClass: string; showNames: boolean }) => (
+  <div className={`grid ${gridCols} gap-2`}>
+    {artworks.map((a) => (
+      <ThumbnailCard key={a.id} artwork={a} titleClass={titleClass} showNames={showNames} />
     ))}
   </div>
 );
