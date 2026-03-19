@@ -82,7 +82,8 @@ export const useArtworksBySeries = () => {
           description: null,
           display_order: s.display_order,
           is_visible: s.is_visible,
-          show_name_in_menu: true,
+          show_name_in_menu: s.show_in_header !== false,
+          show_in_header: s.show_in_header !== false,
           blocks: sectionBlocks,
           artworks: allArtworks,
         } as SectionWithBlocks;
