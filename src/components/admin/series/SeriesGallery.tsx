@@ -3,8 +3,7 @@ import { ZoomIn, ZoomOut, Type, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { CategoryFolder } from "@/components/admin/catalog/CategoryFolder";
-import type { CatalogArtwork, MediumType } from "@/hooks/useCatalog";
+import type { CatalogArtwork } from "@/hooks/useCatalog";
 
 interface SeriesGalleryProps {
   artworks: CatalogArtwork[];
@@ -20,8 +19,6 @@ const ZOOM_LEVELS = [
   { cols: "grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2", titleClass: "text-sm" },
 ];
 
-const MEDIUM_TYPES: MediumType[] = ["PAINTING", "POW", "PHOTO", "ARTIST_BOOK"];
-
 type SortMode = "default" | "year-asc" | "year-desc";
 type SizeFilter = "all" | "S" | "M" | "L";
 type StatusFilter = "all" | "available" | "sold";
@@ -34,7 +31,6 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
   const [yearFilter, setYearFilter] = useState<string>("all");
   const [subSeriesFilter, setSubSeriesFilter] = useState<string>("all");
   const [showNames, setShowNames] = useState(true);
-  const [openCategories, setOpenCategories] = useState<Set<MediumType>>(new Set());
 
   const availableYears = useMemo(() => {
     const years = new Set<string>();
@@ -80,29 +76,24 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
     return result;
   }, [artworks, sortMode, sizeFilter, statusFilter, yearFilter, subSeriesFilter]);
 
-  // Group filtered artworks by medium_type
-  const byMediumType = useMemo(() => {
-    const map = new Map<MediumType, CatalogArtwork[]>();
-    for (const mt of MEDIUM_TYPES) {
-      map.set(mt, []);
-    }
+  // Group by catalog_sub_series
+  const { ungrouped, sortedGroups } = useMemo(() => {
+    const grouped = new Map<string, CatalogArtwork[]>();
+    const ung: CatalogArtwork[] = [];
     for (const a of filtered) {
-      const mt = (a.medium_type as MediumType) || "PAINTING";
-      const arr = map.get(mt) || [];
-      arr.push(a);
-      map.set(mt, arr);
+      if (a.catalog_sub_series) {
+        const existing = grouped.get(a.catalog_sub_series) || [];
+        existing.push(a);
+        grouped.set(a.catalog_sub_series, existing);
+      } else {
+        ung.push(a);
+      }
     }
-    return map;
+    return {
+      ungrouped: ung,
+      sortedGroups: Array.from(grouped.entries()).sort(([a], [b]) => a.localeCompare(b)),
+    };
   }, [filtered]);
-
-  const toggleCategory = (mt: MediumType) => {
-    setOpenCategories((prev) => {
-      const next = new Set(prev);
-      if (next.has(mt)) next.delete(mt);
-      else next.add(mt);
-      return next;
-    });
-  };
 
   const zoomLevel = ZOOM_LEVELS[zoom];
 
@@ -111,43 +102,24 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
       {/* Toolbar */}
       <div className="flex items-center gap-2 flex-wrap">
         <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7"
-            onClick={() => setZoom((z) => Math.min(z + 1, ZOOM_LEVELS.length - 1))}
-            disabled={zoom === ZOOM_LEVELS.length - 1}
-          >
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setZoom((z) => Math.min(z + 1, ZOOM_LEVELS.length - 1))} disabled={zoom === ZOOM_LEVELS.length - 1}>
             <ZoomIn className="h-3.5 w-3.5" />
           </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7"
-            onClick={() => setZoom((z) => Math.max(z - 1, 0))}
-            disabled={zoom === 0}
-          >
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setZoom((z) => Math.max(z - 1, 0))} disabled={zoom === 0}>
             <ZoomOut className="h-3.5 w-3.5" />
           </Button>
         </div>
 
         <div className="flex items-center gap-1">
           {(["all", "S", "M", "L"] as const).map((size) => (
-            <Badge
-              key={size}
-              variant={sizeFilter === size ? "default" : "outline"}
-              className="cursor-pointer text-[10px] px-2 py-0 h-6"
-              onClick={() => setSizeFilter(size)}
-            >
+            <Badge key={size} variant={sizeFilter === size ? "default" : "outline"} className="cursor-pointer text-[10px] px-2 py-0 h-6" onClick={() => setSizeFilter(size)}>
               {size === "all" ? "All" : size}
             </Badge>
           ))}
         </div>
 
         <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as StatusFilter)}>
-          <SelectTrigger className="h-7 w-[110px] text-xs">
-            <SelectValue />
-          </SelectTrigger>
+          <SelectTrigger className="h-7 w-[110px] text-xs"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All status</SelectItem>
             <SelectItem value="available">Available</SelectItem>
@@ -156,36 +128,26 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
         </Select>
 
         <Select value={yearFilter} onValueChange={setYearFilter}>
-          <SelectTrigger className="h-7 w-[100px] text-xs">
-            <SelectValue />
-          </SelectTrigger>
+          <SelectTrigger className="h-7 w-[100px] text-xs"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All years</SelectItem>
-            {availableYears.map((y) => (
-              <SelectItem key={y} value={y}>{y}</SelectItem>
-            ))}
+            {availableYears.map((y) => (<SelectItem key={y} value={y}>{y}</SelectItem>))}
           </SelectContent>
         </Select>
 
         {availableSubSeries.length > 0 && (
           <Select value={subSeriesFilter} onValueChange={setSubSeriesFilter}>
-            <SelectTrigger className="h-7 w-[130px] text-xs">
-              <SelectValue />
-            </SelectTrigger>
+            <SelectTrigger className="h-7 w-[130px] text-xs"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All sub-series</SelectItem>
               <SelectItem value="_none">No sub-series</SelectItem>
-              {availableSubSeries.map((s) => (
-                <SelectItem key={s} value={s}>{s}</SelectItem>
-              ))}
+              {availableSubSeries.map((s) => (<SelectItem key={s} value={s}>{s}</SelectItem>))}
             </SelectContent>
           </Select>
         )}
 
         <Select value={sortMode} onValueChange={(v) => setSortMode(v as SortMode)}>
-          <SelectTrigger className="h-7 w-[120px] text-xs">
-            <SelectValue />
-          </SelectTrigger>
+          <SelectTrigger className="h-7 w-[120px] text-xs"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="default">Default order</SelectItem>
             <SelectItem value="year-asc">Year ↑ oldest</SelectItem>
@@ -193,13 +155,7 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
           </SelectContent>
         </Select>
 
-        <Button
-          variant={showNames ? "secondary" : "ghost"}
-          size="icon"
-          className="h-7 w-7"
-          onClick={() => setShowNames((v) => !v)}
-          title={showNames ? "Hide titles" : "Show titles"}
-        >
+        <Button variant={showNames ? "secondary" : "ghost"} size="icon" className="h-7 w-7" onClick={() => setShowNames((v) => !v)} title={showNames ? "Hide titles" : "Show titles"}>
           <Type className="h-3.5 w-3.5" />
         </Button>
 
@@ -208,34 +164,26 @@ export const SeriesGallery = ({ artworks }: SeriesGalleryProps) => {
         </span>
       </div>
 
-      {/* Category folders */}
-      <div className="space-y-2">
-        {MEDIUM_TYPES.map((mt) => {
-          const items = byMediumType.get(mt) || [];
-          return (
-            <CategoryFolder
-              key={mt}
-              category={mt}
-              count={items.length}
-              isOpen={openCategories.has(mt)}
-              onToggle={() => toggleCategory(mt)}
-            >
-              {items.length > 0 ? (
-                <div className="p-3">
-                  <ThumbnailGrid
-                    artworks={items}
-                    gridCols={zoomLevel.cols}
-                    titleClass={zoomLevel.titleClass}
-                    showNames={showNames}
-                  />
-                </div>
-              ) : (
-                <p className="text-xs text-muted-foreground py-3 px-4">No artworks in this category.</p>
-              )}
-            </CategoryFolder>
-          );
-        })}
-      </div>
+      {/* Ungrouped artworks */}
+      {ungrouped.length > 0 && (
+        <ThumbnailGrid artworks={ungrouped} gridCols={zoomLevel.cols} titleClass={zoomLevel.titleClass} showNames={showNames} />
+      )}
+
+      {/* Sub-series groups */}
+      {sortedGroups.map(([subSeries, items]) => (
+        <div key={subSeries}>
+          <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">
+            {subSeries} <span className="font-normal">({items.length})</span>
+          </p>
+          <ThumbnailGrid artworks={items} gridCols={zoomLevel.cols} titleClass={zoomLevel.titleClass} showNames={showNames} />
+        </div>
+      ))}
+
+      {filtered.length === 0 && (
+        <p className="text-xs text-muted-foreground py-2">
+          {artworks.length === 0 ? "No artworks in this category." : "No artworks match the current filter."}
+        </p>
+      )}
     </div>
   );
 };
@@ -246,25 +194,15 @@ const ThumbnailCard = ({ artwork, titleClass, showNames }: { artwork: CatalogArt
   return (
     <div className="group relative">
       <div className="aspect-square flex items-center justify-center bg-muted/30 rounded overflow-hidden relative">
-        <img
-          src={artwork.image_url}
-          alt={artwork.title}
-          className="max-w-full max-h-full object-contain"
-          loading="lazy"
-        />
+        <img src={artwork.image_url} alt={artwork.title} className="max-w-full max-h-full object-contain" loading="lazy" />
         {artwork.status === "sold" && (
-          <span className="absolute top-0.5 right-0.5 bg-destructive/80 text-destructive-foreground text-[7px] px-1 rounded leading-tight">
-            SOLD
-          </span>
+          <span className="absolute top-0.5 right-0.5 bg-destructive/80 text-destructive-foreground text-[7px] px-1 rounded leading-tight">SOLD</span>
         )}
       </div>
       {showNames && (
         <div className="mt-0.5">
           <div className="flex items-center gap-0.5">
-            <button
-              onClick={() => setExpanded((v) => !v)}
-              className="shrink-0 text-muted-foreground hover:text-foreground transition-colors"
-            >
+            <button onClick={() => setExpanded((v) => !v)} className="shrink-0 text-muted-foreground hover:text-foreground transition-colors">
               {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
             </button>
             <p className={`${titleClass} text-muted-foreground truncate leading-tight`}>{artwork.title}</p>
