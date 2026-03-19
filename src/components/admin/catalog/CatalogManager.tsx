@@ -100,6 +100,13 @@ const CatalogManager = ({ onEdit }: CatalogManagerProps = {}) => {
     return Array.from(set).sort();
   }, [artworks, managedCatalogSeries]);
 
+  const catalogSubSeriesNames = useMemo(() => {
+    const allSubs = Object.values(seriesHierarchy).flat();
+    const fromData = artworks.map((a) => a.catalog_sub_series).filter(Boolean) as string[];
+    const set = new Set([...allSubs, ...fromData]);
+    return Array.from(set).sort();
+  }, [artworks, seriesHierarchy]);
+
   const grouped = useMemo(() => {
     const map: Record<string, typeof filtered> = {};
     for (const cat of CATEGORIES) {
