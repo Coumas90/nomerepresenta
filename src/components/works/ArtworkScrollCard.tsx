@@ -288,18 +288,18 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
                     </p>
                   ) : (
                     <>
-                      <p className="text-stone-500 text-[12px] md:text-[15px] font-bold">
+                      <p className="text-stone-500 text-[12px] md:text-[14px] font-bold">
                         {allImages[currentImageIndex]?.title || artwork.title}
                         {(allImages[currentImageIndex]?.year || artwork.year) && <>, {allImages[currentImageIndex]?.year || artwork.year}</>}
                         {isViewingDetail && <span className="font-normal text-stone-500"> (DETAIL)</span>}
                       </p>
                       {(allImages[currentImageIndex]?.materials || artwork.materials) && (
-                        <p className="text-stone-500 text-[11px] md:text-[13px] mt-[3px] md:mt-[6px]">
+                        <p className="text-stone-500 text-[11px] md:text-[12px] mt-[3px] md:mt-[6px]">
                           {allImages[currentImageIndex]?.materials || artwork.materials}
                         </p>
                       )}
                       {(allImages[currentImageIndex]?.dimensions || artwork.dimensions) && (
-                        <p className="text-stone-500 text-[11px] md:text-[13px] mt-[4px] md:mt-[5px]">
+                        <p className="text-stone-500 text-[11px] md:text-[12px] mt-[4px] md:mt-[5px]">
                           {allImages[currentImageIndex]?.dimensions || artwork.dimensions}
                         </p>
                       )}
@@ -307,7 +307,7 @@ export const ArtworkScrollCard = ({ artwork, isVisible = true, preloadedImages, 
                   )}
                 </div>
                 {allImages.length > 1 && (
-                  <p className="text-stone-400 text-[9px] md:text-[11px] whitespace-nowrap shrink-0" style={{ letterSpacing: '0.5px' }}>
+                  <p className="text-stone-400 text-[9px] md:text-[10px] whitespace-nowrap shrink-0" style={{ letterSpacing: '0.5px' }}>
                     [ {currentImageIndex + 1} / {allImages.length} ]
                   </p>
                 )}
