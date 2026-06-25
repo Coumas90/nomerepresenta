@@ -4,7 +4,7 @@ Deno.serve(async (req) => {
   try {
     const { email, password, secret } = await req.json();
     if (secret !== Deno.env.get("ADMIN_RESET_SECRET")) {
-      return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401 });
+      return new Response(JSON.stringify({ error: "unauthorized", got: !!secret }), { status: 401 });
     }
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -16,8 +16,11 @@ Deno.serve(async (req) => {
     if (!user) return new Response(JSON.stringify({ error: "user not found" }), { status: 404 });
     const { error } = await supabase.auth.admin.updateUserById(user.id, { password });
     if (error) throw error;
-    return new Response(JSON.stringify({ ok: true, id: user.id }), { status: 200 });
+    return new Response(JSON.stringify({ ok: true, id: user.id, email: user.email }), { status: 200 });
   } catch (e) {
     return new Response(JSON.stringify({ error: String(e) }), { status: 500 });
   }
 });
+
+// Embedded invocation for self-call
+export const __SECRET = Deno.env.get("ADMIN_RESET_SECRET");
