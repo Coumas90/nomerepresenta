@@ -1,4 +1,1 @@
 project_id = "zutguutaaplflximklel"
-
-[functions.admin-reset-password]
-verify_jwt = false
