@@ -1,7 +1,4 @@
 project_id = "zutguutaaplflximklel"
 
-[functions.verify-captcha]
-verify_jwt = false
-
-[functions.verify-pricelist-password]
+[functions.admin-reset-password]
 verify_jwt = false
